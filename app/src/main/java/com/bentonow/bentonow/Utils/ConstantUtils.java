@@ -11,4 +11,5 @@ public class ConstantUtils {
 
     public enum optSaveSettings {ALL, USER, LOCATION, ADDRESS, BACKEND_TEXT}
 
+
 }

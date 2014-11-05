@@ -25,6 +25,7 @@ import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
+import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.User;
@@ -254,7 +255,7 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
         mProgressDialog = new ProgressDialog(SignInActivity.this, BackendText.get("sign-up-sign-in-link"));
         mProgressDialog.show();
 
-        loginUser.login(new TextHttpResponseHandler() {
+        UserDao.login(loginUser, new TextHttpResponseHandler() {
             @SuppressWarnings("deprecation")
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
@@ -361,7 +362,7 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
             loginUser.email = user.getString("email");
             loginUser.fb_token = AccessToken.getCurrentAccessToken().getToken();
 
-            loginUser.login(new TextHttpResponseHandler() {
+            UserDao.login(loginUser, new TextHttpResponseHandler() {
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {

@@ -122,45 +122,6 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
         }
     }
 
-    //region onClick
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.actionbar_left_btn:
-                onBackPressed();
-                break;
-            case R.id.button_accept:
-                if (action.equals("phone")) {
-                    Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:4153001332"));
-                    startActivity(intent);
-                } else if (action.equals("logout")) {
-                    User.current = null;
-                    MixpanelUtils.clearPreferences();
-                    updateUI();
-                    BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);
-                }
-
-                action = "";
-                break;
-            case R.id.layout_container_phone:
-                EditPhoneDialog editDialog = new EditPhoneDialog();
-                editDialog.setmListenerDialog(new ListenerDialog() {
-                    @Override
-                    public void btnOkClick(String sPhoneNumber) {
-                        DebugUtils.logDebug(TAG, "btnOkClick: " + sPhoneNumber);
-                        updatePhoneNumber(sPhoneNumber);
-                    }
-
-                    @Override
-                    public void btnOnCancel() {
-                    }
-                });
-                editDialog.show(getFragmentManager(), EditPhoneDialog.TAG);
-                break;
-        }
-    }
-
     private void updatePhoneNumber(final String sPhoneNumber) {
         RequestParams params = new RequestParams();
         params.put("api_token", User.current.api_token);
@@ -244,7 +205,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
 
 
         try {
-             startActivity(Intent.createChooser(intent, "Share..."));
+            startActivity(Intent.createChooser(intent, "Share..."));
         } catch (android.content.ActivityNotFoundException ex) {
             Toast.makeText(getApplicationContext(), "There is no email client installed.", Toast.LENGTH_SHORT).show();
         }
@@ -334,6 +295,50 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
                 }
             }
         });
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.actionbar_left_btn:
+                onBackPressed();
+                break;
+            case R.id.button_accept:
+                if (action.equals("phone")) {
+                    Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:4153001332"));
+                    startActivity(intent);
+                } else if (action.equals("logout")) {
+                    User.current = null;
+                    MixpanelUtils.clearPreferences();
+                    updateUI();
+                    BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);
+                }
+
+                action = "";
+                break;
+            case R.id.layout_container_phone:
+                EditPhoneDialog editDialog = new EditPhoneDialog();
+                editDialog.setmListenerDialog(new ListenerDialog() {
+                    @Override
+                    public void btnOkClick(String sPhoneNumber) {
+                        DebugUtils.logDebug(TAG, "btnOkClick: " + sPhoneNumber);
+                        updatePhoneNumber(sPhoneNumber);
+                    }
+
+                    @Override
+                    public void btnOnCancel() {
+                    }
+                });
+                editDialog.show(getFragmentManager(), EditPhoneDialog.TAG);
+                break;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
     }
 
     private LinearLayout getLayoutContainerPhone() {

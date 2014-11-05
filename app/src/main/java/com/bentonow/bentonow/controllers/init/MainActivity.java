@@ -16,9 +16,9 @@ import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.GoogleLocationUtil;
+import com.bentonow.bentonow.Utils.ImageUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
-import com.bentonow.bentonow.Utils.SocialNetworksUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.errors.ErrorVersionActivity;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
@@ -45,8 +45,6 @@ public class MainActivity extends BaseFragmentActivity {
 
     public static boolean bIsOpen = false;
 
-    private boolean bOpenNextScreen = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,10 +64,8 @@ public class MainActivity extends BaseFragmentActivity {
 
         }
 
-
         Order.cleanUp();
-
-        SocialNetworksUtil.generateKeyHash();
+        ImageUtils.clearCacheFromImages();
     }
 
     @Override

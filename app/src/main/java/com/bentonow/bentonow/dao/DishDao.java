@@ -75,13 +75,19 @@ public class DishDao {
     }
 
     public static double getLowestMainPrice() {
-        double dMinPrice = Settings.price;
+        double dMinPrice = 0;
 
         if (Menu.get() != null) {
-            for (DishModel dishModel : Menu.get().dishModels) {
-                if (dishModel.type.equals("main") && dishModel.price != 0 && dMinPrice > dishModel.price)
-                    dMinPrice = dishModel.price;
-            }
+            for (DishModel dishModel : Menu.get().dishModels)
+                if (dishModel.type.equals("main")) {
+                    dishModel.price = DishDao.getDefaultPriceBento(dishModel.price);
+                    if (dMinPrice == 0)
+                        dMinPrice = dishModel.price;
+                    else {
+                        if (dMinPrice > dishModel.price)
+                            dMinPrice = dishModel.price;
+                    }
+                }
         }
 
         return dMinPrice;

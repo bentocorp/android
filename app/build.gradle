@@ -47,17 +47,17 @@ android {
         applicationId "com.bentonow.bentonow"
         minSdkVersion 17
         targetSdkVersion 22
-        versionCode 23
+        versionCode 24
         multiDexEnabled true
     }
     productFlavors {
         production {
             applicationId "com.bentonow.bentonow"
-            versionName '1.9-rc4'
+            versionName '1.10-rc1'
         }
         stage {
             applicationId "com.bentonow.bentonow.stage"
-            versionName '1.9-rc4-dev'
+            versionName '1.10-rc1-dev'
         }
     }
 

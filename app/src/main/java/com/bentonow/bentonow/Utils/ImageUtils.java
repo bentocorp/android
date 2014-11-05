@@ -59,20 +59,19 @@ public class ImageUtils {
     }
 
     public static DisplayImageOptions dishMainImageOptions() {
-        if (optImages == null)
-            optImages = new DisplayImageOptions.Builder()
-                    .showImageOnLoading(R.drawable.menu_placeholder_side)
-                    .showImageForEmptyUri(R.drawable.menu_placeholder_side)
-                    .showImageOnFail(R.drawable.menu_placeholder_side)
-                    .cacheInMemory(true).cacheOnDisk(true)
-                    .bitmapConfig(Config.ARGB_8888)
-                    .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2).build();
+        optImages = new DisplayImageOptions.Builder()
+                .showImageOnLoading(R.drawable.loading_green_large)
+                .showImageForEmptyUri(R.drawable.menu_placeholder_side)
+                .showImageOnFail(R.drawable.menu_placeholder_side)
+                .cacheInMemory(true).cacheOnDisk(true)
+                .bitmapConfig(Config.ARGB_8888)
+                .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2).build();
         return optImages;
     }
 
     public static DisplayImageOptions dishSideImageOptions() {
         return new DisplayImageOptions.Builder()
-                .showImageOnLoading(R.drawable.menu_placeholder_side)
+                .showImageOnLoading(R.drawable.loading_green)
                 .showImageForEmptyUri(R.drawable.menu_placeholder_side)
                 .showImageOnFail(R.drawable.menu_placeholder_side)
                 .cacheInMemory(true).cacheOnDisk(true)

@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
-import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
@@ -17,9 +16,6 @@ import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.adapter.BuildBentoFixListAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
-import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
-import com.bentonow.bentonow.controllers.session.SettingsActivity;
-import com.bentonow.bentonow.controllers.session.SignUpActivity;
 import com.bentonow.bentonow.dao.DishDao;
 import com.bentonow.bentonow.listener.ListenerMainDishFix;
 import com.bentonow.bentonow.model.BackendText;
@@ -27,7 +23,6 @@ import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Stock;
-import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.order.OrderItem;
 import com.bentonow.bentonow.ui.AutoFitTxtView;
 import com.bentonow.bentonow.ui.BackendButton;
@@ -80,7 +75,7 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
 
         getListBento().setAdapter(getAdapterListBento());
 
-        getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), BentoNowUtils.getNumberFromPrice(DishDao.getLowestMainPrice())));
+        getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), BentoNowUtils.getDefaultPriceBento(DishDao.getLowestMainPrice())));
 
         BentoNowUtils.rotateBanner(getTxtPromoName());
 
@@ -151,19 +146,10 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
                     return;
             }
 
-            if (bOrderComplete)
-                if (User.current == null) {
-                    trackBuildBentos();
-                    startActivity(new Intent(this, SignUpActivity.class));
-                } else if (Order.location == null || Order.address == null) {
-                    Intent intent = new Intent(this, DeliveryLocationActivity.class);
-                    intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.COMPLETE_ORDER);
-                    startActivity(intent);
-                } else {
-                    trackBuildBentos();
-                    startActivity(new Intent(this, CompleteOrderActivity.class));
-                }
-            else
+            if (bOrderComplete && BentoNowUtils.isValidCompleteOrder(BuildFixedBentoActivity.this)) {
+                trackBuildBentos();
+                BentoNowUtils.openCompleteOrderActivity(BuildFixedBentoActivity.this);
+            } else
                 WidgetsUtils.createShortToast("There are not enough dishes to build a bento, try again later");
         } else
             WidgetsUtils.createShortToast("Add some Bentos in your cart");
@@ -227,8 +213,7 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.actionbar_left_btn:
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
+                BentoNowUtils.openSettingsActivity(BuildFixedBentoActivity.this);
                 break;
             case R.id.actionbar_right_btn:
                 if (!Order.current.OrderItems.isEmpty()) {

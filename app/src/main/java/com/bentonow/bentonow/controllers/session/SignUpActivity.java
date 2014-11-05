@@ -24,6 +24,7 @@ import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
+import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.User;
@@ -339,10 +340,11 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
         mProgressDialog = new ProgressDialog(SignUpActivity.this, BackendText.get("sign-in-sign-up-link"));
         mProgressDialog.show();
 
-        registerUser.register(new TextHttpResponseHandler() {
+        UserDao.register(registerUser, new TextHttpResponseHandler() {
             @SuppressWarnings("deprecation")
             @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+            public void onFailure(int statusCode, Header[] headers, String
+                    responseString, Throwable throwable) {
                 Log.i(TAG, "onRegisterPressedOnFailure statusCode:" + statusCode + " responseString: " + responseString);
 
                 dismissDialog();
@@ -456,7 +458,7 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
             loginUser.email = user.getString("email");
             loginUser.fb_token = AccessToken.getCurrentAccessToken().getToken();
 
-            loginUser.login(new TextHttpResponseHandler() {
+            UserDao.login(loginUser, new TextHttpResponseHandler() {
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
@@ -478,6 +480,7 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
                     onSignUpSuccess(responseString);
+                    //BentoNowUtils.openEnterPhoneNumberActivity(SignUpActivity.this, graphResponse);
                 }
             });
         } catch (JSONException e) {

@@ -9,12 +9,18 @@ import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 
 import com.bentonow.bentonow.BuildConfig;
+import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.controllers.errors.ErrorActivity;
+import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.controllers.init.MainActivity;
 import com.bentonow.bentonow.controllers.order.BuildBentoActivity;
 import com.bentonow.bentonow.controllers.order.BuildFixedBentoActivity;
+import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
+import com.bentonow.bentonow.controllers.payment.EnterCreditCardActivity;
 import com.bentonow.bentonow.controllers.session.EnterPhoneNumberActivity;
+import com.bentonow.bentonow.controllers.session.SettingsActivity;
+import com.bentonow.bentonow.controllers.session.SignInActivity;
 import com.bentonow.bentonow.dao.DishDao;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.DishModel;
@@ -44,12 +50,12 @@ public class BentoNowUtils {
 
     public static final SimpleDateFormat sdfBento = new SimpleDateFormat("yyyyMMdd");
     public static final boolean B_APPIUM_TESTING = false;
-    public static final boolean B_KOKUSHO_TESTING = false;
+    public static final boolean B_KOKUSHO_TESTING = true;
 
 
     public static int getCurrentTime() {
         if (BuildConfig.DEBUG && BentoNowUtils.B_KOKUSHO_TESTING)
-            return 183000;
+            return 113000;
             //return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
         else
             return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
@@ -80,7 +86,7 @@ public class BentoNowUtils {
     }
 
     public static void openMainActivity(Context mContext) {
-        if (!MainActivity.bIsOpen) {
+        if (!MainActivity.bIsOpen && SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_APP_IN_FRONT)) {
             Intent intent = new Intent(mContext, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(intent);
@@ -108,11 +114,25 @@ public class BentoNowUtils {
     }
 
     public static void openErrorActivity(Context mContext) {
-        if (!ErrorActivity.bIsOpen) {
+        if (!ErrorActivity.bIsOpen && SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_APP_IN_FRONT)) {
             Intent intent = new Intent(mContext, ErrorActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(intent);
+            Order.cleanUp();
         }
+    }
+
+    public static void openCompleteOrderActivity(Context mContext) {
+        Intent intent = new Intent(mContext, CompleteOrderActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(intent);
+    }
+
+    public static void openSettingsActivity(FragmentActivity mContext) {
+        Intent intent = new Intent(mContext, SettingsActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(intent);
+        mContext.overridePendingTransition(R.anim.left_slide_in, R.anim.right_slide_out);
     }
 
     public static void goToDashboard(Context mContext) {
@@ -339,5 +359,25 @@ public class BentoNowUtils {
         }
     }
 
+    public static boolean isValidCompleteOrder(Context mContext) {
+        boolean bIsValid = true;
+
+        if (User.current == null) {
+            mContext.startActivity(new Intent(mContext, SignInActivity.class));
+            bIsValid = false;
+        } else if (User.location == null || !Settings.isInServiceArea(User.location) || Order.address == null) {
+            WidgetsUtils.createShortToast(mContext.getString(R.string.error_no_valid_delivery_address));
+
+            Intent intent = new Intent(mContext, DeliveryLocationActivity.class);
+            intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.COMPLETE_ORDER);
+            mContext.startActivity(intent);
+            bIsValid = false;
+        } else if (User.current.card == null || User.current.card.last4 == null || User.current.card.last4.isEmpty()) {
+            mContext.startActivity(new Intent(mContext, EnterCreditCardActivity.class));
+            bIsValid = false;
+        }
+
+        return bIsValid;
+    }
 
 }

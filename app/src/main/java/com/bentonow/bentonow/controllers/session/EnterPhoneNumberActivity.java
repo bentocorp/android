@@ -59,8 +59,8 @@ public class EnterPhoneNumberActivity extends BaseFragmentActivity implements Vi
             user.email = fbUser.getString("email");
             user.fb_token = AccessToken.getCurrentAccessToken().getToken();
             user.fb_id = fbUser.getString("id");
-            user.fb_gender = fbUser.getString("gender");
             user.fb_profile_pic = "https://graph.facebook.com/" + user.fb_id + "/picture?width=400";
+            user.fb_gender = fbUser.getString("gender");
             user.fb_age_range = "";
 
 

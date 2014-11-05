@@ -86,6 +86,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private ImageButton btn_clear;
     private ImageButton btn_current_location;
     private ImageView actionbar_right_btn;
+    private ImageView actionbar_left_btn;
     private ProgressBar progressBar;
 
     private boolean mRequestingLocationUpdates;
@@ -171,6 +172,10 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             actionbar_left_btn.setImageResource(R.drawable.ic_ab_back);
             actionbar_left_btn.setOnClickListener(this);
         }
+
+
+        getImageView().setImageResource(R.drawable.ic_ab_user);
+        getImageView().setOnClickListener(this);
 
         getHelpMark().setImageResource(R.drawable.ic_ab_help);
         getHelpMark().setOnClickListener(this);
@@ -570,12 +575,12 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.actionbar_left_btn:
-                onBackPressed();
+                BentoNowUtils.openSettingsActivity(DeliveryLocationActivity.this);
                 break;
             case R.id.actionbar_right_btn:
-                Intent intent = new Intent(DeliveryLocationActivity.this, HelpActivity.class);
-                intent.putExtra("faq", true);
-                startActivity(intent);
+                Intent iHelp = new Intent(DeliveryLocationActivity.this, HelpActivity.class);
+                iHelp.putExtra("faq", true);
+                startActivity(iHelp);
                 break;
             case R.id.button_accept:
                 getCheckIAgree().setChecked(true);
@@ -722,4 +727,11 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             progressBar = (ProgressBar) findViewById(R.id.progressBar);
         return progressBar;
     }
+
+    private ImageView getImageView() {
+        if (actionbar_left_btn == null)
+            actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
+        return actionbar_left_btn;
+    }
+
 }
