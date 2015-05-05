@@ -1,0 +1,22 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.bentonow.bentonow.ErrorClosedActivity"
+    android:id="@+id/base_relative_layout"
+    android:orientation="vertical"
+    android:background="@color/bgcolor">
+
+    <include layout="@layout/actionbar_green_border" />
+
+
+    <ListView
+        android:id="@+id/main_menu_list_items"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        tools:listitem="@layout/inc_menu_item_row">
+
+    </ListView>
+</LinearLayout>
+
+

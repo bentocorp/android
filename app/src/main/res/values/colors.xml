@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#ffffff</color>
+    <color name="btn_green">#87b05f</color>
+    <color name="btn_green_trans">#5087b05f</color>
+    <color name="gray">#7a8591</color>
+    <color name="bgcolor">#edf0f0</color>
+    <color name="red">#e66633</color>
+    <color name="black">#000000</color>
+    <color name="actionbar_title_color">#4f5055</color>
+</resources>

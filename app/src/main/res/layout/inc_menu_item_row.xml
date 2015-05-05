@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/main_menu_item_height"
+        >
+        <ImageView
+            android:id="@+id/menu_item_image"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/main_menu_item_height"
+            android:src="@drawable/tmp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            />
+
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/main_menu_item_height"
+            android:id="@+id/imageView6"
+            android:src="@drawable/menu_gradient" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/main_menu_item_name"
+            android:textAppearance="@style/BentoBuilderBoxMainName"
+            android:gravity="center"
+            android:text="TITLE OF ITEM MENU"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            />
+
+        <RelativeLayout
+            android:id="@+id/overlay_menu_detail"
+            android:visibility="gone"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/main_menu_item_height"
+                android:id="@+id/imageView7"
+                android:src="@drawable/menu_gradient" />
+
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/main_menu_item_name_2"
+                    android:textAppearance="@style/BentoBuilderBoxMainName"
+                    android:gravity="center"
+                    android:text="TITLE OF ITEM MENU"
+                    />
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/main_menu_item_description"
+                    android:textAppearance="@style/BentoBuilderBoxDesc"
+                    android:padding="5dp"
+                    android:gravity="center"
+                    android:text="Description of item .. lalal"
+                    />
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="3"
+                    android:gravity="center">
+                    <TextView
+                        android:id="@+id/btn_add_to_bento_main"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/btn_border_lineal_white"
+                        android:padding="@dimen/btn_padding"
+                        android:text="ADD TO BENTO"
+                        android:gravity="center"
+                        android:textAppearance="@style/BtnMenuItem"
+                        android:layout_weight="1"
+                        />
+                </LinearLayout>
+            </LinearLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+</LinearLayout>

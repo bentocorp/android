@@ -1,0 +1,280 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.bentonow.bentonow.ErrorClosedActivity"
+    android:id="@+id/base_relative_layout"
+    android:background="@color/bgcolor">
+
+    <!-- background -->
+    <!--<ImageView
+        android:id="@+id/bg"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:src="@drawable/bg_error_closed"
+        android:scaleType="centerCrop"/>-->
+
+    <!-- actionbar -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/actionbar_height"
+        android:layout_alignParentTop="true"
+        android:id="@+id/ActionBarCont"
+        >
+        <include layout="@layout/actionbar" />
+
+    </RelativeLayout>
+
+    <!-- content -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/general_padding"
+        android:id="@+id/linearLayout3"
+        android:layout_below="@+id/ActionBarCont"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/linearLayout4">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical"
+            android:background="@drawable/btn_gray"
+            android:weightSum="3">
+            <LinearLayout
+                android:id="@+id/build_main"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/btn_bento_main"
+                >
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="@dimen/main_menu_item_height"
+                    android:layout_weight="1"
+                    >
+                    <ImageView
+                        android:id="@+id/build_main_imageview"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/tmp_trans"
+                        android:scaleType="centerCrop" />
+                    <TextView
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="+ MAIN DISH"
+                        android:id="@+id/build_main_label_textview"
+                        android:textColor="@color/btn_green"
+                        android:textStyle="bold"
+                        android:layout_centerVertical="true"
+                        android:layout_centerHorizontal="true"
+                        />
+                </RelativeLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/main_menu_item_height"
+                android:layout_weight="1"
+                android:baselineAligned="false">
+                <LinearLayout
+                    android:id="@+id/btn_bento_side_1"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_gray_square"
+                    >
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1">
+                        <ImageView
+                            android:id="@+id/build_side1_imageview"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/tmp_trans"
+                            android:scaleType="centerCrop"
+                            />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="+ SIDE"
+                            android:id="@+id/build_side1_label_textview"
+                            android:textStyle="bold"
+                            android:textColor="@color/btn_green"
+                            android:layout_centerVertical="true"
+                            android:layout_centerHorizontal="true"
+                            />
+                    </RelativeLayout>
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/btn_bento_side_2"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_gray_square"
+                    >
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1">
+                        <ImageView
+                            android:id="@+id/build_side2_imageview"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/tmp_trans"
+                            android:scaleType="centerCrop" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="+ SIDE"
+                            android:id="@+id/build_side2_label_textview"
+                            android:textStyle="bold"
+                            android:shadowColor="@color/btn_green"
+                            android:textColor="@color/btn_green"
+                            android:layout_centerVertical="true"
+                            android:layout_centerHorizontal="true"
+                            />
+                    </RelativeLayout>
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/main_menu_item_height"
+                android:layout_weight="1"
+                android:baselineAligned="false">
+                <LinearLayout
+                    android:id="@+id/btn_bento_side_3"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_build_side_3"
+                    >
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        >
+                        <ImageView
+                            android:id="@+id/build_side3_imageview"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/tmp_trans"
+                            android:scaleType="centerCrop" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="+ SIDE"
+                            android:id="@+id/build_side3_label_textview"
+                            android:textColor="@color/btn_green"
+                            android:textStyle="bold"
+                            android:layout_centerVertical="true"
+                            android:layout_centerHorizontal="true"
+                            />
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/btn_bento_side_4"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_build_side_4"
+                    >
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        >
+                        <ImageView
+                            android:id="@+id/build_side4_imageview"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/tmp_trans"
+                            android:scaleType="centerCrop" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="+ SIDE"
+                            android:id="@+id/build_side4_label_textview"
+                            android:textColor="@color/btn_green"
+                            android:textStyle="bold"
+                            android:layout_centerVertical="true"
+                            android:layout_centerHorizontal="true"
+                            />
+
+                    </RelativeLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btn_go_back"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/linearLayout4"
+        android:layout_marginLeft="@dimen/general_padding"
+        android:layout_marginRight="@dimen/general_padding"
+        android:layout_marginBottom="@dimen/general_padding"
+        >
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                >
+                <TextView
+                    android:id="@+id/btn_add_another_bento_disabled"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="ADD ANOTHER BENTO"
+                    android:layout_above="@+id/btn_go_back"
+                    android:padding="@dimen/btn_padding"
+                    android:gravity="center"
+                    android:background="@drawable/btn_gray_pressed"
+                    android:textColor="@color/btn_green_trans"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/btn_add_another_bento"
+                    android:visibility="invisible"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="ADD ANOTHER BENTO"
+                    android:layout_above="@+id/btn_go_back"
+                    android:padding="@dimen/btn_padding"
+                    android:gravity="center"
+                    android:background="@drawable/btn_gray"
+                    android:textColor="@color/btn_green"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/btn_go_back"
+        android:background="@color/gray"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:padding="@dimen/btn_padding"
+        android:text="@string/btn_continue_text"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+</RelativeLayout>
+

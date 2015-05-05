@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name">Bento Now</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_error_closed">ErrorClosedActivity</string>
+    <string name="title_activity_home_about">HomeAboutActivity</string>
+    <string name="error_closed_title">We\'re currently closed!</string>
+    <string name="error_closed_text">Bento opens at 5pm today! We\'re cookin\' up some delicious dinner. \n Get excited!</string>
+    <string name="error_closed_input_mail_hint">Enter email for \'We\'re Open\'! email</string>
+    <string name="btn_submit_text">SUBMIT</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="TermsAndConditions"><![CDATA[Terms & Conditions]]></string>
+    <string name="title_activity_faq">FaqActivity</string>
+    <string name="btn_back_text">BACK</string>
+    <string name="title_activity_build_bento">BuildBentoActivity</string>
+    <string name="btn_continue_text">CONTINUE</string>
+    <string name="title_activity_delivery_location">DeliveryLocationActivity</string>
+    <string name="btn_fonfirm_address_text">CONFIRM ADDRESS</string>
+    <string name="delivery_help">To keep deliveries fast, our driver will meet you at the curb.</string>
+    <string name="btn_cancel_text">Cancel</string>
+    <string name="btn_iagree">I agree</string>
+    <string name="iagree_label">I agree to meet my driver curbside.</string>
+    <string name="alert_tab_checkbox">Please tab the checkbox to confirm the curbside delivery.</string>
+    <string name="title_activity_error_invalid_address">ErrorInvalidAddressActivity</string>
+    <string name="error_invalid_address_actionbar_title">Delivery Location</string>
+    <string name="title_activity_bento_select_main">BentoSelectMainActivity</string>
+    <string name="bento_select_main_actionbar_title">Chose Main Dish</string>
+
+    <string name="bento_builder_actionbar_title">Build Your Bento</string>
+    <string name="delivery_location_actionbar_title">Delivery Location</string>
+    <string name="error_invalid_address_text">We don\'t deliver there yet! Available locations are highlighted above. Enter your email below and we\'ll buy you a free Bento when we come to your area.</string>
+    <string name="error_delivery_address_text_title">Bummer!</string>
+    <string name="title_activity_bento_select_side">BentoSelectSideActivity</string>
+    <string name="title_activity_error_out_of_stock">ErrorOutOfStockActivity</string>
+    <string name="error_soulded_title">Oh no, we sold out!</string>
+    <string name="error_soulded_text">Demand is too high! Enter your email below and we\'ll tell you when we\'re back in stock.</string>
+</resources>

@@ -1,0 +1,68 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+    </style>
+
+    <!--<style name="AudioFileInfoOverlayText">
+        <item name="android:paddingLeft">4px</item>
+        <item name="android:paddingBottom">4px</item>
+        <item name="android:textColor">#ffffffff</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">1</item>
+    </style>-->
+
+    <style name="BentoBuilderBoxMainName">
+        <item name="android:textSize">@dimen/menu_item_title</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:shadowColor">@color/black</item>
+        <item name="android:shadowDx">2</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">1</item>
+        <item name="fontPath">fonts/OpenSans-Bold.ttf</item>
+    </style>
+
+    <style name="BentoBuilderBoxSideName">
+        <item name="android:textSize">@dimen/menu_item_side_title</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:shadowColor">@color/black</item>
+        <item name="android:shadowDx">2</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">1</item>
+        <item name="fontPath">fonts/OpenSans-Bold.ttf</item>
+    </style>
+
+    <style name="BentoBuilderBoxDesc">
+        <item name="android:textSize">@dimen/menu_item_description</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:shadowColor">@color/black</item>
+        <item name="android:shadowDx">2</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">1</item>
+        <item name="fontPath">fonts/OpenSans-Bold.ttf</item>
+    </style>
+
+    <style name="ActionBarTitle">
+        <item name="android:textSize">@dimen/title2</item>
+        <item name="android:textColor">@color/actionbar_title_color</item>
+        <item name="android:textStyle">bold</item>
+        <item name="fontPath">fonts/OpenSans-Regular.ttf</item>
+    </style>
+
+    <style name="BtnMenuItem">
+        <item name="android:textSize">@dimen/title2</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="fontPath">fonts/OpenSans-Regular.ttf</item>
+    </style>
+
+    <dimen name="menu_item_title">20sp</dimen>
+    <dimen name="menu_item_description">14sp</dimen>
+    <dimen name="menu_item_side_title">12sp</dimen>
+</resources>

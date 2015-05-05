@@ -1,0 +1,265 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.bentonow.bentonow.ErrorClosedActivity"
+    android:id="@+id/base_relative_layout"
+    android:background="@color/bgcolor">
+
+    <!-- background -->
+    <!--<ImageView
+        android:id="@+id/bg"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:src="@drawable/bg_error_closed"
+        android:scaleType="centerCrop"/>-->
+
+    <!-- actionbar -->
+    <!--<LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/bg_actionbar"
+        android:gravity="center"
+        android:padding="@dimen/actionbar_padding"
+        android:id="@+id/ActionBar">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delivery Location"
+            android:textSize="@dimen/title2"
+            />
+    </LinearLayout>
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_ab_bento"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:padding="@dimen/actionbar_padding2"
+         />-->
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:id="@+id/ActionBarContainer">
+        <include layout="@layout/actionbar" />
+    </LinearLayout>
+
+    <!-- content -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_below="@+id/ActionBarContainer"
+        android:layout_above="@+id/linearLayout2">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_actionbar"
+            >
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_search" />
+            <AutoCompleteTextView
+                android:id="@+id/autoCompleteTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Enter your delivery address"
+                android:gravity="center_vertical"
+                android:background="#00000000"
+                android:textSize="14sp"
+                android:layout_weight="1" >
+
+                <requestFocus />
+            </AutoCompleteTextView>
+            <!--<EditText
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:hint="Enter your delivery address"
+                android:gravity="center_vertical"
+                android:background="#00000000"
+                android:textSize="14sp"
+                android:layout_weight="1" />-->
+            <ImageView
+                android:id="@+id/btn_go_to_current_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_curr_loc"
+                android:visibility="invisible"/>
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <fragment
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" android:id="@+id/map"
+                tools:context="com.bentonow.bentonow.DeliveryLocationActivity"
+                android:name="com.google.android.gms.maps.SupportMapFragment" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageView4"
+                android:src="@drawable/center_map"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true" />
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/alert_tab_checkbox"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_very_small"
+                android:background="@drawable/alert_orange"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:visibility="invisible"
+                android:id="@+id/alert_iagree" />
+        </RelativeLayout>
+
+    </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_above="@+id/footer_action"
+            android:id="@+id/linearLayout2"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:background="@color/white">
+            <TextView
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:paddingLeft="10dp"
+                android:layout_height="match_parent"
+                android:text="@string/iagree_label"
+                android:id="@+id/textView3"
+                android:gravity="center_vertical"
+                />
+            <ImageView
+                android:id="@+id/btn_help"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_ab_help"
+                />
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/chckIagree"
+                 />
+        </LinearLayout>
+
+
+
+    <RelativeLayout
+        android:id="@+id/footer_action"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        >
+        <TextView
+            android:id="@+id/btn_continue"
+            android:background="@color/gray"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:padding="@dimen/btn_padding"
+            android:text="@string/btn_continue_text"
+            />
+        <TextView
+            android:id="@+id/btn_confirm_address"
+            android:background="@color/btn_green"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:padding="@dimen/btn_padding"
+            android:text="@string/btn_fonfirm_address_text"
+            android:visibility="invisible"
+            />
+    </RelativeLayout>
+
+    <RelativeLayout
+    android:id="@+id/overlay_help"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#90000000"
+    android:visibility="invisible">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="5"
+        android:orientation="horizontal"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:gravity="center"
+        android:baselineAligned="false">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/overlay_message"
+            android:layout_weight="3"
+            >
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/delivery_help"
+                android:padding="@dimen/btn_padding"
+                />
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/btn_cancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/btn_padding"
+                    android:layout_weight="1"
+                    android:textColor="@color/white"
+                    android:background="@drawable/btn_green_corned_left_bottom"
+                    android:gravity="center"
+                    android:text="@string/btn_cancel_text"
+                    />
+                <TextView
+                    android:id="@+id/btn_iagree"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/btn_padding"
+                    android:layout_weight="1"
+                    android:textColor="@color/white"
+                    android:background="@drawable/bg_green_corner_right_bottom"
+                    android:gravity="center"
+                    android:text="@string/btn_iagree"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>
+
+
+</RelativeLayout>
