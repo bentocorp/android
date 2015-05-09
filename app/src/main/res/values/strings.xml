@@ -35,4 +35,6 @@
     <string name="title_activity_error_out_of_stock">ErrorOutOfStockActivity</string>
     <string name="error_soulded_title">Oh no, we sold out!</string>
     <string name="error_soulded_text">Demand is too high! Enter your email below and we\'ll tell you when we\'re back in stock.</string>
+    <string name="title_activity_sign_up">SignUpActivity</string>
+    <string name="title_activity_sign_in">SignInActivity</string>
 </resources>

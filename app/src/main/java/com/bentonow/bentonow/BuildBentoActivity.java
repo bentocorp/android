@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,6 +16,7 @@ import com.bentonow.bentonow.model.Item;
 import com.bentonow.bentonow.model.Orders;
 import com.squareup.picasso.Picasso;
 
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -44,6 +46,9 @@ public class BuildBentoActivity extends BaseActivity {
     private TextView btn_add_another_bento_disabled;
     private TextView bento_box_counter_textview;
     private int bento_count = 0;
+    private TextView btn_continue_inactive, btn_continue_active;
+    private RelativeLayout overlay_autocomplete_bento;
+    private TextView btn_no_complete_for_me,btn_yes_complete_for_me;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,19 +81,34 @@ public class BuildBentoActivity extends BaseActivity {
         btn_add_another_bento_disabled = (TextView)findViewById(R.id.btn_add_another_bento_disabled);
 
         bento_box_counter_textview = (TextView)findViewById(R.id.bento_box_counter_textview);
+
+        btn_continue_inactive = (TextView)findViewById(R.id.btn_continue_inactive);
+        btn_continue_active = (TextView)findViewById(R.id.btn_continue_active);
+
+        // OVERLAY
+        overlay_autocomplete_bento = (RelativeLayout)findViewById(R.id.overlay_autocomplete_bento);
+        btn_no_complete_for_me = (TextView)findViewById(R.id.btn_no_complete_for_me);
+        btn_yes_complete_for_me = (TextView)findViewById(R.id.btn_yes_complete_for_me);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         //builBento();
+        resume();
+    }
+
+    private void resume() {
+        Log.i(TAG,"resume()");
         checkPendingBuildBento();
         showCountBentos();
     }
 
     private void showCountBentos() {
+        Log.i(TAG,"showCountBentos()");
         long pending_bento = Item.count(Item.class, "orderid=? and completed=?", new String[]{String.valueOf(Bentonow.pending_order_id), "yes"});
         if(pending_bento>0) {
+            enableBtnAddAnotherBento();
             bento_box_counter_textview.setText(String.valueOf(pending_bento));
             bento_box_counter_textview.setVisibility(View.VISIBLE);
         }
@@ -239,12 +259,20 @@ public class BuildBentoActivity extends BaseActivity {
 
     private void enableBtnAddAnotherBento() {
         Log.i(TAG,"enableBtnAddAnotherBento()");
+        // btn continue
+        btn_continue_inactive.setVisibility(View.INVISIBLE);
+        btn_continue_active.setVisibility(View.VISIBLE);
+        //btn add another bento
         btn_add_another_bento_disabled.setVisibility(View.INVISIBLE);
         btn_add_another_bento.setVisibility(View.VISIBLE);
     }
 
     private void disableBtnAddAnotherBento() {
         Log.i(TAG,"disableBtnAddAnotherBento()");
+        // btn continue
+        btn_continue_inactive.setVisibility(View.VISIBLE);
+        btn_continue_active.setVisibility(View.INVISIBLE);
+        // btn add another bento
         btn_add_another_bento_disabled.setVisibility(View.VISIBLE);
         btn_add_another_bento.setVisibility(View.INVISIBLE);
     }
@@ -291,10 +319,9 @@ public class BuildBentoActivity extends BaseActivity {
         actionbar_right_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), FaqActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
-                finish();
+                Item bento = Item.findById(Item.class,Bentonow.pending_bento_id);
+                if( !bento.isFull() )
+                    showDialogForAutocompleteBento();
             }
         });
     }
@@ -369,19 +396,130 @@ public class BuildBentoActivity extends BaseActivity {
         btn_add_another_bento.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i(TAG,"Bentonow.pending_bento_id: "+Bentonow.pending_bento_id);
+                Log.i(TAG, "Bentonow.pending_bento_id: " + Bentonow.pending_bento_id);
                 Item current_betno = Item.findById(Item.class, Bentonow.pending_bento_id);
                 Log.i(TAG, "current_betno.isFull(): " + current_betno.isFull());
                 disableBtnAddAnotherBento();
-                if( current_betno.isFull() ) {
+                if (current_betno.isFull()) {
                     current_betno.completed = "yes";
                     current_betno.save();
                     createNewBentoBox();
-                }else{
-                    Toast.makeText(getApplicationContext(),"Current Bento Box is not completed",Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Current Bento Box is not completed", Toast.LENGTH_LONG).show();
                 }
             }
         });
 
+        //////////////////////
+        btn_continue_inactive.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Item bento = Item.findById(Item.class,Bentonow.pending_bento_id);
+                if ( !bento.isFull() )
+                    showDialogForAutocompleteBento();
+            }
+        });
+
+        btn_continue_active.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Item bento = Item.findById(Item.class,Bentonow.pending_bento_id);
+                if(bento.isFull()) {
+                    finalizeOrder();
+                }else{
+                    showDialogForAutocompleteBento();
+                }
+            }
+        });
+
+        /// OVERLAY
+        btn_no_complete_for_me.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                overlay_autocomplete_bento.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        btn_yes_complete_for_me.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                overlay_autocomplete_bento.setVisibility(View.INVISIBLE);
+                Item autocomplete_bento = Item.findById(Item.class, Bentonow.pending_bento_id);
+                if ( autocomplete_bento.main == null ) {
+                    List<Dish> main_dishes = Dish.find(Dish.class,"type=? and today = ?", new String[]{"main",todayDate}, null, "RANDOM()", "1");
+                    for( Dish dish : main_dishes ) {
+                        Log.i(TAG,"dish._id: "+dish._id);
+                        autocomplete_bento.main = dish._id;
+                    }
+                }else{
+                    Log.i(TAG,"Main is NO null");
+                }
+
+                List<Dish> sides_dishes = Dish.find(Dish.class,"type=? and today = ?", new String[]{"side",todayDate}, null, "RANDOM()", null);
+                if( sides_dishes.isEmpty() )
+                    Log.i(TAG,"No dishes for today");
+
+                if ( autocomplete_bento.side1 == null ) {
+                    for( Dish dish : sides_dishes ) {
+                        if( !Arrays.asList(autocomplete_bento.sideItems()).contains(dish._id) ){
+                            Log.i(TAG,"dish._id: "+dish._id);
+                            autocomplete_bento.side1 = dish._id;
+                        }
+                    }
+                }else{
+                    Log.i(TAG, "Side 1 is NO null");
+                }
+
+                if ( autocomplete_bento.side2 == null ) {
+                    for( Dish dish : sides_dishes ) {
+                        if( !Arrays.asList(autocomplete_bento.sideItems()).contains(dish._id) ){
+                            Log.i(TAG,"dish._id: "+dish._id);
+                            autocomplete_bento.side2 = dish._id;
+                        }
+                    }
+                }else{
+                    Log.i(TAG, "Side 2 is NO null");
+                }
+
+                if ( autocomplete_bento.side3 == null ) {
+                    for( Dish dish : sides_dishes ) {
+                        if( !Arrays.asList(autocomplete_bento.sideItems()).contains(dish._id) ){
+                            Log.i(TAG,"dish._id: "+dish._id);
+                            autocomplete_bento.side3 = dish._id;
+                        }
+                    }
+                }else{
+                    Log.i(TAG, "Side 3 is NO null");
+                }
+
+                if ( autocomplete_bento.side4 == null ) {
+                    for( Dish dish : sides_dishes ) {
+                        if( !Arrays.asList(autocomplete_bento.sideItems()).contains(dish._id) ){
+                            Log.i(TAG,"dish._id: "+dish._id);
+                            autocomplete_bento.side4 = dish._id;
+                        }
+                    }
+                }else{
+                    Log.i(TAG, "Side 4 is NO null");
+                }
+
+                autocomplete_bento.save();
+
+                resume();
+            }
+
+        });
+
+    }
+
+    private void showDialogForAutocompleteBento() {
+        overlay_autocomplete_bento.setVisibility(View.VISIBLE);
+    }
+
+    private void finalizeOrder() {
+        Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
+        startActivity(intent);
+        finish();
+        overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
     }
 }

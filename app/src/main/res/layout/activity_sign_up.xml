@@ -1,0 +1,321 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/base_relative_layout"
+    android:background="@color/bgcolor"
+    >
+    <!-- actionbar -->
+    <LinearLayout
+        android:id="@+id/ActionBarContainer"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        >
+        <include layout="@layout/actionbar" />
+    </LinearLayout>
+
+    <!-- container -->
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/scrollView"
+        android:layout_above="@+id/footer"
+        android:layout_below="@+id/ActionBarContainer">
+
+        <LinearLayout
+            android:id="@+id/ll_cont"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical"
+
+            android:layout_below="@+id/ActionBarContainer"
+            android:layout_alignParentBottom="true">
+
+            <!-- alert -->
+            <LinearLayout
+                android:id="@+id/alert_empty_input"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@color/orange"
+                android:visibility="invisible"
+                >
+                <ImageView
+                    android:padding="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_precaution"
+                    />
+                <TextView
+                    android:id="@+id/alert_message_textview"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:gravity="center_vertical"
+                    android:textSize="@dimen/text_small"
+                    android:textColor="@color/white"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="@dimen/general_padding"
+                android:layout_marginRight="@dimen/general_padding"
+                android:gravity="center"
+                >
+                <!-- Facebook -->
+                <ImageView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/btn_facebook"
+                    android:adjustViewBounds="true"
+                    />
+
+                <!-- divisor -->
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/or_divider"
+                    android:adjustViewBounds="true"
+                    android:layout_margin="10dp"
+                    android:paddingLeft="@dimen/general_padding"
+                    android:paddingRight="@dimen/general_padding"
+                    />
+            </LinearLayout>
+
+            <!-- divisor -->
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1px"
+                android:background="@color/divisor" />
+
+            <!-- form group -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@color/white"
+                android:gravity="center_vertical"
+                >
+                <ImageView
+                    android:id="@+id/signup_user_ico"
+                    android:padding="@dimen/ic_email_padding"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_signup_profile"/>
+
+                <!-- divisor -->
+                <View
+                    android:layout_width="1px"
+                    android:layout_height="fill_parent"
+                    android:background="@color/divisor" />
+
+                <EditText
+                    android:id="@+id/user_name"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:hint="Your name"
+                    android:textSize="@dimen/text_small"
+                    android:textColor="@color/gray"
+                    android:background="@color/transparente"
+                    android:padding="@dimen/btn_padding"
+                    android:text="John J. Smith" />
+            </LinearLayout>
+
+            <!-- divisor -->
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1px"
+                android:background="@color/divisor" />
+
+            <!-- form group -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@color/white"
+                android:gravity="center_vertical"
+
+                >
+                <ImageView
+                    android:id="@+id/signup_email_ico"
+                    android:padding="@dimen/ic_email_padding"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_signup_email"/>
+
+                <!-- divisor -->
+                <View
+                    android:layout_width="1px"
+                    android:layout_height="fill_parent"
+                    android:background="@color/divisor" />
+
+                <EditText
+                    android:id="@+id/email_address"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:hint="Email address"
+                    android:textSize="@dimen/text_small"
+                    android:textColor="@color/gray"
+                    android:background="@color/transparente"
+                    android:padding="@dimen/btn_padding"
+                    android:text="vincent+5@bentonow.com" />
+            </LinearLayout>
+
+            <!-- divisor -->
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1px"
+                android:background="@color/divisor" />
+
+            <!-- form group -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@color/white"
+                android:gravity="center_vertical"
+                >
+                <ImageView
+                    android:id="@+id/signup_phone_ico"
+                    android:padding="@dimen/ic_email_padding"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_signup_phone"/>
+
+                <!-- divisor -->
+                <View
+                    android:layout_width="1px"
+                    android:layout_height="fill_parent"
+                    android:background="@color/divisor" />
+
+                <EditText
+                    android:id="@+id/phone_number"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:hint="Phone number"
+                    android:textSize="@dimen/text_small"
+                    android:textColor="@color/gray"
+                    android:background="@color/transparente"
+                    android:padding="@dimen/btn_padding"
+                    android:text="555-123-4567" />
+            </LinearLayout>
+
+            <!-- divisor -->
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1px"
+                android:background="@color/divisor" />
+
+            <!-- form group -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@color/white"
+                android:gravity="center_vertical"
+                >
+                <ImageView
+                    android:id="@+id/signup_key_ico"
+                    android:padding="@dimen/ic_email_padding"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_signup_key"/>
+
+                <!-- divisor -->
+                <View
+                    android:layout_width="1px"
+                    android:layout_height="fill_parent"
+                    android:background="@color/divisor" />
+
+                <EditText
+                    android:id="@+id/password"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:hint="Password"
+                    android:textSize="@dimen/text_small"
+                    android:textColor="@color/gray"
+                    android:background="@color/transparente"
+                    android:padding="@dimen/btn_padding"
+                    android:text="somepassword"
+                    android:password="true" />
+            </LinearLayout>
+
+            <!-- divisor -->
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1px"
+                android:background="@color/divisor" />
+
+            <!-- submit button -->
+            <TextView
+                android:id="@+id/btn_register"
+                android:background="@drawable/btn_dark_gray"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:padding="@dimen/btn_padding"
+                android:text="REGISTER"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="@dimen/general_padding"
+                android:layout_marginRight="@dimen/general_padding"
+                />
+
+            <!-- sign in -->
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Already have an account?"
+                    android:textColor="@color/dark_gray"
+                    />
+                <TextView
+                    android:id="@+id/btn_go_to_sign_in_activity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/btn_green"
+                    android:text="Sign in."
+                    android:padding="@dimen/btn_padding"
+                    android:textStyle="bold"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- FOOTER -->
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/btn_padding"
+        android:id="@+id/footer"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+        <TextView
+            android:layout_weight="1"
+            android:text="@string/privacy_policy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/btn_green"/>
+        <TextView
+            android:layout_weight="1"
+            android:gravity="right"
+            android:textColor="@color/btn_green"
+            android:text="@string/TermsAndConditions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+</RelativeLayout>

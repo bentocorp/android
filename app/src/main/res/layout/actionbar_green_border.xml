@@ -6,7 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/actionbar_height"
         android:background="@drawable/bg_actionbar_green_border"
-        android:id="@+id/ActionBar"
+        android:id="@+id/ActionBarContainer"
         >
 
         <ImageView

@@ -67,8 +67,8 @@ public class BaseActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        finishThisActivity();
+        //super.onBackPressed();
+        //finishThisActivity();
     }
 
     @Override

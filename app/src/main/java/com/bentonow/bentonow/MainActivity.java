@@ -84,7 +84,6 @@ public class MainActivity extends BaseActivity {
                         if (json.get(Config.API.STATUS_OVERALL_LABEL_VALUE).equals(Config.API.STATUS_OVERALL_MESSAGE_OPEN)) {
                             checkForTodayMenu();
                             Bentonow.isOpen = true;
-                            checkForPendingOrder();
                         } else {
                             goToErrorClosed();
                         }
@@ -104,13 +103,16 @@ public class MainActivity extends BaseActivity {
         long todayMenu = Dish.count(Dish.class, "today=?", new String[]{todayDate});
         if ( todayMenu==0 ) {
             String uri = Config.API.URL + Config.API.MENU_URN + "/" + todayDate;
-            Log.i(TAG, "uri: "+uri);
+            Log.i(TAG, "URI: "+uri);
             aq.ajax(uri, JSONObject.class, new AjaxCallback<JSONObject>() {
                 @Override
                 public void callback(String url, JSONObject json, AjaxStatus status) {
                     if (json != null) {
+                        Log.i(TAG,"json: "+json.toString());
                         try {
-                            JSONArray MenuItems = (JSONArray) json.get(Config.API_MENUITEMS_TAG);
+                            JSONObject menu = json.getJSONObject("menus");
+                            JSONObject dinner = menu.getJSONObject("dinner");
+                            JSONArray MenuItems = (JSONArray) dinner.get(Config.API_MENUITEMS_TAG);
                             for (int i = 0; i < MenuItems.length(); i++) {
                                 JSONObject gDish = (JSONObject) MenuItems.get(i);
                                 long menuHoy = Dish.count(Dish.class, "_id=?", new String[]{gDish.getString("itemId")});
@@ -122,13 +124,16 @@ public class MainActivity extends BaseActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                        checkForPendingOrder();
                     } else {
                         Log.i(TAG, "json isNull");
+                        checkForPendingOrder();
                     }
                 }
             });
         }else{
-            Log.i(TAG,"The menu of the day is changed");
+            Log.i(TAG, "The menu of the day is changed");
+            checkForPendingOrder();
         }
     }
 

@@ -27,7 +27,9 @@ public class ErrorInvalidAddressActivity extends BaseActivity {
         btn_change.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finishThisActivity();
+                Intent intent = new Intent(getApplicationContext(), DeliveryLocationActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
             }
         });
 

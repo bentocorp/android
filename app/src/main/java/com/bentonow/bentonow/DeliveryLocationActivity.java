@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -69,6 +70,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
     private TextView btn_confirm_address;
     private String newAddress = "";
     private ImageView actionbar_right_btn;
+    private LatLng auxTarget;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +89,9 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         autoCompView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                // TODO
+                InputMethodManager imm = (InputMethodManager)getSystemService(
+                        Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(autoCompView.getWindowToken(), 0);
                 String str = (String) adapterView.getItemAtPosition(position);
                 //Toast.makeText(getApplicationContext(), str, Toast.LENGTH_SHORT).show();
                 if (!newAddress.equals(str)) {
@@ -406,14 +410,22 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                         mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
                             @Override
                             public void onCameraChange(CameraPosition cameraPosition) {
-                                ////Log.i(TAG,"mMap.getCameraPosition().target: "+mMap.getCameraPosition().target);
-
-                                Location new_location = new Location("newLocation");
-                                LatLng point = mMap.getCameraPosition().target;
-                                new_location.setLatitude(point.latitude);
-                                new_location.setLongitude(point.longitude);
-                                new_location.setTime(new Date().getTime());
-                                scanCurrentLocation(new_location);
+                                Log.i(TAG, "mMap.getCameraPosition().target: " + mMap.getCameraPosition().target);
+                                auxTarget = mMap.getCameraPosition().target;
+                                Handler handler = new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    public void run() {
+                                        if ( auxTarget.equals(mMap.getCameraPosition().target) ) {
+                                            Log.i(TAG,"call google api");
+                                            Location new_location = new Location("newLocation");
+                                            LatLng point = mMap.getCameraPosition().target;
+                                            new_location.setLatitude(point.latitude);
+                                            new_location.setLongitude(point.longitude);
+                                            new_location.setTime(new Date().getTime());
+                                            scanCurrentLocation(new_location);
+                                        }
+                                    }
+                                }, 3500);
                             }
                         });
 

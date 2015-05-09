@@ -1,10 +1,8 @@
 package com.bentonow.bentonow;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -15,7 +13,7 @@ public class FaqActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_faq);
 
-        TextView btn_go_back = (TextView) findViewById(R.id.btn_go_back);
+        TextView btn_go_back = (TextView) findViewById(R.id.footer_container);
         btn_go_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

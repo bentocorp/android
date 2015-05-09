@@ -25,7 +25,7 @@ public class Config {
     }
 
     public static class API{
-        public static String URL = APP_DEV_STATUS.equals(appStatus.PRODUCTION) ? "http://api.bentonow.com" : "http://dev.api.bentonow.com";
+        public static String URL = APP_DEV_STATUS.equals(appStatus.PRODUCTION) ? "https://api.bentonow.com" : "https://dev.api.bentonow.com";
         public static final String MENU_URN = "/menu";
 
         //STATUS OVERALL
@@ -41,6 +41,20 @@ public class Config {
         public static String STATUS_ALL_LABEL_OVERALL = "overall";
 
         public static String STATUS_ALL = "/status/all";
+
+        // USER SIGN UP
+        public static String USER_SIGNUP = "/user/signup";
+
+        public static int USER_SIGNUP_200 = 200;
+        public static int USER_SIGNUP_400 = 400;
+        public static int USER_SIGNUP_409 = 409;
+
+        // USER SIGN IN
+        public static String USER_LOGIN = "/user/login";
+
+        public static int USER_LOGIN_200 = 200;
+        public static int USER_LOGIN_404 = 404;
+        public static int USER_LOGIN_403 = 403;
 
     }
 }

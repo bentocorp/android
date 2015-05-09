@@ -62,8 +62,8 @@ public class BaseFragmentActivity extends FragmentActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        finishThisActivity();
+        //super.onBackPressed();
+        //finishThisActivity();
     }
 
     @Override

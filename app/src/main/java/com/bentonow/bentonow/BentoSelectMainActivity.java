@@ -52,7 +52,11 @@ public class BentoSelectMainActivity extends BaseActivity {
         actionbar_left_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finishThisActivity();
+                //finishThisActivity();
+                Intent intent = new Intent(getApplicationContext(),BuildBentoActivity.class);
+                startActivity(intent);
+                finish();
+                overridePendingTransition(R.anim.left_slide_in, R.anim.right_slide_out);
             }
         });
 

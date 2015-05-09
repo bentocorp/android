@@ -8,4 +8,8 @@
     <color name="red">#e66633</color>
     <color name="black">#000000</color>
     <color name="actionbar_title_color">#4f5055</color>
+    <color name="orange">#e97200</color>
+    <color name="transparente">#00660066</color>
+    <color name="divisor">#50909090</color>
+    <color name="dark_gray">#7a8591</color>
 </resources>

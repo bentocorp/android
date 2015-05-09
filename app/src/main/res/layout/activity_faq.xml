@@ -16,6 +16,7 @@
 
     <!-- actionbar -->
     <LinearLayout
+        android:id="@+id/ActionBarContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -29,7 +30,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_below="@+id/ActionBar"
+        android:layout_below="@+id/ActionBarContainer"
     >
         <TextView
             android:layout_width="fill_parent"
@@ -52,7 +53,7 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/btn_go_back"
+        android:id="@+id/footer_container"
         android:background="@color/btn_green"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"

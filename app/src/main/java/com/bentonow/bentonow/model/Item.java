@@ -46,4 +46,9 @@ public class Item extends SugarRecord<Item>{
         return isFull;
     }
 
+    public String[] sideItems(){
+        String[] toReturn = new String[]{main,side1,side2,side3,side4};
+        return toReturn;
+    }
+
 }
