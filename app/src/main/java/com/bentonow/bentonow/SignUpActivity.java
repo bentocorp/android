@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
+import com.bentonow.bentonow.model.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -152,14 +153,49 @@ public class SignUpActivity extends BaseActivity {
     public void postUserData(){
         String uri = Config.API.URL + Config.API.USER_SIGNUP;
         Map<String, Object> params = new HashMap<String, Object>();
-        String dataJson = "{\"name\":\""+user_name.getText().toString()+"\", \"email\": \""+email_address.getText().toString()+"\", \"phone\": \""+phone_number.getText().toString()+"\", \"password\": \""+password.getText().toString()+"\"}";
-        params.put("data", dataJson);
+        //String dataJson = "{\"name\":\""+user_name.getText().toString()+"\", \"email\": \""+email_address.getText().toString()+"\", \"phone\": \""+phone_number.getText().toString()+"\", \"password\": \""+password.getText().toString()+"\"}";
+        JSONObject data = new JSONObject();
+        try {
+            data.put(Config.USER.NAME,user_name.getText().toString());
+            data.put(Config.USER.EMAIL,email_address.getText().toString());
+            data.put(Config.USER.PHONE,phone_number.getText().toString());
+            data.put(Config.USER.PASSWORD, password.getText().toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        params.put("data", data.toString());
         aq.ajax(uri, params, JSONObject.class, new AjaxCallback<JSONObject>() {
             @Override
             public void callback(String url, JSONObject json, AjaxStatus status) {
                 //Toast.makeText(getApplicationContext(), status.getMessage(), Toast.LENGTH_LONG).show();
                 if ( status.getCode() == Config.API.USER_SIGNUP_200 ) {
                     Log.i(TAG, "json: " + json.toString());
+                    long users = User.count(User.class, null, null);
+                    User user;
+                    if(users==0){
+                        user = new User();
+                    }else{
+                        user = User.findById(User.class, (long) 1);
+                    }
+                    String apitokenTmp = null;
+                    String apitoken = "";
+                    try {
+                        apitokenTmp = json.getString(Config.USER.APITOKEN);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    if (apitokenTmp!=null)apitoken=apitokenTmp;
+                    user.firstname = user_name.getText().toString();
+                    user.phone = phone_number.getText().toString();
+                    user.email = email_address.getText().toString();
+                    user.apitoken = apitoken;
+                    user.save();
+
+                    // GO TO ORDER DETAIL
+                    Intent intent = new Intent(getApplicationContext(),CompleteOrderActivity.class);
+                    startActivity(intent);
+                    finish();
+                    overridePendingTransitionGoLeft();
                 }
                 if ( status.getCode() == Config.API.USER_SIGNUP_400 ) {
                     try {

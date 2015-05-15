@@ -1,0 +1,95 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.bentonow.bentonow.CompleteOrderActivity"
+    android:id="@+id/base_relative_layout"
+    android:background="@color/bgcolor">
+
+    <!-- background -->
+    <!--<ImageView
+        android:id="@+id/bg"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:src="@drawable/bg_error_closed"
+        android:scaleType="centerCrop"/>-->
+
+    <!-- actionbar -->
+    <LinearLayout
+        android:id="@+id/ActionBarContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        >
+        <include layout="@layout/actionbar"/>
+    </LinearLayout>
+
+    <!-- INI CONTAINER -->
+    <RelativeLayout
+        android:layout_below="@+id/ActionBarContainer"
+        android:layout_above="@+id/footer_container"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/main_relative"
+
+        >
+        <!-- INI content -->
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/light_gray"
+                android:padding="@dimen/general_padding"
+                >
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="A single Bento is only ..."
+                    android:gravity="center"
+                    />
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="$12"
+                    android:gravity="center"
+                    android:textAppearance="@style/H1Gray"
+                    />
+            </LinearLayout>
+            <fragment android:id="@+id/payment_form"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                class="com.bentonow.bentonow.fragment.PaymentFormFragment"/>
+        </LinearLayout>
+
+        <!-- END content -->
+    </RelativeLayout>
+
+    <!-- INI FOOTER -->
+    <LinearLayout
+        android:id="@+id/footer_container"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        >
+        <TextView
+            android:id="@+id/btn_continue_to_payment"
+            android:background="@color/btn_green"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:padding="@dimen/btn_padding"
+            android:text="CONTINUE TO PAYMENT"
+            />
+    </LinearLayout>
+
+</RelativeLayout>

@@ -26,13 +26,23 @@
             android:value="bento.db" />
         <meta-data
             android:name="VERSION"
-            android:value="15" />
+            android:value="20" />
         <meta-data
             android:name="QUERY_LOG"
             android:value="false" />
         <meta-data
             android:name="DOMAIN_PACKAGE_NAME"
             android:value="com.bentonow" />
+
+
+        <!--<activity android:name=".activity.PaymentActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>-->
+
 
         <activity
             android:name=".MainActivity"
@@ -70,6 +80,14 @@
             android:name=".DeliveryLocationActivity"
             android:label="@string/title_activity_delivery_location"
             android:screenOrientation="portrait" >
+
+            <!--
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            -->
         </activity>
         <activity
             android:name=".ErrorInvalidAddressActivity"
@@ -77,12 +95,12 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".BentoSelectMainActivity"
+            android:name=".SelectMainActivity"
             android:label="@string/title_activity_bento_select_main"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".BentoSelectSideActivity"
+            android:name=".SelectSideActivity"
             android:label="@string/title_activity_bento_select_side"
             android:screenOrientation="portrait" >
         </activity>
@@ -95,16 +113,59 @@
             android:name=".SignUpActivity"
             android:label="@string/title_activity_sign_up"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden"
-            >
+            android:windowSoftInputMode="stateHidden" >
         </activity>
-
         <activity
             android:name=".SignInActivity"
             android:label="@string/title_activity_sign_in"
             android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" >
+        </activity>
+        <activity
+            android:name=".CompleteOrderActivity"
+            android:label="@string/title_activity_complete_order"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" >
+
+            <!--
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>.
+            -->
+        </activity>
+
+        <activity
+            android:name=".OrderConfirmedActivity"
+            android:label="@string/title_activity_order_confirmed"
+            android:screenOrientation="portrait"
+            >
+        </activity>
+        <activity
+            android:name=".EnterCreditCardActivity"
+            android:label="@string/title_activity_enter_credit_card"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden"
             >
+            <!--<intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>-->
+        </activity>
+
+        <activity
+            android:name=".FacebookActivity"
+            android:label="@string/title_activity_enter_credit_card"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"
+            >
+            <!--<intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>-->
         </activity>
 
         <!-- Google Api Key -->
@@ -129,6 +190,7 @@
             </intent-filter>
         </receiver>
         <!-- END SERVICE -->
+
 
     </application>
 

@@ -43,8 +43,9 @@ public class BaseActivity extends Activity {
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
+        day = day-Config.aux_deduct_day;
         String monthString = month < 10 ? "0"+String.valueOf(month+1): String.valueOf(month);
-        String dayString = day < 10 ? "0"+String.valueOf(day-Config.aux_deduct_day): String.valueOf(day-Config.aux_deduct_day);
+        String dayString = day < 10 ? "0"+String.valueOf(day): String.valueOf(day);
         todayDate = String.valueOf(year)+monthString+dayString;
     }
 
@@ -74,8 +75,17 @@ public class BaseActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        Log.i(BASE_TAG,"onPause()");
+        Log.i(BASE_TAG, "onPause()");
         Bentonow.app.isFocused = false;
+    }
+
+
+    public void overridePendingTransitionGoLeft() {
+        overridePendingTransition(R.anim.left_slide_in, R.anim.right_slide_out);
+    }
+
+    public void overridePendingTransitionGoRight() {
+        overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
     }
 
 }

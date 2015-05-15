@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    >
+    <TextView
+        android:id="@+id/main_item_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Mongolian Beef Bento"
+        android:padding="@dimen/btn_padding"
+        android:textAppearance="@style/SmallText"
+        android:layout_weight="1"
+        />
+    <TextView
+        android:id="@+id/item_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="$14"
+        android:textAppearance="@style/SmallText"
+        android:padding="@dimen/btn_padding"
+        />
+</LinearLayout>

@@ -135,7 +135,7 @@
                     android:textColor="@color/gray"
                     android:background="@color/transparente"
                     android:padding="@dimen/btn_padding"
-                    android:text="somepassword"
+                    android:text="somepassword716*"
                     android:password="true" />
             </LinearLayout>
 

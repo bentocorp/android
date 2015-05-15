@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
+import com.bentonow.bentonow.model.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -109,7 +110,7 @@ public class SignInActivity extends BaseActivity {
         btn_go_to_sign_up_activity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(),SignUpActivity.class);
+                Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
                 startActivity(intent);
                 finish();
                 overrideTransitionGoLeft();
@@ -130,8 +131,56 @@ public class SignInActivity extends BaseActivity {
             @Override
             public void callback(String url, JSONObject json, AjaxStatus status) {
                 // CASE 200 IF OK
-                if ( status.getCode() == Config.API.USER_LOGIN_200 ) {
+                if ( status.getCode() == Config.API.DEFAULT_SUCCESS_200) {
                     Log.i(TAG, "json: " + json.toString());
+                    String firstname = "";
+                    String lastname = "";
+                    String email = "";
+                    String phone = "";
+                    String couponcode = "";
+                    String apitoken = "";
+                    String card_brand = "";
+                    String card_last4 = "";
+                    try {
+                        try {
+                            JSONObject card = json.getJSONObject("card");
+                            card_brand = card.getString("brand");
+                            card_last4 = card.getString("last4");
+                        } catch (JSONException ignore) {
+                            //e1.printStackTrace();
+                        }
+                        firstname = json.getString("firstname");
+                        lastname = json.getString("lastname");
+                        email = json.getString("email");
+                        phone = json.getString("phone");
+                        couponcode = json.getString("coupon_code");
+                        apitoken = json.getString("api_token");
+                    } catch (JSONException e) {
+                        //e.printStackTrace();
+                    }
+
+                    Log.i(TAG,"apitoken: "+apitoken);
+
+                    long isUser = User.count(User.class, null, null);
+                    if ( isUser == 0 ) {
+                        User user = new User(firstname,lastname,email,phone,couponcode,apitoken, card_brand, card_last4);
+                        user.save();
+                    }else{
+                        User user = User.findById(User.class, (long) 1);
+                        user.firstname = firstname;
+                        user.lastname = lastname;
+                        user.email = email;
+                        user.phone = phone;
+                        user.couponcode = couponcode;
+                        user.apitoken = apitoken;
+                        user.cardbrand = card_brand;
+                        user.cardlast4 = card_last4;
+                        user.save();
+                    }
+                    Intent intent = new Intent(getApplicationContext(),CompleteOrderActivity.class);
+                    startActivity(intent);
+                    finish();
+                    overrideTransitionGoLeft();
                 }
 
                 // CASE 403 BAD PASSWORD

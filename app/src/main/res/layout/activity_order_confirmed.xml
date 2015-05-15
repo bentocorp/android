@@ -1,0 +1,93 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.bentonow.bentonow.CompleteOrderActivity"
+    android:id="@+id/base_relative_layout"
+    android:background="@color/bgcolor">
+
+    <!-- background -->
+    <!--<ImageView
+        android:id="@+id/bg"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:src="@drawable/bg_error_closed"
+        android:scaleType="centerCrop"/>-->
+
+    <!-- actionbar -->
+    <LinearLayout
+        android:id="@+id/ActionBarContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        >
+        <include layout="@layout/actionbar_center_logo"/>
+    </LinearLayout>
+
+    <!-- INI CONTAINER -->
+    <RelativeLayout
+        android:layout_below="@+id/ActionBarContainer"
+        android:layout_above="@+id/footer_container"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/main_relative"
+        android:gravity="center"
+        >
+        <!-- INI content -->
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/general_padding"
+                >
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/car_order_confirmed"
+                    android:padding="@dimen/general_padding"
+                    android:layout_margin="@dimen/general_padding"
+                    />
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Order Confirmed!"
+                    android:gravity="center"
+                    android:textAppearance="@style/H1Gray"
+                    />
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="We'll send you text message updates while your delivery is on the way."
+                    android:textAppearance="@style/NormalText"
+                    />
+            </LinearLayout>
+
+        <!-- END content -->
+    </RelativeLayout>
+
+    <!-- INI FOOTER -->
+    <LinearLayout
+        android:id="@+id/footer_container"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        >
+        <TextView
+            android:id="@+id/btn_build_another_bento"
+            android:background="@color/gray"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:padding="@dimen/btn_padding"
+            android:text="BUILD ANOTHER BENTO"
+            />
+    </LinearLayout>
+
+</RelativeLayout>

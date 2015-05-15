@@ -50,6 +50,13 @@
                 android:layout_centerHorizontal="true"
                 />
 
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/col1_solded_flag"
+                android:src="@drawable/flag_solded"
+                android:visibility="invisible" />
+
             <RelativeLayout
                 android:id="@+id/overlay_menu_detail"
                 android:visibility="gone"
@@ -148,6 +155,13 @@
                 android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"
                 />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/col2_solded_flag"
+                android:src="@drawable/flag_solded"
+                android:visibility="invisible" />
 
             <RelativeLayout
                 android:id="@+id/overlay_menu_detail2"

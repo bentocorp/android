@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            >
+            <ImageView
+                android:id="@+id/ic_card"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:src="@drawable/card_empty"
+                />
+            <LinearLayout
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="@dimen/btn_padding"
+                >
+                <EditText android:maxLength="@integer/max_length_card" android:textCursorDrawable="@null" android:background="@color/transparente" android:id="@+id/number" android:text="4242424242424242" style="@style/CardNumber" android:nextFocusDown="@+id/expMonth" android:nextFocusRight="@+id/expMonth" android:nextFocusForward="@+id/expMonth" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:orientation="horizontal"
+                    >
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_border_lineal_white"
+                        android:id="@+id/cardDigits"
+                        android:hint="####"
+                        android:visibility="gone"
+                        android:gravity="center"
+                        android:padding="7dp"
+                        android:inputType="number"
+                        android:textCursorDrawable="@null"
+                        />
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_border_lineal_white"
+                        android:id="@+id/expMonth"
+                        android:hint="MM"
+                        android:text="12"
+                        android:gravity="center"
+                        android:padding="7dp"
+                        android:inputType="number"
+                        android:visibility="gone"
+                        android:textCursorDrawable="@null"
+                        />
+
+                    <EditText
+                        android:id="@+id/expYear"
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_border_lineal_white"
+                        android:nextFocusForward="@+id/ExpYear"
+                        android:hint="YY"
+                        android:text="2016"
+                        android:gravity="center"
+                        android:padding="7dp"
+                        android:visibility="gone"
+                        android:inputType="number"
+                        android:textCursorDrawable="@null"
+                        />
+
+                    <EditText
+                        android:id="@+id/cvc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1"
+                        android:nextFocusForward="@+id/save"
+                        android:background="@drawable/btn_border_lineal_white"
+                        android:hint="CVC"
+                        android:gravity="center"
+                        android:padding="7dp"
+                        android:inputType="number"
+                        android:visibility="gone"
+                        android:textCursorDrawable="@null"
+                        />
+
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+        <!--<Button android:id="@+id/save" style="@style/Save"/>-->
+        <TextView
+            android:id="@+id/save"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Save"
+            android:padding="@dimen/btn_padding"
+            android:background="@color/btn_green"
+            android:textColor="@color/white"
+            android:gravity="center"
+            />
+</LinearLayout>

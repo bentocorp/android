@@ -12,4 +12,15 @@
     <color name="transparente">#00660066</color>
     <color name="divisor">#50909090</color>
     <color name="dark_gray">#7a8591</color>
+    <color name="light_gray">#ffe3e3e3</color>
+    <color name="gray_divisor">#d0d3d3</color>
+
+
+
+
+    <color name="spinnerItem">#AAAAAA</color>
+    <color name="editText">#AAAAAA</color>
+    <color name="buttonText">#EEEEEE</color>
+    <color name="headerText">#EEEEEE</color>
+
 </resources>

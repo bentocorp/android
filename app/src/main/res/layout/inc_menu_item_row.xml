@@ -32,6 +32,17 @@
             android:layout_centerHorizontal="true"
             />
 
+        <ImageView
+            android:id="@+id/solded_flag"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/main_menu_item_height"
+            android:src="@drawable/flag_solded"
+            android:adjustViewBounds="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:visibility="invisible" />
+
         <RelativeLayout
             android:id="@+id/overlay_menu_detail"
             android:visibility="gone"

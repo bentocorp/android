@@ -1,0 +1,448 @@
+package com.bentonow.bentonow;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.androidquery.AQuery;
+import com.androidquery.callback.AjaxCallback;
+import com.androidquery.callback.AjaxStatus;
+import com.bentonow.bentonow.model.Dish;
+import com.bentonow.bentonow.model.Ioscopy;
+import com.bentonow.bentonow.model.Item;
+import com.bentonow.bentonow.model.Orders;
+import com.bentonow.bentonow.model.User;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+
+public class CompleteOrderActivity extends BaseActivity {
+
+    private static final String TAG = "CompleteOrderActivity";
+    private TextView address_textview;
+    private TextView btn_edit_address;
+    private TextView credit_card_textview;
+    private Orders current_order;
+    private User current_user;
+    private TextView btn_goto_buildbento;
+    private TextView tax_detail;
+    private TextView btn_tip_negative, tip_percentTextView, btn_tip_positive;
+    private TextView order_total_textview;
+    private String credit_card_data = "";
+    private TextView btn_confirm_pay_order;
+    private AQuery aq;
+    private TextView btn_add_credit_card, btn_cancel;
+    private RelativeLayout overlay;
+    private User user;
+    private TextView btn_edit_credit_card;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_complete_order);
+        aq = new AQuery(this);
+        // INITIALS METHODS
+        changeInitialsValues();
+        initActionbar();
+        initElemnts();
+        addListeners();
+
+        // TO DEBUG IF BENTO CLOSED
+        if( Bentonow.pending_order_id == null ) tryGetPendingOrder();
+
+        // INITIATE SHOW DETAILS
+        if ( Bentonow.pending_order_id != null ) showOrderDetails();
+        else Toast.makeText(getApplicationContext(),"There is not pending order",Toast.LENGTH_LONG).show();
+    }
+
+    private void changeInitialsValues() {
+        Log.i(TAG, "changeInitialsValues()");
+
+        user = User.findById(User.class, (long) 1);
+
+        // INITIATE FIELD ORDER
+        current_order = Orders.findById(Orders.class,Bentonow.pending_order_id);
+
+        // INITIATE USER
+        current_user = User.findById(User.class, (long) 1);
+
+        // PAYMENT METHOD
+        String cardbrand = "";
+        String cardlast4 = "";
+        if(current_user.cardbrand!=null) cardbrand = current_user.cardbrand;
+        if(current_user.cardlast4!=null) cardlast4 = current_user.cardlast4;
+        credit_card_data = cardbrand+" "+cardlast4;
+
+        // Config
+        Config.CurrentOrder.item_price = Double.parseDouble(Ioscopy.getKeyValue(Config.IOSCOPY.PRICE));
+        Log.i(TAG, "Config.CurrentOrder.item_price: " + Config.CurrentOrder.item_price);
+        Config.CurrentOrder.tax = Double.parseDouble(Ioscopy.getKeyValue(Config.IOSCOPY.TAX_PERCENT));
+        Log.i(TAG, "Config.CurrentOrder.tax: " + Config.CurrentOrder.tax);
+    }
+
+    private void initElemnts() {
+        Log.i(TAG, "initElemnts()");
+        address_textview = (TextView)findViewById(R.id.address_textview);
+        btn_edit_address = (TextView)findViewById(R.id.btn_edit_address);
+        credit_card_textview = (TextView)findViewById(R.id.credit_card_textview);
+        btn_goto_buildbento = (TextView)findViewById(R.id.btn_goto_buildbento);
+        tax_detail = (TextView)findViewById(R.id.tax_detail);
+        /// TIP
+        btn_tip_negative = (TextView)findViewById(R.id.btn_tip_negative);
+        btn_tip_positive = (TextView)findViewById(R.id.btn_tip_positive);
+        tip_percentTextView = (TextView)findViewById(R.id.tip_percent);
+        //
+        order_total_textview = (TextView)findViewById(R.id.order_total_textview);
+        btn_confirm_pay_order = (TextView)findViewById(R.id.btn_confirm_pay_order);
+
+        // OVERLAY
+        overlay = (RelativeLayout)findViewById(R.id.overlay);
+        btn_cancel = (TextView)findViewById(R.id.btn_cancel);
+        btn_add_credit_card = (TextView)findViewById(R.id.btn_add_credit_card);
+        btn_edit_credit_card = (TextView)findViewById(R.id.btn_edit_credit_card);
+    }
+
+    private void addListeners() {
+
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                overlay.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        btn_add_credit_card.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                overlay.setVisibility(View.INVISIBLE);
+                goToAddCreditCard();
+            }
+        });
+
+        btn_edit_credit_card.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                overlay.setVisibility(View.INVISIBLE);
+                goToAddCreditCard();
+            }
+        });
+
+        // BTN EDIT ADDRESS
+        btn_edit_address.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), DeliveryLocationActivity.class);
+                startActivity(intent);
+                finish();
+                overridePendingTransitionGoLeft();
+            }
+        });
+
+        // ADD ANOTHER BENTO
+        btn_goto_buildbento.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), BuildBentoActivity.class);
+                startActivity(intent);
+                finish();
+                overridePendingTransitionGoLeft();
+            }
+        });
+
+        // TIP NEGATIVE
+        btn_tip_negative.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Config.CurrentOrder.tip_percent--;
+                calculateValues();
+                showOrderDetails();
+            }
+        });
+        // TIP POSITIVE
+        btn_tip_positive.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Config.CurrentOrder.tip_percent++;
+                calculateValues();
+                showOrderDetails();
+            }
+        });
+
+        // CONFIRM PAY ORDER
+        btn_confirm_pay_order.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG,"user: "+user.toString());
+                if (user != null && user.cardlast4 != null && !user.cardlast4.isEmpty() ) {
+                    JSONObject data = new JSONObject();
+                    Orders current_order = Orders.findById(Orders.class, Bentonow.pending_order_id);
+                /*
+                 *  ORDER ITEMS
+                 */
+                    JSONArray OrderItems = new JSONArray();
+                    List<Item> orderItems = Item.find(Item.class, "orderid=?", String.valueOf(Bentonow.pending_order_id));
+                    for (Item orderItem : orderItems) {
+                        try {
+                            JSONObject item = new JSONObject();
+                            JSONObject itemBento = new JSONObject();
+                            JSONArray items = new JSONArray();
+                            itemBento.put("type", "main");
+                            itemBento.put("id", Integer.valueOf(orderItem.main));
+                            items.put(itemBento);
+                            itemBento.put("type", "side1");
+                            itemBento.put("id", Integer.valueOf(orderItem.side1));
+                            items.put(itemBento);
+                            itemBento.put("type", "side2");
+                            itemBento.put("id", Integer.valueOf(orderItem.side2));
+                            items.put(itemBento);
+                            itemBento.put("type", "side3");
+                            itemBento.put("id", Integer.valueOf(orderItem.side3));
+                            items.put(itemBento);
+                            itemBento.put("type", "side4");
+                            itemBento.put("id", Integer.valueOf(orderItem.side4));
+                            items.put(itemBento);
+
+                            item.put("items", items);
+                            item.put("item_type", "CustomerBentoBox");
+                            OrderItems.put(item);
+                        } catch (JSONException e) {
+                            //e.printStackTrace();
+                        }
+                    }
+                    try {
+                        data.put("OrderItems", OrderItems);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                /*
+                 *  ORDER DETAILS
+                 */
+                    JSONObject OrderDetails = new JSONObject();
+                    try {
+                        OrderDetails.put("tax_cents", Config.CurrentOrder.total_tax_cost * 100);
+                        OrderDetails.put("tip_cents", Config.CurrentOrder.total_tip_cost * 100);
+                        OrderDetails.put("total_cents", Config.CurrentOrder.total_order_cost * 100);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                /*
+                 *  address
+                 */
+                    JSONObject address = new JSONObject();
+                    try {
+                        address.put("number", current_order.address_number);
+                        address.put("street", current_order.address_street);
+                        address.put("city", current_order.address_city);
+                        address.put("state", current_order.address_state);
+                        address.put("zip", current_order.address_zip);
+                        OrderDetails.put("address", address);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                /*
+                 *  coords
+                 */
+                    JSONObject coords = new JSONObject();
+                    try {
+                        coords.put("lat", current_order.coords_lat);
+                        coords.put("long", current_order.coords_long);
+                        OrderDetails.put("coords", coords);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        data.put("OrderDetails", OrderDetails);
+                        Log.i(TAG, "data: " + data.toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    if(user.stripetoken!=null){
+                        JSONObject Stripe = new JSONObject();
+                        try {
+                            Stripe.put("stripeToken",user.stripetoken);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        try {
+                            data.put("Stripe",Stripe);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+
+                    postOrderData(data.toString());
+                }else {
+                    overlay.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+    }
+
+    private void goToAddCreditCard() {
+        Log.i(TAG,"goToAddCreditCard()");
+        Intent intent = new Intent(getApplicationContext(),EnterCreditCardActivity.class);
+        startActivity(intent);
+        finish();
+        overridePendingTransitionGoRight();
+    }
+
+    public void postOrderData(String data){
+        Log.i(TAG,"postOrderData(data)");
+        if( user!=null && user.apitoken != null ) {
+            String uri = Config.API.URL + Config.API.ORDER;
+            Log.i(TAG,"uri: "+uri);
+            Log.i(TAG,"api_token: " + user.apitoken);
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("data", data);
+            params.put("api_token", user.apitoken);
+            aq.ajax(uri, params, String.class, new AjaxCallback<String>() {
+                @Override
+                public void callback(String url, String json, AjaxStatus status) {
+                    Log.i(TAG, "status.getCode(): " + status.getCode());
+                    Log.i(TAG, "status.getError(): " + status.getError());
+                    Log.i(TAG, "status.getMessage(): " + status.getMessage());
+                    Log.i(TAG, "status.getCode(): " + status.getCode());
+                    // CASE 200 IF OK
+                    if (status.getCode() == Config.API.DEFAULT_SUCCESS_200) {
+                        Orders current_order = Orders.findById(Orders.class, Bentonow.pending_order_id);
+                        current_order.completed = Config.ORDER.STATUS.COMPLETED;
+                        current_order.save();
+                        Bentonow.pending_order_id = null;
+                        Bentonow.pending_bento_id = null;
+                        Intent intent = new Intent(getApplicationContext(), OrderConfirmedActivity.class);
+                        startActivity(intent);
+                        finish();
+                        overridePendingTransitionGoRight();
+                    }
+
+                    // CASE 403 BAD PASSWORD
+                    if (status.getCode() == Config.API.USER_LOGIN_403) {
+                    }
+
+                }
+            });
+        }
+    }
+
+    public void loadOrderItems(){
+        Log.i(TAG,"getMainListDb()");
+
+        ArrayList<HashMap<String, String>> orderItemsList = new ArrayList<HashMap<String, String>>();
+        List<Item> items = Item.find(Item.class,"orderid = ?", String.valueOf(Bentonow.pending_order_id));
+        Config.CurrentOrder.total_items = 0;
+        for( Item item : items ){
+            HashMap<String, String> map = new HashMap<String, String>();
+            long dish_id = Dish.getIdBy_id(item.main);
+            Dish dish = Dish.findById(Dish.class,dish_id);
+            map.put(Config.DISH.NAME, dish.name);
+            Config.CurrentOrder.total_items++;
+            calculateValues();
+            orderItemsList.add(map);
+        }
+        ListView itemsListView = (ListView) findViewById(R.id.orderitems);
+        OrderItemsListAdapter adapter = new OrderItemsListAdapter(getApplicationContext(), orderItemsList);
+        itemsListView.setAdapter(adapter);
+    }
+
+    private void calculateValues() {
+        Config.CurrentOrder.total_items_cost = 0.0;
+        Config.CurrentOrder.total_tax_cost = 0.0;
+        Config.CurrentOrder.total_order_cost = 0.0;
+
+        Config.CurrentOrder.total_items_cost = Config.CurrentOrder.total_items*Config.CurrentOrder.item_price;
+        Config.CurrentOrder.total_tax_cost = round(Config.CurrentOrder.total_items_cost*Config.CurrentOrder.tax/100,2);
+        Config.CurrentOrder.total_tip_cost = round(Config.CurrentOrder.total_items_cost*Config.CurrentOrder.tip_percent/100,2);
+        Config.CurrentOrder.total_order_cost = Config.CurrentOrder.total_tax_cost+Config.CurrentOrder.total_items_cost;
+    }
+
+    private void showOrderDetails() {
+        Log.i(TAG, "showOrderDetails()");
+        // ORDER ADDRESS
+        address_textview.setText(current_order.getOrderAddress());
+        // CREDIT CARD
+        credit_card_textview.setText(credit_card_data);
+        // LOAD ITEMS
+        loadOrderItems();
+        //TIP
+        tip_percentTextView.setText(Config.CurrentOrder.tip_percent+"%");
+        // SHOW TAX
+        tax_detail.setText("$" + Config.CurrentOrder.total_tax_cost);
+        // SHOW TOTAL
+        order_total_textview.setText("$" + Config.CurrentOrder.total_order_cost);
+    }
+
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        long factor = (long) Math.pow(10, places);
+        value = value * factor;
+        long tmp = Math.round(value);
+        return (double) tmp / factor;
+    }
+
+    private void tryGetPendingOrder() {
+        Log.i(TAG, "checkForPendingOrder()");
+        List<Orders> pending_orders = Orders.find(Orders.class, "completed = ? AND today = ?", "no",todayDate);
+        if( !pending_orders.isEmpty() ) {
+            for ( Orders order : pending_orders) {
+                Bentonow.pending_order_id = order.getId();
+            }
+        }else{
+            Toast.makeText(getApplicationContext(),"There is not pending order",Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void initActionbar() {
+        Log.i(TAG,"initActionbar()");
+        TextView actionbar_title = (TextView) findViewById(R.id.actionbar_title);
+        actionbar_title.setText("Complete Order");
+
+        ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
+        actionbar_left_btn.setImageResource(R.drawable.ic_ab_back);
+        actionbar_left_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //finishThisActivity();
+                Intent intent = new Intent(getApplicationContext(), BuildBentoActivity.class);
+                startActivity(intent);
+                finish();
+                overridePendingTransitionGoLeft();
+            }
+        });
+
+        ImageView actionbar_right_btn = (ImageView) findViewById(R.id.actionbar_right_btn);
+        actionbar_right_btn.setImageResource(R.drawable.ic_ab_help);
+        actionbar_right_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //finishThisActivity();
+                Intent intent = new Intent(getApplicationContext(), FaqActivity.class);
+                startActivity(intent);
+                finish();
+                overridePendingTransitionGoRight();
+            }
+        });
+
+    }
+
+}

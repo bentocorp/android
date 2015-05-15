@@ -1,6 +1,5 @@
 package com.bentonow.bentonow;
 
-import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
@@ -11,11 +10,14 @@ import android.widget.Toast;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
-import com.bentonow.bentonow.model.Menu;
+import com.bentonow.bentonow.model.Dish;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by gonzalo on 28/01/2015.
@@ -75,8 +77,6 @@ public class BentoService extends Service {
 
     public void checkAll(){
         Log.i(TAG, "checkOverAll()" );
-        Log.i(TAG, "Bento.app.isFocused: "+ Bentonow.app.isFocused );
-        Log.i(TAG, "Bento.app.is_first_access: "+ Bentonow.app.is_first_access );
         if( Bentonow.app.isFocused && !Bentonow.app.is_first_access ) {
             String uri = Config.API.URL + Config.API.STATUS_ALL_URN;
             aq.ajax(uri, JSONObject.class, new AjaxCallback<JSONObject>() {
@@ -88,14 +88,18 @@ public class BentoService extends Service {
                             if (Bentonow.isOpen) {
                                 // STATUS / MENU
                                 JSONArray menu = json.getJSONArray("menu");
-                                //Log.i(TAG,"menu: "+menu.toString());
-                                Menu.deleteAll(Menu.class);
                                 for (int i = 0; i < menu.length() - 1; i++) {
                                     JSONObject obj = menu.getJSONObject(i);
-                                    //Log.i(TAG, "obj: " + obj.toString());
-                                    //Log.i(TAG,"itemId: "+obj.get("itemId") + "qty: "+obj.get("qty"));
-                                    Menu mItem = new Menu(obj.getString("itemId"), obj.getString("qty"));
-                                    mItem.save();
+                                    String dish_id = obj.getString("itemId");
+                                    String qty = obj.getString("qty");
+                                    long did = Dish.getIdBy_id(dish_id);
+                                    if (did != 0) {
+                                        Dish dish = Dish.findById(Dish.class, did);
+                                        if (!dish.qty.equals(qty)) {
+                                            dish.qty = qty;
+                                            dish.save();
+                                        }
+                                    }
                                 }
                             }
 

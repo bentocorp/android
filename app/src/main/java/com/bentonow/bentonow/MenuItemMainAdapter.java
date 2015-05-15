@@ -1,7 +1,6 @@
 package com.bentonow.bentonow;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,11 +11,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.androidquery.AQuery;
+import com.bentonow.bentonow.model.Dish;
 import com.bentonow.bentonow.model.Item;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class MenuItemMainAdapter extends BaseAdapter {
 
@@ -57,6 +57,7 @@ public class MenuItemMainAdapter extends BaseAdapter {
             holder.overlay_menu_detail = (RelativeLayout) view.findViewById(R.id.overlay_menu_detail);
             holder.main_menu_item_description = (TextView)view.findViewById(R.id.main_menu_item_description);
             holder.btn_add_to_bento_main = (TextView)view.findViewById(R.id.btn_add_to_bento_main);
+            holder.solded_flag = (ImageView)view.findViewById(R.id.solded_flag);
             view.setTag(holder);
         } else {
             holder = (Holder) view.getTag();
@@ -64,43 +65,55 @@ public class MenuItemMainAdapter extends BaseAdapter {
 
         ///
         final HashMap<String, String> row = data.get(position);
+        Log.i(TAG,"row: "+row.toString());
 
-        ///
-        final Holder finalHolder = holder;
-        holder.main_title.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(current_holder != null && current_holder.pressed) {
-                    hideItemDetails(current_holder);
+        long order_dish_id_total = 0;
+        List<Item> allOrderItems = Item.find(Item.class, "orderid=?", String.valueOf(Bentonow.pending_order_id));
+        for ( Item oItem : allOrderItems ){
+            if ( oItem.main != null && oItem.main.equals(row.get("_id")) )
+                order_dish_id_total++;
+        }
+        int rest_quantity = (int) (Integer.valueOf(row.get("qty")) - order_dish_id_total);
+        if( rest_quantity == 0 ) {
+            holder.solded_flag.setVisibility(View.VISIBLE);
+        }else {
+            holder.solded_flag.setVisibility(View.INVISIBLE);
+            final Holder finalHolder = holder;
+            holder.main_title.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(current_holder != null && current_holder.pressed) {
+                        hideItemDetails(current_holder);
+                    }
+                    current_holder = finalHolder;
+                    if(!finalHolder.pressed) {
+                        showItemDetails(finalHolder);
+                    }
                 }
-                current_holder = finalHolder;
-                if(!finalHolder.pressed) {
-                    showItemDetails(finalHolder);
+            });
+
+            holder.btn_add_to_bento_main.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // TODO
+                    Item bento = Item.findById(Item.class,Bentonow.pending_bento_id);
+                    bento.main = row.get("_id");
+                    bento.save();
+                    SelectMainActivity.goToMain();
                 }
-            }
-        });
-
-        holder.btn_add_to_bento_main.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO
-                Item bento = Item.findById(Item.class,Bentonow.pending_bento_id);
-                bento.main = row.get("itemId");
-                bento.save();
-                BentoSelectMainActivity.goToMain();
-            }
-        });
-
-        holder.overlay_menu_detail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i(TAG,"finalHolder.pressed: "+finalHolder.pressed.toString());
-                if(finalHolder.pressed) {
-                    hideItemDetails(finalHolder);
+            });
+            holder.overlay_menu_detail.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i(TAG,"finalHolder.pressed: "+finalHolder.pressed.toString());
+                    if(finalHolder.pressed) {
+                        hideItemDetails(finalHolder);
+                    }
                 }
-            }
-        });
+            });
+        }
 
+        //
         AQuery imgaq = listAq.recycle(view);
         holder.main_title.setText(row.get("name").toUpperCase());
         holder.desc_title.setText(row.get("name").toUpperCase());
@@ -130,5 +143,6 @@ public class MenuItemMainAdapter extends BaseAdapter {
         public RelativeLayout overlay_menu_detail;
         public TextView main_menu_item_description;
         public TextView btn_add_to_bento_main;
+        public ImageView solded_flag;
     }
 }

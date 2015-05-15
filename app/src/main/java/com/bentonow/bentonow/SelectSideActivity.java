@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 
 
-public class BentoSelectSideActivity extends BaseActivity {
+public class SelectSideActivity extends BaseActivity {
 
     private static final String TAG = "BentoSelectMainActivity";
     private static Activity _this;
@@ -53,64 +53,10 @@ public class BentoSelectSideActivity extends BaseActivity {
         actionbar_left_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(),BuildBentoActivity.class);
+                Intent intent = new Intent(getApplicationContext(), BuildBentoActivity.class);
                 startActivity(intent);
                 finish();
                 overridePendingTransition(R.anim.left_slide_in, R.anim.right_slide_out);
-            }
-        });
-
-    }
-
-    public void getSideList(){
-        String uri = Config.API.URL + Config.API.MENU_URN + "/"+todayDate;
-        Log.i(TAG, "uri: " + uri);
-        aq.ajax(uri, JSONObject.class, (long) 5 * 60 * 1000, new AjaxCallback<JSONObject>() {
-            @Override
-            public void callback(String url, JSONObject json, AjaxStatus status) {
-                //home_preloader.setVisibility(View.INVISIBLE);
-
-                ArrayList<HashMap<String, String>> sideMenuList = new ArrayList<HashMap<String, String>>();
-                ArrayList<HashMap<String, String>> sideMenuList2 = new ArrayList<HashMap<String, String>>();
-
-
-                try {
-                    JSONArray MenuItems = json.getJSONArray("MenuItems");
-                    for (int i = 0; i < MenuItems.length(); i++) {
-                        ///
-                        Log.i(TAG, "i: " + String.valueOf(i));
-                        JSONObject MenuItemRow = new JSONObject(String.valueOf(MenuItems.get(i)));
-                        if (String.valueOf(MenuItemRow.get("type")).equals("side")) {
-                            Log.i(TAG, "MenuItems.get(i):" + String.valueOf(MenuItemRow.get("name")));
-                            HashMap<String, String> map1 = new HashMap<String, String>();
-                            for (String item : Config.MenuItems_ItemLabels) {
-                                map1.put(item, String.valueOf(MenuItemRow.get(item)));
-                            }
-                            sideMenuList.add(map1);
-                        }
-                        ///
-                        if (i < MenuItems.length() - 1) {
-                            i++;
-                            Log.i(TAG, "i: " + String.valueOf(i));
-                            JSONObject MenuItemRow_2 = new JSONObject(String.valueOf(MenuItems.get(i)));
-                            if (String.valueOf(MenuItemRow_2.get("type")).equals("side")) {
-                                Log.i(TAG, "MenuItems.get(i):" + String.valueOf(MenuItemRow_2.get("name")));
-                                HashMap<String, String> map2 = new HashMap<String, String>();
-                                for (String item : Config.MenuItems_ItemLabels) {
-                                    map2.put(item, String.valueOf(MenuItemRow_2.get(item)));
-                                }
-                                sideMenuList2.add(map2);
-                            }
-                        }
-                    }
-                    ListView CompanyListView = (ListView) findViewById(R.id.menu_item_side_listview);
-                    MenuItemSideAdapter adapter = new MenuItemSideAdapter(getApplicationContext(), sideMenuList, sideMenuList2);
-                    CompanyListView.setAdapter(adapter);
-                    Log.i(TAG, MenuItems.toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
             }
         });
 
@@ -120,7 +66,7 @@ public class BentoSelectSideActivity extends BaseActivity {
         ArrayList<HashMap<String, String>> sideMenuList = new ArrayList<HashMap<String, String>>();
         ArrayList<HashMap<String, String>> sideMenuList2 = new ArrayList<HashMap<String, String>>();
 
-        List<Dish> main_dishes = Dish.listAll(Dish.class);
+        List<Dish> main_dishes = Dish.find(Dish.class, "today = ?",todayDate);
         int c = 0;
         for( Dish dish : main_dishes ){
             if( dish.type.equals("side") ) {
@@ -133,6 +79,7 @@ public class BentoSelectSideActivity extends BaseActivity {
                     map.put("image1", dish.image1);
                     map.put("max_per_order", dish.max_per_order);
                     map.put("today", dish.today);
+                    map.put("qty", dish.qty);
                     //Log.i(TAG,map.toString());
                     sideMenuList.add(map);
                 } else {
@@ -144,6 +91,7 @@ public class BentoSelectSideActivity extends BaseActivity {
                     map.put("image1", dish.image1);
                     map.put("max_per_order", dish.max_per_order);
                     map.put("today", dish.today);
+                    map.put("qty", dish.qty);
                     Log.i(TAG, map.toString());
                     sideMenuList2.add(map);
                 }

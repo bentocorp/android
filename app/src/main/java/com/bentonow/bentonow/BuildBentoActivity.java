@@ -14,6 +14,7 @@ import com.androidquery.AQuery;
 import com.bentonow.bentonow.model.Dish;
 import com.bentonow.bentonow.model.Item;
 import com.bentonow.bentonow.model.Orders;
+import com.bentonow.bentonow.model.User;
 import com.squareup.picasso.Picasso;
 
 import java.util.Arrays;
@@ -46,7 +47,7 @@ public class BuildBentoActivity extends BaseActivity {
     private TextView btn_add_another_bento_disabled;
     private TextView bento_box_counter_textview;
     private int bento_count = 0;
-    private TextView btn_continue_inactive, btn_continue_active;
+    private TextView btn_continue, btn_finalize_order;
     private RelativeLayout overlay_autocomplete_bento;
     private TextView btn_no_complete_for_me,btn_yes_complete_for_me;
 
@@ -82,8 +83,8 @@ public class BuildBentoActivity extends BaseActivity {
 
         bento_box_counter_textview = (TextView)findViewById(R.id.bento_box_counter_textview);
 
-        btn_continue_inactive = (TextView)findViewById(R.id.btn_continue_inactive);
-        btn_continue_active = (TextView)findViewById(R.id.btn_continue_active);
+        btn_continue = (TextView)findViewById(R.id.btn_continue_inactive);
+        btn_finalize_order = (TextView)findViewById(R.id.btn_continue_active);
 
         // OVERLAY
         overlay_autocomplete_bento = (RelativeLayout)findViewById(R.id.overlay_autocomplete_bento);
@@ -105,7 +106,7 @@ public class BuildBentoActivity extends BaseActivity {
     }
 
     private void showCountBentos() {
-        Log.i(TAG,"showCountBentos()");
+        Log.i(TAG, "showCountBentos()");
         long pending_bento = Item.count(Item.class, "orderid=? and completed=?", new String[]{String.valueOf(Bentonow.pending_order_id), "yes"});
         if(pending_bento>0) {
             enableBtnAddAnotherBento();
@@ -260,8 +261,8 @@ public class BuildBentoActivity extends BaseActivity {
     private void enableBtnAddAnotherBento() {
         Log.i(TAG,"enableBtnAddAnotherBento()");
         // btn continue
-        btn_continue_inactive.setVisibility(View.INVISIBLE);
-        btn_continue_active.setVisibility(View.VISIBLE);
+        btn_continue.setVisibility(View.INVISIBLE);
+        btn_finalize_order.setVisibility(View.VISIBLE);
         //btn add another bento
         btn_add_another_bento_disabled.setVisibility(View.INVISIBLE);
         btn_add_another_bento.setVisibility(View.VISIBLE);
@@ -270,8 +271,8 @@ public class BuildBentoActivity extends BaseActivity {
     private void disableBtnAddAnotherBento() {
         Log.i(TAG,"disableBtnAddAnotherBento()");
         // btn continue
-        btn_continue_inactive.setVisibility(View.VISIBLE);
-        btn_continue_active.setVisibility(View.INVISIBLE);
+        btn_continue.setVisibility(View.VISIBLE);
+        btn_finalize_order.setVisibility(View.INVISIBLE);
         // btn add another bento
         btn_add_another_bento_disabled.setVisibility(View.VISIBLE);
         btn_add_another_bento.setVisibility(View.INVISIBLE);
@@ -319,8 +320,8 @@ public class BuildBentoActivity extends BaseActivity {
         actionbar_right_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Item bento = Item.findById(Item.class,Bentonow.pending_bento_id);
-                if( !bento.isFull() )
+                Item bento = Item.findById(Item.class, Bentonow.pending_bento_id);
+                if (!bento.isFull())
                     showDialogForAutocompleteBento();
             }
         });
@@ -332,7 +333,7 @@ public class BuildBentoActivity extends BaseActivity {
         build_main.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(),BentoSelectMainActivity.class);
+                Intent intent = new Intent(getApplicationContext(),SelectMainActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
                 finish();
@@ -345,7 +346,7 @@ public class BuildBentoActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Bentonow.current_side = 1;
-                Intent intent = new Intent(getApplicationContext(),BentoSelectSideActivity.class);
+                Intent intent = new Intent(getApplicationContext(),SelectSideActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
                 finish();
@@ -358,7 +359,7 @@ public class BuildBentoActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Bentonow.current_side = 2;
-                Intent intent = new Intent(getApplicationContext(), BentoSelectSideActivity.class);
+                Intent intent = new Intent(getApplicationContext(), SelectSideActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
                 finish();
@@ -371,7 +372,7 @@ public class BuildBentoActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Bentonow.current_side = 3;
-                Intent intent = new Intent(getApplicationContext(),BentoSelectSideActivity.class);
+                Intent intent = new Intent(getApplicationContext(),SelectSideActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
                 finish();
@@ -384,7 +385,7 @@ public class BuildBentoActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Bentonow.current_side = 4;
-                Intent intent = new Intent(getApplicationContext(),BentoSelectSideActivity.class);
+                Intent intent = new Intent(getApplicationContext(),SelectSideActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
                 finish();
@@ -411,22 +412,22 @@ public class BuildBentoActivity extends BaseActivity {
         });
 
         //////////////////////
-        btn_continue_inactive.setOnClickListener(new View.OnClickListener() {
+        btn_continue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Item bento = Item.findById(Item.class,Bentonow.pending_bento_id);
-                if ( !bento.isFull() )
+                Item bento = Item.findById(Item.class, Bentonow.pending_bento_id);
+                if (!bento.isFull())
                     showDialogForAutocompleteBento();
             }
         });
 
-        btn_continue_active.setOnClickListener(new View.OnClickListener() {
+        btn_finalize_order.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Item bento = Item.findById(Item.class,Bentonow.pending_bento_id);
-                if(bento.isFull()) {
+                Item bento = Item.findById(Item.class, Bentonow.pending_bento_id);
+                if (bento.isFull()) {
                     finalizeOrder();
-                }else{
+                } else {
                     showDialogForAutocompleteBento();
                 }
             }
@@ -444,72 +445,76 @@ public class BuildBentoActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 overlay_autocomplete_bento.setVisibility(View.INVISIBLE);
-                Item autocomplete_bento = Item.findById(Item.class, Bentonow.pending_bento_id);
-                if ( autocomplete_bento.main == null ) {
-                    List<Dish> main_dishes = Dish.find(Dish.class,"type=? and today = ?", new String[]{"main",todayDate}, null, "RANDOM()", "1");
-                    for( Dish dish : main_dishes ) {
-                        Log.i(TAG,"dish._id: "+dish._id);
-                        autocomplete_bento.main = dish._id;
-                    }
-                }else{
-                    Log.i(TAG,"Main is NO null");
-                }
-
-                List<Dish> sides_dishes = Dish.find(Dish.class,"type=? and today = ?", new String[]{"side",todayDate}, null, "RANDOM()", null);
-                if( sides_dishes.isEmpty() )
-                    Log.i(TAG,"No dishes for today");
-
-                if ( autocomplete_bento.side1 == null ) {
-                    for( Dish dish : sides_dishes ) {
-                        if( !Arrays.asList(autocomplete_bento.sideItems()).contains(dish._id) ){
-                            Log.i(TAG,"dish._id: "+dish._id);
-                            autocomplete_bento.side1 = dish._id;
-                        }
-                    }
-                }else{
-                    Log.i(TAG, "Side 1 is NO null");
-                }
-
-                if ( autocomplete_bento.side2 == null ) {
-                    for( Dish dish : sides_dishes ) {
-                        if( !Arrays.asList(autocomplete_bento.sideItems()).contains(dish._id) ){
-                            Log.i(TAG,"dish._id: "+dish._id);
-                            autocomplete_bento.side2 = dish._id;
-                        }
-                    }
-                }else{
-                    Log.i(TAG, "Side 2 is NO null");
-                }
-
-                if ( autocomplete_bento.side3 == null ) {
-                    for( Dish dish : sides_dishes ) {
-                        if( !Arrays.asList(autocomplete_bento.sideItems()).contains(dish._id) ){
-                            Log.i(TAG,"dish._id: "+dish._id);
-                            autocomplete_bento.side3 = dish._id;
-                        }
-                    }
-                }else{
-                    Log.i(TAG, "Side 3 is NO null");
-                }
-
-                if ( autocomplete_bento.side4 == null ) {
-                    for( Dish dish : sides_dishes ) {
-                        if( !Arrays.asList(autocomplete_bento.sideItems()).contains(dish._id) ){
-                            Log.i(TAG,"dish._id: "+dish._id);
-                            autocomplete_bento.side4 = dish._id;
-                        }
-                    }
-                }else{
-                    Log.i(TAG, "Side 4 is NO null");
-                }
-
-                autocomplete_bento.save();
-
-                resume();
+                autoCompletePendingBento();
             }
 
         });
 
+    }
+
+    private void autoCompletePendingBento() {
+        Item autocomplete_bento = Item.findById(Item.class, Bentonow.pending_bento_id);
+        if ( autocomplete_bento.main == null ) {
+            List<Dish> main_dishes = Dish.find(Dish.class,"type=? and today = ? and qty!=?", new String[]{"main",todayDate,"0"}, null, "RANDOM()", "1");
+            for( Dish dish : main_dishes ) {
+                Log.i(TAG,"dish._id: "+dish._id);
+                autocomplete_bento.main = dish._id;
+            }
+        }else{
+            Log.i(TAG,"Main is NO null");
+        }
+
+        List<Dish> sides_dishes = Dish.find(Dish.class,"type=? and today = ?", new String[]{"side",todayDate}, null, "RANDOM()", null);
+        if( sides_dishes.isEmpty() )
+            Log.i(TAG,"No dishes for today");
+
+        if ( autocomplete_bento.side1 == null ) {
+            for( Dish dish : sides_dishes ) {
+                if( !Arrays.asList(autocomplete_bento.sideItems()).contains(dish._id) ){
+                    Log.i(TAG,"dish._id: "+dish._id);
+                    autocomplete_bento.side1 = dish._id;
+                }
+            }
+        }else{
+            Log.i(TAG, "Side 1 is NO null");
+        }
+
+        if ( autocomplete_bento.side2 == null ) {
+            for( Dish dish : sides_dishes ) {
+                if( !Arrays.asList(autocomplete_bento.sideItems()).contains(dish._id) ){
+                    Log.i(TAG,"dish._id: "+dish._id);
+                    autocomplete_bento.side2 = dish._id;
+                }
+            }
+        }else{
+            Log.i(TAG, "Side 2 is NO null");
+        }
+
+        if ( autocomplete_bento.side3 == null ) {
+            for( Dish dish : sides_dishes ) {
+                if( !Arrays.asList(autocomplete_bento.sideItems()).contains(dish._id) ){
+                    Log.i(TAG,"dish._id: "+dish._id);
+                    autocomplete_bento.side3 = dish._id;
+                }
+            }
+        }else{
+            Log.i(TAG, "Side 3 is NO null");
+        }
+
+        if ( autocomplete_bento.side4 == null ) {
+            for( Dish dish : sides_dishes ) {
+                if( !Arrays.asList(autocomplete_bento.sideItems()).contains(dish._id) ){
+                    Log.i(TAG,"dish._id: "+dish._id);
+                    autocomplete_bento.side4 = dish._id;
+                }
+            }
+        }else{
+            Log.i(TAG, "Side 4 is NO null");
+        }
+
+        autocomplete_bento.save();
+
+        resume();
     }
 
     private void showDialogForAutocompleteBento() {
@@ -517,9 +522,25 @@ public class BuildBentoActivity extends BaseActivity {
     }
 
     private void finalizeOrder() {
-        Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
-        startActivity(intent);
-        finish();
-        overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
+        User user = User.findById(User.class, (long) 1);
+        if( user != null && user.apitoken != null ){
+            Intent intent = new Intent(getApplicationContext(), CompleteOrderActivity.class);
+            startActivity(intent);
+            finish();
+            overridePendingTransitionGoRight();
+        }else {
+            Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
+            startActivity(intent);
+            finish();
+            overridePendingTransitionGoRight();
+        }
     }
+
+    /*private void overridePendingTransitionGoLeft() {
+        overridePendingTransition(R.anim.left_slide_in, R.anim.right_slide_out);
+    }
+
+    private void overridePendingTransitionGoRight() {
+        overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
+    }*/
 }

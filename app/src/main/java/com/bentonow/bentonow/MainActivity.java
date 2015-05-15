@@ -13,6 +13,7 @@ import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
 import com.bentonow.bentonow.model.Checkpoint;
 import com.bentonow.bentonow.model.Dish;
+import com.bentonow.bentonow.model.Ioscopy;
 import com.bentonow.bentonow.model.Orders;
 
 import org.json.JSONArray;
@@ -43,25 +44,70 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(isFirstInit())
+
+        long cantidad = Ioscopy.count(Ioscopy.class,null,null);
+        Log.i(TAG, "cantidad: " + cantidad);
+        if( cantidad == 0 ) tryGetInit();
+        else init();
+    }
+
+    private void init() {
+        if(isFirstInit()) {
             goToHomeAbout();
-        else{
+        }else{
             checkOverAll();
         }
     }
 
+    void tryGetInit(){
+        String uri = Config.API.URL+Config.API.INIT;
+        Log.i(TAG, "uri: " + uri);
+        aq.ajax(uri, JSONObject.class, new AjaxCallback<JSONObject>() {
+            @Override
+            public void callback(String url, JSONObject json, AjaxStatus status) {
+                if (json != null) {
+                    try {
+                        JSONArray init = json.getJSONArray(Config.API.IOSCOPY);
+                        for (int i = 0; i < init.length(); i++) {
+                            JSONObject row = (JSONObject) init.get(i);
+                            Ioscopy ioscopy = new Ioscopy(row.getString(Config.API.INIT_KEY), row.getString(Config.API.INIT_VALUE), row.getString(Config.API.INIT_TYPE));
+                            ioscopy.save();
+                        }
+                        init();
+                    } catch (JSONException e) {
+                        //Log.e(TAG, status.getError());
+                        e.printStackTrace();
+                    }
+                } else {
+                    Log.e(TAG, status.getError());
+                }
+            }
+        });
+    }
+
     private void goToHomeAbout() {
-        //showSplashMessage("It is you first access!");
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
-                Intent intent = new Intent(getApplicationContext(), HomeAboutActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
-                finish();
+                goToHomeAboutActivity();
             }
         }, 1000);
     }
+
+    void goToHomeAboutActivity(){
+        Intent intent = new Intent(getApplicationContext(), HomeAboutActivity.class);
+        startActivity(intent);
+        finish();
+        overridePendingTransitionGoRight();
+    }
+
+    /*private void overridePendingTransitionGoRigh() {
+        overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
+    }
+
+    private void overridePendingTransitionGoLeft() {
+        overridePendingTransition(R.anim.left_slide_in, R.anim.right_slide_out);
+    }*/
 
     private boolean isFirstInit() {
         return Checkpoint.count(Checkpoint.class, null, null) == 0;
@@ -110,14 +156,15 @@ public class MainActivity extends BaseActivity {
                     if (json != null) {
                         Log.i(TAG,"json: "+json.toString());
                         try {
-                            JSONObject menu = json.getJSONObject("menus");
+                            /*JSONObject menu = json.getJSONObject("menus");
                             JSONObject dinner = menu.getJSONObject("dinner");
-                            JSONArray MenuItems = (JSONArray) dinner.get(Config.API_MENUITEMS_TAG);
+                            JSONArray MenuItems = (JSONArray) dinner.get(Config.API_MENUITEMS_TAG);*/
+                            JSONArray MenuItems = (JSONArray) json.get("MenuItems");
                             for (int i = 0; i < MenuItems.length(); i++) {
                                 JSONObject gDish = (JSONObject) MenuItems.get(i);
                                 long menuHoy = Dish.count(Dish.class, "_id=?", new String[]{gDish.getString("itemId")});
                                 if (menuHoy == 0) {
-                                    Dish dish = new Dish(gDish.getString("itemId"), gDish.getString("name"), gDish.getString("description"), gDish.getString("type"), gDish.getString("image1"), gDish.getString("max_per_order"), todayDate);
+                                    Dish dish = new Dish(gDish.getString("itemId"), gDish.getString("name"), gDish.getString("description"), gDish.getString("type"), gDish.getString("image1"), gDish.getString("max_per_order"), todayDate, Config.aux_initial_stock);
                                     dish.save();
                                 }
                             }
@@ -152,18 +199,7 @@ public class MainActivity extends BaseActivity {
 
     private void checkForPendingOrder() {
         Log.i(TAG,"checkForPendingOrder()");
-        Log.i(TAG,"Orders.listAll =========================");
-        List<Orders> orders = Orders.listAll(Orders.class);
-        for( Orders o : orders ){
-            Log.i(TAG,o.toString());
-        }
-
-        Log.i(TAG,"Orders.find(Orders.class, \"completed = ? AND today = ?\", \"no\",todayDate) =========================");
         List<Orders> pending_orders = Orders.find(Orders.class, "completed = ? AND today = ?", "no",todayDate);
-        for( Orders o : pending_orders ){
-            Log.i(TAG,o.toString());
-        }
-
         if( pending_orders.isEmpty() ) {
             // THERE IS NOT ORDERS
             // GO TO DELIVERY LOCATION
@@ -181,7 +217,7 @@ public class MainActivity extends BaseActivity {
             // GO TO BULD-BENTO
             for ( Orders order : pending_orders) {
                 Bentonow.pending_order_id = order.getId();
-                Log.i(TAG, "set Bentonow.pending_order_id: "+Bentonow.pending_order_id);
+                //Log.i(TAG, "set Bentonow.pending_order_id: "+Bentonow.pending_order_id);
             }
             Intent intent = new Intent(getApplicationContext(), BuildBentoActivity.class);
             startActivity(intent);
