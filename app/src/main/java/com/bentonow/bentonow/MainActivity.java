@@ -16,6 +16,8 @@ import com.bentonow.bentonow.model.Dish;
 import com.bentonow.bentonow.model.Ioscopy;
 import com.bentonow.bentonow.model.Orders;
 
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,6 +35,7 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
         aq = new AQuery(this);
         home_preloader = (ProgressBar)findViewById(R.id.home_preloader);
@@ -130,7 +133,9 @@ public class MainActivity extends BaseActivity {
                         if (json.get(Config.API.STATUS_OVERALL_LABEL_VALUE).equals(Config.API.STATUS_OVERALL_MESSAGE_OPEN)) {
                             checkForTodayMenu();
                             Bentonow.isOpen = true;
-                        } else {
+                        } if (json.get(Config.API.STATUS_OVERALL_LABEL_VALUE).equals(Config.API.STATUS_OVERALL_MESSAGE_SOLDOUT)) {
+                            goToErrorSolded();
+                        } else if (json.get(Config.API.STATUS_OVERALL_LABEL_VALUE).equals(Config.API.STATUS_OVERALL_MESSAGE_CLOSED)) {
                             goToErrorClosed();
                         }
                     } catch (JSONException e) {
@@ -146,8 +151,8 @@ public class MainActivity extends BaseActivity {
 
     private void checkForTodayMenu() {
         Log.i(TAG, "checkForTodayMenu()");
-        long todayMenu = Dish.count(Dish.class, "today=?", new String[]{todayDate});
-        if ( todayMenu==0 ) {
+        //long todayMenu = Dish.count(Dish.class, "today=?", new String[]{todayDate});
+        //if ( todayMenu==0 ) {
             String uri = Config.API.URL + Config.API.MENU_URN + "/" + todayDate;
             Log.i(TAG, "URI: "+uri);
             aq.ajax(uri, JSONObject.class, new AjaxCallback<JSONObject>() {
@@ -166,6 +171,21 @@ public class MainActivity extends BaseActivity {
                                 if (menuHoy == 0) {
                                     Dish dish = new Dish(gDish.getString("itemId"), gDish.getString("name"), gDish.getString("description"), gDish.getString("type"), gDish.getString("image1"), gDish.getString("max_per_order"), todayDate, Config.aux_initial_stock);
                                     dish.save();
+                                }else{
+                                    long dish_id = Dish.getIdBy_id(gDish.getString("itemId"));
+                                    if(dish_id!=0) {
+                                        Dish dish = Dish.findById(Dish.class, dish_id);
+                                        if(dish!=null){
+                                            dish.name = gDish.getString("name");
+                                            dish.description = gDish.getString("description");
+                                            dish.type = gDish.getString("type");
+                                            dish.image1 = gDish.getString("image1");
+                                            dish.max_per_order = gDish.getString("max_per_order");
+                                            dish.qty = Config.aux_initial_stock;
+                                            dish.today = todayDate;
+                                            dish.save();
+                                        }
+                                    }
                                 }
                             }
                         } catch (JSONException e) {
@@ -178,10 +198,10 @@ public class MainActivity extends BaseActivity {
                     }
                 }
             });
-        }else{
+        /*}else{
             Log.i(TAG, "The menu of the day is changed");
             checkForPendingOrder();
-        }
+        }*/
     }
 
     private void showSplashMessage(String message) {
@@ -198,7 +218,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void checkForPendingOrder() {
-        Log.i(TAG,"checkForPendingOrder()");
+        Log.i(TAG, "checkForPendingOrder()");
         List<Orders> pending_orders = Orders.find(Orders.class, "completed = ? AND today = ?", "no",todayDate);
         if( pending_orders.isEmpty() ) {
             // THERE IS NOT ORDERS
@@ -231,6 +251,18 @@ public class MainActivity extends BaseActivity {
         handler.postDelayed(new Runnable() {
             public void run() {
                 Intent intent = new Intent(getApplicationContext(), ErrorClosedActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.bottom_slide_in, R.anim.none);
+                finish();
+            }
+        }, 2000);
+    }
+
+    private void goToErrorSolded() {
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                Intent intent = new Intent(getApplicationContext(), ErrorOutOfStockActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.bottom_slide_in, R.anim.none);
                 finish();

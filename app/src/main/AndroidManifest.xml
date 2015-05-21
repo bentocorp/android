@@ -13,6 +13,7 @@
     -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
         android:name="com.orm.SugarApp"
@@ -22,11 +23,14 @@
         android:theme="@style/AppTheme"
         com.bentonow.bentonow:replace="android:icon" >
         <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+        <meta-data
             android:name="DATABASE"
             android:value="bento.db" />
         <meta-data
             android:name="VERSION"
-            android:value="20" />
+            android:value="22" />
         <meta-data
             android:name="QUERY_LOG"
             android:value="false" />
@@ -34,15 +38,15 @@
             android:name="DOMAIN_PACKAGE_NAME"
             android:value="com.bentonow" />
 
-
-        <!--<activity android:name=".activity.PaymentActivity"
+        <!--
+        <activity android:name=".activity.PaymentActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-        </activity>-->
-
+        </activity>
+        -->
 
         <activity
             android:name=".MainActivity"
@@ -80,14 +84,6 @@
             android:name=".DeliveryLocationActivity"
             android:label="@string/title_activity_delivery_location"
             android:screenOrientation="portrait" >
-
-            <!--
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            -->
         </activity>
         <activity
             android:name=".ErrorInvalidAddressActivity"
@@ -126,46 +122,56 @@
             android:label="@string/title_activity_complete_order"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" >
-
-            <!--
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>.
-            -->
         </activity>
-
         <activity
             android:name=".OrderConfirmedActivity"
             android:label="@string/title_activity_order_confirmed"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".EnterCreditCardActivity"
             android:label="@string/title_activity_enter_credit_card"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden"
-            >
-            <!--<intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
+            android:windowSoftInputMode="stateHidden" >
         </activity>
-
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
             android:name=".FacebookActivity"
             android:label="@string/title_activity_enter_credit_card"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden"
-            >
-            <!--<intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:windowSoftInputMode="stateHidden" >
+        </activity>
+        <activity
+            android:name=".EnterPhoneNumberActivity"
+            android:label="@string/title_activity_enter_phone_number"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" >
+        </activity>
+        <activity
+            android:name=".SettingActivity"
+            android:label="@string/title_activity_setting"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".PrivacyPolicyActivity"
+            android:label="@string/title_activity_privacy_policy"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".TermAndConditionsActivity"
+            android:label="@string/title_activity_term_and_conditions"
+            android:screenOrientation="portrait" >
+        </activity>
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
+        <activity
+            android:name=".NextDayMenuActivity"
+            android:label="@string/title_activity_next_day_menu"
+            android:screenOrientation="portrait"
+            >
         </activity>
 
         <!-- Google Api Key -->
@@ -192,6 +198,9 @@
         <!-- END SERVICE -->
 
 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="b93f88316ab43e2a9cc5ec856985492a4a6d820e" />
     </application>
 
 </manifest>

@@ -5,50 +5,34 @@
     tools:context="com.bentonow.bentonow.ErrorClosedActivity"
     android:id="@+id/base_relative_layout">
 
+    <!-- BACKGROUND -->
     <ImageView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:src="@drawable/bg_error_closed"
         android:scaleType="centerCrop"/>
-    <!--<LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:background="@color/white"
-        android:gravity="center"
-        android:padding="@dimen/actionbar_padding">
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/logo_bento_text"/>
-    </LinearLayout>
-    <ImageView
-        android:id="@+id/btn_help"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_ab_help"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:padding="@dimen/actionbar_padding"
-        />-->
+
+    <!-- ACTIONBAR -->
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        >
+        android:id="@+id/linearLayout">
         <include layout="@layout/actionbar_center_logo" />
     </LinearLayout>
 
+    <!-- MAIN CONTAINER -->
     <LinearLayout
+        android:orientation="vertical"
         android:id="@+id/ll_cont"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:orientation="vertical"
-        android:gravity="center">
+        android:layout_below="@+id/linearLayout"
+        android:layout_above="@+id/footer"
+        android:gravity="center"
+        >
 
         <LinearLayout
             android:id="@+id/text_content"
@@ -95,12 +79,16 @@
                 android:src="@drawable/ic_email"/>
             <EditText
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:hint="@string/error_closed_input_mail_hint"
                 android:textSize="@dimen/text_small"
                 android:background="#00000000"
+                android:id="@+id/email_address"
+                android:inputType="textEmailAddress"
+                android:textCursorDrawable="@null"
                 />
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -113,23 +101,49 @@
                 android:gravity="center"
                 android:textColor="@color/white"
                 android:padding="@dimen/btn_padding"
-                android:text="@string/btn_submit_text"/>
+                android:text="@string/btn_submit_text"
+                android:id="@+id/submit"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="@dimen/general_padding"
+            >
+            <TextView
+                android:background="@drawable/btn_border_lineal_white"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:padding="@dimen/btn_padding"
+                android:text="See next day Menu"
+                android:id="@+id/btnNextDayMenu"
+                android:visibility="invisible" />
+
         </LinearLayout>
 
     </LinearLayout>
+
+    <!-- FOOTER -->
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_alignBottom="@+id/ll_cont"
-        android:padding="@dimen/btn_padding">
+        android:padding="@dimen/btn_padding"
+        android:id="@+id/footer"
+        android:layout_alignParentBottom="true">
         <TextView
+            android:id="@+id/btn_privacy_policy"
             android:layout_weight="1"
             android:text="@string/privacy_policy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"/>
         <TextView
+            android:id="@+id/btn_terms_conditions"
             android:layout_weight="1"
             android:gravity="right"
             android:textColor="@color/white"
@@ -137,4 +151,52 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
+
+    <!-- OVERLAY -->
+    <RelativeLayout
+        android:id="@+id/overlay"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#90000000"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="5"
+            android:orientation="horizontal"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:gravity="center"
+            android:baselineAligned="false">
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/overlay_message"
+                android:layout_weight="3"
+                >
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/message_open"
+                    android:gravity="center"
+                    android:padding="@dimen/btn_padding"
+                    />
+                <TextView
+                    android:id="@+id/btn_ok"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/btn_padding"
+                    android:layout_weight="1"
+                    android:textColor="@color/white"
+                    android:background="@drawable/bg_green_corner_left_right_bottom"
+                    android:gravity="center"
+                    android:text="@string/ok"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+
+    </RelativeLayout>
 </RelativeLayout>

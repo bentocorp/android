@@ -5,6 +5,7 @@ import android.util.Log;
 import com.bentonow.bentonow.Bentonow;
 import com.orm.SugarRecord;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -23,6 +24,8 @@ public class Orders extends SugarRecord<Orders> {
     public String tip_cents;
     public String total_cents;
     public String completed;
+    public String couponcode;
+    public String amountoff;
 
     public Orders(){
 
@@ -75,5 +78,14 @@ public class Orders extends SugarRecord<Orders> {
         if ( this.address_zip != null ) address_zip_aux = this.address_zip;
         address = address_number_aux+" "+address_street_aux+", "+address_city_aux+", "+address_zip_aux+" "+address_state_aux;
         return address;
+    }
+
+    public static Long getLastOrderId() {
+        Long last_order_address = (long) 0;
+        List<Orders> orders = Orders.find(Orders.class, null, null);
+        for( Orders lastOrder : orders ){
+            last_order_address = lastOrder.getId();
+        }
+        return last_order_address;
     }
 }

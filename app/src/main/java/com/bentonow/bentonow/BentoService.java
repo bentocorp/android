@@ -16,9 +16,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.List;
-import java.util.Objects;
-
 /**
  * Created by gonzalo on 28/01/2015.
  */
@@ -108,7 +105,7 @@ public class BentoService extends Service {
                             if (overall.get(Config.API.STATUS_OVERALL_LABEL_VALUE).equals(Config.API.STATUS_OVERALL_MESSAGE_OPEN)) {
                                 if (!Bentonow.isOpen) {
                                     Bentonow.isOpen = true;
-                                    goTo(Target.DeliveryLocation);
+                                    goTo(Target.MainActivity);
                                 }
                             } else if (overall.get(Config.API.STATUS_OVERALL_LABEL_VALUE).equals(Config.API.STATUS_OVERALL_MESSAGE_SOLDOUT)) {
                                 if (!Bentonow.isSolded) {
@@ -136,8 +133,8 @@ public class BentoService extends Service {
     private void goTo(Target deliveryLocation) {
         Intent dialogIntent = null;
         switch (deliveryLocation){
-            case DeliveryLocation:
-                dialogIntent = new Intent(this, DeliveryLocationActivity.class);
+            case MainActivity:
+                dialogIntent = new Intent(this, MainActivity.class);
                 dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(dialogIntent);
                 Bentonow.app.current_activity.finish();
@@ -162,7 +159,7 @@ public class BentoService extends Service {
     }
 
     private enum Target {
-        DeliveryLocation, ErrorClosed, ErrorSoulded;
+        MainActivity, ErrorClosed, ErrorSoulded;
     }
 }
 

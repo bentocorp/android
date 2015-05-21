@@ -1,9 +1,5 @@
 package com.bentonow.bentonow;
 
-import com.orm.SugarRecord;
-
-import java.util.Calendar;
-
 /**
  * Created by gonzalo on 07/04/2015.
  */
@@ -20,8 +16,9 @@ public class Config {
 
     public static String invalid_address_extra_label = "invalid_address";
     public static String[] MenuItems_ItemLabels = {"itemId", "name", "description", "type", "image1", "max_per_order","qty"};
-    public static int aux_deduct_day = 1;
-    public static String aux_initial_stock = "1";
+    public static int aux_deduct_day = 0;
+    public static String aux_initial_stock = "0";
+    //public static boolean processing_stock = false;
 
     public static class CurrentOrder {
         public static int tip_percent = 10; // will be modified in the interface
@@ -42,6 +39,8 @@ public class Config {
         public static final String INIT = "/init";
         public static final String IOSCOPY = "/ioscopy";
         public static final String ORDER = "/order";
+        public static final String COUPON_REQUEST = "/couponcode/request";
+        public static final int DEFAULT_ERROR_409 = 409;
         public static String URL = APP_DEV_STATUS.equals(appStatus.PRODUCTION) ? "https://api.bentonow.com" : "https://dev.api.bentonow.com";
         public static final String MENU_URN = "/menu";
 
@@ -78,11 +77,37 @@ public class Config {
         public static int USER_LOGIN_404 = 404;
         public static int USER_LOGIN_403 = 403;
 
+        public class FACEBOOK {
+            public static final String SIGNUP = "/user/fbsignup";
+            public static final int BAD_TOKEN_403 = 403;
+            public static final String SIGNIN = "/user/fbsignup";
+        }
+
+        public class COUPON {
+            public static final String APPLY = "/coupon/apply/";
+
+            public class RESPONSE {
+                public static final int OK200 = 200;
+                public static final int INVALID_COUPON_400 = 400;
+            }
+
+            public class LABELS {
+                public static final String AMOUNTOFF = "amountOff";
+            }
+        }
+
+        public class USER {
+            public static final String FBLOGIN = "/user/fblogin";
+            public static final String FBSIGNUP = "/user/fbsignup";
+        }
     }
 
     public class IOSCOPY {
         public static final String PRICE = "price";
         public static final String TAX_PERCENT = "tax_percent";
+        public static final String FAQ_BODY = "faq-body";
+        public static final String PRIVACY_POLICY_BODY = "privacy-policy-body";
+        public static final String TERMS_CONDITIONS_BODY = "terms-conditions-body";
     }
 
     public class DISH {
@@ -94,6 +119,7 @@ public class Config {
         public static final String MAX_PER_ORDER = "max_per_order";
         public static final String TODAY = "today";
         public static final String QTY = "qty";
+        public static final String ITEM_ID = "item_id";
     }
 
     public class ASSET {
@@ -115,5 +141,27 @@ public class Config {
         public static final String PHONE = "phone";
         public static final String PASSWORD = "password";
         public static final String APITOKEN = "api_token";
+    }
+
+    public class FACEBOOK {
+        public class SIGNUP {
+            public static final String firstname = "firstname";
+            public static final String lastname = "lastname";
+            public static final String email = "email";
+            public static final String phone = "phone";
+            public static final String fb_id = "fb_id";
+            public static final String fb_token = "fb_token";
+            public static final String fb_profile_pic = "fb_profile_pic";
+            public static final String fb_age_range = "fb_age_range";
+            public static final String fb_gender = "fb_gender";
+        }
+    }
+
+    public static class AppNavigateMap {
+        public static from from;
+    }
+
+    static enum from {
+        SettingActivity
     }
 }

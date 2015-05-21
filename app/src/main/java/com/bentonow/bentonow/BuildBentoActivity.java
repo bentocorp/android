@@ -109,7 +109,7 @@ public class BuildBentoActivity extends BaseActivity {
         Log.i(TAG, "showCountBentos()");
         long pending_bento = Item.count(Item.class, "orderid=? and completed=?", new String[]{String.valueOf(Bentonow.pending_order_id), "yes"});
         if(pending_bento>0) {
-            enableBtnAddAnotherBento();
+            //disableBtnAddAnotherBento();
             bento_box_counter_textview.setText(String.valueOf(pending_bento));
             bento_box_counter_textview.setVisibility(View.VISIBLE);
         }
@@ -118,27 +118,33 @@ public class BuildBentoActivity extends BaseActivity {
     private void checkPendingBuildBento() {
         Log.i(TAG, "checkPendingBuildBento()");
         long pending_order_id = Orders.findPendingOrderId(todayDate);
-        Log.i(TAG, "pending_order_id: "+pending_order_id);
+        Log.i(TAG, "pending_order_id: " + pending_order_id);
         Bentonow.pending_order_id = pending_order_id;
-        List<Item> pending_bento = Item.find(Item.class, "orderid=?", new String[]{String.valueOf(Bentonow.pending_order_id)},null,"id DESC","1");
-        if ( pending_bento.isEmpty() ){
-            createNewBentoBox();
-        }else {
-            for (Item item : pending_bento) {
-                Log.i(TAG,"Each pending item: "+pending_bento.toString());
-                bento_count++;
-                Bentonow.pending_bento_id = item.getId();
-                if ( Bentonow.pending_bento_id != null ) {
-                    Item current_betno = Item.findById(Item.class, Bentonow.pending_bento_id);
-                    showCurrentBento(current_betno);
-                } else {
-                    createNewBentoBox();
+        Log.i(TAG, "Bentonow.pending_bento_id: " + Bentonow.pending_bento_id);
+        if( Bentonow.pending_bento_id == null ) {
+            List<Item> pending_bento = Item.find(Item.class, "orderid=?", new String[]{String.valueOf(Bentonow.pending_order_id)}, null, "id DESC", "1");
+            if (pending_bento.isEmpty()) {
+                createNewBentoBox();
+            } else {
+                for (Item item : pending_bento) {
+                    Log.i(TAG, "Each pending item: " + pending_bento.toString());
+                    bento_count++;
+                    Bentonow.pending_bento_id = item.getId();
+                    if (Bentonow.pending_bento_id != null) {
+                        Item current_betno = Item.findById(Item.class, Bentonow.pending_bento_id);
+                        showCurrentBento(current_betno);
+                    } else {
+                        createNewBentoBox();
+                    }
                 }
             }
+        }else{
+            Item current_betno = Item.findById(Item.class, Bentonow.pending_bento_id);
+            showCurrentBento(current_betno);
         }
     }
 
-    private void createNewBentoBox() {
+    public void createNewBentoBox() {
         Log.i(TAG,"createNewBentoBox()");
         Item item = new Item();
         item.completed = "no";
@@ -150,6 +156,10 @@ public class BuildBentoActivity extends BaseActivity {
 
     private void showCurrentBento(Item current_bento) {
         Log.i(TAG,"showCurrentBento(Item current_bento)");
+        if( current_bento == null ){
+            Log.i(TAG, "current_bento isNULL");
+            return;
+        }
         Log.i(TAG,"current_bento: " + current_bento.toString());
         Log.i(TAG,"current_bento.isFull(): " + current_bento.isFull());
 
@@ -159,9 +169,9 @@ public class BuildBentoActivity extends BaseActivity {
             current_bento.completed = "yes";
             current_bento.save();
             enableBtnAddAnotherBento();
-        }/*else{
+        }else{
             disableBtnAddAnotherBento();
-        }*/
+        }
 
         // MAIN DISH
         if( current_bento.main != null ) {
@@ -301,16 +311,15 @@ public class BuildBentoActivity extends BaseActivity {
         //actionbar_title.setTypeface(tf);
 
         //
-        ImageView actionbar_left_btn;
-        actionbar_left_btn = (ImageView)findViewById(R.id.actionbar_left_btn);
-        actionbar_left_btn.setImageResource(R.drawable.ic_ab_help);
+        ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
+        actionbar_left_btn.setImageResource(R.drawable.ic_ab_user);
         actionbar_left_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), FaqActivity.class);
+                Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
                 startActivity(intent);
-                overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
                 finish();
+                overridePendingTransitionGoRight();
             }
         });
 
@@ -333,7 +342,7 @@ public class BuildBentoActivity extends BaseActivity {
         build_main.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(),SelectMainActivity.class);
+                Intent intent = new Intent(getApplicationContext(), SelectMainActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
                 finish();
@@ -416,8 +425,18 @@ public class BuildBentoActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Item bento = Item.findById(Item.class, Bentonow.pending_bento_id);
-                if (!bento.isFull())
+                if (bento == null) {
+                    Log.i(TAG, "bento is NULL");
+                    checkPendingBuildBento();
+                    Item bento2 = Item.findById(Item.class, Bentonow.pending_bento_id);
+                    if (!bento2.isFull()) {
+                        showDialogForAutocompleteBento();
+                    }
+                } else if (!bento.isFull()) {
                     showDialogForAutocompleteBento();
+                } else {
+                    Log.i(TAG, "bento is FULL");
+                }
             }
         });
 
@@ -453,7 +472,13 @@ public class BuildBentoActivity extends BaseActivity {
     }
 
     private void autoCompletePendingBento() {
+
         Item autocomplete_bento = Item.findById(Item.class, Bentonow.pending_bento_id);
+
+        if( !autocomplete_bento.isFull() ) stockProcess();
+
+        processHolder ph = new processHolder();
+
         if ( autocomplete_bento.main == null ) {
             List<Dish> main_dishes = Dish.find(Dish.class,"type=? and today = ? and qty!=?", new String[]{"main",todayDate,"0"}, null, "RANDOM()", "1");
             for( Dish dish : main_dishes ) {
@@ -464,57 +489,194 @@ public class BuildBentoActivity extends BaseActivity {
             Log.i(TAG,"Main is NO null");
         }
 
-        List<Dish> sides_dishes = Dish.find(Dish.class,"type=? and today = ?", new String[]{"side",todayDate}, null, "RANDOM()", null);
+        List<Dish> sides_dishes = Dish.find(Dish.class,"type=? and today = ? and qty != ?", new String[]{"side",todayDate,"0"}, null, "RANDOM()", null);
         if( sides_dishes.isEmpty() )
             Log.i(TAG,"No dishes for today");
 
         if ( autocomplete_bento.side1 == null ) {
             for( Dish dish : sides_dishes ) {
                 if( !Arrays.asList(autocomplete_bento.sideItems()).contains(dish._id) ){
-                    Log.i(TAG,"dish._id: "+dish._id);
-                    autocomplete_bento.side1 = dish._id;
+                    Integer qty = Integer.valueOf(dish.qty);
+                    if(qty>0) {
+                        Log.i(TAG,"String.valueOf(qty-1): "+String.valueOf(qty-1));
+                        autocomplete_bento.side1 = dish._id;
+                        dish.qty = String.valueOf(qty-1);
+                        dish.save();
+                    }
+                }else{
+                    Integer qty = Integer.valueOf(dish.qty);
+                    if(qty>0) {
+                        Log.i(TAG,"String.valueOf(qty-1): "+String.valueOf(qty-1));
+                        autocomplete_bento.side1 = dish._id;
+                        dish.qty = String.valueOf(qty-1);
+                        dish.save();
+                    }
                 }
             }
         }else{
-            Log.i(TAG, "Side 1 is NO null");
+            Log.i(TAG, "autocomplete_bento.side1: "+autocomplete_bento.side1);
         }
 
+        List<Dish> sides_dishes2 = Dish.find(Dish.class, "type=? and today = ? and qty != ?", new String[]{"side", todayDate, "0"}, null, "RANDOM()", null);
+        if( sides_dishes2.isEmpty() )
+            Log.i(TAG,"No dishes for today 2");
         if ( autocomplete_bento.side2 == null ) {
-            for( Dish dish : sides_dishes ) {
+            for( Dish dish : sides_dishes2 ) {
                 if( !Arrays.asList(autocomplete_bento.sideItems()).contains(dish._id) ){
-                    Log.i(TAG,"dish._id: "+dish._id);
-                    autocomplete_bento.side2 = dish._id;
+                    Integer qty = Integer.valueOf(dish.qty);
+                    if(qty>0) {
+                        Log.i(TAG,"String.valueOf(qty-1): "+String.valueOf(qty-1));
+                        autocomplete_bento.side2 = dish._id;
+                        dish.qty = String.valueOf(qty-1);
+                        dish.save();
+                    }
+                }else{
+                    Integer qty = Integer.valueOf(dish.qty);
+                    if(qty>0) {
+                        Log.i(TAG,"String.valueOf(qty-1): "+String.valueOf(qty-1));
+                        autocomplete_bento.side2 = dish._id;
+                        dish.qty = String.valueOf(qty-1);
+                        dish.save();
+                    }
                 }
             }
         }else{
-            Log.i(TAG, "Side 2 is NO null");
+            Log.i(TAG, "autocomplete_bento.side2: "+autocomplete_bento.side2);
         }
 
+        List<Dish> sides_dishes3 = Dish.find(Dish.class, "type=? and today = ? and qty != ?", new String[]{"side", todayDate, "0"}, null, "RANDOM()", null);
+        if( sides_dishes3.isEmpty() )
+            Log.i(TAG,"No dishes for today 3");
         if ( autocomplete_bento.side3 == null ) {
-            for( Dish dish : sides_dishes ) {
+            for( Dish dish : sides_dishes3 ) {
                 if( !Arrays.asList(autocomplete_bento.sideItems()).contains(dish._id) ){
-                    Log.i(TAG,"dish._id: "+dish._id);
-                    autocomplete_bento.side3 = dish._id;
+                    Integer qty = Integer.valueOf(dish.qty);
+                    if(qty>0) {
+                        Log.i(TAG,"String.valueOf(qty-1): "+String.valueOf(qty-1));
+                        autocomplete_bento.side3 = dish._id;
+                        dish.qty = String.valueOf(qty-1);
+                        dish.save();
+                    }
+                }else{
+                    Integer qty = Integer.valueOf(dish.qty);
+                    if(qty>0) {
+                        Log.i(TAG,"String.valueOf(qty-1): "+String.valueOf(qty-1));
+                        autocomplete_bento.side3 = dish._id;
+                        dish.qty = String.valueOf(qty-1);
+                        dish.save();
+                    }
                 }
             }
         }else{
-            Log.i(TAG, "Side 3 is NO null");
+            Log.i(TAG, "autocomplete_bento.side3: "+autocomplete_bento.side3);
         }
 
+        List<Dish> sides_dishes4 = Dish.find(Dish.class, "type=? and today = ? and qty != ?", new String[]{"side", todayDate, "0"}, null, "RANDOM()", null);
+        if( sides_dishes4.isEmpty() )
+            Log.i(TAG,"No dishes for today 4");
         if ( autocomplete_bento.side4 == null ) {
-            for( Dish dish : sides_dishes ) {
+            for( Dish dish : sides_dishes4 ) {
                 if( !Arrays.asList(autocomplete_bento.sideItems()).contains(dish._id) ){
-                    Log.i(TAG,"dish._id: "+dish._id);
-                    autocomplete_bento.side4 = dish._id;
+                    Integer qty = Integer.valueOf(dish.qty);
+                    if(qty>0) {
+                        Log.i(TAG,"String.valueOf(qty-1): "+String.valueOf(qty-1));
+                        autocomplete_bento.side4 = dish._id;
+                        dish.qty = String.valueOf(qty-1);
+                        dish.save();
+                    }
+                }else{
+                    Integer qty = Integer.valueOf(dish.qty);
+                    if(qty>0) {
+                        Log.i(TAG,"String.valueOf(qty-1): "+String.valueOf(qty-1));
+                        autocomplete_bento.side4 = dish._id;
+                        dish.qty = String.valueOf(qty-1);
+                        dish.save();
+                    }
                 }
             }
         }else{
-            Log.i(TAG, "Side 4 is NO null");
+            Log.i(TAG, "autocomplete_bento.side4: "+autocomplete_bento.side4);
         }
 
         autocomplete_bento.save();
+        resume(); // reload view
+        //Config.processing_stock = false; // reset
+        if( autocomplete_bento.isFull() ) {
+            Bentonow.pending_bento_id = null; // reset
+            finalizeOrder();
+        }
+    }
 
-        resume();
+    private void stockProcess() {
+        Log.i(TAG, "stockProcess()");
+        //Config.processing_stock = true;
+        List<Item> order_items = Item.find(Item.class, "orderid=?", String.valueOf(Bentonow.pending_order_id));
+        Log.i(TAG,"order_items.size(): "+order_items.size());
+        for( Item item : order_items ){
+            if(item.isFull()) {
+                Log.i(TAG,"item.isFull");
+                processHolder ph = new processHolder();
+                ph.mDish = Dish.findById(Dish.class, Dish.getIdBy_id(item.main));
+                ph.mQty = Integer.valueOf(ph.mDish.qty);
+                ph.mDish.qty = String.valueOf(ph.mQty - 1);
+                ph.mDish.save();
+
+                ph.s1Dish = Dish.findById(Dish.class, Dish.getIdBy_id(item.side1));
+                ph.s1Qty = Integer.valueOf(ph.s1Dish.qty);
+                if(ph.s1Qty>0) {
+                    ph.s1Qty--;
+                    ph.s1Dish.qty = String.valueOf(ph.s1Qty);
+                    ph.s1Dish.save();
+                }
+
+                ph.s2Dish = Dish.findById(Dish.class, Dish.getIdBy_id(item.side2));
+                ph.s2Qty = Integer.valueOf(ph.s2Dish.qty);
+                if(ph.s2Qty>0) {
+                    ph.s2Qty--;
+                    ph.s2Dish.qty = String.valueOf(ph.s2Qty);
+                    ph.s2Dish.save();
+                }
+
+                ph.s3Dish = Dish.findById(Dish.class, Dish.getIdBy_id(item.side3));
+                ph.s3Qty = Integer.valueOf(ph.s3Dish.qty);
+                if(ph.s3Qty>0) {
+                    ph.s3Qty--;
+                    ph.s3Dish.qty = String.valueOf(ph.s3Qty);
+                    ph.s3Dish.save();
+                }
+
+                ph.s4Dish = Dish.findById(Dish.class, Dish.getIdBy_id(item.side4));
+                ph.s4Qty = Integer.valueOf(ph.s4Dish.qty);
+                if(ph.s4Qty>0) {
+                    ph.s4Qty--;
+                    ph.s4Dish.qty = String.valueOf(ph.s4Qty);
+                    ph.s4Dish.save();
+                }
+
+            }else{
+                Log.i(TAG,"item.isEmpty");
+            }
+        }
+    }
+
+    class processHolder {
+        public Dish mDish;
+        public Integer mQty;
+        public Dish s1Dish;
+        public Integer s1Qty;
+        public Dish s2Dish;
+        public Integer s2Qty;
+        public Dish s3Dish;
+        public Integer s3Qty;
+        public Dish s4Dish;
+        public Integer s4Qty;
+    }
+
+    private void goToCompleteOrder() {
+        Intent intent = new Intent(getApplicationContext(), CompleteOrderActivity.class);
+        startActivity(intent);
+        finish();
+        overridePendingTransitionGoRight();
     }
 
     private void showDialogForAutocompleteBento() {
@@ -523,24 +685,14 @@ public class BuildBentoActivity extends BaseActivity {
 
     private void finalizeOrder() {
         User user = User.findById(User.class, (long) 1);
-        if( user != null && user.apitoken != null ){
-            Intent intent = new Intent(getApplicationContext(), CompleteOrderActivity.class);
-            startActivity(intent);
-            finish();
-            overridePendingTransitionGoRight();
+        if( user != null && user.apitoken != null && !user.apitoken.isEmpty() ){
+            goToCompleteOrder();
         }else {
-            Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
+            Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
             startActivity(intent);
             finish();
             overridePendingTransitionGoRight();
         }
     }
 
-    /*private void overridePendingTransitionGoLeft() {
-        overridePendingTransition(R.anim.left_slide_in, R.anim.right_slide_out);
-    }
-
-    private void overridePendingTransitionGoRight() {
-        overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
-    }*/
 }

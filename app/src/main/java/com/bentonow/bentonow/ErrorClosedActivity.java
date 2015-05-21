@@ -1,12 +1,11 @@
 package com.bentonow.bentonow;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
@@ -15,23 +14,85 @@ import com.androidquery.callback.AjaxStatus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class ErrorClosedActivity extends BaseActivity {
 
-    private static Activity activity;
+    private static final String TAG = "ErrorClosedActivity";
     private AQuery aq;
+    View overlay;
+    TextView email_address;
+    private TextView btnNextDayMenu;
+    private String jsonToSend;
+    private String titleNextDayMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_error_closed);
-
-        activity = this;
         aq = new AQuery(this);
-
-        Bentonow.app.current_activity = this;
-
+        //Config.aux_deduct_day ++;
         initActionbar();
+        initElements();
+        addListeners();
+        initLegalFooter();
+        tryGetTomorrowMenu();
+    }
+
+    private void postData() {
+        String uri = Config.API.URL + Config.API.COUPON_REQUEST;
+        String email = email_address.getText().toString();
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("data", "{\n" +
+                "    \"reason\": \"closed\",\n" +
+                "    \"email\": \"" + email + "\"\n" +
+                "}");
+        aq.ajax(uri, params, String.class, new AjaxCallback<String>() {
+            @Override
+            public void callback(String url, String json, AjaxStatus status) {
+                Log.i("PaymentActivity", "JSONObject: " + json);
+                Log.i("PaymentActivity", "AjaxStatus: " + status.getCode());
+
+                overlay.setVisibility(View.VISIBLE);
+                email_address.setText("");
+            }
+        });
+    }
+
+    private void initElements() {
+        btnNextDayMenu = (TextView)findViewById(R.id.btnNextDayMenu);
+        overlay = findViewById(R.id.overlay);
+        email_address = (TextView)findViewById(R.id.email_address);
+    }
+
+    private void addListeners() {
+        btnNextDayMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(),NextDayMenuActivity.class);
+                intent.putExtra("title", titleNextDayMenu);
+                intent.putExtra("json", jsonToSend);
+                startActivity(intent);
+                overridePendingTransitionGoRight();
+            }
+        });
+
+        findViewById(R.id.btn_ok).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                overlay.setVisibility(View.GONE);
+            }
+        });
+
+        findViewById(R.id.submit).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                postData();
+            }
+        });
     }
 
     private void initActionbar() {
@@ -40,9 +101,58 @@ public class ErrorClosedActivity extends BaseActivity {
         actionbar_right_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), FaqActivity.class);
+                goToFAQ();
+            }
+        });
+    }
+
+    private void initLegalFooter() {
+        findViewById(R.id.btn_privacy_policy).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), PrivacyPolicyActivity.class);
                 startActivity(intent);
-                overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
+                overridePendingTransitionGoRight();
+            }
+        });
+
+        findViewById(R.id.btn_terms_conditions).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), TermAndConditionsActivity.class);
+                startActivity(intent);
+                overridePendingTransitionGoRight();
+            }
+        });
+    }
+
+    void tryGetTomorrowMenu(){
+        String uri = Config.API.URL+Config.API.MENU_URN+"/"+ tomorrowDate;
+        Log.i(TAG, "uri: " + uri);
+        aq.ajax(uri, JSONObject.class, new AjaxCallback<JSONObject>() {
+            @Override
+            public void callback(String url, JSONObject json, AjaxStatus status) {
+                if (json != null) {
+                    try {
+                        Log.i(TAG,"json: "+json.toString());
+                        JSONObject menu = json.getJSONObject("Menu");
+                        String day_text = menu.getString("day_text");
+                        String[] tmp = day_text.split(" ");
+                        String day = (tmp[0]!=null) ? tmp[0] + "'s Menu" : "";
+                        Log.i(TAG, "menu.getString(day_text): " + day);
+                        if(!day.isEmpty()){
+                            titleNextDayMenu = day;
+                            btnNextDayMenu.setText(day);
+                            btnNextDayMenu.setVisibility(View.VISIBLE);
+                        }
+                        jsonToSend = json.toString();
+                    } catch (JSONException e) {
+                        //Log.e(TAG, status.getError());
+                        e.printStackTrace();
+                    }
+                } else {
+                    Log.e(TAG, status.getError());
+                }
             }
         });
     }

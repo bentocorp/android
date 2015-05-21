@@ -1,38 +1,55 @@
 package com.bentonow.bentonow;
 
 import android.os.Bundle;
-import android.text.Html;
+import android.util.Log;
 import android.view.View;
+import android.webkit.WebView;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bentonow.bentonow.model.Ioscopy;
+
+import java.util.List;
 
 
 public class FaqActivity extends BaseActivity {
+
+    private static final String TAG = "FaqActivity";
+    private WebView browser;
+    private TextView btn_go_back;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_faq);
-
-        TextView btn_go_back = (TextView) findViewById(R.id.footer_container);
-        btn_go_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finishThisActivity();
-            }
-        });
-
-        TextView html_container = (TextView) findViewById(R.id.html_container);
-        html_container.setText(Html.fromHtml("<h1>Frequently Asked Questions</h1><h3>Does Bento share my info?</h3><p>Lorem ipsum dolor sit amet</p>"));
+        initActionbar();
+        initElements();
+        loadWebView();
     }
 
-    /*private void addListeners() {
-        actionbar_ic_back = (ImageView)findViewById(R.id.actionbar_ic_back);
-        actionbar_ic_back.setOnClickListener(new View.OnClickListener() {
+    private void initElements() {
+        browser = (WebView) findViewById(R.id.webview);
+    }
+
+    private void loadWebView() {
+        browser.loadUrl(Ioscopy.getKeyValue(Config.IOSCOPY.FAQ_BODY));
+    }
+
+    private void initActionbar() {
+        Log.i(TAG, "initActionbar()");
+        TextView actionbar_title = (TextView) findViewById(R.id.actionbar_title);
+        actionbar_title.setText("FAQ");
+
+        ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
+        actionbar_left_btn.setImageResource(R.drawable.ic_ab_back);
+        actionbar_left_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finishThisActivity();
+                finish();
+                overridePendingTransitionGoLeft();
             }
         });
-    }*/
+
+    }
 
 }

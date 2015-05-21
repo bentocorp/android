@@ -1,6 +1,8 @@
 package com.bentonow.bentonow;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -14,10 +16,21 @@ import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
 import com.bentonow.bentonow.model.User;
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,15 +44,23 @@ public class SignUpActivity extends BaseActivity {
     private AQuery aq;
     private String TAG = "SignUpActivity";
     private TextView btn_go_to_sign_in_activity;
+    private ImageView btn_fb_signup;
+    private Activity _this;
+    private CallbackManager callbackManager;
+    private TextView btn_privacy_policy;
+    private TextView btn_terms_conditions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
         aq = new AQuery(this);
+        _this = this;
+        FacebookSdk.sdkInitialize(getApplicationContext());
         initElements();
         initListeners();
         initActionbar();
+        initCallBackManager();
     }
 
     private void initElements() {
@@ -57,6 +78,10 @@ public class SignUpActivity extends BaseActivity {
         signup_phone_ico = (ImageView)findViewById(R.id.signup_phone_ico);
         signup_key_ico = (ImageView)findViewById(R.id.signup_key_ico);
         btn_register = (TextView) findViewById(R.id.btn_register);
+        btn_fb_signup = (ImageView)findViewById(R.id.btn_facebook_signup);
+
+        btn_privacy_policy = (TextView)findViewById(R.id.btn_privacy_policy);
+        btn_terms_conditions = (TextView)findViewById(R.id.btn_terms_conditions);
     }
 
     private void initActionbar() {
@@ -68,7 +93,7 @@ public class SignUpActivity extends BaseActivity {
         actionbar_left_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(),BuildBentoActivity.class);
+                Intent intent = new Intent(getApplicationContext(),SignInActivity.class);
                 startActivity(intent);
                 finish();
                 overridePendingTransition(R.anim.left_slide_in, R.anim.right_slide_out);
@@ -77,6 +102,24 @@ public class SignUpActivity extends BaseActivity {
     }
 
     private void initListeners() {
+
+        btn_privacy_policy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(),PrivacyPolicyActivity.class);
+                startActivity(intent);
+                overridePendingTransitionGoRight();
+            }
+        });
+
+        btn_terms_conditions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(),TermAndConditionsActivity.class);
+                startActivity(intent);
+                overridePendingTransitionGoRight();
+            }
+        });
         // BTN REGISTER
         btn_register.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -138,6 +181,14 @@ public class SignUpActivity extends BaseActivity {
                 overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
             }
         });
+
+        btn_fb_signup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LoginManager.getInstance().logOut();
+                LoginManager.getInstance().logInWithReadPermissions(_this, Arrays.asList("email"));
+            }
+        });
     }
 
     private void alert(String s) {
@@ -163,18 +214,20 @@ public class SignUpActivity extends BaseActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        Log.i(TAG,"data: "+data.toString());
         params.put("data", data.toString());
         aq.ajax(uri, params, JSONObject.class, new AjaxCallback<JSONObject>() {
             @Override
             public void callback(String url, JSONObject json, AjaxStatus status) {
                 //Toast.makeText(getApplicationContext(), status.getMessage(), Toast.LENGTH_LONG).show();
-                if ( status.getCode() == Config.API.USER_SIGNUP_200 ) {
+                if (status.getCode() == Config.API.USER_SIGNUP_200) {
                     Log.i(TAG, "json: " + json.toString());
                     long users = User.count(User.class, null, null);
                     User user;
-                    if(users==0){
+                    if (users == 0) {
                         user = new User();
-                    }else{
+                    } else {
                         user = User.findById(User.class, (long) 1);
                     }
                     String apitokenTmp = null;
@@ -184,7 +237,7 @@ public class SignUpActivity extends BaseActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    if (apitokenTmp!=null)apitoken=apitokenTmp;
+                    if (apitokenTmp != null) apitoken = apitokenTmp;
                     user.firstname = user_name.getText().toString();
                     user.phone = phone_number.getText().toString();
                     user.email = email_address.getText().toString();
@@ -192,12 +245,12 @@ public class SignUpActivity extends BaseActivity {
                     user.save();
 
                     // GO TO ORDER DETAIL
-                    Intent intent = new Intent(getApplicationContext(),CompleteOrderActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), CompleteOrderActivity.class);
                     startActivity(intent);
                     finish();
                     overridePendingTransitionGoLeft();
                 }
-                if ( status.getCode() == Config.API.USER_SIGNUP_400 ) {
+                if (status.getCode() == Config.API.USER_SIGNUP_400) {
                     try {
                         JSONObject error_message = new JSONObject(status.getError());
                         alert(error_message.getString("error"));
@@ -206,7 +259,7 @@ public class SignUpActivity extends BaseActivity {
                         alert("An error have ocurred.");
                     }
                 }
-                if ( status.getCode() == Config.API.USER_SIGNUP_409 ) {
+                if (status.getCode() == Config.API.USER_SIGNUP_409) {
                     try {
                         JSONObject error_message = new JSONObject(status.getError());
                         email_address.setTextColor(getResources().getColor(R.color.orange));
@@ -219,6 +272,89 @@ public class SignUpActivity extends BaseActivity {
                 }
             }
         });
+    }
+
+    //// FACEBOOK
+    private void initCallBackManager() {
+        callbackManager = CallbackManager.Factory.create();
+
+
+        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+
+                GraphRequest request = GraphRequest.newMeRequest(
+                        loginResult.getAccessToken(),
+                        new GraphRequest.GraphJSONObjectCallback() {
+                            @Override
+                            public void onCompleted(
+                                    JSONObject object,
+                                    GraphResponse response) {
+                                // Application code
+                                JSONObject responseJSONObject = response.getJSONObject();
+                                Log.v("LoginActivity", "graphObject: " + responseJSONObject);
+
+                                long users = User.count(User.class, null, null);
+                                User user;
+                                if (users == 0) user = new User();
+                                else user = User.findById(User.class, (long) 1);
+
+                                try {
+                                    AccessToken accessToken = AccessToken.getCurrentAccessToken();
+                                    Log.i(TAG,"accessToken: "+accessToken.toString());
+                                    user.firstname = responseJSONObject.getString("first_name");
+                                    user.lastname = responseJSONObject.getString("last_name");
+                                    user.email = responseJSONObject.getString("email");
+                                    user.fbid = responseJSONObject.getString("id");
+                                    user.fbtoken = accessToken.getToken();
+                                    user.fbprofilepic = "https://graph.facebook.com/" + responseJSONObject.getString("id") + "/picture";
+                                    user.fbagerange = "";//responseJSONObject.getString("fb_age_range");
+                                    user.fbgender = responseJSONObject.getString("gender");
+                                    user.save();
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                                Intent intent = new Intent(getApplicationContext(), EnterPhoneNumberActivity.class);
+                                startActivity(intent);
+                                finish();
+                                overridePendingTransitionGoRight();
+                            }
+                        }
+                );
+                request.executeAsync();
+            }
+
+            @Override
+            public void onCancel() {
+                Log.i(TAG,"onCancel()");
+            }
+
+            @Override
+            public void onError(FacebookException e) {
+                Log.i(TAG,"onError(FacebookException)");
+                Log.i(TAG, "error: " + e.getMessage());
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        AppEventsLogger.activateApp(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onResume();
+        AppEventsLogger.deactivateApp(this);
     }
 
 }

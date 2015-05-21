@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.androidquery.AQuery;
 import com.bentonow.bentonow.model.Dish;
 import com.bentonow.bentonow.model.Item;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -118,7 +119,12 @@ public class MenuItemMainAdapter extends BaseAdapter {
         holder.main_title.setText(row.get("name").toUpperCase());
         holder.desc_title.setText(row.get("name").toUpperCase());
         holder.main_menu_item_description.setText(row.get("description"));
-        imgaq.id(holder.img).image(row.get("image1"), true, true, 0, 0, null, AQuery.FADE_IN_NETWORK, 1.0f);
+        //imgaq.id(holder.img).image(row.get("image1"), true, true, 0, 0, null, AQuery.FADE_IN_NETWORK, 1.0f);
+        Picasso.with(activity)
+                .load(row.get("image1"))
+                .placeholder(R.drawable.tmp_trans)
+                .error(R.drawable.tmp_trans)
+                .into(holder.img);
 
         return view;
     }

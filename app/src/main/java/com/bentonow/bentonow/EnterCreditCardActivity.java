@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class EnterCreditCardActivity extends FragmentActivity {
+public class EnterCreditCardActivity extends BaseFragmentActivity {
 
     private static final String TAG = "EnterCreditCardActivity";
     public static final String PUBLISHABLE_KEY = "pk_test_hFtlMiWcGFn9TvcyrLDI4Y6P";
@@ -130,11 +130,7 @@ public class EnterCreditCardActivity extends FragmentActivity {
         actionbar_right_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //finishThisActivity();
-                Intent intent = new Intent(getApplicationContext(), FaqActivity.class);
-                startActivity(intent);
-                finish();
-                //overridePendingTransitionGoRight();
+                goToFAQ();
             }
         });
 
@@ -144,5 +140,6 @@ public class EnterCreditCardActivity extends FragmentActivity {
         Intent intent = new Intent(getApplicationContext(), CompleteOrderActivity.class);
         startActivity(intent);
         finish();
+        overridePendingTransitionGoLeft();
     }
 }

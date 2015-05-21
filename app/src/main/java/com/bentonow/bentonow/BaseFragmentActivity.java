@@ -70,8 +70,23 @@ public class BaseFragmentActivity extends FragmentActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        Log.i(BASE_TAG,"onPause()");
+        Log.i(BASE_TAG, "onPause()");
         Bentonow.app.isFocused = false;
+    }
+
+    public void goToFAQ(){
+        Intent intent = new Intent(getApplicationContext(), FaqActivity.class);
+        startActivity(intent);
+        finish();
+        overridePendingTransitionGoRight();
+    }
+
+    public void overridePendingTransitionGoLeft() {
+        overridePendingTransition(R.anim.left_slide_in, R.anim.right_slide_out);
+    }
+
+    public void overridePendingTransitionGoRight() {
+        overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
     }
 
 }

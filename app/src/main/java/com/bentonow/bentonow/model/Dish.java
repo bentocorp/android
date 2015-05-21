@@ -10,6 +10,7 @@ import java.util.List;
  * Created by gonzalo on 27/04/2015.
  */
 public class Dish extends SugarRecord<Dish> {
+    private static final String TAG = "Dish SugarRecord<Dish>";
     public String _id;
     public String name;
     public String description;
@@ -33,6 +34,7 @@ public class Dish extends SugarRecord<Dish> {
     }
 
     public static long getIdBy_id(String _id) {
+        Log.i(TAG,"getIdBy_id(String _id: "+_id+")");
         long dish_id = 0;
         List<Dish> dishes = Dish.find(Dish.class, "_id = ?", _id);
         for ( Dish each_dish : dishes) {

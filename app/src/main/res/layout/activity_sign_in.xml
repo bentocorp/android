@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/scrollView"
-        android:layout_above="@+id/footer"
+        android:layout_above="@+id/pie"
         android:layout_below="@+id/ActionBarContainer">
 
         <LinearLayout
@@ -94,9 +94,10 @@
                     android:hint="Email address"
                     android:textSize="@dimen/text_small"
                     android:textColor="@color/gray"
-                    android:background="@color/transparente"
+                    android:background="@color/transparent"
                     android:padding="@dimen/btn_padding"
-                    android:text="vincent+5@bentonow.com" />
+                    android:inputType="textEmailAddress"
+                    android:textCursorDrawable="@null" />
             </LinearLayout>
 
             <!-- divisor -->
@@ -133,9 +134,9 @@
                     android:hint="Password"
                     android:textSize="@dimen/text_small"
                     android:textColor="@color/gray"
-                    android:background="@color/transparente"
+                    android:background="@color/transparent"
                     android:padding="@dimen/btn_padding"
-                    android:text="somepassword716*"
+                    android:textCursorDrawable="@null"
                     android:password="true" />
             </LinearLayout>
 
@@ -182,9 +183,9 @@
                 <ImageView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/btn_facebook"
+                    android:src="@drawable/btn_facebook_signin"
                     android:adjustViewBounds="true"
-                    />
+                    android:id="@+id/btn_facebook" />
             </LinearLayout>
 
             <!-- sign in -->
@@ -222,23 +223,11 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="@dimen/btn_padding"
-        android:id="@+id/footer"
+        android:id="@+id/pie"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true">
-        <TextView
-            android:layout_weight="1"
-            android:text="@string/privacy_policy"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/btn_green"/>
-        <TextView
-            android:layout_weight="1"
-            android:gravity="right"
-            android:textColor="@color/btn_green"
-            android:text="@string/TermsAndConditions"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+
     </LinearLayout>
 
 </RelativeLayout>

@@ -15,6 +15,13 @@ public class User extends SugarRecord<User> {
     public String cardbrand;
     public String cardlast4;
     public String stripetoken;
+    //FB
+    public String fbid;
+    public String fbtoken;
+    public String fbprofilepic;
+    public String fbagerange;
+    public String fbgender;
+    //
 
     public User() {}
 

@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/scrollView"
-        android:layout_above="@+id/footer"
+        android:layout_above="@+id/pie"
         android:layout_below="@+id/ActionBarContainer">
 
         <LinearLayout
@@ -70,9 +70,10 @@
                 >
                 <!-- Facebook -->
                 <ImageView
+                    android:id="@+id/btn_facebook_signup"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/btn_facebook"
+                    android:src="@drawable/btn_facebook_signup"
                     android:adjustViewBounds="true"
                     />
 
@@ -122,9 +123,9 @@
                     android:hint="Your name"
                     android:textSize="@dimen/text_small"
                     android:textColor="@color/gray"
-                    android:background="@color/transparente"
+                    android:background="@color/transparent"
                     android:padding="@dimen/btn_padding"
-                    android:text="John J. Smith" />
+                    android:textCursorDrawable="@null" />
             </LinearLayout>
 
             <!-- divisor -->
@@ -162,9 +163,10 @@
                     android:hint="Email address"
                     android:textSize="@dimen/text_small"
                     android:textColor="@color/gray"
-                    android:background="@color/transparente"
+                    android:background="@color/transparent"
                     android:padding="@dimen/btn_padding"
-                    android:text="vincent+5@bentonow.com" />
+                    android:textCursorDrawable="@null"
+                    android:inputType="textEmailAddress" />
             </LinearLayout>
 
             <!-- divisor -->
@@ -201,9 +203,10 @@
                     android:hint="Phone number"
                     android:textSize="@dimen/text_small"
                     android:textColor="@color/gray"
-                    android:background="@color/transparente"
+                    android:background="@color/transparent"
                     android:padding="@dimen/btn_padding"
-                    android:text="555-123-4567" />
+                    android:textCursorDrawable="@null"
+                    android:inputType="phone" />
             </LinearLayout>
 
             <!-- divisor -->
@@ -237,12 +240,13 @@
                     android:id="@+id/password"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:hint="Password"
+                    android:hint="@string/password"
                     android:textSize="@dimen/text_small"
                     android:textColor="@color/gray"
-                    android:background="@color/transparente"
+                    android:background="@color/transparent"
                     android:padding="@dimen/btn_padding"
-                    android:text="somepassword"
+                    android:textCursorDrawable="@null"
+                    android:inputType="textPassword"
                     android:password="true" />
             </LinearLayout>
 
@@ -299,17 +303,19 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="@dimen/btn_padding"
-        android:id="@+id/footer"
+        android:id="@+id/pie"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true">
         <TextView
+            android:id="@+id/btn_privacy_policy"
             android:layout_weight="1"
             android:text="@string/privacy_policy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/btn_green"/>
         <TextView
+            android:id="@+id/btn_terms_conditions"
             android:layout_weight="1"
             android:gravity="right"
             android:textColor="@color/btn_green"

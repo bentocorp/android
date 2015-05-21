@@ -6,15 +6,6 @@
     android:id="@+id/base_relative_layout"
     android:background="@color/bgcolor">
 
-    <!-- background -->
-    <!--<ImageView
-        android:id="@+id/bg"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:src="@drawable/bg_error_closed"
-        android:scaleType="centerCrop"/>-->
-
-    <!-- actionbar -->
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -38,18 +29,20 @@
             android:scaleType="centerCrop"
             android:adjustViewBounds="true" />
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/white"
             >
 
             <TextView
+                android:layout_weight="1"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="Address"
                 android:id="@+id/invalid_address_textview"
                 android:padding="@dimen/btn_padding"
-                android:background="@color/white"
 
                 />
 
@@ -65,7 +58,7 @@
                 android:textStyle="bold"
                 android:textColor="@color/btn_green"
                 android:textSize="@dimen/text_very_small"/>
-        </RelativeLayout>
+        </LinearLayout>
 
         <TextView
             android:layout_width="fill_parent"
@@ -112,12 +105,13 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_email"/>
             <EditText
+                android:id="@+id/email_address"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/error_closed_input_mail_hint"
+                android:hint="Enter your email for a free coupon"
                 android:textSize="@dimen/text_small"
                 android:background="#00000000"
-                />
+                android:inputType="textEmailAddress" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -126,14 +120,60 @@
             android:background="@color/btn_green"
             >
             <TextView
+                android:id="@+id/btn_submit"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:textColor="@color/white"
                 android:padding="@dimen/btn_padding"
-                android:text="@string/btn_submit_text"/>
+                android:text="SEND FREE BENTO COUPON"/>
         </LinearLayout>
     </LinearLayout>
 
+    <RelativeLayout
+        android:id="@+id/overlay"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#90000000"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="5"
+            android:orientation="horizontal"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:gravity="center"
+            android:baselineAligned="false">
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/overlay_message"
+                android:layout_weight="3"
+                >
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Thanks! We'll let you know when we're in your area."
+                    android:gravity="center"
+                    android:padding="@dimen/btn_padding"
+                    />
+                <TextView
+                    android:id="@+id/btn_ok"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/btn_padding"
+                    android:textColor="@color/white"
+                    android:background="@drawable/bg_green_corner_left_right_bottom"
+                    android:gravity="center"
+                    android:text="@string/ok"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+
+    </RelativeLayout>
 
 </RelativeLayout>

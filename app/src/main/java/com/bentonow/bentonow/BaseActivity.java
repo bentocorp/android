@@ -19,6 +19,7 @@ public class BaseActivity extends Activity {
     private static final String BASE_TAG = "BaseActivity";
     private Intent service_intent;
     protected String todayDate;
+    protected String tomorrowDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +48,9 @@ public class BaseActivity extends Activity {
         String monthString = month < 10 ? "0"+String.valueOf(month+1): String.valueOf(month);
         String dayString = day < 10 ? "0"+String.valueOf(day): String.valueOf(day);
         todayDate = String.valueOf(year)+monthString+dayString;
+        int tday = day+1;
+        String TomorrowDayString = day < 10 ? "0"+String.valueOf(tday): String.valueOf(tday);
+        tomorrowDate = String.valueOf(year)+monthString+TomorrowDayString;
     }
 
     @Override
@@ -61,10 +65,6 @@ public class BaseActivity extends Activity {
         Bentonow.app.isFocused = true;
     }
 
-    public void finishThisActivity() {
-        finish();
-        overridePendingTransition(R.anim.left_slide_in, R.anim.right_slide_out);
-    }
 
     @Override
     public void onBackPressed() {
@@ -86,6 +86,38 @@ public class BaseActivity extends Activity {
 
     public void overridePendingTransitionGoRight() {
         overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
+    }
+
+    public void goToFAQ(){
+        Intent intent = new Intent(getApplicationContext(), FaqActivity.class);
+        startActivity(intent);
+        overridePendingTransitionGoRight();
+    }
+
+    public class go{
+        public void toLoginActivity(Config.from comeFrom){
+            Config.AppNavigateMap.from = comeFrom;
+            Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
+            startActivity(intent);
+            overridePendingTransitionGoRight();
+        }
+
+        public void fromLogin(){
+            switch (Config.AppNavigateMap.from){
+                case SettingActivity:
+                    Config.AppNavigateMap.from = null;
+                    Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
+                    startActivity(intent);
+                    overridePendingTransitionGoLeft();
+                    break;
+                default:
+                    Config.AppNavigateMap.from = null;
+                    Intent intent2 = new Intent(getApplicationContext(), BuildBentoActivity.class);
+                    startActivity(intent2);
+                    overridePendingTransitionGoLeft();
+                    break;
+            }
+        }
     }
 
 }

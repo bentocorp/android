@@ -85,8 +85,9 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
 
         Log.i(TAG, "onCreate()");
         if( Bentonow.pending_order_id == null ) tryGetPendingOrder();
-        if ( Bentonow.pending_order_id != null && order == null ){
-            order = Orders.findById(Orders.class,Bentonow.pending_order_id);
+        Long lastOrderId = Orders.getLastOrderId();
+        if ( lastOrderId != null && lastOrderId != 0 ){
+            order = Orders.findById(Orders.class,lastOrderId);
             if (order!=null) newAddress = order.getOrderAddress();
         }
         String address = "";

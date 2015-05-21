@@ -1,19 +1,33 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.cifereca.dineout.FacebookActivity"
-    android:background="@color/bgcolor">
+    tools:context=".MainActivity"
+    android:orientation="vertical">
 
-    <ProgressBar
-        android:id="@+id/fb_progress"
-        android:layout_width="wrap_content"
+    <TextView android:text="Username" android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:id="@+id/username" />
 
-</RelativeLayout>
+    <Button
+        android:id="@+id/facebook_login"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Login"/>
+
+    <Button
+        android:id="@+id/facebook_logout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Logout"/>
+
+
+    <Button
+        android:id="@+id/facebook_accessToken"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="facebook access Token"/>
+
+</LinearLayout>

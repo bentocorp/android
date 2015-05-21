@@ -35,13 +35,13 @@
         <ImageView
             android:id="@+id/solded_flag"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/main_menu_item_height"
-            android:src="@drawable/flag_solded"
+            android:layout_height="wrap_content"
+            android:src="@drawable/banner_sold_out"
             android:adjustViewBounds="true"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:visibility="invisible" />
+            android:visibility="gone" />
 
         <RelativeLayout
             android:id="@+id/overlay_menu_detail"

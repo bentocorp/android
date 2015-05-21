@@ -60,10 +60,7 @@ public class OrderConfirmedActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 //finishThisActivity();
-                Intent intent = new Intent(getApplicationContext(), FaqActivity.class);
-                startActivity(intent);
-                finish();
-                overridePendingTransitionGoRight();
+                goToFAQ();
             }
         });
 

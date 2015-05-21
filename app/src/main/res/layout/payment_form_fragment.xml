@@ -27,7 +27,15 @@
                 android:orientation="horizontal"
                 android:padding="@dimen/btn_padding"
                 >
-                <EditText android:maxLength="@integer/max_length_card" android:textCursorDrawable="@null" android:background="@color/transparente" android:id="@+id/number" android:text="4242424242424242" style="@style/CardNumber" android:nextFocusDown="@+id/expMonth" android:nextFocusRight="@+id/expMonth" android:nextFocusForward="@+id/expMonth" />
+                <EditText
+                    android:maxLength="@integer/max_length_card"
+                    android:textCursorDrawable="@null"
+                    android:background="@color/transparent"
+                    android:id="@+id/number"
+                    style="@style/CardNumber"
+                    android:nextFocusDown="@+id/expMonth"
+                    android:nextFocusRight="@+id/expMonth"
+                    android:nextFocusForward="@+id/expMonth" />
 
                 <LinearLayout
                     android:layout_width="fill_parent"
