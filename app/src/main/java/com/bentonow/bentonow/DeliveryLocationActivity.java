@@ -105,26 +105,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                 imm.hideSoftInputFromWindow(autoCompView.getWindowToken(), 0);
                 String str = (String) adapterView.getItemAtPosition(position);
                 //Toast.makeText(getApplicationContext(), str, Toast.LENGTH_SHORT).show();
-                if (!newAddress.equals(str)) {
-                    newAddress = str;
-                    Geocoder geoCoderClick = new Geocoder(getApplicationContext(), Locale.getDefault());
-                    try {
-                        List<Address> addresses = geoCoderClick.getFromLocationName(str, 5);
-                        String add = "";
-                        if (addresses.size() > 0) {
-                            //String coords = "geo:" + String.valueOf(addresses.get(0).getLatitude()) + "," + String.valueOf(addresses.get(0).getLongitude());
-                            Location searched_location = new Location("searchedLocation");
-                            //LatLng point = mMap.getCameraPosition().target;
-                            searched_location.setLatitude(addresses.get(0).getLatitude());
-                            searched_location.setLongitude(addresses.get(0).getLongitude());
-                            searched_location.setTime(new Date().getTime());
-                            //scanCurrentLocation(searched_location);
-                            goToCenterLocation(searched_location);
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
+                checkAddress(str);
             }
         });
         //////////// END GOOGLE PLACE AUTOCOMPLETE //////////////
@@ -141,6 +122,29 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         }
         addListeners();
         initActionbar();
+    }
+
+    private void checkAddress (String str) {
+        if (!newAddress.equals(str)) {
+            newAddress = str;
+            Geocoder geoCoderClick = new Geocoder(getApplicationContext(), Locale.getDefault());
+            try {
+                List<Address> addresses = geoCoderClick.getFromLocationName(str, 5);
+                String add = "";
+                if (addresses.size() > 0) {
+                    //String coords = "geo:" + String.valueOf(addresses.get(0).getLatitude()) + "," + String.valueOf(addresses.get(0).getLongitude());
+                    Location searched_location = new Location("searchedLocation");
+                    //LatLng point = mMap.getCameraPosition().target;
+                    searched_location.setLatitude(addresses.get(0).getLatitude());
+                    searched_location.setLongitude(addresses.get(0).getLongitude());
+                    searched_location.setTime(new Date().getTime());
+                    //scanCurrentLocation(searched_location);
+                    goToCenterLocation(searched_location);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void tryGetPendingOrder() {
@@ -270,6 +274,10 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         btn_confirm_address.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (BuildConfig.DEBUG) {
+                    checkAddress(autoCompView.getText().toString());
+                }
+
                 if (newAddress.isEmpty()) {
                     Log.i(TAG, "newAddress");
                     Toast.makeText(getApplicationContext(), "There is not a address for delivery.", Toast.LENGTH_LONG).show();
