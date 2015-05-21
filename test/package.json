@@ -1,0 +1,21 @@
+{
+  "name": "bento",
+  "version": "1.0.0",
+  "description": "Bento test",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha -timeout 60000 --reporter spec ../test",
+    "test-out-area": "mocha -timeout 60000 --reporter spec test_out_area.js",
+    "test-closed": "mocha -timeout 60000 --reporter spec test_cloded.js",
+    "test-out-stock": "mocha -timeout 60000 --reporter spec test_out_stock.js"
+  },
+  "devDependencies": {
+    "chai": "^2.2.0",
+    "chai-as-promised": "^5.0.0",
+    "colors": "^1.0.3",
+    "express": "^4.12.3",
+    "q": "^2.0.2",
+    "underscore": "^1.8.3",
+    "wd": "^0.3.11"
+  }
+}
