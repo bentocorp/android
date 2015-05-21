@@ -99,6 +99,8 @@ public class Config {
         public class USER {
             public static final String FBLOGIN = "/user/fblogin";
             public static final String FBSIGNUP = "/user/fbsignup";
+            public static final String LOGIN = "/user/login";
+            public static final String SIGNUP = "/user/signup";
         }
     }
 

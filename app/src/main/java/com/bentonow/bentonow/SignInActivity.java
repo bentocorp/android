@@ -3,6 +3,7 @@ package com.bentonow.bentonow;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -128,7 +129,7 @@ public class SignInActivity extends BaseActivity {
                 try {
                     data.put("email", email_address.getText().toString());
                     data.put("password", password.getText().toString());
-                    postUserData(data.toString());
+                    postUserData(data.toString(), false);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -156,9 +157,14 @@ public class SignInActivity extends BaseActivity {
         });
     }
 
-    public void postUserData( String dataJson ){
+    public void postUserData( String dataJson, boolean facebookMethod ){
         Log.i(TAG,"postUserData( String dataJson )");
-        String uri = Config.API.URL + Config.API.USER.FBLOGIN;
+        String uri;
+        if(facebookMethod) {
+            uri = Config.API.URL + Config.API.USER.FBLOGIN;
+        }else{
+            uri = Config.API.URL + Config.API.USER.LOGIN;
+        }
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("data", dataJson);
 
@@ -167,6 +173,14 @@ public class SignInActivity extends BaseActivity {
         aq.ajax(uri, params, JSONObject.class, new AjaxCallback<JSONObject>() {
             @Override
             public void callback(String url, JSONObject json, AjaxStatus status) {
+
+                if(json!=null) Log.i(TAG,"json: "+json.toString());
+                else Log.i(TAG,"json IS NULL");
+
+                Log.i(TAG,"status.getError(): "+status.getError());
+                Log.i(TAG,"status.getMessage(): "+status.getMessage());
+                Log.i(TAG, "status.getCode(): " + status.getCode());
+
                 // CASE 200 IF OK
                 if (status.getCode() == Config.API.DEFAULT_SUCCESS_200) {
                     Log.i(TAG, "json: " + json.toString());
@@ -288,7 +302,7 @@ public class SignInActivity extends BaseActivity {
                                 try {
                                     data.put("email", responseJSONObject.getString("email"));
                                     data.put("fb_token", accessToken.getToken());
-                                    postUserData(data.toString());
+                                    postUserData(data.toString(),true);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }

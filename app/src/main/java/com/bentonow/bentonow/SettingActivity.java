@@ -25,6 +25,7 @@ public class SettingActivity extends BaseActivity {
     private TextView btn_cancel_logout, btn_yes_logout;
     private RelativeLayout overlay_logout;
     private User user;
+    private TextView user_name, phone, email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +40,9 @@ public class SettingActivity extends BaseActivity {
     private void checkUserSession() {
         user = User.findById(User.class, (long) 1);
         if( user != null && user.apitoken != null && !user.apitoken.isEmpty() ) {
+            user_name.setText(user.firstname);
+            phone.setText(user.phone);
+            email.setText(user.email);
             user_general_content.setVisibility(View.VISIBLE);
             btn_setting_signin.setVisibility(View.GONE);
         }
@@ -61,6 +65,10 @@ public class SettingActivity extends BaseActivity {
         overlay_logout = (RelativeLayout) findViewById(R.id.overlay_logout);
         btn_cancel_logout = (TextView)findViewById(R.id.btn_cancel_logout);
         btn_yes_logout = (TextView)findViewById(R.id.btn_yes_logout);
+
+        user_name = (TextView)findViewById(R.id.user_name);
+        phone = (TextView)findViewById(R.id.phone);
+        email = (TextView)findViewById(R.id.email);
     }
 
     private void initListeners() {
@@ -68,8 +76,7 @@ public class SettingActivity extends BaseActivity {
         btn_yes_logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                user.apitoken = "";
-                user.save();
+                user.reset();
                 Intent intent = new Intent(getApplicationContext(),BuildBentoActivity.class);
                 startActivity(intent);
                 finish();
@@ -110,7 +117,7 @@ public class SettingActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 go igo = new go();
-                igo.toLoginActivity(Config.AppNavigateMap.from.SettingActivity);
+                igo.toLoginActivity(Config.from.SettingActivity);
             }
         });
         btn_setting_faq.setOnClickListener(new View.OnClickListener() {

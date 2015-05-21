@@ -202,7 +202,7 @@ public class SignUpActivity extends BaseActivity {
     }
 
     public void postUserData(){
-        String uri = Config.API.URL + Config.API.USER_SIGNUP;
+        String uri = Config.API.URL + Config.API.USER.SIGNUP;
         Map<String, Object> params = new HashMap<String, Object>();
         //String dataJson = "{\"name\":\""+user_name.getText().toString()+"\", \"email\": \""+email_address.getText().toString()+"\", \"phone\": \""+phone_number.getText().toString()+"\", \"password\": \""+password.getText().toString()+"\"}";
         JSONObject data = new JSONObject();

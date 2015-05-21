@@ -42,4 +42,23 @@ public class User extends SugarRecord<User> {
         String stripetkn = (stripetoken != null) ? stripetoken : "";
         return "id: "+getId()+", firstname: "+firstname+", lastname: "+lastname+", email: "+email+", phone: "+phone+", apitoken: "+apitoken+", cardbrand: "+cardbrand+", cardlast4: "+cardlast4+", StripeToken: "+stripetkn;
     }
+
+    public void reset() {
+        User user = User.findById(User.class,(long)1);
+        user.firstname = "";
+        user.lastname = "";
+        user.email = "";
+        user.phone = "";
+        user.couponcode = "";
+        user.apitoken = "";
+        user.cardbrand = "";
+        user.cardlast4 = "";
+        user.stripetoken = "";
+        user.fbid = "";
+        user.fbtoken = "";
+        user.fbprofilepic = "";
+        user.fbagerange = "";
+        user.fbgender = "";
+        user.save();
+    }
 }

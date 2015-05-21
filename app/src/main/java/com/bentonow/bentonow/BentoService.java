@@ -85,7 +85,7 @@ public class BentoService extends Service {
                             if (Bentonow.isOpen) {
                                 // STATUS / MENU
                                 JSONArray menu = json.getJSONArray("menu");
-                                for (int i = 0; i < menu.length() - 1; i++) {
+                                for (int i = 0; i < menu.length(); i++) {
                                     JSONObject obj = menu.getJSONObject(i);
                                     String dish_id = obj.getString("itemId");
                                     String qty = obj.getString("qty");

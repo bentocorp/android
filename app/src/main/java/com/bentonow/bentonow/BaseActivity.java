@@ -103,19 +103,26 @@ public class BaseActivity extends Activity {
         }
 
         public void fromLogin(){
-            switch (Config.AppNavigateMap.from){
-                case SettingActivity:
-                    Config.AppNavigateMap.from = null;
-                    Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
-                    startActivity(intent);
-                    overridePendingTransitionGoLeft();
-                    break;
-                default:
-                    Config.AppNavigateMap.from = null;
-                    Intent intent2 = new Intent(getApplicationContext(), BuildBentoActivity.class);
-                    startActivity(intent2);
-                    overridePendingTransitionGoLeft();
-                    break;
+            try {
+                switch (Config.AppNavigateMap.from){
+                    case SettingActivity:
+                        Config.AppNavigateMap.from = null;
+                        Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
+                        startActivity(intent);
+                        overridePendingTransitionGoLeft();
+                        break;
+                    default:
+                        Config.AppNavigateMap.from = null;
+                        Intent intent2 = new Intent(getApplicationContext(), BuildBentoActivity.class);
+                        startActivity(intent2);
+                        overridePendingTransitionGoLeft();
+                        break;
+                }
+            }catch (NullPointerException ignored){
+                Config.AppNavigateMap.from = null;
+                Intent intent2 = new Intent(getApplicationContext(), BuildBentoActivity.class);
+                startActivity(intent2);
+                overridePendingTransitionGoLeft();
             }
         }
     }
