@@ -50,6 +50,7 @@ public class BuildBentoActivity extends BaseActivity {
     private TextView btn_continue, btn_finalize_order;
     private RelativeLayout overlay_autocomplete_bento;
     private TextView btn_no_complete_for_me,btn_yes_complete_for_me;
+    private ImageView actionbar_right_btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,7 +110,7 @@ public class BuildBentoActivity extends BaseActivity {
         Log.i(TAG, "showCountBentos()");
         long pending_bento = Item.count(Item.class, "orderid=? and completed=?", new String[]{String.valueOf(Bentonow.pending_order_id), "yes"});
         if(pending_bento>0) {
-            //disableBtnAddAnotherBento();
+            actionbar_right_btn.setImageResource(R.drawable.ic_ab_bento_completed);
             bento_box_counter_textview.setText(String.valueOf(pending_bento));
             bento_box_counter_textview.setVisibility(View.VISIBLE);
         }
@@ -297,20 +298,10 @@ public class BuildBentoActivity extends BaseActivity {
         return Dish.findById(Dish.class, main_dish_id);
     }
 
-    /*private void builBento() {
-        if(!Bento.build.main.equals("")){
-            main_img = (ImageView)findViewById(R.id.main_img);
-            aq.id(main_img).image(Bento.build.main, true, true, 0, 0, null, AQuery.FADE_IN_NETWORK, 1.0f);
-        }
-    }*/
-
     private void initActionbar() {
         TextView actionbar_title = (TextView) findViewById(R.id.actionbar_title);
         actionbar_title.setText(getResources().getString(R.string.bento_builder_actionbar_title));
-        //Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/OpenSans-Regular.ttf");
-        //actionbar_title.setTypeface(tf);
 
-        //
         ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
         actionbar_left_btn.setImageResource(R.drawable.ic_ab_user);
         actionbar_left_btn.setOnClickListener(new View.OnClickListener() {
@@ -323,15 +314,20 @@ public class BuildBentoActivity extends BaseActivity {
             }
         });
 
-        ImageView actionbar_right_btn;
         actionbar_right_btn = (ImageView)findViewById(R.id.actionbar_right_btn);
         actionbar_right_btn.setImageResource(R.drawable.ic_ab_bento);
         actionbar_right_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Item bento = Item.findById(Item.class, Bentonow.pending_bento_id);
-                if (!bento.isFull())
+                if (bento.isFull()){
+                    Intent intent = new Intent(getApplicationContext(), CompleteOrderActivity.class);
+                    startActivity(intent);
+                    finish();
+                    overridePendingTransitionGoRight();
+                }else{
                     showDialogForAutocompleteBento();
+                }
             }
         });
     }
@@ -489,21 +485,29 @@ public class BuildBentoActivity extends BaseActivity {
             Log.i(TAG,"Main is NO null");
         }
 
+        List<Dish> tmp = Dish.find(Dish.class,"type=?", new String[]{"side"}, null, "RANDOM()", null);
+        for( Dish dish : tmp ) {
+            Log.i(TAG,"dish: "+dish.toString());
+        }
+
         List<Dish> sides_dishes = Dish.find(Dish.class,"type=? and today = ? and qty != ?", new String[]{"side",todayDate,"0"}, null, "RANDOM()", null);
         if( sides_dishes.isEmpty() )
             Log.i(TAG,"No dishes for today");
 
         if ( autocomplete_bento.side1 == null ) {
             for( Dish dish : sides_dishes ) {
-                if( !Arrays.asList(autocomplete_bento.sideItems()).contains(dish._id) ){
+                if( !Arrays.asList(autocomplete_bento.sideItems()).contains(dish._id) ) {
                     Integer qty = Integer.valueOf(dish.qty);
-                    if(qty>0) {
-                        Log.i(TAG,"String.valueOf(qty-1): "+String.valueOf(qty-1));
+                    if (qty > 0) {
+                        Log.i(TAG, "String.valueOf(qty-1): " + String.valueOf(qty - 1));
                         autocomplete_bento.side1 = dish._id;
-                        dish.qty = String.valueOf(qty-1);
+                        dish.qty = String.valueOf(qty - 1);
                         dish.save();
                     }
-                }else{
+                }
+            }
+            if ( autocomplete_bento.side1 == null ) {
+                for( Dish dish : sides_dishes ) {
                     Integer qty = Integer.valueOf(dish.qty);
                     if(qty>0) {
                         Log.i(TAG,"String.valueOf(qty-1): "+String.valueOf(qty-1));
@@ -530,7 +534,10 @@ public class BuildBentoActivity extends BaseActivity {
                         dish.qty = String.valueOf(qty-1);
                         dish.save();
                     }
-                }else{
+                }
+            }
+            if ( autocomplete_bento.side2 == null ) {
+                for( Dish dish : sides_dishes2 ) {
                     Integer qty = Integer.valueOf(dish.qty);
                     if(qty>0) {
                         Log.i(TAG,"String.valueOf(qty-1): "+String.valueOf(qty-1));
@@ -557,7 +564,10 @@ public class BuildBentoActivity extends BaseActivity {
                         dish.qty = String.valueOf(qty-1);
                         dish.save();
                     }
-                }else{
+                }
+            }
+            if(autocomplete_bento.side3 == null){
+                for( Dish dish : sides_dishes3 ) {
                     Integer qty = Integer.valueOf(dish.qty);
                     if(qty>0) {
                         Log.i(TAG,"String.valueOf(qty-1): "+String.valueOf(qty-1));
@@ -584,7 +594,10 @@ public class BuildBentoActivity extends BaseActivity {
                         dish.qty = String.valueOf(qty-1);
                         dish.save();
                     }
-                }else{
+                }
+            }
+            if ( autocomplete_bento.side4 == null ) {
+                for( Dish dish : sides_dishes4 ) {
                     Integer qty = Integer.valueOf(dish.qty);
                     if(qty>0) {
                         Log.i(TAG,"String.valueOf(qty-1): "+String.valueOf(qty-1));

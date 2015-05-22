@@ -1,0 +1,61 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.bentonow.bentonow.ErrorClosedActivity"
+    android:id="@+id/base_relative_layout"
+    android:background="@color/bgcolor">
+
+    <!-- actionbar -->
+    <LinearLayout
+        android:id="@+id/ActionBarContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        >
+        <include layout="@layout/actionbar"/>
+    </LinearLayout>
+
+    <!-- content -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:layout_below="@+id/ActionBarContainer"
+        android:paddingTop="75dp"
+        >
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1px"
+            android:background="@color/gray"
+            />
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/white"
+            >
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:src="@drawable/setting_creditcard"
+                android:padding="@dimen/setting_ico_padd"
+                />
+            <TextView
+                android:id="@+id/credit_card_text"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:text="Credit Card"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/btn_padding"
+                />
+        </LinearLayout>
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1px"
+            android:background="@color/gray"
+            />
+    </LinearLayout>
+</RelativeLayout>
