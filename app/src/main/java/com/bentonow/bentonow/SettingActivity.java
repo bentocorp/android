@@ -104,7 +104,7 @@ public class SettingActivity extends BaseActivity {
         btn_call.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + "4153001332"));
+                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + Config.PHONE_NUMBER));
                 startActivity(intent);
             }
         });

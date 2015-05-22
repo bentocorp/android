@@ -177,7 +177,8 @@ public class MenuItemSideAdapter extends BaseAdapter {
                     .into(holder.img);
         }catch (IndexOutOfBoundsException ignore){
             Log.i(TAG,"Col 1 empty");
-            holder.col_1_main_container.removeAllViews();
+            holder.main_title.setText("");
+            holder.img.setImageResource(R.drawable.tmp_trans);
         }
 
         /**
