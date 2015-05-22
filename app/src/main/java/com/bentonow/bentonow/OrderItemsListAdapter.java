@@ -91,6 +91,7 @@ public class OrderItemsListAdapter extends BaseAdapter {
                         finalHolder.btn_edit_remove.setVisibility(View.GONE);
                         finalHolder.item_price.setVisibility(View.GONE);
                         finalHolder.main_title.setVisibility(View.GONE);
+                        finalHolder.btn_remove.setVisibility(View.GONE);
                     }
                 });
             }

@@ -188,6 +188,7 @@ public class MainActivity extends BaseActivity {
                                     }
                                 }
                             }
+                            tryToGetMenuSock();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -202,6 +203,18 @@ public class MainActivity extends BaseActivity {
             Log.i(TAG, "The menu of the day is changed");
             checkForPendingOrder();
         }*/
+    }
+
+    private void tryToGetMenuSock() {
+        String uri = Config.API.URL + Config.API.STATUS_MENU;
+        aq.ajax(uri, JSONArray.class, new AjaxCallback<JSONArray>() {
+            @Override
+            public void callback(String url, JSONArray json, AjaxStatus status) {
+                if(json!=null){
+                    BentoService.processMenuStock(json);
+                }
+            }
+        });
     }
 
     private void showSplashMessage(String message) {
