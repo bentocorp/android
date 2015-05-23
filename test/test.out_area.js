@@ -53,9 +53,7 @@ describe("Bento - Out of Area", function () {
       .elementById('com.bentonow.bentonow:id/btn_get_started')
         .click()
       .waitForElementById('com.bentonow.bentonow:id/autoCompleteTextView')
-        .setText('726 Market Street, San Francisco, CA 94102, USA')
-      .waitForElementById('com.bentonow.bentonow:id/autoCompleteTextView')
-        .text().should.become('726 Market Street, San Francisco, CA 94102, USA');
+        .setText('760 Maritime St Oakland, CA 94607, USA');
   });
   
   it("Check TOS", function () {
