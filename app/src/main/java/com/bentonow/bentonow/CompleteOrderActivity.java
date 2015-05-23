@@ -62,6 +62,7 @@ public class CompleteOrderActivity extends BaseActivity {
     private LinearLayout message_box, row_discount;
     private TextView coupon_result_message;
     private TextView discount_cents;
+    private boolean processing = false;
 
 
     @Override
@@ -279,12 +280,12 @@ public class CompleteOrderActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Log.i(TAG, "user: " + current_user.toString());
-                if (current_user != null && current_user.cardlast4 != null && !current_user.cardlast4.isEmpty() ) {
+                if (current_user != null && current_user.cardlast4 != null && !current_user.cardlast4.isEmpty()) {
                     JSONObject data = new JSONObject();
                     Orders current_order = Orders.findById(Orders.class, Bentonow.pending_order_id);
-                /*
-                 *  ORDER ITEMS
-                 */
+            /*
+             *  ORDER ITEMS
+             */
                     JSONArray OrderItems = new JSONArray();
                     List<Item> orderItems = Item.find(Item.class, "orderid=?", String.valueOf(Bentonow.pending_order_id));
                     for (Item orderItem : orderItems) {
@@ -321,9 +322,9 @@ public class CompleteOrderActivity extends BaseActivity {
                         e.printStackTrace();
                     }
 
-                /*
-                 *  ORDER DETAILS
-                 */
+            /*
+             *  ORDER DETAILS
+             */
                     JSONObject OrderDetails = new JSONObject();
                     try {
                         OrderDetails.put("tax_cents", Config.CurrentOrder.total_tax_cost * 100);
@@ -333,9 +334,9 @@ public class CompleteOrderActivity extends BaseActivity {
                         e.printStackTrace();
                     }
 
-                /*
-                 *  address
-                 */
+            /*
+             *  address
+             */
                     JSONObject address = new JSONObject();
                     try {
                         address.put("number", current_order.address_number);
@@ -348,9 +349,9 @@ public class CompleteOrderActivity extends BaseActivity {
                         e.printStackTrace();
                     }
 
-                /*
-                 *  coords
-                 */
+            /*
+             *  coords
+             */
                     JSONObject coords = new JSONObject();
                     try {
                         coords.put("lat", current_order.coords_lat);
@@ -366,37 +367,37 @@ public class CompleteOrderActivity extends BaseActivity {
                         e.printStackTrace();
                     }
 
-                    /*
-                     *  STRIPE
-                     */
-                    if(current_user.stripetoken!=null){
+                /*
+                 *  STRIPE
+                 */
+                    if (current_user.stripetoken != null) {
                         JSONObject Stripe = new JSONObject();
                         try {
-                            Stripe.put("stripeToken",current_user.stripetoken);
+                            Stripe.put("stripeToken", current_user.stripetoken);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                         try {
-                            data.put("Stripe",Stripe);
+                            data.put("Stripe", Stripe);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
 
                     //Orders order = Orders.findById(Orders.class,Bentonow.pending_order_id);
-                    if(current_order.amountoff!=null){
+                    if (current_order.amountoff != null) {
                         try {
-                            data.put("CouponCode",current_order.couponcode);
+                            data.put("CouponCode", current_order.couponcode);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                    }else{
-                        Log.i(TAG,"No hay promo. current_order.amountoff ");
+                    } else {
+                        Log.i(TAG, "No hay promo. current_order.amountoff ");
                     }
 
 
                     postOrderData(data.toString());
-                }else {
+                } else {
                     overlay.setVisibility(View.VISIBLE);
                 }
             }
@@ -467,40 +468,44 @@ public class CompleteOrderActivity extends BaseActivity {
     }
 
     public void postOrderData(String data){
-        Log.i(TAG, "postOrderData(data)");
-        if( current_user!=null && current_user.apitoken != null && !current_user.apitoken.isEmpty() ) {
-            String uri = Config.API.URL + Config.API.ORDER;
-            Log.i(TAG,"uri: "+uri);
-            Log.i(TAG,"api_token: " + current_user.apitoken);
-            Map<String, Object> params = new HashMap<String, Object>();
-            params.put("data", data);
-            params.put("api_token", current_user.apitoken);
-            aq.ajax(uri, params, String.class, new AjaxCallback<String>() {
-                @Override
-                public void callback(String url, String json, AjaxStatus status) {
-                    Log.i(TAG, "status.getCode(): " + status.getCode());
-                    Log.i(TAG, "status.getError(): " + status.getError());
-                    Log.i(TAG, "status.getMessage(): " + status.getMessage());
-                    Log.i(TAG, "status.getCode(): " + status.getCode());
-                    // CASE 200 IF OK
-                    if (status.getCode() == Config.API.DEFAULT_SUCCESS_200) {
-                        Orders current_order = Orders.findById(Orders.class, Bentonow.pending_order_id);
-                        current_order.completed = Config.ORDER.STATUS.COMPLETED;
-                        current_order.save();
-                        Bentonow.pending_order_id = null;
-                        Bentonow.pending_bento_id = null;
-                        Intent intent = new Intent(getApplicationContext(), OrderConfirmedActivity.class);
-                        startActivity(intent);
-                        finish();
-                        overridePendingTransitionGoRight();
-                    }
+        if (!processing) {
+            processing = true;
+            Log.i(TAG, "postOrderData(data)");
+            if (current_user != null && current_user.apitoken != null && !current_user.apitoken.isEmpty()) {
+                String uri = Config.API.URL + Config.API.ORDER;
+                Log.i(TAG, "uri: " + uri);
+                Log.i(TAG, "api_token: " + current_user.apitoken);
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("data", data);
+                params.put("api_token", current_user.apitoken);
+                aq.ajax(uri, params, String.class, new AjaxCallback<String>() {
+                    @Override
+                    public void callback(String url, String json, AjaxStatus status) {
+                        Log.i(TAG, "status.getCode(): " + status.getCode());
+                        Log.i(TAG, "status.getError(): " + status.getError());
+                        Log.i(TAG, "status.getMessage(): " + status.getMessage());
+                        Log.i(TAG, "status.getCode(): " + status.getCode());
+                        // CASE 200 IF OK
+                        if (status.getCode() == Config.API.DEFAULT_SUCCESS_200) {
+                            Orders current_order = Orders.findById(Orders.class, Bentonow.pending_order_id);
+                            current_order.completed = Config.ORDER.STATUS.COMPLETED;
+                            current_order.save();
+                            Bentonow.pending_order_id = null;
+                            Bentonow.pending_bento_id = null;
+                            Intent intent = new Intent(getApplicationContext(), OrderConfirmedActivity.class);
+                            startActivity(intent);
+                            finish();
+                            overridePendingTransitionGoRight();
+                        }else if (status.getCode() == Config.API.USER_LOGIN_403) {
+                            // CASE 403 BAD PASSWORD
+                            processing = false;
+                        }else {
+                            processing = false;
+                        }
 
-                    // CASE 403 BAD PASSWORD
-                    if ( status.getCode() == Config.API.USER_LOGIN_403 ) {
                     }
-
-                }
-            });
+                });
+            }
         }
     }
 
