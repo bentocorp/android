@@ -12,6 +12,7 @@ public class Config {
     public static final long TIME_TO_CHECK_IF_BENTO_OPEN = 1000 * 30;
     public static final long CACHE_REST_DURATION_TIME = 5 * 60 * 1000;
     public static final String API_MENUITEMS_TAG = "MenuItems";
+    public static final String PHONE_NUMBER = "4153001332";
     public static appStatus APP_DEV_STATUS = appStatus.DEVELOPMENT;
 
     public static String invalid_address_extra_label = "invalid_address";

@@ -26,6 +26,7 @@ public class SettingActivity extends BaseActivity {
     private RelativeLayout overlay_logout;
     private User user;
     private TextView user_name, phone, email;
+    private LinearLayout btn_setting_creditcard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +41,11 @@ public class SettingActivity extends BaseActivity {
     private void checkUserSession() {
         user = User.findById(User.class, (long) 1);
         if( user != null && user.apitoken != null && !user.apitoken.isEmpty() ) {
-            user_name.setText(user.firstname);
+            user_name.setText(user.firstname+" "+user.lastname);
             phone.setText(user.phone);
             email.setText(user.email);
             user_general_content.setVisibility(View.VISIBLE);
+            btn_setting_creditcard.setVisibility(View.VISIBLE);
             btn_setting_signin.setVisibility(View.GONE);
         }
     }
@@ -53,6 +55,7 @@ public class SettingActivity extends BaseActivity {
         btn_setting_faq = (LinearLayout)findViewById(R.id.btn_setting_faq);
         btn_setting_email = (LinearLayout)findViewById(R.id.btn_setting_email);
         btn_setting_phone = (LinearLayout)findViewById(R.id.btn_setting_phone);
+        btn_setting_creditcard = (LinearLayout)findViewById(R.id.btn_setting_creditcard);
 
         overlay_call = (RelativeLayout)findViewById(R.id.overlay_call);
         btn_call = (TextView)findViewById(R.id.btn_call);
@@ -101,7 +104,7 @@ public class SettingActivity extends BaseActivity {
         btn_call.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + "4153001332"));
+                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + Config.PHONE_NUMBER));
                 startActivity(intent);
             }
         });
@@ -118,6 +121,14 @@ public class SettingActivity extends BaseActivity {
             public void onClick(View v) {
                 go igo = new go();
                 igo.toLoginActivity(Config.from.SettingActivity);
+            }
+        });
+        btn_setting_creditcard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(),CreditCardActivity.class);
+                startActivity(intent);
+                overridePendingTransitionGoRight();
             }
         });
         btn_setting_faq.setOnClickListener(new View.OnClickListener() {

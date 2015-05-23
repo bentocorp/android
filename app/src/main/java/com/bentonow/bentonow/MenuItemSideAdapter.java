@@ -30,6 +30,8 @@ public class MenuItemSideAdapter extends BaseAdapter {
     private final AQuery listAq;
     private final LayoutInflater inflater;
     private Holder current_holder;
+    private HashMap<String, String> row2;
+    private HashMap<String, String> row;
 
 
     public MenuItemSideAdapter(Context a, ArrayList<HashMap<String, String>> datos, ArrayList<HashMap<String, String>> datos2) {
@@ -56,6 +58,7 @@ public class MenuItemSideAdapter extends BaseAdapter {
         Holder holder = new Holder();
         if (view == null) {
             view = inflater.inflate(R.layout.inc_menu_item_side, null);
+            holder.col_1_main_container = (RelativeLayout)view.findViewById(R.id.col_1_main_container);
             holder.img = (ImageView) view.findViewById(R.id.menu_item_image);
             holder.main_title = (TextView) view.findViewById(R.id.main_menu_item_name);
             holder.desc_title = (TextView) view.findViewById(R.id.main_menu_item_name_2);
@@ -64,6 +67,7 @@ public class MenuItemSideAdapter extends BaseAdapter {
             holder.btn_add_to_bento_side1 = (TextView)view.findViewById(R.id.btn_add_to_bento_side1);
             holder.col1_solded_flag = (ImageView)view.findViewById(R.id.col1_solded_flag);
             ///
+            holder.col_2_main_container = (RelativeLayout)view.findViewById(R.id.col_2_main_container);
             holder.img_2 = (ImageView) view.findViewById(R.id.menu_item_image2);
             holder.main_title_2 = (TextView) view.findViewById(R.id.main_menu_item_name2);
             holder.desc_title_2 = (TextView) view.findViewById(R.id.main_menu_item_name_22);
@@ -77,189 +81,203 @@ public class MenuItemSideAdapter extends BaseAdapter {
             holder = (Holder) view.getTag();
         }
 
-
-        final HashMap<String, String> row = data.get(position);
-        final Holder finalHolder = holder;
-
-        long order_dish_id_total = 0;
         List<Item> allOrderItems = Item.find(Item.class, "orderid=?", String.valueOf(Bentonow.pending_order_id));
-        for ( Item oItem : allOrderItems ){
-            String iid = row.get("itemId");
-            if ( oItem.side1 != null && oItem.side1.equals(iid) )
-                order_dish_id_total++;
-            if ( oItem.side2 != null && oItem.side2.equals(iid) )
-                order_dish_id_total++;
-            if ( oItem.side3 != null && oItem.side3.equals(iid) )
-                order_dish_id_total++;
-            if ( oItem.side4 != null && oItem.side4.equals(iid) )
-                order_dish_id_total++;
-        }
-        int rest_quantity = (int) (Integer.valueOf(row.get("qty")) - order_dish_id_total);
+
+
+        try {
+            row = data.get(position);
+            final Holder finalHolder = holder;
+
+            long order_dish_id_total = 0;
+            for (Item oItem : allOrderItems) {
+                String iid = row.get("itemId");
+                if (oItem.side1 != null && oItem.side1.equals(iid))
+                    order_dish_id_total++;
+                if (oItem.side2 != null && oItem.side2.equals(iid))
+                    order_dish_id_total++;
+                if (oItem.side3 != null && oItem.side3.equals(iid))
+                    order_dish_id_total++;
+                if (oItem.side4 != null && oItem.side4.equals(iid))
+                    order_dish_id_total++;
+            }
+            int rest_quantity = (int) (Integer.valueOf(row.get("qty")) - order_dish_id_total);
 
             // IF !STOCK NO ADD LISTENERS
-        if( rest_quantity == 0 ) {
-            holder.col1_solded_flag.setVisibility(View.VISIBLE);
-        }else {
-            holder.col1_solded_flag.setVisibility(View.INVISIBLE);
-            //ADD LISTENERS
-            holder.main_title.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (current_holder != null) {
-                        if (current_holder.pressed)
-                            hideItemDetails(current_holder);
-                        if (current_holder.pressed_2)
-                            hideItemDetails2(current_holder);
+            if (rest_quantity == 0) {
+                holder.col1_solded_flag.setVisibility(View.VISIBLE);
+            } else {
+                holder.col1_solded_flag.setVisibility(View.INVISIBLE);
+                //ADD LISTENERS
+                holder.main_title.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (current_holder != null) {
+                            if (current_holder.pressed)
+                                hideItemDetails(current_holder);
+                            if (current_holder.pressed_2)
+                                hideItemDetails2(current_holder);
+                        }
+
+                        current_holder = finalHolder;
+                        showItemDetails(finalHolder);
                     }
+                });
 
-                    current_holder = finalHolder;
-                    showItemDetails(finalHolder);
-                }
-            });
-
-            holder.overlay_menu_detail.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.i(TAG, "finalHolder.pressed: " + finalHolder.pressed.toString());
-                    hideItemDetails(finalHolder);
-                    //if(finalHolder.pressed) {}
-                }
-            });
-
-            holder.btn_add_to_bento_side1.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.i(TAG, "btn_add_to_bento_side1 row.get(itemId): " + row.get("itemId"));
-                    Item bento = Item.findById(Item.class, Bentonow.pending_bento_id);
-                    Log.i(TAG, bento.toString());
-                    Log.i(TAG, "Bentonow.current_side: " + Bentonow.current_side);
-                    switch (Bentonow.current_side) {
-                        case 1:
-                            Log.i(TAG, "btn1 side1");
-                            bento.side1 = String.valueOf(row.get("itemId"));
-                            break;
-                        case 2:
-                            Log.i(TAG, "btn1 side2");
-                            bento.side2 = String.valueOf(row.get("itemId"));
-                            break;
-                        case 3:
-                            Log.i(TAG, "btn1 side3");
-                            bento.side3 = String.valueOf(row.get("itemId"));
-                            break;
-                        case 4:
-                            Log.i(TAG, "btn1 side4");
-                            bento.side4 = String.valueOf(row.get("itemId"));
-                            break;
+                holder.overlay_menu_detail.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.i(TAG, "finalHolder.pressed: " + finalHolder.pressed.toString());
+                        hideItemDetails(finalHolder);
+                        //if(finalHolder.pressed) {}
                     }
-                    bento.save();
-                    SelectSideActivity.goToMain();
-                }
-            });
+                });
+
+                holder.btn_add_to_bento_side1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.i(TAG, "btn_add_to_bento_side1 row.get(itemId): " + row.get("itemId"));
+                        Item bento = Item.findById(Item.class, Bentonow.pending_bento_id);
+                        Log.i(TAG, bento.toString());
+                        Log.i(TAG, "Bentonow.current_side: " + Bentonow.current_side);
+                        switch (Bentonow.current_side) {
+                            case 1:
+                                Log.i(TAG, "btn1 side1");
+                                bento.side1 = String.valueOf(row.get("itemId"));
+                                break;
+                            case 2:
+                                Log.i(TAG, "btn1 side2");
+                                bento.side2 = String.valueOf(row.get("itemId"));
+                                break;
+                            case 3:
+                                Log.i(TAG, "btn1 side3");
+                                bento.side3 = String.valueOf(row.get("itemId"));
+                                break;
+                            case 4:
+                                Log.i(TAG, "btn1 side4");
+                                bento.side4 = String.valueOf(row.get("itemId"));
+                                break;
+                        }
+                        bento.save();
+                        SelectSideActivity.goToMain();
+                    }
+                });
+            }
+
+            /// COL 1 ADD LABELS
+            AQuery imgaq = listAq.recycle(view);
+            holder.main_title.setText(row.get("name").toUpperCase());
+            holder.desc_title.setText(row.get("name").toUpperCase());
+            holder.main_menu_item_description.setText(row.get("description"));
+
+            //imgaq.id(holder.img).image(row.get("image1"), true, true, 0, 0, null, AQuery.FADE_IN_NETWORK, 1.0f);
+            Picasso.with(activity)
+                    .load(row.get("image1"))
+                    .placeholder(R.drawable.tmp_trans)
+                    .error(R.drawable.tmp_trans)
+                    .into(holder.img);
+        }catch (IndexOutOfBoundsException ignore){
+            Log.i(TAG,"Col 1 empty");
+            holder.main_title.setText("");
+            holder.img.setImageResource(R.drawable.tmp_trans);
         }
-
-        /// COL 1 ADD LABELS
-        AQuery imgaq = listAq.recycle(view);
-        holder.main_title.setText(row.get("name").toUpperCase());
-        holder.desc_title.setText(row.get("name").toUpperCase());
-        holder.main_menu_item_description.setText(row.get("description"));
-
-        //imgaq.id(holder.img).image(row.get("image1"), true, true, 0, 0, null, AQuery.FADE_IN_NETWORK, 1.0f);
-        Picasso.with(activity)
-                .load(row.get("image1"))
-                .placeholder(R.drawable.tmp_trans)
-                .error(R.drawable.tmp_trans)
-                .into(holder.img);
-
 
         /**
          * INIT COL 2
          */
-        final HashMap<String, String> row2 = data2.get(position);
-        long order_dish_id_total_2 = 0;
-        for ( Item oItem : allOrderItems ){
-            String iid = row2.get("itemId");
-            if ( oItem.side1 != null && oItem.side1.equals(iid) )
-                order_dish_id_total_2++;
-            if ( oItem.side2 != null && oItem.side2.equals(iid) )
-                order_dish_id_total_2++;
-            if ( oItem.side3 != null && oItem.side3.equals(iid) )
-                order_dish_id_total_2++;
-            if ( oItem.side4 != null && oItem.side4.equals(iid) )
-                order_dish_id_total_2++;
+        final Holder finalHolder2 = holder;
+        try {
+            row2 = data2.get(position);
+            long order_dish_id_total_2 = 0;
+            for (Item oItem : allOrderItems) {
+                String iid = row2.get("itemId");
+                if (oItem.side1 != null && oItem.side1.equals(iid))
+                    order_dish_id_total_2++;
+                if (oItem.side2 != null && oItem.side2.equals(iid))
+                    order_dish_id_total_2++;
+                if (oItem.side3 != null && oItem.side3.equals(iid))
+                    order_dish_id_total_2++;
+                if (oItem.side4 != null && oItem.side4.equals(iid))
+                    order_dish_id_total_2++;
+            }
+            int rest_quantity_2 = (int) (Integer.valueOf(row2.get("qty")) - order_dish_id_total_2);
+
+            if (rest_quantity_2 == 0) {
+
+                holder.col2_solded_flag.setVisibility(View.VISIBLE);
+            } else {
+                // COL 2 ADD LISTENERS
+                holder.col2_solded_flag.setVisibility(View.INVISIBLE);
+                holder.main_title_2.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (current_holder != null) {
+                            if (current_holder.pressed)
+                                hideItemDetails(current_holder);
+                            if (current_holder.pressed_2)
+                                hideItemDetails2(current_holder);
+                        }
+
+                        current_holder = finalHolder2;
+                        showItemDetails2(finalHolder2);
+                        //if(!finalHolder.pressed_2) {}
+                    }
+                });
+
+                holder.btn_add_to_bento_side2.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Item bento = Item.findById(Item.class, Bentonow.pending_bento_id);
+                        switch (Bentonow.current_side) {
+                            case 1:
+                                Log.i(TAG, "btn2 side1");
+                                bento.side1 = String.valueOf(row2.get("itemId"));
+                                break;
+                            case 2:
+                                Log.i(TAG, "btn2 side2");
+                                bento.side2 = String.valueOf(row2.get("itemId"));
+                                break;
+                            case 3:
+                                Log.i(TAG, "btn2 side3");
+                                bento.side3 = String.valueOf(row2.get("itemId"));
+                                break;
+                            case 4:
+                                Log.i(TAG, "btn2 side4");
+                                bento.side4 = String.valueOf(row2.get("itemId"));
+                                break;
+                        }
+                        bento.save();
+                        SelectSideActivity.goToMain();
+                    }
+                });
+
+                holder.overlay_menu_detail_2.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.i(TAG, "finalHolder.pressed: " + finalHolder2.pressed_2.toString());
+                        if (finalHolder2.pressed_2) {
+                            hideItemDetails2(finalHolder2);
+                        }
+                    }
+                });
+            }
+
+
+            holder.main_title_2.setText(row2.get("name").toUpperCase());
+            holder.desc_title_2.setText(row2.get("name").toUpperCase());
+            holder.main_menu_item_description_2.setText(row2.get("description"));
+            //AQuery imgaq_2 = listAq.recycle(view);
+            //imgaq_2.id(holder.img_2).image(row2.get("image1"), true, true, 0, 0, null, AQuery.FADE_IN_NETWORK, 1.0f);
+            Picasso.with(activity)
+                    .load(row2.get("image1"))
+                    .placeholder(R.drawable.tmp_trans)
+                    .error(R.drawable.tmp_trans)
+                    .into(holder.img_2);
+        }catch (IndexOutOfBoundsException ignore){
+            Log.i(TAG, "Col 2 empty");
+            //finalHolder2.col_2_main_container.removeAllViews();
+            holder.main_title_2.setText("");
+            holder.img_2.setImageResource(R.drawable.tmp_trans);
         }
-        int rest_quantity_2 = (int) (Integer.valueOf(row2.get("qty")) - order_dish_id_total_2);
-
-        if( rest_quantity_2 == 0 ) {
-
-            holder.col2_solded_flag.setVisibility(View.VISIBLE);
-        }else {
-            // COL 2 ADD LISTENERS
-            holder.col2_solded_flag.setVisibility(View.INVISIBLE);
-            holder.main_title_2.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (current_holder != null) {
-                        if (current_holder.pressed)
-                            hideItemDetails(current_holder);
-                        if (current_holder.pressed_2)
-                            hideItemDetails2(current_holder);
-                    }
-
-                    current_holder = finalHolder;
-                    showItemDetails2(finalHolder);
-                    //if(!finalHolder.pressed_2) {}
-                }
-            });
-
-            holder.btn_add_to_bento_side2.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Item bento = Item.findById(Item.class, Bentonow.pending_bento_id);
-                    switch (Bentonow.current_side) {
-                        case 1:
-                            Log.i(TAG, "btn2 side1");
-                            bento.side1 = String.valueOf(row2.get("itemId"));
-                            break;
-                        case 2:
-                            Log.i(TAG, "btn2 side2");
-                            bento.side2 = String.valueOf(row2.get("itemId"));
-                            break;
-                        case 3:
-                            Log.i(TAG, "btn2 side3");
-                            bento.side3 = String.valueOf(row2.get("itemId"));
-                            break;
-                        case 4:
-                            Log.i(TAG, "btn2 side4");
-                            bento.side4 = String.valueOf(row2.get("itemId"));
-                            break;
-                    }
-                    bento.save();
-                    SelectSideActivity.goToMain();
-                }
-            });
-
-            holder.overlay_menu_detail_2.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.i(TAG, "finalHolder.pressed: " + finalHolder.pressed_2.toString());
-                    if (finalHolder.pressed_2) {
-                        hideItemDetails2(finalHolder);
-                    }
-                }
-            });
-        }
-
-
-        holder.main_title_2.setText(row2.get("name").toUpperCase());
-        holder.desc_title_2.setText(row2.get("name").toUpperCase());
-        holder.main_menu_item_description_2.setText(row2.get("description"));
-        //AQuery imgaq_2 = listAq.recycle(view);
-        //imgaq_2.id(holder.img_2).image(row2.get("image1"), true, true, 0, 0, null, AQuery.FADE_IN_NETWORK, 1.0f);
-        Picasso.with(activity)
-                .load(row2.get("image1"))
-                .placeholder(R.drawable.tmp_trans)
-                .error(R.drawable.tmp_trans)
-                .into(holder.img_2);
 
         return view;
     }
@@ -307,5 +325,7 @@ public class MenuItemSideAdapter extends BaseAdapter {
         public TextView btn_add_to_bento_side2;
         public ImageView col1_solded_flag;
         public ImageView col2_solded_flag;
+        public RelativeLayout col_2_main_container;
+        public RelativeLayout col_1_main_container;
     }
 }

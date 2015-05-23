@@ -72,6 +72,26 @@ public class BentoService extends Service {
         }, Config.TIME_TO_CHECK_IF_BENTO_OPEN);
     }
 
+    public static void processMenuStock(JSONArray menu){
+        try {
+            for (int i = 0; i < menu.length(); i++) {
+                JSONObject obj = menu.getJSONObject(i);
+                String dish_id = obj.getString("itemId");
+                String qty = obj.getString("qty");
+                long did = Dish.getIdBy_id(dish_id);
+                if (did != 0) {
+                    Dish dish = Dish.findById(Dish.class, did);
+                    if (!dish.qty.equals(qty)) {
+                        dish.qty = qty;
+                        dish.save();
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void checkAll(){
         Log.i(TAG, "checkOverAll()" );
         if( Bentonow.app.isFocused && !Bentonow.app.is_first_access ) {
@@ -85,19 +105,7 @@ public class BentoService extends Service {
                             if (Bentonow.isOpen) {
                                 // STATUS / MENU
                                 JSONArray menu = json.getJSONArray("menu");
-                                for (int i = 0; i < menu.length(); i++) {
-                                    JSONObject obj = menu.getJSONObject(i);
-                                    String dish_id = obj.getString("itemId");
-                                    String qty = obj.getString("qty");
-                                    long did = Dish.getIdBy_id(dish_id);
-                                    if (did != 0) {
-                                        Dish dish = Dish.findById(Dish.class, did);
-                                        if (!dish.qty.equals(qty)) {
-                                            dish.qty = qty;
-                                            dish.save();
-                                        }
-                                    }
-                                }
+                                processMenuStock(menu);
                             }
 
                             // STATUS / OVERALL

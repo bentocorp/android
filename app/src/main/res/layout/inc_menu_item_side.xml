@@ -12,6 +12,7 @@
         >
 
         <RelativeLayout
+            android:id="@+id/col_1_main_container"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
@@ -27,7 +28,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:src="@drawable/tmp"
+                    android:src="@drawable/tmp_trans"
                     android:scaleType="centerCrop"
                     android:adjustViewBounds="true" />
             </LinearLayout>
@@ -45,7 +46,6 @@
                 android:id="@+id/main_menu_item_name"
                 android:textAppearance="@style/BentoBuilderBoxSideName"
                 android:gravity="center"
-                android:text="TITLE OF ITEM MENU"
                 android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"
                 />
@@ -120,6 +120,7 @@
 
 
         <RelativeLayout
+            android:id="@+id/col_2_main_container"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
@@ -134,7 +135,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:src="@drawable/tmp"
+                    android:src="@drawable/tmp_trans"
                     android:scaleType="centerCrop"
                     android:adjustViewBounds="true"
                      />
@@ -153,7 +154,6 @@
                 android:id="@+id/main_menu_item_name2"
                 android:textAppearance="@style/BentoBuilderBoxSideName"
                 android:gravity="center"
-                android:text="TITLE OF ITEM MENU"
                 android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"
                 />

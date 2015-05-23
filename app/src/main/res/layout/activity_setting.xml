@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        >
+        android:orientation="vertical">
         <include layout="@layout/actionbar"/>
     </LinearLayout>
 
@@ -25,7 +25,7 @@
         android:orientation="vertical"
         android:layout_below="@+id/ActionBarContainer"
         android:background="@color/white"
-    >
+        android:id="@+id/mainContainer">
         <RelativeLayout
             android:visibility="gone"
             android:id="@+id/user_general_content"
@@ -41,20 +41,17 @@
                     android:id="@+id/user_name"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:text="Gonzalo Galeano"
                     android:textStyle="bold"
                     />
                 <TextView
                     android:id="@+id/phone"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:text="+1 (513) 536 - 6474"
                     />
                 <TextView
                     android:id="@+id/email"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:text="gozpellz@gmail.com"
                     />
             </LinearLayout>
             <TextView
@@ -72,6 +69,36 @@
 
 
         <LinearLayout
+            android:id="@+id/btn_setting_creditcard"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            >
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:src="@drawable/setting_creditcard"
+                android:padding="@dimen/setting_ico_padd"
+                />
+            <TextView
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:text="Credit Card"
+                android:gravity="center_vertical"
+                android:paddingLeft="@dimen/btn_padding"
+                android:background="@drawable/border_bottom"
+                />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/arrow_gray_right"
+                />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/btn_setting_signin"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -85,13 +112,20 @@
                 android:padding="@dimen/setting_ico_padd"
                 />
             <TextView
-                android:layout_width="fill_parent"
+                android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="fill_parent"
                 android:text="Sign In"
                 android:gravity="center_vertical"
                 android:paddingLeft="@dimen/btn_padding"
                 android:background="@drawable/border_bottom"
                 />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/arrow_gray_right"
+                />
+
         </LinearLayout>
         <LinearLayout
             android:id="@+id/btn_setting_faq"
@@ -107,12 +141,18 @@
                 android:padding="@dimen/setting_ico_padd"
                 />
             <TextView
-                android:layout_width="fill_parent"
+                android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="fill_parent"
                 android:text="FAQ"
                 android:gravity="center_vertical"
                 android:paddingLeft="@dimen/btn_padding"
                 android:background="@drawable/border_bottom"
+                />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/arrow_gray_right"
                 />
         </LinearLayout>
         <LinearLayout
@@ -129,13 +169,20 @@
                 android:padding="@dimen/setting_ico_padd"
                 />
             <TextView
-                android:layout_width="fill_parent"
+                android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="fill_parent"
                 android:text="Email Support"
                 android:gravity="center_vertical"
                 android:paddingLeft="@dimen/btn_padding"
                 android:background="@drawable/border_bottom"
                 />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/arrow_gray_right"
+                />
+
         </LinearLayout>
         <LinearLayout
             android:id="@+id/btn_setting_phone"
@@ -151,12 +198,18 @@
                 android:padding="@dimen/setting_ico_padd"
                 />
             <TextView
-                android:layout_width="fill_parent"
+                android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="fill_parent"
                 android:text="Phone Support"
                 android:gravity="center_vertical"
                 android:paddingLeft="@dimen/btn_padding"
                 android:background="@drawable/border_bottom"
+                />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/arrow_gray_right"
                 />
         </LinearLayout>
     </LinearLayout>
@@ -166,7 +219,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="#90000000"
-        android:visibility="invisible">
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -229,7 +282,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="#90000000"
-        android:visibility="invisible">
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="fill_parent"
