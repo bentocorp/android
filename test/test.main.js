@@ -242,12 +242,6 @@ describe("Bento", function () {
         .click();
   });
 
-  it('Work around to issue where login go back instead of finish the order', function(){
-    return driver
-      .waitForElementById('com.bentonow.bentonow:id/btn_continue_active')
-        .click();
-  });
-
   it('Change Address', function(){
     return driver
       .sleep(5000)
