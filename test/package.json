@@ -4,10 +4,11 @@
   "description": "Bento test",
   "main": "index.js",
   "scripts": {
-    "test": "mocha -timeout 60000 --reporter spec ../test",
-    "test-out-area": "mocha -timeout 60000 --reporter spec test_out_area.js",
-    "test-closed": "mocha -timeout 60000 --reporter spec test_cloded.js",
-    "test-out-stock": "mocha -timeout 60000 --reporter spec test_out_stock.js"
+    "test": "mocha --timeout 60000 --reporter spec ../test",
+    "test-main": "mocha --timeout 60000 --reporter spec test.main.js",
+    "test-out-area": "mocha --timeout 60000 --reporter spec test.out_area.js",
+    "test-closed": "mocha --timeout 60000 --reporter spec test.cloded.js",
+    "test-out-stock": "mocha --timeout 60000 --reporter spec test.out_stock.js"
   },
   "devDependencies": {
     "chai": "^2.2.0",
