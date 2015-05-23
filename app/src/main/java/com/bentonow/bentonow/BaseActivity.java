@@ -103,11 +103,18 @@ public class BaseActivity extends Activity {
         }
 
         public void fromLogin(){
+            Intent intent;
             try {
                 switch (Config.AppNavigateMap.from){
                     case SettingActivity:
                         Config.AppNavigateMap.from = null;
-                        Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
+                        intent = new Intent(getApplicationContext(), SettingActivity.class);
+                        startActivity(intent);
+                        overridePendingTransitionGoLeft();
+                        break;
+                    case BuildBentoActivity:
+                        Config.AppNavigateMap.from = null;
+                        intent = new Intent(getApplicationContext(), CompleteOrderActivity.class);
                         startActivity(intent);
                         overridePendingTransitionGoLeft();
                         break;
