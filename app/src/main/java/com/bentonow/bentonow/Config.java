@@ -165,6 +165,6 @@ public class Config {
     }
 
     static enum from {
-        SettingActivity
+        BuildBentoActivity, SettingActivity
     }
 }

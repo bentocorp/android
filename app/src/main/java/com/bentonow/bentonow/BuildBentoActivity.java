@@ -701,10 +701,8 @@ public class BuildBentoActivity extends BaseActivity {
         if( user != null && user.apitoken != null && !user.apitoken.isEmpty() ){
             goToCompleteOrder();
         }else {
-            Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
-            startActivity(intent);
-            finish();
-            overridePendingTransitionGoRight();
+            go igo = new go();
+            igo.toLoginActivity(Config.from.BuildBentoActivity);
         }
     }
 
