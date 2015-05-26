@@ -10,7 +10,7 @@
             android:id="@+id/menu_item_image"
             android:layout_width="fill_parent"
             android:layout_height="@dimen/main_menu_item_height"
-            android:src="@drawable/tmp"
+            android:src="@drawable/tmp_trans"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
             />

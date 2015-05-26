@@ -115,17 +115,26 @@ public class MenuItemMainAdapter extends BaseAdapter {
         }
 
         //
-        AQuery imgaq = listAq.recycle(view);
-        holder.main_title.setText(row.get("name").toUpperCase());
-        holder.desc_title.setText(row.get("name").toUpperCase());
-        holder.main_menu_item_description.setText(row.get("description"));
-        //imgaq.id(holder.img).image(row.get("image1"), true, true, 0, 0, null, AQuery.FADE_IN_NETWORK, 1.0f);
-        Picasso.with(activity)
-                .load(row.get("image1"))
-                .placeholder(R.drawable.tmp_trans)
-                .error(R.drawable.tmp_trans)
-                .into(holder.img);
+        String title = "";
+        String description = "";
+        try {
+            title = row.get("name").toUpperCase();
+            description = row.get("description");
+        }catch (NullPointerException ignored){
 
+        }
+
+        holder.main_title.setText(title);
+        holder.desc_title.setText(title);
+        holder.main_menu_item_description.setText(description);
+
+        if(!row.get("image1").isEmpty()) {
+            Picasso.with(activity)
+                    .load(row.get("image1"))
+                    .placeholder(R.drawable.tmp_trans)
+                    .error(R.drawable.tmp_trans)
+                    .into(holder.img);
+        }
         return view;
     }
 

@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.bentonow.bentonow.model.Checkpoint;
+
 import java.util.Calendar;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
@@ -37,6 +39,10 @@ public class BaseActivity extends Activity {
         );
 
         setTodayDate();
+    }
+
+    public boolean isFirstInit() {
+        return Checkpoint.count(Checkpoint.class, null, null) == 0;
     }
 
     private void setTodayDate() {

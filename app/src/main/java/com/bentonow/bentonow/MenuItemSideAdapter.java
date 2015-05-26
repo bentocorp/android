@@ -1,6 +1,7 @@
 package com.bentonow.bentonow;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -164,17 +165,26 @@ public class MenuItemSideAdapter extends BaseAdapter {
             }
 
             /// COL 1 ADD LABELS
-            AQuery imgaq = listAq.recycle(view);
-            holder.main_title.setText(row.get("name").toUpperCase());
-            holder.desc_title.setText(row.get("name").toUpperCase());
-            holder.main_menu_item_description.setText(row.get("description"));
+            String title = "";
+            String description = "";
+            try {
+                title = row.get("name").toUpperCase();
+                description = row.get("description");
+            }catch (NullPointerException ignored){
 
-            //imgaq.id(holder.img).image(row.get("image1"), true, true, 0, 0, null, AQuery.FADE_IN_NETWORK, 1.0f);
-            Picasso.with(activity)
-                    .load(row.get("image1"))
-                    .placeholder(R.drawable.tmp_trans)
-                    .error(R.drawable.tmp_trans)
-                    .into(holder.img);
+            }
+
+            holder.main_title.setText(title);
+            holder.desc_title.setText(title);
+            holder.main_menu_item_description.setText(description);
+
+            if(!row.get("image1").isEmpty()) {
+                Picasso.with(activity)
+                        .load(row.get("image1"))
+                        .placeholder(R.drawable.tmp_trans)
+                        .error(R.drawable.tmp_trans)
+                        .into(holder.img);
+            }
         }catch (IndexOutOfBoundsException ignore){
             Log.i(TAG,"Col 1 empty");
             holder.main_title.setText("");
@@ -262,16 +272,24 @@ public class MenuItemSideAdapter extends BaseAdapter {
             }
 
 
-            holder.main_title_2.setText(row2.get("name").toUpperCase());
-            holder.desc_title_2.setText(row2.get("name").toUpperCase());
-            holder.main_menu_item_description_2.setText(row2.get("description"));
-            //AQuery imgaq_2 = listAq.recycle(view);
-            //imgaq_2.id(holder.img_2).image(row2.get("image1"), true, true, 0, 0, null, AQuery.FADE_IN_NETWORK, 1.0f);
-            Picasso.with(activity)
-                    .load(row2.get("image1"))
-                    .placeholder(R.drawable.tmp_trans)
-                    .error(R.drawable.tmp_trans)
-                    .into(holder.img_2);
+            String title = "";
+            String description = "";
+            try {
+                title = row2.get("name").toUpperCase();
+                description = row2.get("description");
+            }catch (NullPointerException ignored){
+
+            }
+            holder.main_title_2.setText(title);
+            holder.desc_title_2.setText(title);
+            holder.main_menu_item_description_2.setText(description);
+            if(!row2.get("image1").isEmpty()) {
+                Picasso.with(activity)
+                        .load(row2.get("image1"))
+                        .placeholder(R.drawable.tmp_trans)
+                        .error(R.drawable.tmp_trans)
+                        .into(holder.img_2);
+            }
         }catch (IndexOutOfBoundsException ignore){
             Log.i(TAG, "Col 2 empty");
             //finalHolder2.col_2_main_container.removeAllViews();
