@@ -242,6 +242,7 @@ describe("Bento", function () {
         .click();
   });
 
+<<<<<<< HEAD
 
   // it('Change Address', function(){
   //   return driver
@@ -253,6 +254,18 @@ describe("Bento", function () {
   //     .back()
   //     .back();
   // });
+=======
+  it('Change Address', function(){
+    return driver
+      .sleep(5000)
+      .waitForElementById('com.bentonow.bentonow:id/btn_edit_address')
+        .click()
+      .waitForElementById('com.bentonow.bentonow:id/autoCompleteTextView')
+        .setText('Kearny St, San Francisco, CA 94108, USA')
+      .back()
+      .back();
+  });
+>>>>>>> origin/master
 
   it ('Change Credit Card', function(){
     return driver
