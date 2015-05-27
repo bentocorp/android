@@ -21,11 +21,17 @@
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
             android:src="@drawable/logo_bento"/>
-        <ImageView
+
+        <TextView
+            android:id="@+id/tx_slogan"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
-            android:src="@drawable/tx_slogan"/>
+            android:text="Delicious Asian Food Delivered in Minutes."
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:padding="10dp"
+            />
 
         <ProgressBar
             android:layout_width="32dp"

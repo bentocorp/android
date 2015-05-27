@@ -30,6 +30,7 @@ public class MainActivity extends BaseActivity {
     private AQuery aq;
     private ProgressBar home_preloader;
     private TextView splash_message;
+    private TextView tx_slogan;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,17 +39,20 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         aq = new AQuery(this);
         initElements();
+        tx_slogan.setText(Ioscopy.getKeyValue("launch-slogan"));
+        tryGetAll(todayDate);
     }
 
     private void initElements() {
         home_preloader = (ProgressBar)findViewById(R.id.home_preloader);
         splash_message = (TextView) findViewById(R.id.splash_message);
+        tx_slogan = (TextView) findViewById(R.id.tx_slogan);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        init();
+        tryGetAll(todayDate);
     }
 
     private void init() {
@@ -56,7 +60,7 @@ public class MainActivity extends BaseActivity {
             goTo goTo = new goTo();
             goTo.HomeAbout();
         }else{
-            tryGetAll(todayDate);
+            checkForPendingOrder();
         }
     }
 
@@ -103,7 +107,7 @@ public class MainActivity extends BaseActivity {
                 } catch (JSONException e) {
                     //e.printStackTrace();
                 }
-                checkForPendingOrder();
+                init();
             }
         });
     }
@@ -242,7 +246,7 @@ public class MainActivity extends BaseActivity {
             }, 2000);
         }
 
-        private void ErrorSolded() {
+        void ErrorSolded() {
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 public void run() {
@@ -253,7 +257,7 @@ public class MainActivity extends BaseActivity {
                 }
             }, 2000);
         }
-        private void HomeAbout() {
+        void HomeAbout() {
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 public void run() {

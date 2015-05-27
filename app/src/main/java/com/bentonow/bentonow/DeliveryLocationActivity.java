@@ -431,7 +431,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
             if (mMap != null) {
                 Log.i(TAG,"Bentonow.pending_order_id: "+Bentonow.pending_order_id);
                 if( order == null )
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.772492, -122.420262), 6.0f));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.772492, -122.420262), 11.0f));
                 else{
                     double lat = Double.parseDouble(order.coords_lat);
                     double lng = Double.parseDouble(order.coords_long);

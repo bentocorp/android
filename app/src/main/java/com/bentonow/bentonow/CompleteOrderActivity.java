@@ -260,7 +260,7 @@ public class CompleteOrderActivity extends BaseActivity {
         btn_tip_negative.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if( Config.CurrentOrder.tip_percent > 0 ) Config.CurrentOrder.tip_percent--;
+                if( Config.CurrentOrder.tip_percent > 0 ) Config.CurrentOrder.tip_percent-=5;
                 calculateValues();
                 showOrderDetails();
             }
@@ -269,7 +269,7 @@ public class CompleteOrderActivity extends BaseActivity {
         btn_tip_positive.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Config.CurrentOrder.tip_percent++;
+                if( Config.CurrentOrder.tip_percent < 30 ) Config.CurrentOrder.tip_percent+=5;
                 calculateValues();
                 showOrderDetails();
             }

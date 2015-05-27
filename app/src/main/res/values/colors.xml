@@ -22,5 +22,6 @@
     <color name="editText">#AAAAAA</color>
     <color name="buttonText">#EEEEEE</color>
     <color name="headerText">#EEEEEE</color>
+    <color name="dark_green">#5e7c40</color>
 
 </resources>
