@@ -1,6 +1,8 @@
 package com.bentonow.bentonow;
 
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
@@ -8,6 +10,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Handler;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -26,6 +29,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bentonow.bentonow.model.Orders;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -73,6 +78,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
     private ImageView actionbar_right_btn;
     private LatLng auxTarget;
     private Orders order;
+    private FragmentActivity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +86,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         setContentView(R.layout.activity_delivery_location);
 
         //setUpMapIfNeeded();
-
+        activity = this;
         Bentonow.app.current_activity = this;
 
         Log.i(TAG, "onCreate()");
@@ -122,6 +128,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         }
         addListeners();
         initActionbar();
+
     }
 
     private void checkAddress (String str) {
@@ -352,7 +359,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                             order.address_zip = address_zip;
                             order.completed = Config.ORDER.STATUS.UNCOMPLETED;
                             order.save();
-                            Log.i(TAG,"New order generated");
+                            Log.i(TAG, "New order generated");
                             Bentonow.pending_order_id = order.getId();
                             goTo(BuildBentoActivity.class);
                         } else {
@@ -365,7 +372,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                             order.address_state = address_state;
                             order.address_zip = address_zip;
                             order.save();
-                            Log.i(TAG,"Pending order has changed");
+                            Log.i(TAG, "Pending order has changed");
                             goTo(CompleteOrderActivity.class);
                         }
                     } else {

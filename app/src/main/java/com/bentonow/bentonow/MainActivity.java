@@ -1,5 +1,7 @@
 package com.bentonow.bentonow;
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,6 +18,9 @@ import com.bentonow.bentonow.model.Ioscopy;
 import com.bentonow.bentonow.model.Orders;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+
 import io.fabric.sdk.android.Fabric;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,6 +36,7 @@ public class MainActivity extends BaseActivity {
     private ProgressBar home_preloader;
     private TextView splash_message;
     private TextView tx_slogan;
+    private Activity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,9 +44,10 @@ public class MainActivity extends BaseActivity {
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
         aq = new AQuery(this);
+        activity = this;
         initElements();
         tx_slogan.setText(Ioscopy.getKeyValue("launch-slogan"));
-        tryGetAll(todayDate);
+        //tryGetAll(todayDate);
     }
 
     private void initElements() {
@@ -52,7 +59,15 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        tryGetAll(todayDate);
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(activity.getApplicationContext());
+        if (resultCode == ConnectionResult.SUCCESS) {
+            tryGetAll(todayDate);
+        } else if (resultCode == ConnectionResult.SERVICE_MISSING ||
+                resultCode == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED ||
+                resultCode == ConnectionResult.SERVICE_DISABLED) {
+            Dialog dialog = GooglePlayServicesUtil.getErrorDialog(resultCode, activity, 1);
+            dialog.show();
+        }
     }
 
     private void init() {
@@ -219,20 +234,6 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    class SplashMessage {
-        private void show(String message) {
-            splash_message.setText(message);
-            splash_message.setVisibility(View.VISIBLE);
-            home_preloader.setVisibility(View.INVISIBLE);
-        }
-
-        private void hide() {
-            splash_message.setText("");
-            splash_message.setVisibility(View.INVISIBLE);
-            home_preloader.setVisibility(View.VISIBLE);
-        }
-    }
-
     class goTo{
         private void ErrorClosed() {
             Handler handler = new Handler();
@@ -257,7 +258,9 @@ public class MainActivity extends BaseActivity {
                 }
             }, 2000);
         }
+
         void HomeAbout() {
+            Log.i(TAG,"HomeAbout()");
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 public void run() {
@@ -267,6 +270,7 @@ public class MainActivity extends BaseActivity {
         }
 
         void HomeAboutActivity(){
+            Log.i(TAG,"HomeAboutActivity()");
             Intent intent = new Intent(getApplicationContext(), HomeAboutActivity.class);
             startActivity(intent);
             finish();
