@@ -79,7 +79,8 @@
                 android:ems="10"
                 android:hint="Enter your delivery address"
                 android:gravity="center_vertical"
-                android:background="#00000000"
+                android:background="@color/transparent"
+                android:textCursorDrawable="@null"
                 android:textSize="14sp"
                 android:layout_weight="1" >
 

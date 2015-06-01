@@ -110,8 +110,9 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                         Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(autoCompView.getWindowToken(), 0);
                 String str = (String) adapterView.getItemAtPosition(position);
-                //Toast.makeText(getApplicationContext(), str, Toast.LENGTH_SHORT).show();
-                checkAddress(str);
+                if(str!=null) {
+                    checkAddress(str);
+                }
             }
         });
         //////////// END GOOGLE PLACE AUTOCOMPLETE //////////////
@@ -281,7 +282,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         btn_confirm_address.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && autoCompView.getText().toString() != null) {
                     checkAddress(autoCompView.getText().toString());
                 }
 

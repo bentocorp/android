@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -64,42 +65,25 @@ public class SelectSideActivity extends BaseActivity {
 
     public void getSideListDb(){
         ArrayList<HashMap<String, String>> sideMenuList = new ArrayList<HashMap<String, String>>();
-        ArrayList<HashMap<String, String>> sideMenuList2 = new ArrayList<HashMap<String, String>>();
 
         List<Dish> main_dishes = Dish.find(Dish.class, "today = ?",todayDate);
-        int c = 0;
         for( Dish dish : main_dishes ){
             if( dish.type.equals("side") ) {
-                if ( (c % 2) == 0 ) {
-                    HashMap<String, String> map = new HashMap<String, String>();
-                    map.put("itemId", dish._id);
-                    map.put("name", dish.name);
-                    map.put("description", dish.description);
-                    map.put("type", dish.type);
-                    map.put("image1", dish.image1);
-                    map.put("max_per_order", dish.max_per_order);
-                    map.put("today", dish.today);
-                    map.put("qty", dish.qty);
-                    //Log.i(TAG,map.toString());
-                    sideMenuList.add(map);
-                } else {
-                    HashMap<String, String> map = new HashMap<String, String>();
-                    map.put("itemId", dish._id);
-                    map.put("name", dish.name);
-                    map.put("description", dish.description);
-                    map.put("type", dish.type);
-                    map.put("image1", dish.image1);
-                    map.put("max_per_order", dish.max_per_order);
-                    map.put("today", dish.today);
-                    map.put("qty", dish.qty);
-                    Log.i(TAG, map.toString());
-                    sideMenuList2.add(map);
-                }
-                c++;
+                HashMap<String, String> map = new HashMap<String, String>();
+                map.put("itemId", dish._id);
+                map.put("name", dish.name);
+                map.put("description", dish.description);
+                map.put("type", dish.type);
+                map.put("image1", dish.image1);
+                map.put("max_per_order", dish.max_per_order);
+                map.put("today", dish.today);
+                map.put("qty", dish.qty);
+                //Log.i(TAG,map.toString());
+                sideMenuList.add(map);
             }
         }
-        ListView CompanyListView = (ListView) findViewById(R.id.menu_item_side_listview);
-        MenuItemSideAdapter adapter = new MenuItemSideAdapter(getApplicationContext(), sideMenuList, sideMenuList2);
+        GridView CompanyListView = (GridView) findViewById(R.id.menu_item_side_listview);
+        DishListAdapter adapter = new DishListAdapter(getApplicationContext(), sideMenuList);
         CompanyListView.setAdapter(adapter);
     }
 

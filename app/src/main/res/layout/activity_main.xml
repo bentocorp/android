@@ -30,7 +30,9 @@
             android:text="Delicious Asian Food Delivered in Minutes."
             android:gravity="center"
             android:textColor="@color/white"
-            android:padding="10dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:textSize="@dimen/text_very_small"
             />
 
         <ProgressBar

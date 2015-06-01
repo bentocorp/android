@@ -99,27 +99,9 @@ public class NextDayMenuActivity extends BaseActivity {
                             .error(R.drawable.tmp_trans)
                             .into(holder.img);
 
-                    //sideList.addView(vi);
-                }
-
-                /////////////////////////
-                i++;
-                JSONObject row2 = menuItems.getJSONObject(i);
-                if(row2.getString("type").equals("side")){
-                    //View vi = inflater.inflate(R.layout.inc_menu_item_side, null);
-                    Holder holder = new Holder();
-                    holder.img_2 = (ImageView) vi.findViewById(R.id.menu_item_image2);
-                    holder.main_title_2 = (TextView) vi.findViewById(R.id.main_menu_item_name2);
-
-                    holder.main_title_2.setText(row2.getString("name").toUpperCase());
-                    Picasso.with(getApplicationContext())
-                            .load(row2.getString("image1"))
-                            .placeholder(R.drawable.tmp_trans)
-                            .error(R.drawable.tmp_trans)
-                            .into(holder.img_2);
-
                     sideList.addView(vi);
                 }
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }

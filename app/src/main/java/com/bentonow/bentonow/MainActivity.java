@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -47,7 +46,6 @@ public class MainActivity extends BaseActivity {
         activity = this;
         initElements();
         tx_slogan.setText(Ioscopy.getKeyValue("launch-slogan"));
-        //tryGetAll(todayDate);
     }
 
     private void initElements() {
@@ -71,11 +69,17 @@ public class MainActivity extends BaseActivity {
     }
 
     private void init() {
-        if(isFirstInit()) {
+        Log.i(TAG,"Config.android_min_version: "+Config.android_min_version);
+        if ( Config.android_min_version.equals(Config.current_version) ) {
+            if (isFirstInit()) {
+                goTo goTo = new goTo();
+                goTo.HomeAbout();
+            } else {
+                checkForPendingOrder();
+            }
+        }else {
             goTo goTo = new goTo();
-            goTo.HomeAbout();
-        }else{
-            checkForPendingOrder();
+            goTo.ErrorVersion();
         }
     }
 
@@ -121,6 +125,12 @@ public class MainActivity extends BaseActivity {
                     BentoService.processMenuStock(menu);
                 } catch (JSONException e) {
                     //e.printStackTrace();
+                }
+
+                try {
+                    Config.android_min_version = json.getString("android_min_version");
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
                 init();
             }
@@ -252,6 +262,18 @@ public class MainActivity extends BaseActivity {
             handler.postDelayed(new Runnable() {
                 public void run() {
                     Intent intent = new Intent(getApplicationContext(), ErrorOutOfStockActivity.class);
+                    startActivity(intent);
+                    overridePendingTransition(R.anim.bottom_slide_in, R.anim.none);
+                    finish();
+                }
+            }, 2000);
+        }
+
+        void ErrorVersion() {
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    Intent intent = new Intent(getApplicationContext(), ErrorVersionActivity.class);
                     startActivity(intent);
                     overridePendingTransition(R.anim.bottom_slide_in, R.anim.none);
                     finish();

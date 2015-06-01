@@ -5,6 +5,8 @@ package com.bentonow.bentonow;
  */
 public class Config {
 
+    public static final String current_version = "1.0";
+    public static String android_min_version;
     public static final String API_KEY = "AIzaSyDz5MlSeWBUP1iDeSI3j6qeoLbMWDbJgQg";
     public static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place";
     public static final String TYPE_AUTOCOMPLETE = "/autocomplete";
@@ -111,6 +113,7 @@ public class Config {
         public static final String FAQ_BODY = "faq-body";
         public static final String PRIVACY_POLICY_BODY = "privacy-policy-body";
         public static final String TERMS_CONDITIONS_BODY = "terms-conditions-body";
+        public static final String ANDROID_MIN_VERSION = "current_version";
     }
 
     public class DISH {

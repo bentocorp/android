@@ -83,7 +83,7 @@ public class SelectMainActivity extends BaseActivity {
             }
         }
         ListView CompanyListView = (ListView) findViewById(R.id.main_menu_list_items);
-        MenuItemMainAdapter adapter = new MenuItemMainAdapter(getApplicationContext(), mainMenuList);
+        DishListAdapter adapter = new DishListAdapter(getApplicationContext(), mainMenuList);
         CompanyListView.setAdapter(adapter);
     }
 
