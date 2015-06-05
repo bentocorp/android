@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
+import com.bentonow.bentonow.dialog.ConfirmDialog;
 import com.bentonow.bentonow.model.Dish;
 import com.bentonow.bentonow.model.Ioscopy;
 import com.bentonow.bentonow.model.Item;
@@ -534,8 +535,9 @@ public class CompleteOrderActivity extends BaseActivity {
                 }
             }
         }
+        ConfirmDialog dialog = new ConfirmDialog(findViewById(R.id.overlay_remove_bento), findViewById(R.id.btn_bento_cancel), findViewById(R.id.btn_bento_ok));
         ListView itemsListView = (ListView) findViewById(R.id.orderitems);
-        OrderItemsListAdapter adapter = new OrderItemsListAdapter(getApplicationContext(), orderItemsList, editMode);
+        OrderItemsListAdapter adapter = new OrderItemsListAdapter(this, orderItemsList, editMode, dialog);
         itemsListView.setAdapter(adapter);
         itemsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
