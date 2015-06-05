@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:autofit="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="@dimen/main_menu_item_height"
         android:orientation="horizontal"
         >
         <RelativeLayout
-            android:id="@+id/col_1_main_container"
+            android:id="@+id/container"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
@@ -38,14 +37,18 @@
                 android:scaleType="centerCrop"
                 android:src="@drawable/menu_gradient" />
 
-            <TextView
+            <me.grantland.widget.AutofitTextView
+                android:singleLine="true"
+                autofit:minTextSize="8sp"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:id="@+id/main_menu_item_name"
-                android:textAppearance="@style/BentoBuilderBoxSideName"
+                android:textAppearance="@style/BentoBuilderBoxMainName"
                 android:gravity="center"
+                android:text="TITLE OF ITEM MENU"
                 android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"
+                android:padding="10dp"
                 />
 
             <ImageView
@@ -93,19 +96,41 @@
                         android:gravity="center"
                         android:text="Description of item .. lalal"
                         />
+
                     <LinearLayout
+                        android:id="@+id/btn_add_to_bento_side1"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:weightSum="3"
                         android:gravity="center">
                         <TextView
-                            android:id="@+id/btn_add_to_bento_side1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@drawable/btn_border_lineal_white"
                             android:padding="@dimen/btn_padding"
                             android:text="ADD TO BENTO"
+                            android:gravity="center"
+                            android:textAppearance="@style/BtnMenuItem"
+                            android:layout_weight="1"
+                            />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/btn_added"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="3"
+                        android:visibility="gone"
+                        android:gravity="center">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/btn_gray"
+                            android:padding="@dimen/btn_padding"
+                            android:text="ADDED TO BENTO"
+                            android:textColor="@color/btn_green"
                             android:gravity="center"
                             android:textAppearance="@style/BtnMenuItem"
                             android:layout_weight="1"

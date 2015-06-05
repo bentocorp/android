@@ -5,12 +5,17 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
+import com.bentonow.bentonow.Utils.Email;
+import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -45,18 +50,22 @@ public class ErrorOutOfStockActivity extends BaseActivity {
         String uri = Config.API.URL + Config.API.COUPON_REQUEST;
         String email = email_address.getText().toString();
 
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("data", "{\n" +
-                "    \"reason\": \"OUT OF STOCK\",\n" +
-                "    \"email\": \"" + email + "\"\n" +
-                "}");
-        aq.ajax(uri, params, String.class, new AjaxCallback<String>() {
-            @Override
-            public void callback(String url, String json, AjaxStatus status) {
-                overlay.setVisibility(View.VISIBLE);
-                email_address.setText("");
-            }
-        });
+        if( email.isEmpty() || !Email.isEmailValid(email)){
+            Toast.makeText(getApplicationContext(),"Invalid email address.",Toast.LENGTH_LONG).show();
+        }else {
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("data", "{\n" +
+                    "    \"reason\": \"OUT OF STOCK\",\n" +
+                    "    \"email\": \"" + email + "\"\n" +
+                    "}");
+            aq.ajax(uri, params, String.class, new AjaxCallback<String>() {
+                @Override
+                public void callback(String url, String json, AjaxStatus status) {
+                    overlay.setVisibility(View.VISIBLE);
+                    email_address.setText("");
+                }
+            });
+        }
     }
 
     private void initElements() {
@@ -131,18 +140,22 @@ public class ErrorOutOfStockActivity extends BaseActivity {
             public void callback(String url, JSONObject json, AjaxStatus status) {
                 if (json != null) {
                     try {
-                        Log.i(TAG,"json: "+json.toString());
-                        JSONObject menu = json.getJSONObject("Menu");
+                        Log.i(TAG, "json: " + json.toString());
+                        JSONObject menus = json.getJSONObject("menus");
+                        JSONObject dinner = menus.getJSONObject("dinner");
+                        JSONObject menu = dinner.getJSONObject("Menu");
                         String day_text = menu.getString("day_text");
                         String[] tmp = day_text.split(" ");
-                        String day = (tmp[0]!=null) ? tmp[0] + "'s Menu" : "";
+                        String day = (tmp[0] != null) ? tmp[0] + "'s Menu" : "";
                         Log.i(TAG, "menu.getString(day_text): " + day);
-                        if(!day.isEmpty()){
+                        if (!day.isEmpty()) {
                             titleNextDayMenu = day;
                             btnNextDayMenu.setText(day);
                             btnNextDayMenu.setVisibility(View.VISIBLE);
                         }
-                        jsonToSend = json.toString();
+                        jsonToSend = dinner.toString();
+                        JSONArray MenuItems = dinner.getJSONArray("MenuItems");
+                        preloadImages(MenuItems);
                     } catch (JSONException e) {
                         //Log.e(TAG, status.getError());
                         e.printStackTrace();
@@ -152,5 +165,21 @@ public class ErrorOutOfStockActivity extends BaseActivity {
                 }
             }
         });
+    }
+
+    private void preloadImages(JSONArray menuItems) {
+        LinearLayout list = (LinearLayout)findViewById(R.id.tomorrow_main_dishes_container);
+        for( int i = 0; i < menuItems.length(); i++ ){
+            try {
+                JSONObject row = menuItems.getJSONObject(i);
+                if ( row.getString(Config.DISH.IMAGE1)!=null && !row.getString(Config.DISH.IMAGE1).isEmpty() ) {
+                    Picasso.with(getApplicationContext())
+                            .load(row.getString(Config.DISH.IMAGE1))
+                            .fetch();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

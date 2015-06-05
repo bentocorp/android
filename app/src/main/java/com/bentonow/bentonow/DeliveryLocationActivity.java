@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -24,6 +25,7 @@ import android.widget.CompoundButton;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -79,6 +81,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
     private LatLng auxTarget;
     private Orders order;
     private FragmentActivity activity;
+    private ImageView btn_clear;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,18 +105,27 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         //////////// INI GOOGLE PLACE AUTOCOMPLETE //////////////
         autoCompView = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView);
         autoCompView.setAdapter(new GooglePlacesAutocompleteAdapter(getApplicationContext(), R.layout.listitem_locationaddress));
-        autoCompView.setText( address, false );
+        autoCompView.setText(address, false);
         //Log.i(TAG, "autoCompView: " + autoCompView.toString());
         autoCompView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                InputMethodManager imm = (InputMethodManager)getSystemService(
+                InputMethodManager imm = (InputMethodManager) getSystemService(
                         Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(autoCompView.getWindowToken(), 0);
                 String str = (String) adapterView.getItemAtPosition(position);
-                if(str!=null) {
+                if (str != null) {
                     checkAddress(str);
                 }
+            }
+        });
+        autoCompView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if(!autoCompView.getText().toString().isEmpty()){
+                    btn_clear.setVisibility(View.VISIBLE);
+                }
+                return true;
             }
         });
         //////////// END GOOGLE PLACE AUTOCOMPLETE //////////////
@@ -120,6 +133,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         alert_iagree = (TextView) findViewById(R.id.alert_iagree);
         btn_continue = (TextView) findViewById(R.id.btn_continue);
         btn_confirm_address = (TextView) findViewById(R.id.btn_confirm_address);
+        btn_clear = (ImageView)findViewById(R.id.btn_clear);
+        progressBar = (ProgressBar)findViewById(R.id.progressBar);
         ///
         chckIagree = (CheckBox) findViewById(R.id.chckIagree);
         if( order != null ) {
@@ -179,6 +194,14 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
     }
 
     private void addListeners() {
+
+        btn_clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                autoCompView.setText("");
+                btn_clear.setVisibility(View.INVISIBLE);
+            }
+        });
 
         chckIagree.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -282,107 +305,102 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         btn_confirm_address.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (BuildConfig.DEBUG && autoCompView.getText().toString() != null) {
+                if (BuildConfig.DEBUG) {
                     checkAddress(autoCompView.getText().toString());
                 }
 
-                if (newAddress.isEmpty()) {
-                    Log.i(TAG, "newAddress");
-                    Toast.makeText(getApplicationContext(), "There is not a address for delivery.", Toast.LENGTH_LONG).show();
-                } else {
-                    String[] address = newAddress.split(", ");
-                    String address_number = "";
-                    String address_street = "";
-                    String address_city = "";
-                    String address_state = "";
-                    String address_zip = "";
+                String[] address = newAddress.split(", ");
+                String address_number = "";
+                String address_street = "";
+                String address_city = "";
+                String address_state = "";
+                String address_zip = "";
 
-                    try {
-                        //if (address[0]!=null) {
-                        Log.i(TAG, "address[0]: " + address[0]);
-                        String[] tmp = address[0].split(" ");
-                        for (int i = 0; i < tmp.length; i++) {
-                            if (i == 0) {
-                                address_number = tmp[i];
-                            } else {
-                                address_street += tmp[i] + " ";
-                            }
-                        }
-                    } catch (ArrayIndexOutOfBoundsException ignored) {
-
-                    }
-
-                    try {
-                        //if (address[1]!=null) {
-                        Log.i(TAG, "address[1]: " + address[1]);
-                        address_city = address[1];
-                    } catch (ArrayIndexOutOfBoundsException ignored) {
-
-                    }
-
-                    try {
-                        //if (address[2]!=null) {
-                        Log.i(TAG, "address[2]: " + address[2]);
-                        String[] tmp = address[2].split(" ");
-                        for (int i = 0; i < tmp.length; i++) {
-                            if (i == tmp.length - 1) {
-                                address_zip = tmp[i];
-                            } else {
-                                address_state += tmp[i] + " ";
-                            }
-                        }
-                    } catch (ArrayIndexOutOfBoundsException ignored) {
-
-                    }
-
-                    List<LatLng> sfpolygon = new ArrayList<LatLng>();
-                    sfpolygon.add(new LatLng(37.8095806, -122.44983680000001));
-                    sfpolygon.add(new LatLng(37.77783170000001, -122.44335350000001));
-                    sfpolygon.add(new LatLng(37.7460824, -122.43567470000002));
-                    sfpolygon.add(new LatLng(37.7490008, -122.37636569999998));
-                    sfpolygon.add(new LatLng(37.78611430000001, -122.37928390000002));
-                    sfpolygon.add(new LatLng(37.8135812, -122.40348819999998));
-                    sfpolygon.add(new LatLng(37.8095806, -122.44983680000001));
-
-
-                    //Log.i(TAG, "sfpolygon: " + sfpolygon.toString());
-                    if (PolyUtil.containsLocation(mMap.getCameraPosition().target, sfpolygon, false)) {
-                        Orders order = null;
-                        if (Bentonow.pending_order_id == null) {
-                            order = new Orders();
-                            order.today = todayDate;
-                            order.coords_lat = String.valueOf(((LatLng) mMap.getCameraPosition().target).latitude);
-                            order.coords_long = String.valueOf(((LatLng) mMap.getCameraPosition().target).longitude);
-                            order.address_number = address_number;
-                            order.address_street = address_street;
-                            order.address_city = address_city;
-                            order.address_state = address_state;
-                            order.address_zip = address_zip;
-                            order.completed = Config.ORDER.STATUS.UNCOMPLETED;
-                            order.save();
-                            Log.i(TAG, "New order generated");
-                            Bentonow.pending_order_id = order.getId();
-                            goTo(BuildBentoActivity.class);
+                try {
+                    //if (address[0]!=null) {
+                    Log.i(TAG, "address[0]: " + address[0]);
+                    String[] tmp = address[0].split(" ");
+                    for (int i = 0; i < tmp.length; i++) {
+                        if (i == 0) {
+                            address_number = tmp[i];
                         } else {
-                            order = Orders.findById(Orders.class, Bentonow.pending_order_id);
-                            order.coords_lat = String.valueOf(((LatLng) mMap.getCameraPosition().target).latitude);
-                            order.coords_long = String.valueOf(((LatLng) mMap.getCameraPosition().target).longitude);
-                            order.address_number = address_number;
-                            order.address_street = address_street;
-                            order.address_city = address_city;
-                            order.address_state = address_state;
-                            order.address_zip = address_zip;
-                            order.save();
-                            Log.i(TAG, "Pending order has changed");
-                            goTo(CompleteOrderActivity.class);
+                            address_street += tmp[i] + " ";
                         }
-                    } else {
-                        Intent intent = new Intent(getApplicationContext(), ErrorInvalidAddressActivity.class);
-                        intent.putExtra(Config.invalid_address_extra_label, newAddress);
-                        startActivity(intent);
-                        overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
-                        finish();
                     }
+                } catch (ArrayIndexOutOfBoundsException ignored) {
+
+                }
+
+                try {
+                    //if (address[1]!=null) {
+                    Log.i(TAG, "address[1]: " + address[1]);
+                    address_city = address[1];
+                } catch (ArrayIndexOutOfBoundsException ignored) {
+
+                }
+
+                try {
+                    //if (address[2]!=null) {
+                    Log.i(TAG, "address[2]: " + address[2]);
+                    String[] tmp = address[2].split(" ");
+                    for (int i = 0; i < tmp.length; i++) {
+                        if (i == tmp.length - 1) {
+                            address_zip = tmp[i];
+                        } else {
+                            address_state += tmp[i] + " ";
+                        }
+                    }
+                } catch (ArrayIndexOutOfBoundsException ignored) {
+
+                }
+
+                List<LatLng> sfpolygon = new ArrayList<LatLng>();
+                sfpolygon.add(new LatLng(37.8095806, -122.44983680000001));
+                sfpolygon.add(new LatLng(37.77783170000001, -122.44335350000001));
+                sfpolygon.add(new LatLng(37.7460824, -122.43567470000002));
+                sfpolygon.add(new LatLng(37.7490008, -122.37636569999998));
+                sfpolygon.add(new LatLng(37.78611430000001, -122.37928390000002));
+                sfpolygon.add(new LatLng(37.8135812, -122.40348819999998));
+                sfpolygon.add(new LatLng(37.8095806, -122.44983680000001));
+
+
+                //Log.i(TAG, "sfpolygon: " + sfpolygon.toString());
+                if (PolyUtil.containsLocation(mMap.getCameraPosition().target, sfpolygon, false)) {
+                    Orders order = null;
+                    if (Bentonow.pending_order_id == null) {
+                        order = new Orders();
+                        order.today = todayDate;
+                        order.coords_lat = String.valueOf(((LatLng) mMap.getCameraPosition().target).latitude);
+                        order.coords_long = String.valueOf(((LatLng) mMap.getCameraPosition().target).longitude);
+                        order.address_number = address_number;
+                        order.address_street = address_street;
+                        order.address_city = address_city;
+                        order.address_state = address_state;
+                        order.address_zip = address_zip;
+                        order.completed = Config.ORDER.STATUS.UNCOMPLETED;
+                        order.save();
+                        Log.i(TAG, "New order generated");
+                        Bentonow.pending_order_id = order.getId();
+                        goTo(BuildBentoActivity.class);
+                    } else {
+                        order = Orders.findById(Orders.class, Bentonow.pending_order_id);
+                        order.coords_lat = String.valueOf(((LatLng) mMap.getCameraPosition().target).latitude);
+                        order.coords_long = String.valueOf(((LatLng) mMap.getCameraPosition().target).longitude);
+                        order.address_number = address_number;
+                        order.address_street = address_street;
+                        order.address_city = address_city;
+                        order.address_state = address_state;
+                        order.address_zip = address_zip;
+                        order.save();
+                        Log.i(TAG, "Pending order has changed");
+                        goTo(CompleteOrderActivity.class);
+                    }
+                } else {
+                    Intent intent = new Intent(getApplicationContext(), ErrorInvalidAddressActivity.class);
+                    intent.putExtra(Config.invalid_address_extra_label, newAddress);
+                    startActivity(intent);
+                    overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
+                    finish();
                 }
             }
         });
@@ -439,7 +457,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
             if (mMap != null) {
                 Log.i(TAG,"Bentonow.pending_order_id: "+Bentonow.pending_order_id);
                 if( order == null )
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.772492, -122.420262), 11.0f));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Config.INIT_LAT_LONG, 11.0f));
                 else{
                     double lat = Double.parseDouble(order.coords_lat);
                     double lng = Double.parseDouble(order.coords_long);
@@ -463,6 +481,14 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                 mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
                     @Override
                     public void onMapLoaded() {
+
+                        Location new_location = new Location("newLocation");
+                        LatLng point = Config.INIT_LAT_LONG;
+                        new_location.setLatitude(point.latitude);
+                        new_location.setLongitude(point.longitude);
+                        new_location.setTime(new Date().getTime());
+                        scanCurrentLocation(new_location);
+
                         GoogleMap.OnMyLocationChangeListener myLocationChangeListener = new GoogleMap.OnMyLocationChangeListener() {
                             @Override
                             public void onMyLocationChange(Location location) {
@@ -487,8 +513,16 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                             @Override
                             public void onCameraChange(CameraPosition cameraPosition) {
                                 Log.i(TAG, "mMap.getCameraPosition().target: " + mMap.getCameraPosition().target);
-                                auxTarget = mMap.getCameraPosition().target;
-                                Handler handler = new Handler();
+                                //auxTarget = mMap.getCameraPosition().target;
+
+                                Location new_location = new Location("newLocation");
+                                LatLng point = mMap.getCameraPosition().target;
+                                new_location.setLatitude(point.latitude);
+                                new_location.setLongitude(point.longitude);
+                                new_location.setTime(new Date().getTime());
+                                scanCurrentLocation(new_location);
+
+                                /*Handler handler = new Handler();
                                 handler.postDelayed(new Runnable() {
                                     public void run() {
                                         if ( auxTarget.equals(mMap.getCameraPosition().target) ) {
@@ -501,7 +535,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                                             scanCurrentLocation(new_location);
                                         }
                                     }
-                                }, 3500);
+                                }, 3500);*/
                             }
                         });
                     }
@@ -516,12 +550,18 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
     }
 
     private void scanCurrentLocation(Location location) {
+
+        btn_clear.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
+
         Geocoder geoCoder = new Geocoder(getApplicationContext());
         List<Address> matches = null;
         try {
             matches = geoCoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
         } catch (IOException e) {
             e.printStackTrace();
+            Log.i(TAG, "e.getMessage(): " + e.getMessage());
+            Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
         }
         Address bestMatch = null;
         if( matches != null ) {
@@ -537,9 +577,12 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                 newAddress += bestMatch.getAddressLine(1) != null ? ", " + bestMatch.getAddressLine(1) : "";
                 newAddress += bestMatch.getAddressLine(2) != null ? ", " + bestMatch.getAddressLine(2) : "";
                 autoCompView.setText(newAddress);
+                btn_clear.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.INVISIBLE);
             }
         }catch (NullPointerException ignored){
-
+            btn_clear.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.INVISIBLE);
         }
         ///////////////////////
         //geoCoder = new Geocoder(this, Locale.getDefault());

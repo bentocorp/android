@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,6 +20,7 @@ import android.widget.TextView;
 
 import com.androidquery.AQuery;
 import com.androidquery.auth.FacebookHandle;
+import com.bentonow.bentonow.InputFilterMinMax;
 import com.bentonow.bentonow.PaymentForm;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.EnterCreditCardActivity;
@@ -27,6 +30,7 @@ import org.json.JSONObject;
 
 public class PaymentFormFragment extends Fragment implements PaymentForm {
 
+    private static final String TAG = "PaymentFormFragment";
     TextView saveButton;
     EditText cardNumber;
     //TextView cardType;
@@ -56,16 +60,6 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
             }
         });
 
-        /*((Button) view.findViewById(R.id.facebook)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FacebookHandle handle = new FacebookHandle(getActivity(), "175514842582531", "");
-
-                String url = "https://graph.facebook.com/me/feed";
-                aq.auth(handle).ajax(url, JSONObject.class, this, "facebookCb");
-            }
-        });*/
-
         this.ic_card = (ImageView) view.findViewById(R.id.ic_card);
         //this.cardType = (TextView) view.findViewById(R.id.cardType);
         this.cardDigits = (EditText) view.findViewById(R.id.cardDigits);
@@ -73,6 +67,35 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
         this.cvc = (EditText) view.findViewById(R.id.cvc);
         this.monthSpinner = (EditText) view.findViewById(R.id.expMonth);
         this.yearSpinner = (EditText) view.findViewById(R.id.expYear);
+
+        ////////////////////
+        this.monthSpinner.setFilters(new InputFilter[]{ new InputFilterMinMax("1", "12")});
+        this.yearSpinner.setFilters(new InputFilter[]{new InputFilterMinMax("1", "99")});
+        this.cvc.setFilters(new InputFilter[]{new InputFilterMinMax("1", "999")});
+        ////////////////////
+
+        TextWatcher textWacher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                chechIfCompleted();
+            }
+        };
+
+        this.cvc.addTextChangedListener(textWacher);
+        this.yearSpinner.addTextChangedListener(textWacher);
+        this.monthSpinner.addTextChangedListener(textWacher);
+
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 
         this.cardDigits.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
@@ -102,8 +125,9 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
 
             @Override
             public void afterTextChanged(Editable editable) {
+                chechIfCompleted();
                 String charSequence = cardNumber.getText().toString();
-                if (charSequence != null && charSequence.length() > 1) {
+                if (charSequence.length() > 1) {
                     String cardCode = charSequence.substring(0, 2);
 
                     if (cardCode.equals("34") || cardCode.equals("37")) {
@@ -151,6 +175,29 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
         });
 
         return view;
+    }
+
+    private void chechIfCompleted() {
+        boolean completed = true;
+        if( cardNumber.getText().toString().length() != 16 ){
+            completed = false;
+        }
+        if( cvc.getText().toString().length() < 3 ){
+            completed = false;
+        }
+        if( yearSpinner.getText().toString().length() < 2 ){
+            completed = false;
+        }
+        if( monthSpinner.getText().toString().length() < 2 ){
+            completed = false;
+        }
+
+        Log.i(TAG,"COMPLETED: "+completed);
+        if( completed ){
+            saveButton.setBackgroundResource(R.drawable.bg_green_cornered);
+        }else{
+            saveButton.setBackgroundResource(R.drawable.btn_dark_gray);
+        }
     }
 
     void hideFullNumber () {

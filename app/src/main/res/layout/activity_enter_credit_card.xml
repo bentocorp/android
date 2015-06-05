@@ -1,10 +1,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.bentonow.bentonow.CompleteOrderActivity"
+    android:layout_height="fill_parent"
+    tools:context="com.bentonow.bentonow.EnterCreditCardActivity"
     android:id="@+id/base_relative_layout"
-    android:background="@color/bgcolor">
+    android:background="@color/bgcolor"
+    android:layout_alignParentBottom="true"
+    >
 
     <!-- background -->
     <!--<ImageView
@@ -28,11 +30,9 @@
     <!-- INI CONTAINER -->
     <RelativeLayout
         android:layout_below="@+id/ActionBarContainer"
-        android:layout_above="@+id/footer_container"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/main_relative"
-
         >
         <!-- INI content -->
 
@@ -62,17 +62,14 @@
                     android:textAppearance="@style/H1Gray"
                     />
             </LinearLayout>
-            <fragment android:id="@+id/payment_form"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                class="com.bentonow.bentonow.fragment.PaymentFormFragment"/>
         </LinearLayout>
+
 
         <!-- END content -->
     </RelativeLayout>
 
     <!-- INI FOOTER -->
-    <LinearLayout
+    <!--<LinearLayout
         android:id="@+id/footer_container"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -90,6 +87,14 @@
             android:padding="@dimen/btn_padding"
             android:text="CONTINUE TO PAYMENT"
             />
-    </LinearLayout>
-
+    </LinearLayout>-->
+    <fragment android:id="@+id/payment_form"
+        android:layout_below="@+id/main_relative"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        class="com.bentonow.bentonow.fragment.PaymentFormFragment"
+        tools:layout="@layout/payment_form_fragment"
+        android:layout_marginBottom="@dimen/general_padding"
+        android:layout_alignParentBottom="true"
+        />
 </RelativeLayout>

@@ -86,14 +86,25 @@
 
                 <requestFocus />
             </AutoCompleteTextView>
-            <!--<EditText
-                android:layout_width="fill_parent"
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:hint="Enter your delivery address"
-                android:gravity="center_vertical"
-                android:background="#00000000"
-                android:textSize="14sp"
-                android:layout_weight="1" />-->
+                >
+                <ImageView
+                    android:id="@+id/btn_clear"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/creditcard_btn_clear"
+                    android:layout_centerInParent="true"
+                    />
+               <ProgressBar
+                   android:id="@+id/progressBar"
+                   android:layout_centerInParent="true"
+                   android:layout_width="30dp"
+                   android:layout_height="30dp" />
+            </RelativeLayout>
+
             <ImageView
                 android:id="@+id/btn_go_to_current_location"
                 android:layout_width="wrap_content"
@@ -111,7 +122,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" android:id="@+id/map"
                 tools:context="com.bentonow.bentonow.DeliveryLocationActivity"
-                android:name="com.google.android.gms.maps.SupportMapFragment" />
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                 />
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

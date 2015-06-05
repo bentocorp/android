@@ -1,12 +1,15 @@
 package com.bentonow.bentonow;
 
+import com.google.android.gms.maps.model.LatLng;
+
 /**
  * Created by gonzalo on 07/04/2015.
  */
 public class Config {
 
-    public static final String current_version = "1.0";
-    public static String android_min_version;
+    public static final int current_version = 1;
+    public static final LatLng INIT_LAT_LONG = new LatLng(37.772492, -122.420262);
+    public static int android_min_version;
     public static final String API_KEY = "AIzaSyDz5MlSeWBUP1iDeSI3j6qeoLbMWDbJgQg";
     public static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place";
     public static final String TYPE_AUTOCOMPLETE = "/autocomplete";
@@ -18,7 +21,6 @@ public class Config {
     public static appStatus APP_DEV_STATUS = appStatus.DEVELOPMENT;
 
     public static String invalid_address_extra_label = "invalid_address";
-    public static String[] MenuItems_ItemLabels = {"itemId", "name", "description", "type", "image1", "max_per_order","qty"};
     public static int aux_deduct_day = 0;
     public static String aux_initial_stock = "0";
     //public static boolean processing_stock = false;
@@ -44,7 +46,7 @@ public class Config {
         public static final String ORDER = "/order";
         public static final String COUPON_REQUEST = "/couponcode/request";
         public static final int DEFAULT_ERROR_409 = 409;
-        public static String URL = APP_DEV_STATUS.equals(appStatus.PRODUCTION) ? "https://api.bentonow.com" : "https://dev.api.bentonow.com";
+        public static String URL = APP_DEV_STATUS.equals(appStatus.PRODUCTION) ? "https://api.bentonow.com" : "https://api2.dev.bentonow.com";
         public static final String MENU_URN = "/menu";
 
         // INIT
@@ -126,6 +128,7 @@ public class Config {
         public static final String TODAY = "today";
         public static final String QTY = "qty";
         public static final String ITEM_ID = "item_id";
+        public static final String itemId = "itemId";
     }
 
     public class ASSET {
@@ -169,5 +172,13 @@ public class Config {
 
     static enum from {
         BuildBentoActivity, SettingActivity
+    }
+
+    public class SIDE {
+        public static final int MAIN = 0;
+            public static final int SIDE_1 = 1;
+        public static final int SIDE_2 = 2;
+        public static final int SIDE_3 = 3;
+        public static final int SIDE_4 = 4;
     }
 }

@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -19,6 +20,7 @@ import com.bentonow.bentonow.model.Orders;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.squareup.picasso.Picasso;
 
 import io.fabric.sdk.android.Fabric;
 import org.json.JSONArray;
@@ -69,13 +71,13 @@ public class MainActivity extends BaseActivity {
     }
 
     private void init() {
-        Log.i(TAG,"Config.android_min_version: "+Config.android_min_version);
-        if ( Config.android_min_version.equals(Config.current_version) ) {
+        Log.i(TAG, "Config.android_min_version: " + Config.android_min_version);
+        if ( Config.current_version >= Config.android_min_version ) {
             if (isFirstInit()) {
                 goTo goTo = new goTo();
                 goTo.HomeAbout();
             } else {
-                checkForPendingOrder();
+                if(Bentonow.isOpen) checkForPendingOrder();
             }
         }else {
             goTo goTo = new goTo();
@@ -101,34 +103,38 @@ public class MainActivity extends BaseActivity {
 
                 // STATUS/OVERALL
                 try {
-                    JsonProcess.OverAll(json.getJSONObject("/status/overall"));
+                    JSONObject statusall = json.getJSONObject("/status/all");
+                    JsonProcess.OverAll(statusall.getJSONObject("overall"));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
                 // /menu/{date}
-                /*JSONObject menu = json.getJSONObject("menus");
-                JSONObject dinner = menu.getJSONObject("dinner");
-                JSONArray MenuItems = (JSONArray) dinner.get(Config.API_MENUITEMS_TAG);*/
                 try {
                     JSONObject menu_date = json.getJSONObject("/menu/{date}");
-                    JSONArray MenuItems = (JSONArray) menu_date.get("MenuItems");
+                    JSONObject menu = menu_date.getJSONObject("menus");
+                    JSONObject dinner = menu.getJSONObject("dinner");
+                    //JSONObject dinner = menu.getJSONObject("lunch");
+                    JSONArray MenuItems = (JSONArray) dinner.get(Config.API_MENUITEMS_TAG);
                     JsonProcess.MenuItems(MenuItems);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
-                // /status/all | menu
-                try {
-                    JSONObject status_all = json.getJSONObject("/status/all");
-                    JSONArray menu = status_all.getJSONArray("menu");
-                    BentoService.processMenuStock(menu);
-                } catch (JSONException e) {
-                    //e.printStackTrace();
+                if (Bentonow.isOpen) {
+                    // /status/all | menu
+                    try {
+                        JSONObject status_all = json.getJSONObject("/status/all");
+                        JSONArray menu = status_all.getJSONArray("menu");
+                        BentoService.processMenuStock(menu);
+                    } catch (JSONException e) {
+                        //e.printStackTrace();
+                    }
                 }
 
                 try {
-                    Config.android_min_version = json.getString("android_min_version");
+                    Log.i(TAG,"Config.android_min_version: "+Config.android_min_version);
+                    Config.android_min_version = json.getInt("android_min_version");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -139,19 +145,27 @@ public class MainActivity extends BaseActivity {
 
     class JsonProcess {
         public void OverAll( JSONObject json ){
-            try {
-                // IF BENTO NOW OPEN
-                if (json.get(Config.API.STATUS_OVERALL_LABEL_VALUE).equals(Config.API.STATUS_OVERALL_MESSAGE_OPEN)) {
-                    Bentonow.isOpen = true;
-                } if (json.get(Config.API.STATUS_OVERALL_LABEL_VALUE).equals(Config.API.STATUS_OVERALL_MESSAGE_SOLDOUT)) {
-                    goTo goTo = new goTo();
-                    goTo.ErrorSolded();
-                } else if (json.get(Config.API.STATUS_OVERALL_LABEL_VALUE).equals(Config.API.STATUS_OVERALL_MESSAGE_CLOSED)) {
-                    goTo goTo = new goTo();
-                    goTo.ErrorClosed();
+            if( !isFirstInit() ) {
+                Log.i(TAG, "OverAll(json)");
+                try {
+                    // IF BENTO NOW OPEN
+                    String overall = json.getString(Config.API.STATUS_OVERALL_LABEL_VALUE);
+                    if (overall.equals(Config.API.STATUS_OVERALL_MESSAGE_OPEN)) {
+                        Log.i(TAG, "Bentonow.isOpen turn true");
+                        Bentonow.isOpen = true;
+                    }
+                    if (overall.equals(Config.API.STATUS_OVERALL_MESSAGE_SOLDOUT)) {
+                        Bentonow.isSolded = true;
+                        goTo goTo = new goTo();
+                        goTo.ErrorSolded();
+                    } else if (overall.equals(Config.API.STATUS_OVERALL_MESSAGE_CLOSED)) {
+                        Bentonow.isOpen = false;
+                        goTo goTo = new goTo();
+                        goTo.ErrorClosed();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
         }
 
@@ -183,24 +197,38 @@ public class MainActivity extends BaseActivity {
         }
 
         public void MenuItems(JSONArray MenuItems){
+            if (BuildConfig.DEBUG) {
+                Picasso.with(getApplicationContext()).setIndicatorsEnabled(true);
+                Picasso.with(getApplicationContext()).setLoggingEnabled(true);
+            }
             for (int i = 0; i < MenuItems.length(); i++) {
                 JSONObject gDish;
                 try {
                     gDish = (JSONObject) MenuItems.get(i);
-                    long menuHoy = Dish.count(Dish.class, "_id=?", new String[]{gDish.getString("itemId")});
+
+                    String image = gDish.getString(Config.DISH.IMAGE1);
+                    if (!TextUtils.isEmpty(image)) {
+                        Picasso.with(getApplicationContext())
+                                .load(image)
+                                //.resizeDimen(R.dimen.article_image_preview_width, R.dimen.article_image_preview_height)
+                                //.centerCrop()
+                                .fetch();
+                    }
+
+                    long menuHoy = Dish.count(Dish.class, "_id=?", new String[]{gDish.getString(Config.DISH.itemId)});
                     if (menuHoy == 0) {
-                        Dish dish = new Dish(gDish.getString("itemId"), gDish.getString("name"), gDish.getString("description"), gDish.getString("type"), gDish.getString("image1"), gDish.getString("max_per_order"), todayDate, Config.aux_initial_stock);
+                        Dish dish = new Dish(gDish.getString(Config.DISH.itemId), gDish.getString(Config.DISH.NAME), gDish.getString(Config.DISH.DESCRIPTION), gDish.getString(Config.DISH.TYPE), gDish.getString(Config.DISH.IMAGE1), gDish.getString(Config.DISH.MAX_PER_ORDER), todayDate, Config.aux_initial_stock);
                         dish.save();
                     } else {
-                        long dish_id = Dish.getIdBy_id(gDish.getString("itemId"));
+                        long dish_id = Dish.getIdBy_id(gDish.getString(Config.DISH.itemId));
                         if (dish_id != 0) {
                             Dish dish = Dish.findById(Dish.class, dish_id);
                             if (dish != null) {
-                                dish.name = gDish.getString("name");
-                                dish.description = gDish.getString("description");
-                                dish.type = gDish.getString("type");
-                                dish.image1 = gDish.getString("image1");
-                                dish.max_per_order = gDish.getString("max_per_order");
+                                dish.name = gDish.getString(Config.DISH.NAME);
+                                dish.description = gDish.getString(Config.DISH.DESCRIPTION);
+                                dish.type = gDish.getString(Config.DISH.TYPE);
+                                dish.image1 = gDish.getString(Config.DISH.IMAGE1);
+                                dish.max_per_order = gDish.getString(Config.DISH.MAX_PER_ORDER);
                                 dish.qty = Config.aux_initial_stock;
                                 dish.today = todayDate;
                                 dish.save();

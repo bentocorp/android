@@ -65,13 +65,16 @@
                 android:layout_height="fill_parent"
                 tools:listitem="@layout/inc_menu_item_row">
             </ListView>-->
-            <LinearLayout
-                android:id="@+id/tomorrow_side_dishes_container"
+            <com.bentonow.bentonow.BentoGridView
+                android:id="@+id/menu_item_side_listview"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                tools:listitem="@layout/inc_menu_item_row"
+                android:numColumns="2"
+                android:fillViewport="true"
+                >
 
-            </LinearLayout>
+            </com.bentonow.bentonow.BentoGridView>
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

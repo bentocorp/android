@@ -164,8 +164,17 @@ public class EnterPhoneNumberActivity extends BaseActivity {
                     user.apitoken = apitoken;
                     user.save();
 
-                    go igo = new go();
-                    igo.fromLogin();
+                    if ( Config.AppNavigateMap.from.equals(Config.from.SettingActivity) ) {
+                        Config.AppNavigateMap.from = null;
+                        Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
+                        startActivity(intent);
+                        overridePendingTransitionGoLeft();
+                    }else{
+                        Intent intent = new Intent(getApplicationContext(), CompleteOrderActivity.class);
+                        startActivity(intent);
+                        overridePendingTransitionGoLeft();
+                    }
+
                 } if (status.getCode() == Config.API.DEFAULT_ERROR_409) {
                     try {
                         JSONObject error_message = null;

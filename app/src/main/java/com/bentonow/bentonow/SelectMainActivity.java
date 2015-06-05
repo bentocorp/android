@@ -70,27 +70,27 @@ public class SelectMainActivity extends BaseActivity {
             if( dish.type.equals("main") ) {
                 Log.i(TAG,"dish: "+dish.toString());
                 HashMap<String, String> map = new HashMap<String, String>();
-                map.put("_id", dish._id);
-                map.put("name", dish.name);
-                map.put("description", dish.description);
-                map.put("type", dish.type);
-                map.put("image1", dish.image1);
-                map.put("max_per_order", dish.max_per_order);
-                map.put("today", dish.today);
-                map.put("qty", dish.qty);
+                map.put(Config.DISH._ID, dish._id);
+                map.put(Config.DISH.NAME, dish.name);
+                map.put(Config.DISH.DESCRIPTION, dish.description);
+                map.put(Config.DISH.TYPE, dish.type);
+                map.put(Config.DISH.IMAGE1, dish.image1);
+                map.put(Config.DISH.MAX_PER_ORDER, dish.max_per_order);
+                map.put(Config.DISH.TODAY, dish.today);
+                map.put(Config.DISH.QTY, dish.qty);
                 Log.i(TAG, "map: " + map.toString());
                 mainMenuList.add(map);
             }
         }
-        ListView CompanyListView = (ListView) findViewById(R.id.main_menu_list_items);
-        DishListAdapter adapter = new DishListAdapter(getApplicationContext(), mainMenuList);
-        CompanyListView.setAdapter(adapter);
+        ListView DishListView = (ListView) findViewById(R.id.main_menu_list_items);
+        DishListAdapter adapter = new DishListAdapter(_this, mainMenuList);
+        DishListView.setAdapter(adapter);
     }
 
-    public static void goToMain(){
+    /*public static void goToMain(){
         Intent intent = new Intent(aq.getContext(),BuildBentoActivity.class);
         _this.startActivity(intent);
         _this.overridePendingTransition(R.anim.left_slide_in, R.anim.right_slide_out);
         _this.finish();
-    }
+    }*/
 }

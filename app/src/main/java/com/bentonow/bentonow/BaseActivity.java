@@ -99,45 +99,4 @@ public class BaseActivity extends Activity {
         startActivity(intent);
         overridePendingTransitionGoRight();
     }
-
-    public class go{
-        public void toLoginActivity(Config.from comeFrom){
-            Config.AppNavigateMap.from = comeFrom;
-            Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
-            startActivity(intent);
-            overridePendingTransitionGoRight();
-        }
-
-        public void fromLogin(){
-            Intent intent;
-            try {
-                switch (Config.AppNavigateMap.from){
-                    case SettingActivity:
-                        Config.AppNavigateMap.from = null;
-                        intent = new Intent(getApplicationContext(), SettingActivity.class);
-                        startActivity(intent);
-                        overridePendingTransitionGoLeft();
-                        break;
-                    case BuildBentoActivity:
-                        Config.AppNavigateMap.from = null;
-                        intent = new Intent(getApplicationContext(), CompleteOrderActivity.class);
-                        startActivity(intent);
-                        overridePendingTransitionGoLeft();
-                        break;
-                    default:
-                        Config.AppNavigateMap.from = null;
-                        Intent intent2 = new Intent(getApplicationContext(), BuildBentoActivity.class);
-                        startActivity(intent2);
-                        overridePendingTransitionGoLeft();
-                        break;
-                }
-            }catch (NullPointerException ignored){
-                Config.AppNavigateMap.from = null;
-                Intent intent2 = new Intent(getApplicationContext(), BuildBentoActivity.class);
-                startActivity(intent2);
-                overridePendingTransitionGoLeft();
-            }
-        }
-    }
-
 }

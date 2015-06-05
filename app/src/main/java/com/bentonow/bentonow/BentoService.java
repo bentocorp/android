@@ -111,6 +111,7 @@ public class BentoService extends Service {
                             // STATUS / OVERALL
                             JSONObject overall = json.getJSONObject("overall");
                             if (overall.get(Config.API.STATUS_OVERALL_LABEL_VALUE).equals(Config.API.STATUS_OVERALL_MESSAGE_OPEN)) {
+                                Log.i(TAG,"Bentonow.isOpen: "+Bentonow.isOpen.toString());
                                 if (!Bentonow.isOpen) {
                                     Bentonow.isOpen = true;
                                     goTo(Target.MainActivity);
@@ -145,7 +146,7 @@ public class BentoService extends Service {
                 dialogIntent = new Intent(this, MainActivity.class);
                 dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(dialogIntent);
-                Bentonow.app.current_activity.finish();
+                //Bentonow.app.current_activity.finish();
                 Bentonow.app.current_activity.overridePendingTransition(R.anim.top_slide_in, R.anim.bottom_slide_out);
                 break;
             case ErrorClosed:
@@ -153,14 +154,14 @@ public class BentoService extends Service {
                 dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 //dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(dialogIntent);
-                Bentonow.app.current_activity.finish();
+                //Bentonow.app.current_activity.finish();
                 Bentonow.app.current_activity.overridePendingTransition(R.anim.bottom_slide_in, R.anim.top_slide_out);
                 break;
             case ErrorSoulded:
                 dialogIntent = new Intent(this, ErrorOutOfStockActivity.class);
                 dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(dialogIntent);
-                Bentonow.app.current_activity.finish();
+                //Bentonow.app.current_activity.finish();
                 Bentonow.app.current_activity.overridePendingTransition(R.anim.bottom_slide_in, R.anim.top_slide_out);
                 break;
         }

@@ -62,7 +62,6 @@
                 android:textColor="@color/white"
                 android:gravity="center"
                 />
-
         </LinearLayout>
 
         <WebView
@@ -137,6 +136,5 @@
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
-
     </RelativeLayout>
 </RelativeLayout>

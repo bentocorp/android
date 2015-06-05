@@ -18,7 +18,7 @@ public class SettingActivity extends BaseActivity {
 
     private static final String TAG = "SettingActivity";
     private LinearLayout btn_setting_signin, btn_setting_faq, btn_setting_phone, btn_setting_email;
-    private TextView btn_call,btn_cancel;
+    private TextView btn_call, btn_cancel;
     private RelativeLayout overlay_call;
     private TextView btn_logout;
     private RelativeLayout user_general_content;
@@ -36,12 +36,13 @@ public class SettingActivity extends BaseActivity {
         initElements();
         initListeners();
         checkUserSession();
+        Config.AppNavigateMap.from = Config.from.SettingActivity;
     }
 
     private void checkUserSession() {
         user = User.findById(User.class, (long) 1);
-        if( user != null && user.apitoken != null && !user.apitoken.isEmpty() ) {
-            user_name.setText(user.firstname+" "+user.lastname);
+        if (user != null && user.apitoken != null && !user.apitoken.isEmpty()) {
+            user_name.setText(user.firstname + " " + user.lastname);
             phone.setText(user.phone);
             email.setText(user.email);
             user_general_content.setVisibility(View.VISIBLE);
@@ -51,27 +52,27 @@ public class SettingActivity extends BaseActivity {
     }
 
     private void initElements() {
-        btn_setting_signin = (LinearLayout)findViewById(R.id.btn_setting_signin);
-        btn_setting_faq = (LinearLayout)findViewById(R.id.btn_setting_faq);
-        btn_setting_email = (LinearLayout)findViewById(R.id.btn_setting_email);
-        btn_setting_phone = (LinearLayout)findViewById(R.id.btn_setting_phone);
-        btn_setting_creditcard = (LinearLayout)findViewById(R.id.btn_setting_creditcard);
+        btn_setting_signin = (LinearLayout) findViewById(R.id.btn_setting_signin);
+        btn_setting_faq = (LinearLayout) findViewById(R.id.btn_setting_faq);
+        btn_setting_email = (LinearLayout) findViewById(R.id.btn_setting_email);
+        btn_setting_phone = (LinearLayout) findViewById(R.id.btn_setting_phone);
+        btn_setting_creditcard = (LinearLayout) findViewById(R.id.btn_setting_creditcard);
 
-        overlay_call = (RelativeLayout)findViewById(R.id.overlay_call);
-        btn_call = (TextView)findViewById(R.id.btn_call);
-        btn_cancel = (TextView)findViewById(R.id.btn_cancel);
+        overlay_call = (RelativeLayout) findViewById(R.id.overlay_call);
+        btn_call = (TextView) findViewById(R.id.btn_call);
+        btn_cancel = (TextView) findViewById(R.id.btn_cancel);
 
         user_general_content = (RelativeLayout) findViewById(R.id.user_general_content);
-        btn_logout = (TextView)findViewById(R.id.btn_logout);
+        btn_logout = (TextView) findViewById(R.id.btn_logout);
 
         //LOG OUT OVERLAY
         overlay_logout = (RelativeLayout) findViewById(R.id.overlay_logout);
-        btn_cancel_logout = (TextView)findViewById(R.id.btn_cancel_logout);
-        btn_yes_logout = (TextView)findViewById(R.id.btn_yes_logout);
+        btn_cancel_logout = (TextView) findViewById(R.id.btn_cancel_logout);
+        btn_yes_logout = (TextView) findViewById(R.id.btn_yes_logout);
 
-        user_name = (TextView)findViewById(R.id.user_name);
-        phone = (TextView)findViewById(R.id.phone);
-        email = (TextView)findViewById(R.id.email);
+        user_name = (TextView) findViewById(R.id.user_name);
+        phone = (TextView) findViewById(R.id.phone);
+        email = (TextView) findViewById(R.id.email);
     }
 
     private void initListeners() {
@@ -80,7 +81,7 @@ public class SettingActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 user.reset();
-                Intent intent = new Intent(getApplicationContext(),BuildBentoActivity.class);
+                Intent intent = new Intent(getApplicationContext(), BuildBentoActivity.class);
                 startActivity(intent);
                 finish();
                 overridePendingTransitionGoLeft();
@@ -104,7 +105,7 @@ public class SettingActivity extends BaseActivity {
         btn_call.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + Config.PHONE_NUMBER));
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + Config.PHONE_NUMBER));
                 startActivity(intent);
             }
         });
@@ -119,14 +120,15 @@ public class SettingActivity extends BaseActivity {
         btn_setting_signin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                go igo = new go();
-                igo.toLoginActivity(Config.from.SettingActivity);
+                Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
+                startActivity(intent);
+                overridePendingTransitionGoRight();
             }
         });
         btn_setting_creditcard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(),CreditCardActivity.class);
+                Intent intent = new Intent(getApplicationContext(), CreditCardActivity.class);
                 startActivity(intent);
                 overridePendingTransitionGoRight();
             }
@@ -162,7 +164,6 @@ public class SettingActivity extends BaseActivity {
     }
 
 
-
     private void initActionbar() {
         Log.i(TAG, "initActionbar()");
         TextView actionbar_title = (TextView) findViewById(R.id.actionbar_title);
@@ -173,9 +174,7 @@ public class SettingActivity extends BaseActivity {
         actionbar_left_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //finishThisActivity();
-                Intent intent = new Intent(getApplicationContext(), BuildBentoActivity.class);
-                startActivity(intent);
+                Config.AppNavigateMap.from = null;
                 finish();
                 overridePendingTransitionGoLeft();
             }
@@ -183,4 +182,11 @@ public class SettingActivity extends BaseActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Config.AppNavigateMap.from = null;
+        finish();
+        overridePendingTransitionGoLeft();
+    }
 }

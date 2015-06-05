@@ -74,8 +74,6 @@ public class SignInActivity extends BaseActivity {
         actionbar_left_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), BuildBentoActivity.class);
-                startActivity(intent);
                 finish();
                 overridePendingTransitionGoLeft();
             }
@@ -142,7 +140,7 @@ public class SignInActivity extends BaseActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
                 startActivity(intent);
-                finish();
+                //finish();
                 overridePendingTransitionGoRight();
             }
         });
@@ -168,17 +166,17 @@ public class SignInActivity extends BaseActivity {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("data", dataJson);
 
-        Log.i(TAG,"dataJson: "+dataJson);
+        Log.i(TAG, "dataJson: " + dataJson);
 
         aq.ajax(uri, params, JSONObject.class, new AjaxCallback<JSONObject>() {
             @Override
             public void callback(String url, JSONObject json, AjaxStatus status) {
 
-                if(json!=null) Log.i(TAG,"json: "+json.toString());
-                else Log.i(TAG,"json IS NULL");
+                if (json != null) Log.i(TAG, "json: " + json.toString());
+                else Log.i(TAG, "json IS NULL");
 
-                Log.i(TAG,"status.getError(): "+status.getError());
-                Log.i(TAG,"status.getMessage(): "+status.getMessage());
+                Log.i(TAG, "status.getError(): " + status.getError());
+                Log.i(TAG, "status.getMessage(): " + status.getMessage());
                 Log.i(TAG, "status.getCode(): " + status.getCode());
 
                 // CASE 200 IF OK
@@ -229,8 +227,16 @@ public class SignInActivity extends BaseActivity {
                         user.save();
                     }
 
-                    go igo = new go();
-                    igo.fromLogin();
+                    if ( Config.AppNavigateMap.from != null && Config.AppNavigateMap.from.equals(Config.from.SettingActivity) ) {
+                        Config.AppNavigateMap.from = null;
+                        Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
+                        startActivity(intent);
+                        overridePendingTransitionGoLeft();
+                    }else{
+                        Intent intent = new Intent(getApplicationContext(), CompleteOrderActivity.class);
+                        startActivity(intent);
+                        overridePendingTransitionGoLeft();
+                    }
                 }
 
                 // CASE 403 BAD PASSWORD
@@ -290,11 +296,11 @@ public class SignInActivity extends BaseActivity {
                                     GraphResponse response) {
                                 // Application code
                                 JSONObject responseJSONObject = response.getJSONObject();
-                                Log.v("LoginActivity", "graphObject: "+responseJSONObject);
+                                Log.v("LoginActivity", "graphObject: " + responseJSONObject);
 
                                 long users = User.count(User.class, null, null);
                                 User user;
-                                if(users==0) user = new User();
+                                if (users == 0) user = new User();
                                 else user = User.findById(User.class, (long) 1);
 
                                 AccessToken accessToken = AccessToken.getCurrentAccessToken();
@@ -302,7 +308,7 @@ public class SignInActivity extends BaseActivity {
                                 try {
                                     data.put("email", responseJSONObject.getString("email"));
                                     data.put("fb_token", accessToken.getToken());
-                                    postUserData(data.toString(),true);
+                                    postUserData(data.toString(), true);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -345,4 +351,10 @@ public class SignInActivity extends BaseActivity {
         AppEventsLogger.deactivateApp(this);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+        overridePendingTransitionGoLeft();
+    }
 }

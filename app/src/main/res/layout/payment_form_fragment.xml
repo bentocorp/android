@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_container"
     android:orientation="vertical"
     android:gravity="center_horizontal"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="wrap_content"
     >
 
         <LinearLayout
@@ -64,7 +65,7 @@
                         android:background="@drawable/btn_border_lineal_white"
                         android:id="@+id/expMonth"
                         android:hint="MM"
-                        android:text="12"
+                        android:text=""
                         android:gravity="center"
                         android:padding="7dp"
                         android:inputType="number"
@@ -80,7 +81,7 @@
                         android:background="@drawable/btn_border_lineal_white"
                         android:nextFocusForward="@+id/ExpYear"
                         android:hint="YY"
-                        android:text="2016"
+                        android:text=""
                         android:gravity="center"
                         android:padding="7dp"
                         android:visibility="gone"
@@ -111,10 +112,10 @@
             android:id="@+id/save"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Save"
-            android:padding="@dimen/btn_padding"
-            android:background="@color/btn_green"
+            android:text="CONTINUE TO SUMMARY"
+            android:background="@drawable/btn_dark_gray"
             android:textColor="@color/white"
             android:gravity="center"
+            android:layout_margin="@dimen/general_padding"
             />
 </LinearLayout>

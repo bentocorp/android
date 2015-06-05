@@ -76,7 +76,7 @@ public class FaqActivity extends BaseActivity {
         btn_call.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + Config.PHONE_NUMBER));
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + Config.PHONE_NUMBER));
                 startActivity(intent);
             }
         });
@@ -107,6 +107,13 @@ public class FaqActivity extends BaseActivity {
             }
         });
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+        overridePendingTransitionGoLeft();
     }
 
 }

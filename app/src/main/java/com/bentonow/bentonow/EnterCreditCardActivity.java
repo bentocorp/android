@@ -33,7 +33,7 @@ public class EnterCreditCardActivity extends BaseFragmentActivity {
     private ProgressDialogFragment progressFragment;
 
     AQuery aq;
-    private TextView btn_continue_to_payment;
+    //private TextView btn_continue_to_payment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,16 +49,16 @@ public class EnterCreditCardActivity extends BaseFragmentActivity {
     }
 
     private void initElements() {
-        btn_continue_to_payment = (TextView)findViewById(R.id.btn_continue_to_payment);
+        //btn_continue_to_payment = (TextView)findViewById(R.id.btn_continue_to_payment);
     }
 
     private void addListeners(){
-        btn_continue_to_payment.setOnClickListener(new View.OnClickListener() {
+        /*btn_continue_to_payment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 returnToPayment();
             }
-        });
+        });*/
     }
 
     public void saveCreditCard(PaymentForm form) {

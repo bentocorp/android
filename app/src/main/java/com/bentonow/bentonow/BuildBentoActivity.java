@@ -180,16 +180,16 @@ public class BuildBentoActivity extends BaseActivity {
             if (!main_dish.image1.isEmpty()) {
                 build_main_label_textview.setVisibility(View.INVISIBLE);
                 build_main_imageview.setVisibility(View.VISIBLE);
-                //aq.id(build_main_imageview).image(main_dish.image1, true, true, 0, 0, null, AQuery.FADE_IN_NETWORK, 1.0f);
                 Picasso.with(getApplicationContext())
                         .load(main_dish.image1)
                         .placeholder(R.drawable.tmp_trans)
                         .error(R.drawable.tmp_trans)
                         .into(build_main_imageview);
+            }else{
+                build_main_label_textview.setVisibility(View.INVISIBLE);
+                build_main_imageview.setVisibility(View.VISIBLE);
+                build_main_imageview.setImageResource(R.drawable.tmp_trans);
             }
-        }else{
-            build_main_label_textview.setVisibility(View.VISIBLE);
-            build_main_imageview.setVisibility(View.INVISIBLE);
         }
 
         // SIDE 1 DISH
@@ -205,10 +205,11 @@ public class BuildBentoActivity extends BaseActivity {
                         .placeholder(R.drawable.tmp_trans)
                         .error(R.drawable.tmp_trans)
                         .into(build_side1_imageview);
+            }else{
+                build_side1_label_textview.setVisibility(View.INVISIBLE);
+                build_side1_imageview.setVisibility(View.VISIBLE);
+                build_side1_imageview.setImageResource(R.drawable.tmp_trans);
             }
-        }else{
-            build_side1_label_textview.setVisibility(View.VISIBLE);
-            build_side1_imageview.setVisibility(View.INVISIBLE);
         }
 
         // SIDE 2 DISH
@@ -224,10 +225,11 @@ public class BuildBentoActivity extends BaseActivity {
                         .placeholder(R.drawable.tmp_trans)
                         .error(R.drawable.tmp_trans)
                         .into(build_side2_imageview);
+            }else{
+                build_side2_label_textview.setVisibility(View.INVISIBLE);
+                build_side2_imageview.setVisibility(View.VISIBLE);
+                build_side2_imageview.setImageResource(R.drawable.tmp_trans);
             }
-        }else{
-            build_side2_label_textview.setVisibility(View.VISIBLE);
-            build_side2_imageview.setVisibility(View.INVISIBLE);
         }
 
         // SIDE 3 DISH
@@ -237,16 +239,16 @@ public class BuildBentoActivity extends BaseActivity {
                 Log.i(TAG, "side3_dish.image1: " + side3_dish.image1);
                 build_side3_label_textview.setVisibility(View.INVISIBLE);
                 build_side3_imageview.setVisibility(View.VISIBLE);
-                //aq.id(build_side3_imageview).image(side3_dish.image1, true, true, 0, 0, null, AQuery.FADE_IN_NETWORK, 1.0f);
                 Picasso.with(getApplicationContext())
                         .load(side3_dish.image1)
                         .placeholder(R.drawable.tmp_trans)
                         .error(R.drawable.tmp_trans)
                         .into(build_side3_imageview);
+            }else{
+                build_side3_label_textview.setVisibility(View.INVISIBLE);
+                build_side3_imageview.setVisibility(View.VISIBLE);
+                build_side3_imageview.setImageResource(R.drawable.tmp_trans);
             }
-        }else{
-            build_side3_label_textview.setVisibility(View.VISIBLE);
-            build_side3_imageview.setVisibility(View.INVISIBLE);
         }
 
         // SIDE 4 DISH
@@ -262,10 +264,11 @@ public class BuildBentoActivity extends BaseActivity {
                         .placeholder(R.drawable.tmp_trans)
                         .error(R.drawable.tmp_trans)
                         .into(build_side4_imageview);
+            }else{
+                build_side4_label_textview.setVisibility(View.INVISIBLE);
+                build_side4_imageview.setVisibility(View.VISIBLE);
+                build_side4_imageview.setImageResource(R.drawable.tmp_trans);
             }
-        }else{
-            build_side4_label_textview.setVisibility(View.VISIBLE);
-            build_side4_imageview.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -309,7 +312,7 @@ public class BuildBentoActivity extends BaseActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
                 startActivity(intent);
-                finish();
+                //finish();
                 overridePendingTransitionGoRight();
             }
         });
@@ -320,11 +323,9 @@ public class BuildBentoActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Item bento = Item.findById(Item.class, Bentonow.pending_bento_id);
-                if (bento.isFull()){
-                    Intent intent = new Intent(getApplicationContext(), CompleteOrderActivity.class);
-                    startActivity(intent);
-                    finish();
-                    overridePendingTransitionGoRight();
+                //TODO
+                if ( bento != null && bento.isFull()){
+                    finalizeOrder();
                 }else{
                     showDialogForAutocompleteBento();
                 }
@@ -338,6 +339,7 @@ public class BuildBentoActivity extends BaseActivity {
         build_main.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Bentonow.current_side = Config.SIDE.MAIN;
                 Intent intent = new Intent(getApplicationContext(), SelectMainActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
@@ -350,7 +352,7 @@ public class BuildBentoActivity extends BaseActivity {
         btn_bento_side_1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bentonow.current_side = 1;
+                Bentonow.current_side = Config.SIDE.SIDE_1;
                 Intent intent = new Intent(getApplicationContext(),SelectSideActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
@@ -363,7 +365,7 @@ public class BuildBentoActivity extends BaseActivity {
         btn_bento_side_2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bentonow.current_side = 2;
+                Bentonow.current_side = Config.SIDE.SIDE_2;
                 Intent intent = new Intent(getApplicationContext(), SelectSideActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
@@ -376,7 +378,7 @@ public class BuildBentoActivity extends BaseActivity {
         btn_bento_side_3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bentonow.current_side = 3;
+                Bentonow.current_side = Config.SIDE.SIDE_3;
                 Intent intent = new Intent(getApplicationContext(),SelectSideActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
@@ -389,7 +391,7 @@ public class BuildBentoActivity extends BaseActivity {
         btn_bento_side_4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bentonow.current_side = 4;
+                Bentonow.current_side = Config.SIDE.SIDE_4;
                 Intent intent = new Intent(getApplicationContext(),SelectSideActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
@@ -701,8 +703,9 @@ public class BuildBentoActivity extends BaseActivity {
         if( user != null && user.apitoken != null && !user.apitoken.isEmpty() ){
             goToCompleteOrder();
         }else {
-            go igo = new go();
-            igo.toLoginActivity(Config.from.BuildBentoActivity);
+            Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
+            startActivity(intent);
+            overridePendingTransitionGoRight();
         }
     }
 

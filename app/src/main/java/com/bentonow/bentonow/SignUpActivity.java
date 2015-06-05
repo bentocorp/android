@@ -93,10 +93,8 @@ public class SignUpActivity extends BaseActivity {
         actionbar_left_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(),SignInActivity.class);
-                startActivity(intent);
                 finish();
-                overridePendingTransition(R.anim.left_slide_in, R.anim.right_slide_out);
+                overridePendingTransitionGoLeft();
             }
         });
     }
@@ -177,7 +175,7 @@ public class SignUpActivity extends BaseActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(),SignInActivity.class);
                 startActivity(intent);
-                finish();
+                //finish();
                 overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
             }
         });
@@ -245,10 +243,16 @@ public class SignUpActivity extends BaseActivity {
                     user.save();
 
                     // GO TO ORDER DETAIL
-                    Intent intent = new Intent(getApplicationContext(), CompleteOrderActivity.class);
-                    startActivity(intent);
-                    finish();
-                    overridePendingTransitionGoLeft();
+                    if ( Config.AppNavigateMap.from.equals(Config.from.SettingActivity) ) {
+                        Config.AppNavigateMap.from = null;
+                        Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
+                        startActivity(intent);
+                        overridePendingTransitionGoLeft();
+                    }else{
+                        Intent intent = new Intent(getApplicationContext(), CompleteOrderActivity.class);
+                        startActivity(intent);
+                        overridePendingTransitionGoLeft();
+                    }
                 }
                 if (status.getCode() == Config.API.USER_SIGNUP_400) {
                     try {
@@ -357,4 +361,10 @@ public class SignUpActivity extends BaseActivity {
         AppEventsLogger.deactivateApp(this);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+        overridePendingTransitionGoLeft();
+    }
 }

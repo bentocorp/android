@@ -155,6 +155,7 @@ public class CompleteOrderActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 initAll();
+                //coupon_result_message.setText("");
                 overlay_coupon_result.setVisibility(View.GONE);
             }
         });
@@ -162,11 +163,13 @@ public class CompleteOrderActivity extends BaseActivity {
         findViewById(R.id.btn_send_promo).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO
                 if(!promo_code.getText().toString().isEmpty()) {
                     overlay_coupon.setVisibility(View.GONE);
                     overlay_coupon_result.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.VISIBLE);
+                    message_box.setVisibility(View.INVISIBLE);
                     postPromoCode(promo_code.getText().toString());
+                    promo_code.setText("");
                     InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(promo_code.getWindowToken(), 0);
                 }
@@ -424,7 +427,9 @@ public class CompleteOrderActivity extends BaseActivity {
                             current_order.amountoff = amountOff;
                             current_order.couponcode = promo_code;
                             current_order.save();
-                            coupon_result_message.setText(amountOff);
+                            //coupon_result_message.setText(amountOff);
+                            overlay_coupon_result.setVisibility(View.INVISIBLE);
+                            initAll();
                         } catch (JSONException e) {
                             //Log.e(TAG, status.getError());
                             e.printStackTrace();
@@ -437,7 +442,7 @@ public class CompleteOrderActivity extends BaseActivity {
                     if(json!=null){
                         try {
                             String error = json.getString("error");
-                            Log.e(TAG,"ERROR: "+error);
+                            Log.e(TAG, "ERROR: " + error);
                             coupon_result_message.setText(error);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -581,11 +586,16 @@ public class CompleteOrderActivity extends BaseActivity {
         }
 
         //TIP
+//        Double double_tip_percent = round(Config.CurrentOrder.tip_percent,2);
+//        String tip_percent = String.format("%.2f", double_tip_percent );
         tip_percentTextView.setText(Config.CurrentOrder.tip_percent+"%");
         // SHOW TAX
-        tax_detail.setText("$" + Config.CurrentOrder.total_tax_cost);
+        String total_tax = String.valueOf(String.format("%.2f", Config.CurrentOrder.total_tax_cost));
+        tax_detail.setText("$" + total_tax);
+
         // SHOW TOTAL
-        order_total_textview.setText("$" + Config.CurrentOrder.total_order_cost);
+        String total_order_cost = String.valueOf(String.format("%.2f", Config.CurrentOrder.total_order_cost));
+        order_total_textview.setText("$" + total_order_cost);
     }
 
     public static double round(double value, int places) {

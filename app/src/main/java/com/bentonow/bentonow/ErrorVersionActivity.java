@@ -30,10 +30,10 @@ public class ErrorVersionActivity extends BaseActivity {
 
     private void showDescription() {
         TextView current_version = (TextView) findViewById(R.id.current_version);
-        current_version.setText(Config.current_version);
+        current_version.setText(String.valueOf(Config.current_version));
 
         TextView available_version = (TextView) findViewById(R.id.available_version);
-        available_version.setText(Config.android_min_version);
+        available_version.setText(String.valueOf(Config.android_min_version));
     }
 
 }
