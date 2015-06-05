@@ -622,7 +622,7 @@ public class CompleteOrderActivity extends BaseActivity {
     private void initActionbar() {
         Log.i(TAG,"initActionbar()");
         TextView actionbar_title = (TextView) findViewById(R.id.actionbar_title);
-        actionbar_title.setText("Complete Order");
+        actionbar_title.setText("Summary");
 
         ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
         actionbar_left_btn.setImageResource(R.drawable.ic_ab_back);
