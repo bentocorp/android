@@ -427,7 +427,7 @@ public class BuildBentoActivity extends BaseActivity {
                     Log.i(TAG, "bento is NULL");
                     checkPendingBuildBento();
                     Item bento2 = Item.findById(Item.class, Bentonow.pending_bento_id);
-                    if (!bento2.isFull()) {
+                    if (bento2 != null && !bento2.isFull()) {
                         showDialogForAutocompleteBento();
                     }
                 } else if (!bento.isFull()) {
