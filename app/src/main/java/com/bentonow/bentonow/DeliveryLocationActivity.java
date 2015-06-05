@@ -188,9 +188,17 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         TextView actionbar_title = (TextView) findViewById(R.id.actionbar_title);
         actionbar_title.setText(getResources().getString(R.string.delivery_location_actionbar_title));
 
+        final Activity _this = this;
+
         //
         actionbar_right_btn = (ImageView)findViewById(R.id.actionbar_right_btn);
-        actionbar_right_btn.setImageResource(R.drawable.ic_ab_bento);
+        actionbar_right_btn.setImageResource(R.drawable.ic_ab_question_mark);
+        actionbar_right_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(_this, FaqActivity.class));
+            }
+        });
     }
 
     private void addListeners() {
