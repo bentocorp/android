@@ -1,5 +1,7 @@
 package com.bentonow.bentonow;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -29,6 +31,7 @@ public class EnterCreditCardActivity extends BaseFragmentActivity {
 
     private static final String TAG = "EnterCreditCardActivity";
     public static final String PUBLISHABLE_KEY = "pk_test_hFtlMiWcGFn9TvcyrLDI4Y6P";
+    private static Activity _this;
 
     private ProgressDialogFragment progressFragment;
 
@@ -40,6 +43,8 @@ public class EnterCreditCardActivity extends BaseFragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enter_credit_card);
         aq = new AQuery(this);
+
+        _this = this;
 
         initActionbar();
         initElements();
@@ -136,10 +141,10 @@ public class EnterCreditCardActivity extends BaseFragmentActivity {
 
     }
 
-    private void returnToPayment() {
-        Intent intent = new Intent(getApplicationContext(), CompleteOrderActivity.class);
-        startActivity(intent);
-        finish();
-        overridePendingTransitionGoLeft();
+    public static void returnToPayment() {
+        Intent intent = new Intent(_this, CompleteOrderActivity.class);
+        _this.startActivity(intent);
+        _this.finish();
+        _this.overridePendingTransition(R.anim.left_slide_in, R.anim.right_slide_out);
     }
 }
