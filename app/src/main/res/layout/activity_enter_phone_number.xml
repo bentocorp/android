@@ -64,17 +64,33 @@
                 android:layout_width="1px"
                 android:layout_height="fill_parent"
                 android:background="@color/divisor" />
-
-            <EditText
-                android:id="@+id/phone_number"
-                android:layout_width="fill_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:hint="Phone Number"
                 android:textSize="@dimen/text_small"
                 android:textColor="@color/gray"
                 android:background="@color/transparent"
                 android:padding="@dimen/btn_padding"
-                android:inputType="phone" />
+                android:text="+1 "
+                android:paddingLeft="@dimen/btn_padding"
+                android:paddingBottom="@dimen/btn_padding"
+                android:paddingTop="@dimen/btn_padding"
+                android:gravity="center"/>
+            <EditText
+                android:id="@+id/phone_number"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:textSize="@dimen/text_small"
+                android:textColor="@color/gray"
+                android:background="@color/transparent"
+                android:paddingRight="@dimen/btn_padding"
+                android:paddingBottom="@dimen/btn_padding"
+                android:paddingTop="@dimen/btn_padding"
+                android:inputType="phone"
+                android:digits="1234567890"
+                android:gravity="center_vertical"
+                android:maxLength="16"
+                android:focusableInTouchMode="true" />
         </LinearLayout>
 
         <!-- divisor -->

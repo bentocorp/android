@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -118,6 +120,44 @@ public class SignUpActivity extends BaseActivity {
                 overridePendingTransitionGoRight();
             }
         });
+        phone_number.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String phone = phone_number.getText().toString();
+
+                // "("
+                if (phone.length() == 1 && phone.substring(0).equals("(") == false) {
+                    phone_number.setText("(" + phone);
+                } else if (phone.length() == 1 && phone.substring(0).equals("(")) {
+                    phone_number.setText("");
+                    // ") "
+                } else if (phone.length() == 4) {
+                    phone_number.setText(phone + ") ");
+                } else if (phone.length() == 6 && phone.substring(5).equals(") ")) {
+                    phone_number.setText(phone.substring(0, 6));
+                    // " - "
+                } else if (phone_number.length() == 9) {
+                    phone_number.setText(phone + " - ");
+                } else if (phone_number.length() == 12 && phone.substring(10).equals(" - ")) {
+                    phone_number.setText(phone.substring(0, 10));
+                }
+
+                phone_number.setSelection(phone_number.getText().length());
+
+                phone_number.setTextColor(getResources().getColor(R.color.gray));
+                signup_phone_ico.setImageResource(R.drawable.ic_signup_phone);
+            }
+        });
         // BTN REGISTER
         btn_register.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,7 +186,7 @@ public class SignUpActivity extends BaseActivity {
                 }
 
                 // PHONE
-                if (phone_number.getText().toString().equals("")) {
+                if (phone_number.getText().length() != 16) {
                     phone_number.setTextColor(getResources().getColor(R.color.orange));
                     signup_phone_ico.setImageResource(R.drawable.ic_signup_phone_error);
                     alert("Please enter a valid phone number.");
@@ -156,7 +196,7 @@ public class SignUpActivity extends BaseActivity {
                     signup_phone_ico.setImageResource(R.drawable.ic_signup_phone);
                 }
 
-                // PHONE
+                // PASSWORD
                 if (password.getText().toString().equals("")) {
                     password.setTextColor(getResources().getColor(R.color.orange));
                     signup_key_ico.setImageResource(R.drawable.ic_signup_key_error);

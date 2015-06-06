@@ -2,8 +2,12 @@ package com.bentonow.bentonow;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.telephony.PhoneNumberFormattingTextWatcher;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -69,13 +73,60 @@ public class EnterPhoneNumberActivity extends BaseActivity {
         phone_number = (EditText)findViewById(R.id.phone_number);
         phone_number_ico = (ImageView)findViewById(R.id.phone_number_ico);
         btn_done = (TextView)findViewById(R.id.btn_done);
+
+        phone_number.requestFocus();
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     }
 
     private void addListeners(){
+        phone_number.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String phone = phone_number.getText().toString();
+
+                // "("
+                if (phone.length() == 1 && phone.substring(0).equals("(") == false) {
+                    phone_number.setText("(" + phone);
+                } else if (phone.length() == 1 && phone.substring(0).equals("(")) {
+                    phone_number.setText("");
+                    // ") "
+                } else if (phone.length() == 4) {
+                    phone_number.setText(phone + ") ");
+                } else if (phone.length() == 6 && phone.substring(5).equals(") ")) {
+                    phone_number.setText(phone.substring(0, 6));
+                    // " - "
+                } else if (phone_number.length() == 9) {
+                    phone_number.setText(phone + " - ");
+                } else if (phone_number.length() == 12 && phone.substring(10).equals(" - ")) {
+                    phone_number.setText(phone.substring(0, 10));
+                }
+
+                phone_number.setSelection(phone_number.getText().length());
+
+                if (phone_number.getText().toString().length() == 16) {
+                    btn_done.setBackgroundResource(R.drawable.bg_green_cornered);
+                } else {
+                    btn_done.setBackgroundResource(R.drawable.btn_dark_gray);
+                }
+
+                phone_number.setTextColor(getResources().getColor(R.color.gray));
+                phone_number_ico.setImageResource(R.drawable.ic_signup_phone);
+            }
+        });
         btn_done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (phone_number.getText().toString().equals("")) {
+                if (phone_number.getText().toString().length() != 16) {
                     phone_number.setTextColor(getResources().getColor(R.color.orange));
                     phone_number_ico.setImageResource(R.drawable.ic_signup_phone_error);
                     return;
@@ -83,8 +134,10 @@ public class EnterPhoneNumberActivity extends BaseActivity {
                     phone_number.setTextColor(getResources().getColor(R.color.gray));
                     phone_number_ico.setImageResource(R.drawable.ic_signup_phone);
                 }
+
                 User user = User.findById(User.class,(long)1);
-                user.phone = phone_number.getText().toString();
+                user.phone = phone_number.getText().toString().replace("(", "").replace(")", "").replace(" ", "-");
+
                 user.save();
                 postUserData();
             }
