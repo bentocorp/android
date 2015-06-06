@@ -59,11 +59,11 @@ public class BuildBentoActivity extends BaseActivity {
         Log.i(TAG, "onCreate");
         aq = new AQuery(this);
         initActionbar();
-        changeViewsElemnts();
+        chargeViewsElemnts();
         initListeners();
     }
 
-    private void changeViewsElemnts() {
+    private void chargeViewsElemnts() {
         build_main_label_textview = (TextView)findViewById(R.id.build_main_label_textview);
         build_main_imageview = (ImageView)findViewById(R.id.build_main_imageview);
 
@@ -152,7 +152,8 @@ public class BuildBentoActivity extends BaseActivity {
         item.orderid = String.valueOf(Bentonow.pending_order_id);
         item.save();
         Bentonow.pending_bento_id = item.getId();
-        showCurrentBento(item);
+        //showCurrentBento(item);
+        resume();
     }
 
     private void showCurrentBento(Item current_bento) {
@@ -190,6 +191,10 @@ public class BuildBentoActivity extends BaseActivity {
                 build_main_imageview.setVisibility(View.VISIBLE);
                 build_main_imageview.setImageResource(R.drawable.tmp_trans);
             }
+        }else{
+            build_main_label_textview.setVisibility(View.VISIBLE);
+            build_main_imageview.setImageResource(R.drawable.tmp_trans);
+            build_main_imageview.setVisibility(View.INVISIBLE);
         }
 
         // SIDE 1 DISH
@@ -210,6 +215,10 @@ public class BuildBentoActivity extends BaseActivity {
                 build_side1_imageview.setVisibility(View.VISIBLE);
                 build_side1_imageview.setImageResource(R.drawable.tmp_trans);
             }
+        }else{
+            build_side1_label_textview.setVisibility(View.VISIBLE);
+            build_side1_imageview.setVisibility(View.INVISIBLE);
+            build_side1_imageview.setImageResource(R.drawable.tmp_trans);
         }
 
         // SIDE 2 DISH
@@ -230,6 +239,10 @@ public class BuildBentoActivity extends BaseActivity {
                 build_side2_imageview.setVisibility(View.VISIBLE);
                 build_side2_imageview.setImageResource(R.drawable.tmp_trans);
             }
+        }else{
+            build_side2_label_textview.setVisibility(View.VISIBLE);
+            build_side2_imageview.setVisibility(View.INVISIBLE);
+            build_side2_imageview.setImageResource(R.drawable.tmp_trans);
         }
 
         // SIDE 3 DISH
@@ -249,6 +262,10 @@ public class BuildBentoActivity extends BaseActivity {
                 build_side3_imageview.setVisibility(View.VISIBLE);
                 build_side3_imageview.setImageResource(R.drawable.tmp_trans);
             }
+        }else{
+            build_side3_label_textview.setVisibility(View.VISIBLE);
+            build_side3_imageview.setVisibility(View.INVISIBLE);
+            build_side3_imageview.setImageResource(R.drawable.tmp_trans);
         }
 
         // SIDE 4 DISH
@@ -269,6 +286,10 @@ public class BuildBentoActivity extends BaseActivity {
                 build_side4_imageview.setVisibility(View.VISIBLE);
                 build_side4_imageview.setImageResource(R.drawable.tmp_trans);
             }
+        }else{
+            build_side4_label_textview.setVisibility(View.VISIBLE);
+            build_side4_imageview.setVisibility(View.INVISIBLE);
+            build_side4_imageview.setImageResource(R.drawable.tmp_trans);
         }
     }
 
@@ -323,7 +344,6 @@ public class BuildBentoActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Item bento = Item.findById(Item.class, Bentonow.pending_bento_id);
-                //TODO
                 if ( bento != null && bento.isFull()){
                     finalizeOrder();
                 }else{

@@ -11,6 +11,7 @@ public class Bentonow {
     public static Long pending_order_id = null;
     public static Long pending_bento_id = null;
     public static int current_side;
+    public static String current_dish_selected = "";
 
     static class app {
         public static Boolean is_first_access = false;
