@@ -15,8 +15,10 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.androidquery.AQuery;
 import com.androidquery.auth.FacebookHandle;
@@ -39,6 +41,9 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
     EditText cvc;
     EditText monthSpinner;
     EditText yearSpinner;
+    private LinearLayout second_step;
+    private ImageView btn_clear;
+    private boolean completed;
 
     public static void hideSoftKeyboard(Activity activity) {
         InputMethodManager inputMethodManager = (InputMethodManager)  activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -49,14 +54,18 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.payment_form_fragment, container, false);
 
-        final AQuery aq = new AQuery(getActivity(), view);
+        //final AQuery aq = new AQuery(getActivity(), view);
 
         this.saveButton = (TextView) view.findViewById(R.id.save);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                hideSoftKeyboard(getActivity());
-                saveForm(view);
+                if(completed) {
+                    hideSoftKeyboard(getActivity());
+                    saveForm(view);
+                }else{
+                    Toast.makeText(getActivity(),"No introduced a card",Toast.LENGTH_LONG).show();
+                }
             }
         });
 
@@ -67,6 +76,16 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
         this.cvc = (EditText) view.findViewById(R.id.cvc);
         this.monthSpinner = (EditText) view.findViewById(R.id.expMonth);
         this.yearSpinner = (EditText) view.findViewById(R.id.expYear);
+        this.second_step = (LinearLayout) view.findViewById(R.id.second_step);
+        this.btn_clear = (ImageView)view.findViewById(R.id.btn_clear);
+
+        btn_clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cardDigits.setText("");
+                cardNumber.setText("");
+            }
+        });
 
         ////////////////////
         this.monthSpinner.setFilters(new InputFilter[]{ new InputFilterMinMax("1", "12")});
@@ -108,6 +127,8 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
                     cvc.setVisibility(View.GONE);
                     monthSpinner.setVisibility(View.GONE);
                     yearSpinner.setVisibility(View.GONE);
+                    second_step.setVisibility(View.GONE);
+                    btn_clear.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -169,6 +190,9 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
                         }
                     } else {
                         //cardType.setText("Card Type");
+                        if (charSequence.length() == 16) {
+                            hideFullNumber();
+                        }
                     }
                 }
             }
@@ -178,7 +202,7 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
     }
 
     private void chechIfCompleted() {
-        boolean completed = true;
+        completed = true;
         if( cardNumber.getText().toString().length() != 16 ){
             completed = false;
         }
@@ -212,10 +236,13 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
         }
 
         cardNumber.setVisibility(View.GONE);
-        cvc.setVisibility(View.VISIBLE);
         monthSpinner.setVisibility(View.VISIBLE);
+        monthSpinner.requestFocus();
         yearSpinner.setVisibility(View.VISIBLE);
+        cvc.setVisibility(View.VISIBLE);
         cardDigits.setVisibility(View.VISIBLE);
+        second_step.setVisibility(View.VISIBLE);
+        btn_clear.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -241,6 +268,7 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
 
     public void saveForm(View button) {
         ((EnterCreditCardActivity)getActivity()).saveCreditCard(this);
+        EnterCreditCardActivity.returnToPayment();
     }
 
     private Integer getInteger(EditText editText) {
