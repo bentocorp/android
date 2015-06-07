@@ -36,7 +36,7 @@
                     android:background="@color/transparent"
                     android:id="@+id/number"
                     style="@style/CardNumber"
-                    />
+                    android:singleLine="true" />
 
                 <ImageView
                     android:id="@+id/btn_clear"
@@ -66,7 +66,7 @@
                         android:padding="7dp"
                         android:inputType="number"
                         android:textCursorDrawable="@null"
-                        />
+                        android:singleLine="true" />
 
                     <EditText
                         android:layout_width="wrap_content"
@@ -84,7 +84,7 @@
                         android:nextFocusDown="@+id/expYear"
                         android:nextFocusRight="@+id/expYear"
                         android:nextFocusForward="@+id/expYear"
-                        />
+                        android:singleLine="true" />
 
                     <EditText
                         android:id="@+id/expYear"
@@ -102,7 +102,7 @@
                         android:nextFocusDown="@+id/expMonth"
                         android:nextFocusRight="@+id/cvc"
                         android:nextFocusForward="@+id/cvc"
-                        />
+                        android:singleLine="true" />
 
                     <EditText
                         android:id="@+id/cvc"
@@ -117,7 +117,7 @@
                         android:inputType="number"
                         android:visibility="gone"
                         android:textCursorDrawable="@null"
-                        />
+                        android:singleLine="true" />
 
                 </LinearLayout>
             </LinearLayout>

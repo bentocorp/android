@@ -86,7 +86,7 @@
                 android:id="@+id/email_address"
                 android:inputType="textEmailAddress"
                 android:textCursorDrawable="@null"
-                />
+                android:singleLine="true" />
         </LinearLayout>
 
         <LinearLayout

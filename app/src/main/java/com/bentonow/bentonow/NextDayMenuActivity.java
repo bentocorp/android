@@ -77,10 +77,10 @@ public class NextDayMenuActivity extends BaseActivity {
                     holder.img = (ImageView) vi.findViewById(R.id.menu_item_image);
                     holder.main_title = (TextView) vi.findViewById(R.id.main_menu_item_name);
 
-                    holder.main_title.setText(row.getString("name").toUpperCase());
-                    if ( row.getString("image1")!=null && !row.getString("image1").isEmpty() ) {
+                    holder.main_title.setText(row.getString(Config.DISH.NAME).toUpperCase());
+                    if ( row.getString(Config.DISH.IMAGE1)!=null && !row.getString(Config.DISH.IMAGE1).isEmpty() ) {
                         Picasso.with(getApplicationContext())
-                                .load(row.getString("image1"))
+                                .load(row.getString(Config.DISH.IMAGE1))
                                 .placeholder(R.drawable.tmp_trans)
                                 .error(R.drawable.tmp_trans)
                                 .into(holder.img);
@@ -93,38 +93,7 @@ public class NextDayMenuActivity extends BaseActivity {
             }
         }
 
-        ////////////////////////////
-
-
-
-        ////////////////////////////
         getSideList();
-        /*LinearLayout sideList = (LinearLayout)findViewById(R.id.tomorrow_side_dishes_container);
-        for( int i = 0; i < menuItems.length(); i++ ){
-            Log.i(TAG,"for( int i = "+(i-1)+"; i < menuItems.length("+menuItems.length()+"); i = "+i+" )");
-            try {
-                JSONObject row = menuItems.getJSONObject(i);
-                View vi = inflater.inflate(R.layout.inc_menu_item_side, null);
-                if(row.getString("type").equals("side")){
-                    Holder holder = new Holder();
-                    holder.img = (ImageView) vi.findViewById(R.id.menu_item_image);
-                    holder.main_title = (TextView) vi.findViewById(R.id.main_menu_item_name);
-
-                    holder.main_title.setText(row.getString("name").toUpperCase());
-                    Picasso.with(getApplicationContext())
-                            .load(row.getString("image1"))
-                            .placeholder(R.drawable.tmp_trans)
-                            .error(R.drawable.tmp_trans)
-                            .into(holder.img);
-
-                    sideList.addView(vi);
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }*/
-
     }
 
     private void initActionbar() {
@@ -137,7 +106,6 @@ public class NextDayMenuActivity extends BaseActivity {
         actionbar_left_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Config.aux_deduct_day --;
                 finish();
                 overridePendingTransitionGoLeft();
             }
@@ -148,21 +116,13 @@ public class NextDayMenuActivity extends BaseActivity {
         ArrayList<HashMap<String, String>> sideMenuList = new ArrayList<HashMap<String, String>>();
 
         for( int i = 0; i < MenuItems.length(); i++ ){
-            //Log.i(TAG,"for( int i = "+(i-1)+"; i < menuItems.length("+MenuItems.length()+"); i = "+i+" )");
             try {
                 JSONObject row = MenuItems.getJSONObject(i);
                 View vi = inflater.inflate(R.layout.inc_menu_item_side, null);
                 if(row.getString("type").equals("side")){
-                    Log.i(TAG,"row: "+row.toString());
                     HashMap<String, String> map = new HashMap<String, String>();
-                    //map.put(Config.DISH._ID, dish._id);
                     map.put(Config.DISH.NAME, row.getString(Config.DISH.NAME).toUpperCase());
-                    //map.put(Config.DISH.DESCRIPTION, dish.description);
-                    //map.put(Config.DISH.TYPE, dish.type);
                     map.put(Config.DISH.IMAGE1, row.getString(Config.DISH.IMAGE1));
-                    //map.put(Config.DISH.MAX_PER_ORDER, dish.max_per_order);
-                    //map.put(Config.DISH.TODAY, dish.today);
-                    //map.put(Config.DISH.QTY, dish.qty);
                     sideMenuList.add(map);
                 }
 
@@ -216,8 +176,7 @@ public class NextDayMenuActivity extends BaseActivity {
                 holder.desc_title = (TextView) view.findViewById(R.id.main_menu_item_name_2);
                 holder.overlay_menu_detail = (RelativeLayout) view.findViewById(R.id.overlay_menu_detail);
                 holder.main_menu_item_description = (TextView)view.findViewById(R.id.main_menu_item_description);
-                holder.btn_add_to_bento_side1 = (LinearLayout)view.findViewById(R.id.btn_add_to_bento_side1);
-                holder.col1_solded_flag = (ImageView)view.findViewById(R.id.col1_solded_flag);
+                //holder.col1_solded_flag = (ImageView)view.findViewById(R.id.col1_solded_flag);
                 holder.btn_added = (LinearLayout)view.findViewById(R.id.btn_added);
                 view.setTag(holder);
             } else {
@@ -261,7 +220,6 @@ public class NextDayMenuActivity extends BaseActivity {
             public TextView desc_title;
             public RelativeLayout overlay_menu_detail;
             public TextView main_menu_item_description;
-            public LinearLayout btn_add_to_bento_side1;
             public ImageView col1_solded_flag;
             public RelativeLayout container;
             public HashMap<String, String> row;

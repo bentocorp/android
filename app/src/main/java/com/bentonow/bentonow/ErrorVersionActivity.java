@@ -14,7 +14,6 @@ public class ErrorVersionActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_needed);
-        showDescription();
         findViewById(R.id.btn_update).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -26,14 +25,6 @@ public class ErrorVersionActivity extends BaseActivity {
                 }
             }
         });
-    }
-
-    private void showDescription() {
-        TextView current_version = (TextView) findViewById(R.id.current_version);
-        current_version.setText(String.valueOf(Config.current_version));
-
-        TextView available_version = (TextView) findViewById(R.id.available_version);
-        available_version.setText(String.valueOf(Config.android_min_version));
     }
 
 }

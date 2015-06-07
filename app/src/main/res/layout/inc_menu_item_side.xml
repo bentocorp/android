@@ -51,15 +51,6 @@
                 android:padding="10dp"
                 />
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/col1_solded_flag"
-                android:src="@drawable/banner_sold_out"
-                android:visibility="gone"
-                android:layout_alignParentRight="true"
-                />
-
             <RelativeLayout
                 android:id="@+id/overlay_menu_detail"
                 android:visibility="gone"
@@ -102,13 +93,25 @@
                         />
 
                     <LinearLayout
-                        android:id="@+id/btn_add_to_bento_side1"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:weightSum="3"
                         android:gravity="center">
                         <TextView
+                            android:id="@+id/btn_add_to_bento_solded"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/btn_border_lineal_white"
+                            android:padding="@dimen/btn_padding"
+                            android:text="Sold Out"
+                            android:gravity="center"
+                            android:textAppearance="@style/BtnMenuItem"
+                            android:layout_weight="1"
+                            android:visibility="gone"
+                            />
+                        <TextView
+                            android:id="@+id/btn_add_to_bento"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@drawable/btn_border_lineal_white"

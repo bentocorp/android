@@ -17,6 +17,8 @@ import com.bentonow.bentonow.model.Orders;
 import com.bentonow.bentonow.model.User;
 import com.squareup.picasso.Picasso;
 
+import org.w3c.dom.Text;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -51,6 +53,10 @@ public class BuildBentoActivity extends BaseActivity {
     private RelativeLayout overlay_autocomplete_bento;
     private TextView btn_no_complete_for_me,btn_yes_complete_for_me;
     private ImageView actionbar_right_btn;
+    private RelativeLayout main_title_container;
+    private TextView main_title;
+    private RelativeLayout side1_title_container, side2_title_container, side3_title_container, side4_title_container;
+    private TextView side1_title,side2_title,side3_title,side4_title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,18 +72,28 @@ public class BuildBentoActivity extends BaseActivity {
     private void chargeViewsElemnts() {
         build_main_label_textview = (TextView)findViewById(R.id.build_main_label_textview);
         build_main_imageview = (ImageView)findViewById(R.id.build_main_imageview);
+        main_title_container = (RelativeLayout)findViewById(R.id.main_title_container);
+        main_title = (TextView)findViewById(R.id.main_title);
 
         build_side1_label_textview = (TextView)findViewById(R.id.build_side1_label_textview);
         build_side1_imageview = (ImageView)findViewById(R.id.build_side1_imageview);
+        side1_title_container = (RelativeLayout)findViewById(R.id.side1_title_container);
+        side1_title = (TextView)findViewById(R.id.side1_title);
 
         build_side2_label_textview = (TextView)findViewById(R.id.build_side2_label_textview);
         build_side2_imageview = (ImageView)findViewById(R.id.build_side2_imageview);
+        side2_title_container = (RelativeLayout)findViewById(R.id.side2_title_container);
+        side2_title = (TextView)findViewById(R.id.side2_title);
 
         build_side3_label_textview = (TextView)findViewById(R.id.build_side3_label_textview);
         build_side3_imageview = (ImageView)findViewById(R.id.build_side3_imageview);
+        side3_title_container = (RelativeLayout)findViewById(R.id.side3_title_container);
+        side3_title = (TextView)findViewById(R.id.side3_title);
 
         build_side4_label_textview = (TextView)findViewById(R.id.build_side4_label_textview);
         build_side4_imageview = (ImageView)findViewById(R.id.build_side4_imageview);
+        side4_title_container = (RelativeLayout)findViewById(R.id.side4_title_container);
+        side4_title = (TextView)findViewById(R.id.side4_title);
 
         btn_add_another_bento = (TextView)findViewById(R.id.btn_add_another_bento);
         btn_add_another_bento_disabled = (TextView)findViewById(R.id.btn_add_another_bento_disabled);
@@ -181,6 +197,8 @@ public class BuildBentoActivity extends BaseActivity {
             if (!main_dish.image1.isEmpty()) {
                 build_main_label_textview.setVisibility(View.INVISIBLE);
                 build_main_imageview.setVisibility(View.VISIBLE);
+                main_title.setText(main_dish.name.toUpperCase());
+                main_title_container.setVisibility(View.VISIBLE);
                 Picasso.with(getApplicationContext())
                         .load(main_dish.image1)
                         .placeholder(R.drawable.tmp_trans)
@@ -190,11 +208,15 @@ public class BuildBentoActivity extends BaseActivity {
                 build_main_label_textview.setVisibility(View.INVISIBLE);
                 build_main_imageview.setVisibility(View.VISIBLE);
                 build_main_imageview.setImageResource(R.drawable.tmp_trans);
+                main_title.setText(main_dish.name.toUpperCase());
+                main_title_container.setVisibility(View.VISIBLE);
             }
         }else{
             build_main_label_textview.setVisibility(View.VISIBLE);
             build_main_imageview.setImageResource(R.drawable.tmp_trans);
             build_main_imageview.setVisibility(View.INVISIBLE);
+            main_title.setText("");
+            main_title_container.setVisibility(View.GONE);
         }
 
         // SIDE 1 DISH
@@ -204,7 +226,8 @@ public class BuildBentoActivity extends BaseActivity {
                 Log.i(TAG, "side1_dish.image1: " + side1_dish.image1);
                 build_side1_label_textview.setVisibility(View.INVISIBLE);
                 build_side1_imageview.setVisibility(View.VISIBLE);
-                //aq.id(build_side1_imageview).image(side1_dish.image1, true, true, 0, 0, null, AQuery.FADE_IN_NETWORK, 1.0f);
+                side1_title.setText(side1_dish.name.toUpperCase());
+                side1_title_container.setVisibility(View.VISIBLE);
                 Picasso.with(getApplicationContext())
                         .load(side1_dish.image1)
                         .placeholder(R.drawable.tmp_trans)
@@ -214,11 +237,15 @@ public class BuildBentoActivity extends BaseActivity {
                 build_side1_label_textview.setVisibility(View.INVISIBLE);
                 build_side1_imageview.setVisibility(View.VISIBLE);
                 build_side1_imageview.setImageResource(R.drawable.tmp_trans);
+                side1_title.setText(side1_dish.name.toUpperCase());
+                side1_title_container.setVisibility(View.VISIBLE);
             }
         }else{
             build_side1_label_textview.setVisibility(View.VISIBLE);
             build_side1_imageview.setVisibility(View.INVISIBLE);
             build_side1_imageview.setImageResource(R.drawable.tmp_trans);
+            side1_title.setText("");
+            side1_title_container.setVisibility(View.GONE);
         }
 
         // SIDE 2 DISH
@@ -228,7 +255,8 @@ public class BuildBentoActivity extends BaseActivity {
                 Log.i(TAG, "side2_dish.image1: " + side2_dish.image1);
                 build_side2_label_textview.setVisibility(View.INVISIBLE);
                 build_side2_imageview.setVisibility(View.VISIBLE);
-                //aq.id(build_side2_imageview).image(side2_dish.image1, true, true, 0, 0, null, AQuery.FADE_IN_NETWORK, 1.0f);
+                side2_title.setText(side2_dish.name.toUpperCase());
+                side2_title_container.setVisibility(View.VISIBLE);
                 Picasso.with(getApplicationContext())
                         .load(side2_dish.image1)
                         .placeholder(R.drawable.tmp_trans)
@@ -238,11 +266,15 @@ public class BuildBentoActivity extends BaseActivity {
                 build_side2_label_textview.setVisibility(View.INVISIBLE);
                 build_side2_imageview.setVisibility(View.VISIBLE);
                 build_side2_imageview.setImageResource(R.drawable.tmp_trans);
+                side2_title.setText(side2_dish.name.toUpperCase());
+                side2_title_container.setVisibility(View.VISIBLE);
             }
         }else{
             build_side2_label_textview.setVisibility(View.VISIBLE);
             build_side2_imageview.setVisibility(View.INVISIBLE);
             build_side2_imageview.setImageResource(R.drawable.tmp_trans);
+            side2_title.setText("");
+            side2_title_container.setVisibility(View.GONE);
         }
 
         // SIDE 3 DISH
@@ -252,6 +284,8 @@ public class BuildBentoActivity extends BaseActivity {
                 Log.i(TAG, "side3_dish.image1: " + side3_dish.image1);
                 build_side3_label_textview.setVisibility(View.INVISIBLE);
                 build_side3_imageview.setVisibility(View.VISIBLE);
+                side3_title.setText(side3_dish.name.toUpperCase());
+                side3_title_container.setVisibility(View.VISIBLE);
                 Picasso.with(getApplicationContext())
                         .load(side3_dish.image1)
                         .placeholder(R.drawable.tmp_trans)
@@ -261,11 +295,15 @@ public class BuildBentoActivity extends BaseActivity {
                 build_side3_label_textview.setVisibility(View.INVISIBLE);
                 build_side3_imageview.setVisibility(View.VISIBLE);
                 build_side3_imageview.setImageResource(R.drawable.tmp_trans);
+                side3_title.setText(side3_dish.name.toUpperCase());
+                side3_title_container.setVisibility(View.VISIBLE);
             }
         }else{
             build_side3_label_textview.setVisibility(View.VISIBLE);
             build_side3_imageview.setVisibility(View.INVISIBLE);
             build_side3_imageview.setImageResource(R.drawable.tmp_trans);
+            side3_title.setText("");
+            side3_title_container.setVisibility(View.GONE);
         }
 
         // SIDE 4 DISH
@@ -275,7 +313,8 @@ public class BuildBentoActivity extends BaseActivity {
                 Log.i(TAG, "side4_dish.image1: " + side4_dish.image1);
                 build_side4_label_textview.setVisibility(View.INVISIBLE);
                 build_side4_imageview.setVisibility(View.VISIBLE);
-                //aq.id(build_side4_imageview).image(side4_dish.image1, true, true, 0, 0, null, AQuery.FADE_IN_NETWORK, 1.0f);
+                side4_title.setText(side4_dish.name.toUpperCase());
+                side4_title_container.setVisibility(View.VISIBLE);
                 Picasso.with(getApplicationContext())
                         .load(side4_dish.image1)
                         .placeholder(R.drawable.tmp_trans)
@@ -285,11 +324,15 @@ public class BuildBentoActivity extends BaseActivity {
                 build_side4_label_textview.setVisibility(View.INVISIBLE);
                 build_side4_imageview.setVisibility(View.VISIBLE);
                 build_side4_imageview.setImageResource(R.drawable.tmp_trans);
+                side4_title.setText(side4_dish.name.toUpperCase());
+                side4_title_container.setVisibility(View.VISIBLE);
             }
         }else{
             build_side4_label_textview.setVisibility(View.VISIBLE);
             build_side4_imageview.setVisibility(View.INVISIBLE);
             build_side4_imageview.setImageResource(R.drawable.tmp_trans);
+            side4_title.setText("");
+            side4_title_container.setVisibility(View.GONE);
         }
     }
 
