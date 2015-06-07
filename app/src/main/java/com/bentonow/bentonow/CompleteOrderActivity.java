@@ -246,7 +246,7 @@ public class CompleteOrderActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Item current_betno = Item.findById(Item.class, Bentonow.pending_bento_id);
-                if (current_betno.isFull()) {
+                if ( current_betno != null && current_betno.isFull()) {
                     current_betno.completed = "yes";
                     current_betno.save();
                     createNewBentoBox();

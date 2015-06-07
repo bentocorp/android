@@ -16,6 +16,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
 /**
  * Created by gonzalo on 28/01/2015.
  */
@@ -73,7 +78,20 @@ public class BentoService extends Service {
     }
 
     public static void processMenuStock(JSONArray menu){
+        Log.i(TAG,"processMenuStock(JSONArray menu)");
         try {
+            String date = new SimpleDateFormat("yyyyMMdd", Locale.US).format(new Date());
+            Log.i(TAG, "date: " + date);
+            //Dish.executeQuery("UPDATE DISH SET TODAY = '' WHERE TODAY = '"+date+"'");
+
+            /*List<Dish> menu_de_hoy = Dish.find(Dish.class, "TODAY=?", date);
+            for( Dish d : menu_de_hoy ){
+                Log.i(TAG,"d: "+d.toString());
+                d.today = "";
+                d.save();
+            }*/
+
+
             for (int i = 0; i < menu.length(); i++) {
                 JSONObject obj = menu.getJSONObject(i);
                 String dish_id = obj.getString("itemId");
@@ -81,10 +99,12 @@ public class BentoService extends Service {
                 long did = Dish.getIdBy_id(dish_id);
                 if (did != 0) {
                     Dish dish = Dish.findById(Dish.class, did);
-                    if (!dish.qty.equals(qty)) {
+                    //Log.i(TAG,"dish: "+dish.toString());
+                    //if (!dish.qty.equals(qty)) {
                         dish.qty = qty;
+                        dish.today = date;
                         dish.save();
-                    }
+                    //}
                 }
             }
         } catch (JSONException e) {

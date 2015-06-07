@@ -1,5 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:autofit="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.bentonow.bentonow.ErrorClosedActivity"
@@ -62,6 +63,30 @@
                         android:layout_height="wrap_content"
                         android:src="@drawable/tmp_trans"
                         android:scaleType="centerCrop" />
+
+                    <RelativeLayout
+                        android:id="@+id/main_title_container"
+                        android:visibility="gone"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:src="@drawable/menu_gradient" />
+                        <me.grantland.widget.AutofitTextView
+                            android:id="@+id/main_title"
+                            android:singleLine="true"
+                            autofit:minTextSize="8sp"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:textAppearance="@style/BentoBuilderBoxMainName"
+                            android:gravity="center"
+                            android:text="TITLE OF ITEM MENU"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="10dp"
+                            />
+                    </RelativeLayout>
+
                     <TextView
 
                         android:layout_width="wrap_content"
@@ -100,6 +125,28 @@
                             android:src="@drawable/tmp_trans"
                             android:scaleType="centerCrop"
                             />
+                        <RelativeLayout
+                            android:id="@+id/side1_title_container"
+                            android:visibility="gone"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content">
+                            <ImageView
+                                android:layout_width="fill_parent"
+                                android:layout_height="fill_parent"
+                                android:src="@drawable/menu_gradient" />
+                            <me.grantland.widget.AutofitTextView
+                                android:id="@+id/side1_title"
+                                android:singleLine="true"
+                                autofit:minTextSize="8sp"
+                                android:layout_width="fill_parent"
+                                android:layout_height="fill_parent"
+                                android:textAppearance="@style/BentoBuilderBoxMainName"
+                                android:gravity="center"
+                                android:text="TITLE OF ITEM MENU"
+                                android:paddingLeft="10dp"
+                                android:paddingRight="10dp"
+                                />
+                        </RelativeLayout>
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -130,6 +177,28 @@
                             android:layout_height="wrap_content"
                             android:src="@drawable/tmp_trans"
                             android:scaleType="centerCrop" />
+                        <RelativeLayout
+                            android:id="@+id/side2_title_container"
+                            android:visibility="gone"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content">
+                            <ImageView
+                                android:layout_width="fill_parent"
+                                android:layout_height="fill_parent"
+                                android:src="@drawable/menu_gradient" />
+                            <me.grantland.widget.AutofitTextView
+                                android:id="@+id/side2_title"
+                                android:singleLine="true"
+                                autofit:minTextSize="8sp"
+                                android:layout_width="fill_parent"
+                                android:layout_height="fill_parent"
+                                android:textAppearance="@style/BentoBuilderBoxMainName"
+                                android:gravity="center"
+                                android:text="TITLE OF ITEM MENU"
+                                android:paddingLeft="10dp"
+                                android:paddingRight="10dp"
+                                />
+                        </RelativeLayout>
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -169,6 +238,28 @@
                             android:layout_height="wrap_content"
                             android:src="@drawable/tmp_trans"
                             android:scaleType="centerCrop" />
+                        <RelativeLayout
+                            android:id="@+id/side3_title_container"
+                            android:visibility="gone"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content">
+                            <ImageView
+                                android:layout_width="fill_parent"
+                                android:layout_height="fill_parent"
+                                android:src="@drawable/menu_gradient" />
+                            <me.grantland.widget.AutofitTextView
+                                android:id="@+id/side3_title"
+                                android:singleLine="true"
+                                autofit:minTextSize="8sp"
+                                android:layout_width="fill_parent"
+                                android:layout_height="fill_parent"
+                                android:textAppearance="@style/BentoBuilderBoxMainName"
+                                android:gravity="center"
+                                android:text="TITLE OF ITEM MENU"
+                                android:paddingLeft="10dp"
+                                android:paddingRight="10dp"
+                                />
+                        </RelativeLayout>
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -201,6 +292,28 @@
                             android:layout_height="wrap_content"
                             android:src="@drawable/tmp_trans"
                             android:scaleType="centerCrop" />
+                        <RelativeLayout
+                            android:id="@+id/side4_title_container"
+                            android:visibility="gone"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content">
+                            <ImageView
+                                android:layout_width="fill_parent"
+                                android:layout_height="fill_parent"
+                                android:src="@drawable/menu_gradient" />
+                            <me.grantland.widget.AutofitTextView
+                                android:id="@+id/side4_title"
+                                android:singleLine="true"
+                                autofit:minTextSize="8sp"
+                                android:layout_width="fill_parent"
+                                android:layout_height="fill_parent"
+                                android:textAppearance="@style/BentoBuilderBoxMainName"
+                                android:gravity="center"
+                                android:text="TITLE OF ITEM MENU"
+                                android:paddingLeft="10dp"
+                                android:paddingRight="10dp"
+                                />
+                        </RelativeLayout>
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -296,7 +409,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="#90000000"
-        android:visibility="invisible"
+        android:visibility="gone"
         >
 
         <LinearLayout

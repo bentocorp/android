@@ -97,7 +97,8 @@
                     android:background="@color/transparent"
                     android:padding="@dimen/btn_padding"
                     android:inputType="textEmailAddress"
-                    android:textCursorDrawable="@null" />
+                    android:textCursorDrawable="@null"
+                    android:singleLine="true" />
             </LinearLayout>
 
             <!-- divisor -->
@@ -137,7 +138,8 @@
                     android:background="@color/transparent"
                     android:padding="@dimen/btn_padding"
                     android:textCursorDrawable="@null"
-                    android:password="true" />
+                    android:password="true"
+                    android:singleLine="true" />
             </LinearLayout>
 
             <!-- divisor -->
