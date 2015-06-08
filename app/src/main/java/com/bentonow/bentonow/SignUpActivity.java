@@ -121,6 +121,7 @@ public class SignUpActivity extends BaseActivity {
             }
         });
         phone_number.addTextChangedListener(new TextWatcher() {
+            int oldLenght;
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -133,29 +134,32 @@ public class SignUpActivity extends BaseActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                String phone = phone_number.getText().toString();
+                String phone = phone_number.getText().toString().replaceAll("[^0-9]", "");
+                StringBuilder sb;
 
-                // "("
-                if (phone.length() == 1 && phone.substring(0).equals("(") == false) {
-                    phone_number.setText("(" + phone);
-                } else if (phone.length() == 1 && phone.substring(0).equals("(")) {
-                    phone_number.setText("");
-                    // ") "
-                } else if (phone.length() == 4) {
-                    phone_number.setText(phone + ") ");
-                } else if (phone.length() == 6 && phone.substring(5).equals(") ")) {
-                    phone_number.setText(phone.substring(0, 6));
-                    // " - "
-                } else if (phone_number.length() == 9) {
-                    phone_number.setText(phone + " - ");
-                } else if (phone_number.length() == 12 && phone.substring(10).equals(" - ")) {
-                    phone_number.setText(phone.substring(0, 10));
+                if (oldLenght != phone.length()) {
+                    oldLenght = phone.length();
+
+                    if (phone.length() <= 3) {
+                        sb = new StringBuilder(phone)
+                                .insert(0, "(");
+                    } else if (phone.length() <= 6) {
+                        sb = new StringBuilder(phone)
+                                .insert(0, "(")
+                                .insert(4, ") ");
+                    } else {
+                        sb = new StringBuilder(phone)
+                                .insert(0, "(")
+                                .insert(4, ") ")
+                                .insert(9, " - ");
+                    }
+
+                    phone_number.setText(sb.toString());
+                    phone_number.setSelection(phone_number.getText().length());
+
+                    phone_number.setTextColor(getResources().getColor(R.color.gray));
+                    signup_phone_ico.setImageResource(R.drawable.ic_signup_phone);
                 }
-
-                phone_number.setSelection(phone_number.getText().length());
-
-                phone_number.setTextColor(getResources().getColor(R.color.gray));
-                signup_phone_ico.setImageResource(R.drawable.ic_signup_phone);
             }
         });
         // BTN REGISTER
