@@ -197,6 +197,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(_this, FaqActivity.class));
+                overridePendingTransitionGoRight();
             }
         });
     }

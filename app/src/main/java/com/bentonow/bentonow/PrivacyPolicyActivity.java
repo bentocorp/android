@@ -87,7 +87,7 @@ public class PrivacyPolicyActivity extends BaseActivity {
         });
 
         // BROWSER
-        browser.loadUrl(Ioscopy.getKeyValue(Config.IOSCOPY.TERMS_CONDITIONS_BODY));
+        browser.loadUrl(Ioscopy.getKeyValue(Config.IOSCOPY.PRIVACY_POLICY_BODY));
     }
 
     private void initActionbar() {

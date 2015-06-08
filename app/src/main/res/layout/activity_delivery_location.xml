@@ -99,12 +99,15 @@
                     android:src="@drawable/creditcard_btn_clear"
                     android:layout_centerInParent="true"
                     android:adjustViewBounds="true"
+                    android:visibility="invisible"
                     />
                <ProgressBar
                    android:id="@+id/progressBar"
                    android:layout_centerInParent="true"
                    android:layout_width="30dp"
-                   android:layout_height="30dp" />
+                   android:layout_height="30dp"
+
+                   />
             </RelativeLayout>
 
             <ImageView
@@ -113,8 +116,8 @@
                 android:layout_height="fill_parent"
                 android:src="@drawable/ic_curr_loc"
                 android:visibility="invisible"
-                android:paddingLeft="9dp"
-                android:paddingRight="9dp"
+                android:paddingStart="1dp"
+                android:paddingEnd="9dp"
                 />
 
         </LinearLayout>
@@ -162,8 +165,7 @@
             android:padding="5dp"
             android:background="@color/white">
             <TextView
-                android:layout_weight="1"
-                android:layout_width="0dp"
+               android:layout_width="wrap_content"
                 android:paddingLeft="10dp"
                 android:layout_height="match_parent"
                 android:text="@string/iagree_label"
@@ -175,13 +177,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_ab_help"
+                android:padding="10dp"
                 />
 
-            <CheckBox
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/chckIagree"
-                 />
+                android:layout_weight="1"
+                android:gravity="right">
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/chckIagree"
+                    />
+            </LinearLayout>
         </LinearLayout>
 
 

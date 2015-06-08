@@ -54,10 +54,12 @@ public class SelectSideActivity extends BaseActivity {
         actionbar_left_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), BuildBentoActivity.class);
+                finish();
+                overridePendingTransitionGoLeft();
+                /*Intent intent = new Intent(getApplicationContext(), BuildBentoActivity.class);
                 startActivity(intent);
                 finish();
-                overridePendingTransition(R.anim.left_slide_in, R.anim.right_slide_out);
+                overridePendingTransition(R.anim.left_slide_in, R.anim.right_slide_out);*/
             }
         });
 
@@ -92,4 +94,11 @@ public class SelectSideActivity extends BaseActivity {
         _this.finish();
         _this.overridePendingTransition(R.anim.left_slide_in, R.anim.right_slide_out);
     }*/
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+        overridePendingTransitionGoLeft();
+    }
 }

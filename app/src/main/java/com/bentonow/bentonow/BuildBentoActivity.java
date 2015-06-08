@@ -403,10 +403,9 @@ public class BuildBentoActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Bentonow.current_side = Config.SIDE.MAIN;
-                Intent intent = new Intent(getApplicationContext(), SelectMainActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
-                finish();
+                startActivity(new Intent(getApplicationContext(), SelectMainActivity.class));
+                overridePendingTransitionGoRight();
+                //finish();
             }
         });
 
@@ -416,10 +415,9 @@ public class BuildBentoActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Bentonow.current_side = Config.SIDE.SIDE_1;
-                Intent intent = new Intent(getApplicationContext(),SelectSideActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
-                finish();
+                startActivity(new Intent(getApplicationContext(), SelectSideActivity.class));
+                overridePendingTransitionGoRight();
+                //finish();
             }
         });
 
@@ -429,10 +427,9 @@ public class BuildBentoActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Bentonow.current_side = Config.SIDE.SIDE_2;
-                Intent intent = new Intent(getApplicationContext(), SelectSideActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
-                finish();
+                startActivity(new Intent(getApplicationContext(), SelectSideActivity.class));
+                overridePendingTransitionGoRight();
+                //finish();
             }
         });
 
@@ -442,10 +439,9 @@ public class BuildBentoActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Bentonow.current_side = Config.SIDE.SIDE_3;
-                Intent intent = new Intent(getApplicationContext(),SelectSideActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
-                finish();
+                startActivity(new Intent(getApplicationContext(), SelectSideActivity.class));
+                overridePendingTransitionGoRight();
+                //finish();
             }
         });
 
@@ -455,10 +451,9 @@ public class BuildBentoActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Bentonow.current_side = Config.SIDE.SIDE_4;
-                Intent intent = new Intent(getApplicationContext(),SelectSideActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
-                finish();
+                startActivity(new Intent(getApplicationContext(), SelectSideActivity.class));
+                overridePendingTransitionGoRight();
+                //finish();
             }
         });
 
@@ -494,7 +489,34 @@ public class BuildBentoActivity extends BaseActivity {
                         showDialogForAutocompleteBento();
                     }
                 } else if (!bento.isFull()) {
-                    showDialogForAutocompleteBento();
+                    if(bento.main==null){
+                        Bentonow.current_side = Config.SIDE.MAIN;
+                        startActivity(new Intent(getApplicationContext(), SelectMainActivity.class));
+                        overridePendingTransitionGoRight();
+                    }else
+                    if(bento.side1==null){
+                        Bentonow.current_side = Config.SIDE.SIDE_1;
+                        startActivity(new Intent(getApplicationContext(), SelectSideActivity.class));
+                        overridePendingTransitionGoRight();
+                    }else
+                    if(bento.side2==null){
+                        Bentonow.current_side = Config.SIDE.SIDE_2;
+                        startActivity(new Intent(getApplicationContext(), SelectSideActivity.class));
+                        overridePendingTransitionGoRight();
+                    }else
+                    if(bento.side3==null){
+                        Bentonow.current_side = Config.SIDE.SIDE_3;
+                        startActivity(new Intent(getApplicationContext(), SelectSideActivity.class));
+                        overridePendingTransitionGoRight();
+                    }else
+                    if(bento.side4==null){
+                        Bentonow.current_side = Config.SIDE.SIDE_4;
+                        startActivity(new Intent(getApplicationContext(), SelectSideActivity.class));
+                        overridePendingTransitionGoRight();
+                    }else{
+
+                    }
+                    //showDialogForAutocompleteBento();
                 } else {
                     Log.i(TAG, "bento is FULL");
                 }
