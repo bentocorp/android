@@ -81,6 +81,7 @@ public class SettingActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 user.reset();
+                Config.AppNavigateMap.from = null;
                 Intent intent = new Intent(getApplicationContext(), BuildBentoActivity.class);
                 startActivity(intent);
                 finish();
