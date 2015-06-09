@@ -36,19 +36,14 @@
                     android:background="@color/transparent"
                     android:id="@+id/number"
                     style="@style/CardNumber"
+                    android:hint="1234 5678 9012 3456"
+                    android:inputType="number"
                     android:singleLine="true" />
-
-                <ImageView
-                    android:id="@+id/btn_clear"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/x_reset_input"
-                    android:adjustViewBounds="true"
-                    />
 
                 <LinearLayout
                     android:id="@+id/second_step"
-                    android:layout_width="fill_parent"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:visibility="gone"
@@ -58,51 +53,37 @@
                         android:layout_width="wrap_content"
                         android:layout_height="fill_parent"
                         android:layout_weight="1"
-                        android:background="@drawable/btn_border_lineal_white"
+                        android:background="@color/transparent"
                         android:id="@+id/cardDigits"
                         android:hint="####"
+                        android:maxLength="4"
                         android:visibility="gone"
                         android:gravity="center"
                         android:padding="7dp"
                         android:inputType="number"
                         android:textCursorDrawable="@null"
-                        android:singleLine="true" />
+                        android:singleLine="true"
+                        style="@style/CardNumber"/>
 
                     <EditText
                         android:layout_width="wrap_content"
                         android:layout_height="fill_parent"
                         android:layout_weight="1"
-                        android:background="@drawable/btn_border_lineal_white"
+                        android:background="@color/transparent"
                         android:id="@+id/expMonth"
-                        android:hint="MM"
+                        android:hint="MM/YY"
+                        android:maxLength="5"
                         android:text=""
                         android:gravity="center"
                         android:padding="7dp"
                         android:inputType="number"
                         android:visibility="gone"
                         android:textCursorDrawable="@null"
-                        android:nextFocusDown="@+id/expYear"
-                        android:nextFocusRight="@+id/expYear"
-                        android:nextFocusForward="@+id/expYear"
-                        android:singleLine="true" />
-
-                    <EditText
-                        android:id="@+id/expYear"
-                        android:layout_width="wrap_content"
-                        android:layout_height="fill_parent"
-                        android:layout_weight="1"
-                        android:background="@drawable/btn_border_lineal_white"
-                        android:hint="YY"
-                        android:text=""
-                        android:gravity="center"
-                        android:padding="7dp"
-                        android:visibility="gone"
-                        android:inputType="number"
-                        android:textCursorDrawable="@null"
-                        android:nextFocusDown="@+id/expMonth"
+                        android:nextFocusDown="@+id/cvc"
                         android:nextFocusRight="@+id/cvc"
                         android:nextFocusForward="@+id/cvc"
-                        android:singleLine="true" />
+                        android:singleLine="true"
+                        style="@style/CardNumber"/>
 
                     <EditText
                         android:id="@+id/cvc"
@@ -110,16 +91,26 @@
                         android:layout_height="fill_parent"
                         android:layout_weight="1"
                         android:nextFocusForward="@+id/save"
-                        android:background="@drawable/btn_border_lineal_white"
+                        android:background="@color/transparent"
                         android:hint="CVC"
+                        android:maxLength="3"
                         android:gravity="center"
                         android:padding="7dp"
                         android:inputType="number"
                         android:visibility="gone"
                         android:textCursorDrawable="@null"
-                        android:singleLine="true" />
+                        android:singleLine="true"
+                        style="@style/CardNumber"/>
 
                 </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/btn_clear"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/x_reset_input"
+                    android:adjustViewBounds="true"
+                    />
             </LinearLayout>
         </LinearLayout>
         <!--<Button android:id="@+id/save" style="@style/Save"/>-->

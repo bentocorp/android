@@ -30,6 +30,9 @@ import com.bentonow.bentonow.model.User;
 
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 public class PaymentFormFragment extends Fragment implements PaymentForm {
 
     private static final String TAG = "PaymentFormFragment";
@@ -40,7 +43,6 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
     EditText cardDigits;
     EditText cvc;
     EditText monthSpinner;
-    EditText yearSpinner;
     private LinearLayout second_step;
     private ImageView btn_clear;
     private boolean completed;
@@ -75,7 +77,6 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
         this.cardNumber = (EditText) view.findViewById(R.id.number);
         this.cvc = (EditText) view.findViewById(R.id.cvc);
         this.monthSpinner = (EditText) view.findViewById(R.id.expMonth);
-        this.yearSpinner = (EditText) view.findViewById(R.id.expYear);
         this.second_step = (LinearLayout) view.findViewById(R.id.second_step);
         this.btn_clear = (ImageView)view.findViewById(R.id.btn_clear);
 
@@ -84,16 +85,23 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
             public void onClick(View v) {
                 cardDigits.setText("");
                 cardNumber.setText("");
+                cvc.setText("");
+                monthSpinner.setText("");
+
+                cardNumber.requestFocus();
+                cardNumber.setVisibility(View.VISIBLE);
+                cardDigits.setVisibility(View.GONE);
+                cvc.setVisibility(View.GONE);
+                monthSpinner.setVisibility(View.GONE);
+                second_step.setVisibility(View.GONE);
             }
         });
 
         ////////////////////
-        this.monthSpinner.setFilters(new InputFilter[]{ new InputFilterMinMax("1", "12")});
-        this.yearSpinner.setFilters(new InputFilter[]{new InputFilterMinMax("1", "99")});
         this.cvc.setFilters(new InputFilter[]{new InputFilterMinMax("1", "999")});
         ////////////////////
 
-        TextWatcher textWacher = new TextWatcher() {
+        this.cvc.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -108,11 +116,85 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
             public void afterTextChanged(Editable s) {
                 chechIfCompleted();
             }
-        };
+        });
 
-        this.cvc.addTextChangedListener(textWacher);
-        this.yearSpinner.addTextChangedListener(textWacher);
-        this.monthSpinner.addTextChangedListener(textWacher);
+        this.monthSpinner.addTextChangedListener(new TextWatcher() {
+            int oldLength;
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String charSequence = monthSpinner.getText().toString().replaceAll("[^0-9]", "");
+                StringBuilder sb = null;
+
+                if (oldLength != charSequence.length()) {
+                    oldLength = charSequence.length();
+
+                    if (charSequence.length() == 1) {
+                        try {
+                            int month = Integer.parseInt(charSequence);
+
+                            if (month > 1) {
+                                charSequence = "0" + charSequence;
+                            }
+                        } catch (Exception e) {}
+                    } else if (charSequence.length() == 2) {
+                        try {
+                            int month = Integer.parseInt(charSequence);
+
+                            if (month > 12) {
+                                charSequence = charSequence.substring(0, 1);
+                            }
+                        } catch (Exception e) {}
+                    }
+
+                    if (charSequence.length() == 3) {
+                        try {
+                            int year = Integer.parseInt(charSequence.substring(2));
+
+                            if (year == 0) {
+                                charSequence = charSequence.substring(0, 2);
+                            }
+                        } catch (Exception e) {}
+                    } else if (charSequence.length() == 4) {
+                        try {
+                            int year = Integer.parseInt(charSequence.substring(2));
+
+                            SimpleDateFormat sdf = new SimpleDateFormat("yy"); // Just the year, with 2 digits
+                            int currYear = Integer.parseInt(sdf.format(Calendar.getInstance().getTime()));
+
+                            if (year < currYear) {
+                                charSequence = charSequence.substring(0, 3);
+                            }
+                        } catch (Exception e) {}
+                    }
+
+                    if (charSequence.length() >= 2) {
+                        sb = new StringBuilder(charSequence)
+                                .insert(2, "/");
+                    }
+
+                    if (sb != null) {
+                        monthSpinner.setText(sb.toString());
+                        monthSpinner.setSelection(sb.length());
+                    }
+
+                    if (monthSpinner.getText().length() == 5) {
+                        cvc.requestFocus();
+                    }
+                }
+
+                chechIfCompleted();
+            }
+        });
 
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 
@@ -126,14 +208,13 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
                     cardDigits.setVisibility(View.GONE);
                     cvc.setVisibility(View.GONE);
                     monthSpinner.setVisibility(View.GONE);
-                    yearSpinner.setVisibility(View.GONE);
                     second_step.setVisibility(View.GONE);
-                    btn_clear.setVisibility(View.VISIBLE);
                 }
             }
         });
 
         this.cardNumber.addTextChangedListener(new TextWatcher() {
+            int oldLength;
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -146,55 +227,88 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                chechIfCompleted();
-                String charSequence = cardNumber.getText().toString();
-                if (charSequence.length() > 1) {
-                    String cardCode = charSequence.substring(0, 2);
+                String charSequence = cardNumber.getText().toString().replaceAll("[^0-9]", "");
+                StringBuilder sb = null;
 
-                    if (cardCode.equals("34") || cardCode.equals("37")) {
-                        //cardType.setText("American Express");
-                        if (charSequence.length() == 15) {
-                            hideFullNumber();
-                        }
-                    } else if (cardCode.equals("36") || cardCode.equals("51") || cardCode.equals("52") || cardCode.equals("53") || cardCode.equals("54") || cardCode.equals("55")) {
-                        //cardType.setText("Mastercard");
-                        if (charSequence.length() == 16) {
-                            hideFullNumber();
-                        }
-                    } else if (cardCode.startsWith("4")) {
-                        //cardType.setText("Visa");
-                        ic_card.setImageResource(R.drawable.card_visa);
-                        User user = User.findById(User.class,(long)1);
-                        user.cardbrand = "Visa";
-                        user.save();
-                        if (charSequence.length() == 16) {
-                            hideFullNumber();
-                        }
-                    } else if (cardCode.equals("60") || cardCode.equals("65")) {
-                        //cardType.setText("Discover Card");
+                if (oldLength != charSequence.length()) {
+                    oldLength = charSequence.length();
 
-                        if (charSequence.length() == 16) {
-                            hideFullNumber();
-                        }
-                    } else if (cardCode.equals("30") || cardCode.equals("38")) {
-                        //cardType.setText("Diners Club");
+                    if (charSequence.length() > 1) {
+                        String cardCode = charSequence.substring(0, 2);
 
-                        if (charSequence.length() == 14) {
-                            hideFullNumber();
-                        }
-                    } else if (cardCode.equals("35")) {
-                        //cardType.setText("JBC");
+                        if (cardCode.equals("34") || cardCode.equals("37")) {
+                            //cardType.setText("American Express");
+                            if (charSequence.length() == 15) {
+                                hideFullNumber();
+                            }
+                        } else if (cardCode.equals("36") || cardCode.equals("51") || cardCode.equals("52") || cardCode.equals("53") || cardCode.equals("54") || cardCode.equals("55")) {
+                            //cardType.setText("Mastercard");
+                            if (charSequence.length() == 16) {
+                                hideFullNumber();
+                            }
+                        } else if (cardCode.startsWith("4")) {
+                            //cardType.setText("Visa");
+                            ic_card.setImageResource(R.drawable.card_visa);
+                            User user = User.findById(User.class, (long) 1);
 
-                        if (charSequence.length() == 16) {
-                            hideFullNumber();
+                            if (user != null) {
+                                user.cardbrand = "Visa";
+                                user.save();
+                            }
+
+                            if (charSequence.length() == 16) {
+                                hideFullNumber();
+                            }
+                        } else if (cardCode.equals("60") || cardCode.equals("65")) {
+                            //cardType.setText("Discover Card");
+
+                            if (charSequence.length() == 16) {
+                                hideFullNumber();
+                            }
+                        } else if (cardCode.equals("30") || cardCode.equals("38")) {
+                            //cardType.setText("Diners Club");
+
+                            if (charSequence.length() == 14) {
+                                hideFullNumber();
+                            }
+                        } else if (cardCode.equals("35")) {
+                            //cardType.setText("JBC");
+
+                            if (charSequence.length() == 16) {
+                                hideFullNumber();
+                            }
+                        } else {
+                            ic_card.setImageResource(R.drawable.card_empty);
+                            //cardType.setText("Card Type");
+                            if (charSequence.length() == 16) {
+                                hideFullNumber();
+                            }
+                        }
+
+                        if (charSequence.length() >= 13) {
+                            sb = new StringBuilder(charSequence)
+                                    .insert(4, " ")
+                                    .insert(9, " ")
+                                    .insert(14, " ");
+                        } else if (charSequence.length() >= 8) {
+                            sb = new StringBuilder(charSequence)
+                                    .insert(4, " ")
+                                    .insert(9, " ");
+                        } else if (charSequence.length() >= 4) {
+                            sb = new StringBuilder(charSequence)
+                                    .insert(4, " ");
+                        }
+
+                        if (sb != null) {
+                            cardNumber.setText(sb.toString());
+                            cardNumber.setSelection(sb.length());
                         }
                     } else {
-                        //cardType.setText("Card Type");
-                        if (charSequence.length() == 16) {
-                            hideFullNumber();
-                        }
+                        ic_card.setImageResource(R.drawable.card_empty);
                     }
                 }
+
+                chechIfCompleted();
             }
         });
 
@@ -203,16 +317,13 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
 
     private void chechIfCompleted() {
         completed = true;
-        if( cardNumber.getText().toString().length() != 16 ){
+        if( cardNumber.getText().toString().length() < 14){
             completed = false;
         }
         if( cvc.getText().toString().length() < 3 ){
             completed = false;
         }
-        if( yearSpinner.getText().toString().length() < 2 ){
-            completed = false;
-        }
-        if( monthSpinner.getText().toString().length() < 2 ){
+        if( monthSpinner.getText().toString().length() < 5 ){
             completed = false;
         }
 
@@ -231,18 +342,19 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
             String last4 = cardNumber.getText().toString().substring(cardNumber.getText().length()-4);
             cardDigits.setText(last4);
             User user = User.findById(User.class,(long)1);
-            user.cardlast4 = last4;
-            user.save();
+
+            if (user != null) {
+                user.cardlast4 = last4;
+                user.save();
+            }
         }
 
         cardNumber.setVisibility(View.GONE);
         monthSpinner.setVisibility(View.VISIBLE);
         monthSpinner.requestFocus();
-        yearSpinner.setVisibility(View.VISIBLE);
         cvc.setVisibility(View.VISIBLE);
         cardDigits.setVisibility(View.VISIBLE);
         second_step.setVisibility(View.VISIBLE);
-        btn_clear.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -258,12 +370,20 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
 
     @Override
     public Integer getExpMonth() {
-        return getInteger(this.monthSpinner);
+        try {
+            return Integer.parseInt(this.monthSpinner.getText().toString().split("/")[0]);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
     }
 
     @Override
     public Integer getExpYear() {
-        return getInteger(this.yearSpinner);
+        try {
+            return Integer.parseInt(this.monthSpinner.getText().toString().split("/")[0]);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
     }
 
     public void saveForm(View button) {
