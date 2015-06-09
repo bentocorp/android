@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -161,19 +162,27 @@ public class CompleteOrderActivity extends BaseActivity {
             }
         });
 
+        promo_code.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (event != null) {
+                    // if shift key is down, then we want to insert the '\n' char in the TextView;
+                    // otherwise, the default action is to send the message.
+                    if (!event.isShiftPressed()) {
+                        submitPromoCode();
+                        return true;
+                    }
+                    return false;
+                }
+
+                submitPromoCode();
+                return true;
+            }
+        });
+
         findViewById(R.id.btn_send_promo).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!promo_code.getText().toString().isEmpty()) {
-                    overlay_coupon.setVisibility(View.GONE);
-                    overlay_coupon_result.setVisibility(View.VISIBLE);
-                    progressBar.setVisibility(View.VISIBLE);
-                    message_box.setVisibility(View.INVISIBLE);
-                    postPromoCode(promo_code.getText().toString());
-                    promo_code.setText("");
-                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(promo_code.getWindowToken(), 0);
-                }
+            submitPromoCode();
             }
         });
 
@@ -406,6 +415,19 @@ public class CompleteOrderActivity extends BaseActivity {
                 }
             }
         });
+    }
+
+    private void submitPromoCode () {
+        if(!promo_code.getText().toString().isEmpty()) {
+            overlay_coupon.setVisibility(View.GONE);
+            overlay_coupon_result.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
+            message_box.setVisibility(View.INVISIBLE);
+            postPromoCode(promo_code.getText().toString());
+            promo_code.setText("");
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(promo_code.getWindowToken(), 0);
+        }
     }
 
     private void postPromoCode(final String promo_code) {

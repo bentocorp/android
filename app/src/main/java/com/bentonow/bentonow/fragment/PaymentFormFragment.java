@@ -7,6 +7,7 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +47,7 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
     private LinearLayout second_step;
     private ImageView btn_clear;
     private boolean completed;
+    private boolean isPreparedForSending = true;
 
     public static void hideSoftKeyboard(Activity activity) {
         InputMethodManager inputMethodManager = (InputMethodManager)  activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -64,7 +66,7 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
             public void onClick(View view) {
                 if(completed) {
                     hideSoftKeyboard(getActivity());
-                    saveForm(view);
+                    saveForm();
                 }else{
                     Toast.makeText(getActivity(),"No introduced a card",Toast.LENGTH_LONG).show();
                 }
@@ -213,6 +215,37 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
             }
         });
 
+        this.cvc.setOnEditorActionListener(new EditText.OnEditorActionListener(){
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (event != null) {
+                    // if shift key is down, then we want to insert the '\n' char in the TextView;
+                    // otherwise, the default action is to send the message.
+                    if (!event.isShiftPressed()) {
+                        if (isPreparedForSending) {
+                            if(completed) {
+                                hideSoftKeyboard(getActivity());
+                                saveForm();
+                            }else{
+                                Toast.makeText(getActivity(),"No introduced a card",Toast.LENGTH_LONG).show();
+                            }
+                        }
+                        return true;
+                    }
+                    return false;
+                }
+
+                if (isPreparedForSending) {
+                    if(completed) {
+                        hideSoftKeyboard(getActivity());
+                        saveForm();
+                    }else{
+                        Toast.makeText(getActivity(),"No introduced a card",Toast.LENGTH_LONG).show();
+                    }
+                }
+                return true;
+            }
+        });
+
         this.cardNumber.addTextChangedListener(new TextWatcher() {
             int oldLength;
             @Override
@@ -327,7 +360,7 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
             completed = false;
         }
 
-        Log.i(TAG,"COMPLETED: "+completed);
+        Log.i(TAG, "COMPLETED: " + completed);
         if( completed ){
             saveButton.setBackgroundResource(R.drawable.bg_green_cornered);
         }else{
@@ -371,7 +404,7 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
     @Override
     public Integer getExpMonth() {
         try {
-            return Integer.parseInt(this.monthSpinner.getText().toString().split("/")[0]);
+            return Integer.parseInt(this.monthSpinner.getText().toString().substring(0, 2));
         } catch (NumberFormatException e) {
             return 0;
         }
@@ -380,15 +413,18 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
     @Override
     public Integer getExpYear() {
         try {
-            return Integer.parseInt(this.monthSpinner.getText().toString().split("/")[0]);
+            return Integer.parseInt(this.monthSpinner.getText().toString().substring(3));
         } catch (NumberFormatException e) {
             return 0;
         }
     }
 
-    public void saveForm(View button) {
-        ((EnterCreditCardActivity)getActivity()).saveCreditCard(this);
-        EnterCreditCardActivity.returnToPayment();
+    public void saveForm() {
+        if (isPreparedForSending) {
+            ((EnterCreditCardActivity) getActivity()).saveCreditCard(this);
+            EnterCreditCardActivity.returnToPayment();
+            isPreparedForSending = false;
+        }
     }
 
     private Integer getInteger(EditText editText) {

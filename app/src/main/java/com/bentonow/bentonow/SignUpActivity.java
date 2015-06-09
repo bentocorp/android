@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -116,13 +117,14 @@ public class SignUpActivity extends BaseActivity {
         btn_terms_conditions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(),TermAndConditionsActivity.class);
+                Intent intent = new Intent(getApplicationContext(), TermAndConditionsActivity.class);
                 startActivity(intent);
                 overridePendingTransitionGoRight();
             }
         });
         phone_number.addTextChangedListener(new TextWatcher() {
             int oldLenght;
+
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -167,51 +169,24 @@ public class SignUpActivity extends BaseActivity {
         btn_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                alertReset();
-                // USER NAME
-                if (user_name.getText().toString().equals("")) {
-                    user_name.setTextColor(getResources().getColor(R.color.orange));
-                    signup_user_ico.setImageResource(R.drawable.ic_signup_profile_error);
-                    alert("Please enter a valid name.");
-                    return;
-                }else{
-                    user_name.setTextColor(getResources().getColor(R.color.gray));
-                    signup_user_ico.setImageResource(R.drawable.ic_signup_profile);
+                submitForm();
+            }
+        });
+
+        password.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (event != null) {
+                    // if shift key is down, then we want to insert the '\n' char in the TextView;
+                    // otherwise, the default action is to send the message.
+                    if (!event.isShiftPressed()) {
+                        submitForm();
+                        return true;
+                    }
+                    return false;
                 }
 
-                // EMAIL
-                if (email_address.getText().toString().equals("")) {
-                    email_address.setTextColor(getResources().getColor(R.color.orange));
-                    signup_email_ico.setImageResource(R.drawable.ic_signup_email_error);
-                    alert("Please enter a valid email address.");
-                    return;
-                }else{
-                    email_address.setTextColor(getResources().getColor(R.color.gray));
-                    signup_email_ico.setImageResource(R.drawable.ic_signup_email);
-                }
-
-                // PHONE
-                if (phone_number.getText().length() != 16) {
-                    phone_number.setTextColor(getResources().getColor(R.color.orange));
-                    signup_phone_ico.setImageResource(R.drawable.ic_signup_phone_error);
-                    alert("Please enter a valid phone number.");
-                    return;
-                }else{
-                    phone_number.setTextColor(getResources().getColor(R.color.gray));
-                    signup_phone_ico.setImageResource(R.drawable.ic_signup_phone);
-                }
-
-                // PASSWORD
-                if (password.getText().toString().equals("")) {
-                    password.setTextColor(getResources().getColor(R.color.orange));
-                    signup_key_ico.setImageResource(R.drawable.ic_signup_key_error);
-                    alert("Please enter a password.");
-                    return;
-                }else{
-                    password.setTextColor(getResources().getColor(R.color.gray));
-                    signup_key_ico.setImageResource(R.drawable.ic_signup_key);
-                }
-                postUserData();
+                submitForm();
+                return true;
             }
         });
 
@@ -232,6 +207,54 @@ public class SignUpActivity extends BaseActivity {
                 LoginManager.getInstance().logInWithReadPermissions(_this, Arrays.asList("email"));
             }
         });
+    }
+
+    private void submitForm () {
+        alertReset();
+        // USER NAME
+        if (user_name.getText().toString().equals("")) {
+            user_name.setTextColor(getResources().getColor(R.color.orange));
+            signup_user_ico.setImageResource(R.drawable.ic_signup_profile_error);
+            alert("Please enter a valid name.");
+            return;
+        }else{
+            user_name.setTextColor(getResources().getColor(R.color.gray));
+            signup_user_ico.setImageResource(R.drawable.ic_signup_profile);
+        }
+
+        // EMAIL
+        if (email_address.getText().toString().equals("")) {
+            email_address.setTextColor(getResources().getColor(R.color.orange));
+            signup_email_ico.setImageResource(R.drawable.ic_signup_email_error);
+            alert("Please enter a valid email address.");
+            return;
+        }else{
+            email_address.setTextColor(getResources().getColor(R.color.gray));
+            signup_email_ico.setImageResource(R.drawable.ic_signup_email);
+        }
+
+        // PHONE
+        if (phone_number.getText().length() != 16) {
+            phone_number.setTextColor(getResources().getColor(R.color.orange));
+            signup_phone_ico.setImageResource(R.drawable.ic_signup_phone_error);
+            alert("Please enter a valid phone number.");
+            return;
+        }else{
+            phone_number.setTextColor(getResources().getColor(R.color.gray));
+            signup_phone_ico.setImageResource(R.drawable.ic_signup_phone);
+        }
+
+        // PASSWORD
+        if (password.getText().toString().equals("")) {
+            password.setTextColor(getResources().getColor(R.color.orange));
+            signup_key_ico.setImageResource(R.drawable.ic_signup_key_error);
+            alert("Please enter a password.");
+            return;
+        }else{
+            password.setTextColor(getResources().getColor(R.color.gray));
+            signup_key_ico.setImageResource(R.drawable.ic_signup_key);
+        }
+        postUserData();
     }
 
     private void alert(String s) {
@@ -288,7 +311,7 @@ public class SignUpActivity extends BaseActivity {
                     user.save();
 
                     // GO TO ORDER DETAIL
-                    if ( Config.AppNavigateMap.from.equals(Config.from.SettingActivity) ) {
+                    if (Config.AppNavigateMap.from != null && Config.AppNavigateMap.from.equals(Config.from.SettingActivity) ) {
                         Config.AppNavigateMap.from = null;
                         Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
                         startActivity(intent);

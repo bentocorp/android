@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -100,37 +101,24 @@ public class SignInActivity extends BaseActivity {
         btn_sign_in.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                alertReset();
-                // EMAIL
-                if (email_address.getText().toString().equals("")) {
-                    email_address.setTextColor(getResources().getColor(R.color.orange));
-                    signup_email_ico.setImageResource(R.drawable.ic_signup_email_error);
-                    alert("Please enter a valid email address.");
-                    return;
-                } else {
-                    email_address.setTextColor(getResources().getColor(R.color.gray));
-                    signup_email_ico.setImageResource(R.drawable.ic_signup_email);
+                submitForm();
+            }
+        });
+
+        password.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (event != null) {
+                    // if shift key is down, then we want to insert the '\n' char in the TextView;
+                    // otherwise, the default action is to send the message.
+                    if (!event.isShiftPressed()) {
+                        submitForm();
+                        return true;
+                    }
+                    return false;
                 }
 
-                // PHONE
-                if (password.getText().toString().equals("")) {
-                    password.setTextColor(getResources().getColor(R.color.orange));
-                    signup_key_ico.setImageResource(R.drawable.ic_signup_key_error);
-                    alert("Please enter a password.");
-                    return;
-                } else {
-                    password.setTextColor(getResources().getColor(R.color.gray));
-                    signup_key_ico.setImageResource(R.drawable.ic_signup_key);
-                }
-
-                JSONObject data = new JSONObject();
-                try {
-                    data.put("email", email_address.getText().toString());
-                    data.put("password", password.getText().toString());
-                    postUserData(data.toString(), false);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                submitForm();
+                return true;
             }
         });
 
@@ -153,6 +141,40 @@ public class SignInActivity extends BaseActivity {
                 LoginManager.getInstance().logInWithReadPermissions(_this, Arrays.asList("email"));
             }
         });
+    }
+
+    private void submitForm() {
+        alertReset();
+        // EMAIL
+        if (email_address.getText().toString().equals("")) {
+            email_address.setTextColor(getResources().getColor(R.color.orange));
+            signup_email_ico.setImageResource(R.drawable.ic_signup_email_error);
+            alert("Please enter a valid email address.");
+            return;
+        } else {
+            email_address.setTextColor(getResources().getColor(R.color.gray));
+            signup_email_ico.setImageResource(R.drawable.ic_signup_email);
+        }
+
+        // PHONE
+        if (password.getText().toString().equals("")) {
+            password.setTextColor(getResources().getColor(R.color.orange));
+            signup_key_ico.setImageResource(R.drawable.ic_signup_key_error);
+            alert("Please enter a password.");
+            return;
+        } else {
+            password.setTextColor(getResources().getColor(R.color.gray));
+            signup_key_ico.setImageResource(R.drawable.ic_signup_key);
+        }
+
+        JSONObject data = new JSONObject();
+        try {
+            data.put("email", email_address.getText().toString());
+            data.put("password", password.getText().toString());
+            postUserData(data.toString(), false);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public void postUserData( String dataJson, boolean facebookMethod ){
