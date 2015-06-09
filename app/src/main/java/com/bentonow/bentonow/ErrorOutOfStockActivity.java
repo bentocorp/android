@@ -39,11 +39,23 @@ public class ErrorOutOfStockActivity extends BaseActivity {
         setContentView(R.layout.activity_error_out_of_stock);
         aq = new AQuery(this);
         //Config.aux_deduct_day ++;
+
+        //Intent intent = getIntent();
+        //Bundle extras = intent.getExtras();
+        String next_day_json = savedInstanceState.getString("json");
+        if(next_day_json!=null){
+            try {
+                processJson(new JSONObject(next_day_json));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
         initActionbar();
         initElements();
         addListeners();
         initLegalFooter();
-        tryGetTomorrowMenu();
+        //tryGetTomorrowMenu();
     }
 
     private void postData() {
@@ -139,27 +151,7 @@ public class ErrorOutOfStockActivity extends BaseActivity {
             @Override
             public void callback(String url, JSONObject json, AjaxStatus status) {
                 if (json != null) {
-                    try {
-                        Log.i(TAG, "json: " + json.toString());
-                        JSONObject menus = json.getJSONObject("menus");
-                        JSONObject dinner = menus.getJSONObject("dinner");
-                        JSONObject menu = dinner.getJSONObject("Menu");
-                        String day_text = menu.getString("day_text");
-                        String[] tmp = day_text.split(" ");
-                        String day = (tmp[0] != null) ? tmp[0] + "'s Menu" : "";
-                        Log.i(TAG, "menu.getString(day_text): " + day);
-                        if (!day.isEmpty()) {
-                            titleNextDayMenu = day;
-                            btnNextDayMenu.setText(day);
-                            btnNextDayMenu.setVisibility(View.VISIBLE);
-                        }
-                        jsonToSend = dinner.toString();
-                        JSONArray MenuItems = dinner.getJSONArray("MenuItems");
-                        preloadImages(MenuItems);
-                    } catch (JSONException e) {
-                        //Log.e(TAG, status.getError());
-                        e.printStackTrace();
-                    }
+                    processJson(json);
                 } else {
                     Log.e(TAG, status.getError());
                 }
@@ -167,8 +159,31 @@ public class ErrorOutOfStockActivity extends BaseActivity {
         });
     }
 
+    private void processJson(JSONObject json) {
+        try {
+            Log.i(TAG, "json: " + json.toString());
+            JSONObject menus = json.getJSONObject("menus");
+            JSONObject dinner = menus.getJSONObject("dinner");
+            JSONObject menu = dinner.getJSONObject("Menu");
+            String day_text = menu.getString("day_text");
+            String[] tmp = day_text.split(" ");
+            String day = (tmp[0] != null) ? tmp[0] + "'s Menu" : "";
+            Log.i(TAG, "menu.getString(day_text): " + day);
+            if (!day.isEmpty()) {
+                titleNextDayMenu = day;
+                btnNextDayMenu.setText(day);
+                btnNextDayMenu.setVisibility(View.VISIBLE);
+            }
+            jsonToSend = dinner.toString();
+            JSONArray MenuItems = dinner.getJSONArray("MenuItems");
+            preloadImages(MenuItems);
+        } catch (JSONException e) {
+            //Log.e(TAG, status.getError());
+            e.printStackTrace();
+        }
+    }
+
     private void preloadImages(JSONArray menuItems) {
-        LinearLayout list = (LinearLayout)findViewById(R.id.tomorrow_main_dishes_container);
         for( int i = 0; i < menuItems.length(); i++ ){
             try {
                 JSONObject row = menuItems.getJSONObject(i);

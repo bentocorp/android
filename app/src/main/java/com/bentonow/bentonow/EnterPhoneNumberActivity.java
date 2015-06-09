@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
+import com.bentonow.bentonow.model.Orders;
 import com.bentonow.bentonow.model.User;
 
 import org.json.JSONException;
@@ -228,9 +229,19 @@ public class EnterPhoneNumberActivity extends BaseActivity {
                         startActivity(intent);
                         overridePendingTransitionGoLeft();
                     }else{
-                        Intent intent = new Intent(getApplicationContext(), CompleteOrderActivity.class);
-                        startActivity(intent);
-                        overridePendingTransitionGoLeft();
+                        Orders current_order = Orders.findById(Orders.class, Bentonow.pending_order_id);
+                        if ( current_order.coords_lat == null || current_order.coords_long == null ) {
+                            startActivity(new Intent(getApplicationContext(), DeliveryLocationActivity.class));
+                            overridePendingTransitionGoLeft();
+                        }else{
+                            if( user.stripetoken == null || user.stripetoken.isEmpty() ) {
+                                startActivity(new Intent(getApplicationContext(), EnterCreditCardActivity.class));
+                                overridePendingTransitionGoLeft();
+                            }else {
+                                startActivity(new Intent(getApplicationContext(), CompleteOrderActivity.class));
+                                overridePendingTransitionGoLeft();
+                            }
+                        }
                     }
 
                 } if (status.getCode() == Config.API.DEFAULT_ERROR_409) {

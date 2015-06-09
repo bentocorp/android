@@ -1,14 +1,20 @@
 package com.bentonow.bentonow;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
@@ -20,6 +26,10 @@ import com.bentonow.bentonow.model.Orders;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.PolyUtil;
 import com.squareup.picasso.Picasso;
 
 import io.fabric.sdk.android.Fabric;
@@ -27,17 +37,23 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
 public class MainActivity extends BaseActivity {
 
     private static final String TAG = "MainActivity";
+    private static final long LOCATION_REFRESH_TIME = 1;
+    private static final float LOCATION_REFRESH_DISTANCE = 1;
     private AQuery aq;
     private ProgressBar home_preloader;
     private TextView splash_message;
     private TextView tx_slogan;
     private Activity activity;
+    private GoogleApiClient mGoogleApiClient;
+    private Location mLastLocation;
+    private String next_day_json;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +64,28 @@ public class MainActivity extends BaseActivity {
         activity = this;
         initElements();
         tx_slogan.setText(Ioscopy.getKeyValue("launch-slogan"));
+    }
+
+    private void showGPSDisabledAlertToUser(){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setMessage("GPS is disabled in your device. Would you like to enable it?")
+                .setCancelable(false)
+                .setPositiveButton("Goto Settings Page To Enable GPS",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent callGPSSettingIntent = new Intent(
+                                        android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                startActivity(callGPSSettingIntent);
+                            }
+                        });
+        alertDialogBuilder.setNegativeButton("Cancel",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.show();
     }
 
     private void initElements() {
@@ -70,6 +108,83 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+
+    private void tryToGetLocationFromGPS() {
+        LocationManager mLocationManager;
+        final LocationListener mLocationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(final Location location) {
+                Log.i(TAG,"onLocationChanged() location: "+location.toString());
+                if(Config.current_location==null) {
+                    Config.current_location = location;
+                    Config.INIT_LAT_LONG = new LatLng(Config.current_location.getLatitude(), Config.current_location.getLongitude());
+
+                    ///////////////////////
+                    List<LatLng> sfpolygon = new ArrayList<LatLng>();
+                    String[] serviceArea_dinner = Config.serviceArea_dinner.split(" ");
+                    for (int i = 0; i < serviceArea_dinner.length; i++) {
+                        String[] loc = serviceArea_dinner[i].split(",");
+                        double lat = Double.valueOf(loc[1]);
+                        double lng = Double.valueOf(loc[0]);
+                        sfpolygon.add(new LatLng(lat, lng));
+                    }
+                /*sfpolygon.add(new LatLng(37.8095806, -122.44983680000001));
+                sfpolygon.add(new LatLng(37.77783170000001, -122.44335350000001));
+                sfpolygon.add(new LatLng(37.7460824, -122.43567470000002));
+                sfpolygon.add(new LatLng(37.7490008, -122.37636569999998));
+                sfpolygon.add(new LatLng(37.78611430000001, -122.37928390000002));
+                sfpolygon.add(new LatLng(37.8135812, -122.40348819999998));
+                sfpolygon.add(new LatLng(37.8095806, -122.44983680000001));*/
+
+
+                    //Log.i(TAG, "sfpolygon: " + sfpolygon.toString());
+                    if (PolyUtil.containsLocation(Config.INIT_LAT_LONG, sfpolygon, false)) {
+                        startActivity(new Intent(getApplicationContext(), BuildBentoActivity.class));
+                        overridePendingTransitionGoRight();
+                        finish();
+                    } else {
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            public void run() {
+                                startActivity(new Intent(getApplicationContext(), DeliveryLocationActivity.class));
+                                overridePendingTransitionGoRight();
+                                finish();
+                            }
+                        }, 2000);
+                    }
+                }else{
+                    //finalMLocationManager.removeUpdates(mLocationListener);
+                }
+                ///////////////////////
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+
+        mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            //Toast.makeText(this, "GPS is Enabled in your devide", Toast.LENGTH_SHORT).show();
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME, LOCATION_REFRESH_DISTANCE, mLocationListener);
+            //mLocationManager.removeUpdates();
+        }else{
+            showGPSDisabledAlertToUser();
+        }
+    }
+
     private void init() {
         Log.i(TAG, "Config.android_min_version: " + Config.android_min_version);
         if ( Config.current_version >= Config.android_min_version ) {
@@ -89,7 +204,7 @@ public class MainActivity extends BaseActivity {
         Log.i(TAG,"tryGetInit()");
         String uri = Config.API.URL+Config.API.INIT+"/"+date;
         Log.i(TAG, "uri: " + uri);
-        aq.ajax(uri, JSONObject.class, new AjaxCallback<JSONObject>() {
+        aq.ajax(uri, JSONObject.class, 30*1000, new AjaxCallback<JSONObject>() {
             @Override
             public void callback(String url, JSONObject json, AjaxStatus status) {
                 JsonProcess JsonProcess = new JsonProcess();
@@ -121,6 +236,16 @@ public class MainActivity extends BaseActivity {
                     e.printStackTrace();
                 }
 
+                // /menu/next/{date}
+                try {
+                    JSONObject menu_date = json.getJSONObject("/menu/next/{date}");
+//                    JSONObject menu = menu_date.getJSONObject("menus");
+//                    JSONObject dinner = menu.getJSONObject("dinner");
+                    next_day_json = menu_date.toString();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 if (Bentonow.isOpen) {
                     // /status/all | menu
                     try {
@@ -138,6 +263,16 @@ public class MainActivity extends BaseActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
+                /////////////////////////////////
+                try {
+                    JSONObject settings = json.getJSONObject("settings");
+                    Config.serviceArea_dinner = settings.getString("serviceArea_dinner");
+                    Log.i(TAG,"Config.serviceArea_dinner: "+Config.serviceArea_dinner);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 init();
             }
         });
@@ -245,25 +380,12 @@ public class MainActivity extends BaseActivity {
 
     private void checkForPendingOrder() {
         Log.i(TAG, "checkForPendingOrder()");
-        List<Orders> pending_orders = Orders.find(Orders.class, "completed = ? AND today = ?", "no",todayDate);
-        if( pending_orders.isEmpty() ) {
-            // THERE IS NOT ORDERS
-            // GO TO DELIVERY LOCATION
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                public void run() {
-                    Intent intent = new Intent(getApplicationContext(), DeliveryLocationActivity.class);
-                    startActivity(intent);
-                    overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
-                    finish();
-                }
-            }, 2000);
-        }else{
-            // THERE IS AN PENDING ORDER
-            // GO TO BULD-BENTO
-            for ( Orders order : pending_orders) {
+        List<Orders> pending_orders = Orders.find(Orders.class, "completed = ? AND today = ?", "no", todayDate);
+        if (pending_orders.isEmpty()) {
+            tryToGetLocationFromGPS();
+        } else {
+            for (Orders order : pending_orders) {
                 Bentonow.pending_order_id = order.getId();
-                //Log.i(TAG, "set Bentonow.pending_order_id: "+Bentonow.pending_order_id);
             }
             Intent intent = new Intent(getApplicationContext(), BuildBentoActivity.class);
             startActivity(intent);
@@ -278,6 +400,7 @@ public class MainActivity extends BaseActivity {
             handler.postDelayed(new Runnable() {
                 public void run() {
                     Intent intent = new Intent(getApplicationContext(), ErrorClosedActivity.class);
+                    if(next_day_json!=null) intent.putExtra("json",next_day_json);
                     startActivity(intent);
                     overridePendingTransition(R.anim.bottom_slide_in, R.anim.none);
                     finish();
@@ -290,6 +413,7 @@ public class MainActivity extends BaseActivity {
             handler.postDelayed(new Runnable() {
                 public void run() {
                     Intent intent = new Intent(getApplicationContext(), ErrorOutOfStockActivity.class);
+                    if(next_day_json!=null) intent.putExtra("json",next_day_json);
                     startActivity(intent);
                     overridePendingTransition(R.anim.bottom_slide_in, R.anim.none);
                     finish();

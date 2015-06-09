@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
+import com.bentonow.bentonow.model.Orders;
 import com.bentonow.bentonow.model.User;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -217,7 +218,7 @@ public class SignUpActivity extends BaseActivity {
         btn_go_to_sign_in_activity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(),SignInActivity.class);
+                Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
                 startActivity(intent);
                 //finish();
                 overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
@@ -270,7 +271,7 @@ public class SignUpActivity extends BaseActivity {
                     if (users == 0) {
                         user = new User();
                     } else {
-                        user = User.findById(User.class, (long) 1);
+                        user = User.currentUser();
                     }
                     String apitokenTmp = null;
                     String apitoken = "";
@@ -293,9 +294,19 @@ public class SignUpActivity extends BaseActivity {
                         startActivity(intent);
                         overridePendingTransitionGoLeft();
                     }else{
-                        Intent intent = new Intent(getApplicationContext(), CompleteOrderActivity.class);
-                        startActivity(intent);
-                        overridePendingTransitionGoLeft();
+                        Orders current_order = Orders.findById(Orders.class, Bentonow.pending_order_id);
+                        if ( current_order.coords_lat == null || current_order.coords_long == null ) {
+                            startActivity(new Intent(getApplicationContext(), DeliveryLocationActivity.class));
+                            overridePendingTransitionGoLeft();
+                        }else {
+                            if( user.stripetoken == null || user.stripetoken.isEmpty() ) {
+                                startActivity(new Intent(getApplicationContext(), EnterCreditCardActivity.class));
+                                overridePendingTransitionGoLeft();
+                            }else{
+                                startActivity(new Intent(getApplicationContext(), CompleteOrderActivity.class));
+                                overridePendingTransitionGoLeft();
+                            }
+                        }
                     }
                 }
                 if (status.getCode() == Config.API.USER_SIGNUP_400) {

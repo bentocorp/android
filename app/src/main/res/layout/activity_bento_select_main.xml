@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.bentonow.bentonow.ErrorClosedActivity"
+    tools:context="com.bentonow.bentonow.SelectMainActivity"
     android:id="@+id/base_relative_layout"
     android:orientation="vertical"
     android:background="@color/bgcolor">
@@ -14,7 +14,7 @@
         android:id="@+id/main_menu_list_items"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        tools:listitem="@layout/inc_menu_item_row">
+        tools:listitem="@layout/inc_menu_item_side">
 
     </ListView>
 </LinearLayout>
