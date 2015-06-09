@@ -73,7 +73,6 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:visibility="gone"
             >
             <ImageView
                 android:layout_width="wrap_content"
@@ -82,20 +81,26 @@
                 android:src="@drawable/setting_creditcard"
                 android:padding="@dimen/setting_ico_padd"
                 />
-            <TextView
-                android:layout_weight="1"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:text="Credit Card"
-                android:gravity="center_vertical"
-                android:paddingLeft="@dimen/btn_padding"
                 android:background="@drawable/border_bottom"
-                />
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/arrow_gray_right"
-                />
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:text="Credit Card"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="@dimen/btn_padding"
+                    />
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:src="@drawable/arrow_gray_right"
+                    android:paddingRight="20dp"
+                    />
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
@@ -111,21 +116,26 @@
                 android:src="@drawable/setting_user"
                 android:padding="@dimen/setting_ico_padd"
                 />
-            <TextView
-                android:layout_weight="1"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:text="Sign In"
-                android:gravity="center_vertical"
-                android:paddingLeft="@dimen/btn_padding"
                 android:background="@drawable/border_bottom"
-                />
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:src="@drawable/arrow_gray_right"
-                />
-
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:text="Sign In"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="@dimen/btn_padding"
+                    />
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:src="@drawable/arrow_gray_right"
+                    android:paddingRight="20dp"
+                    />
+            </LinearLayout>
         </LinearLayout>
         <LinearLayout
             android:id="@+id/btn_setting_faq"
@@ -140,20 +150,26 @@
                 android:src="@drawable/setting_help"
                 android:padding="@dimen/setting_ico_padd"
                 />
-            <TextView
-                android:layout_weight="1"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:text="FAQ"
-                android:gravity="center_vertical"
-                android:paddingLeft="@dimen/btn_padding"
                 android:background="@drawable/border_bottom"
-                />
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:src="@drawable/arrow_gray_right"
-                />
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:text="FAQ"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="@dimen/btn_padding"
+                    />
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:src="@drawable/arrow_gray_right"
+                    android:paddingRight="20dp"
+                    />
+            </LinearLayout>
         </LinearLayout>
         <LinearLayout
             android:id="@+id/btn_setting_email"
@@ -168,21 +184,26 @@
                 android:src="@drawable/setting_email"
                 android:padding="@dimen/setting_ico_padd"
                 />
-            <TextView
-                android:layout_weight="1"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:text="Email Support"
-                android:gravity="center_vertical"
-                android:paddingLeft="@dimen/btn_padding"
                 android:background="@drawable/border_bottom"
-                />
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:src="@drawable/arrow_gray_right"
-                />
-
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:text="Email Support"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="@dimen/btn_padding"
+                    />
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:src="@drawable/arrow_gray_right"
+                    android:paddingRight="20dp"
+                    />
+            </LinearLayout>
         </LinearLayout>
         <LinearLayout
             android:id="@+id/btn_setting_phone"
@@ -197,20 +218,27 @@
                 android:src="@drawable/setting_phone"
                 android:padding="@dimen/setting_ico_padd"
                 />
-            <TextView
-                android:layout_weight="1"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:text="Phone Support"
-                android:gravity="center_vertical"
-                android:paddingLeft="@dimen/btn_padding"
                 android:background="@drawable/border_bottom"
-                />
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:src="@drawable/arrow_gray_right"
-                />
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:text="Phone Support"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="@dimen/btn_padding"
+
+                    />
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:src="@drawable/arrow_gray_right"
+                    android:paddingRight="20dp"
+                    />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
