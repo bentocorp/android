@@ -40,6 +40,8 @@ public class SettingActivity extends BaseActivity {
     }
 
     private void checkUserSession() {
+        btn_setting_creditcard.setVisibility(View.GONE);
+
         user = User.findById(User.class, (long) 1);
         if (user != null && user.apitoken != null && !user.apitoken.isEmpty()) {
             user_name.setText(user.firstname + " " + user.lastname);
@@ -47,13 +49,15 @@ public class SettingActivity extends BaseActivity {
             email.setText(user.email);
             user_general_content.setVisibility(View.VISIBLE);
 
-            if (user.cardlast4 != null && !user.cardlast4.isEmpty()) {
-                btn_setting_creditcard.setVisibility(View.VISIBLE);
-            } else {
-                btn_setting_creditcard.setVisibility(View.GONE);
-            }
-            
+//            if (user.cardlast4 != null && !user.cardlast4.isEmpty()) {
+//                btn_setting_creditcard.setVisibility(View.VISIBLE);
+//            } else {
+//                btn_setting_creditcard.setVisibility(View.GONE);
+//            }
+
             btn_setting_signin.setVisibility(View.GONE);
+        } else {
+//            btn_setting_creditcard.setVisibility(View.GONE);
         }
     }
 
