@@ -465,6 +465,7 @@
                 android:textCursorDrawable="@null"
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_small"
+                android:singleLine="true"
                 />
 
             <View
