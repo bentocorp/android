@@ -108,7 +108,7 @@ public class SignUpActivity extends BaseActivity {
         btn_privacy_policy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(),PrivacyPolicyActivity.class);
+                Intent intent = new Intent(getApplicationContext(), PrivacyPolicyActivity.class);
                 startActivity(intent);
                 overridePendingTransitionGoRight();
             }
@@ -122,6 +122,28 @@ public class SignUpActivity extends BaseActivity {
                 overridePendingTransitionGoRight();
             }
         });
+
+        TextWatcher watcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                validate();
+            }
+        };
+
+        email_address.addTextChangedListener(watcher);
+        user_name.addTextChangedListener(watcher);
+        password.addTextChangedListener(watcher);
+
         phone_number.addTextChangedListener(new TextWatcher() {
             int oldLenght;
 
@@ -163,6 +185,8 @@ public class SignUpActivity extends BaseActivity {
                     phone_number.setTextColor(getResources().getColor(R.color.gray));
                     signup_phone_ico.setImageResource(R.drawable.ic_signup_phone);
                 }
+
+                validate();
             }
         });
         // BTN REGISTER
@@ -207,6 +231,14 @@ public class SignUpActivity extends BaseActivity {
                 LoginManager.getInstance().logInWithReadPermissions(_this, Arrays.asList("email"));
             }
         });
+    }
+
+    private void validate () {
+        if (user_name.getText().toString().equals("") || email_address.getText().toString().equals("") || phone_number.getText().length() != 16 || password.getText().toString().equals("")) {
+            btn_register.setBackgroundResource(R.drawable.btn_dark_gray);
+        } else {
+            btn_register.setBackgroundResource(R.drawable.bg_green_cornered);
+        }
     }
 
     private void submitForm () {

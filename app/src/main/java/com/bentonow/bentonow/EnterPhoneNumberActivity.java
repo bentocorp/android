@@ -6,6 +6,7 @@ import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -80,6 +81,23 @@ public class EnterPhoneNumberActivity extends BaseActivity {
     }
 
     private void addListeners(){
+        phone_number.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (event != null) {
+                    // if shift key is down, then we want to insert the '\n' char in the TextView;
+                    // otherwise, the default action is to send the message.
+                    if (!event.isShiftPressed()) {
+                        submitForm();
+                        return true;
+                    }
+                    return false;
+                }
+
+                submitForm();
+                return true;
+            }
+        });
+
         phone_number.addTextChangedListener(new TextWatcher() {
             int oldLenght;
 
@@ -127,27 +145,37 @@ public class EnterPhoneNumberActivity extends BaseActivity {
                     phone_number.setTextColor(getResources().getColor(R.color.gray));
                     phone_number_ico.setImageResource(R.drawable.ic_signup_phone);
                 }
+
+                if (phone_number.getText().toString().length() != 16) {
+                    btn_done.setBackgroundResource(R.drawable.btn_dark_gray);
+                } else {
+                    btn_done.setBackgroundResource(R.drawable.bg_green_cornered);
+                }
             }
         });
         btn_done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (phone_number.getText().toString().length() != 16) {
-                    phone_number.setTextColor(getResources().getColor(R.color.orange));
-                    phone_number_ico.setImageResource(R.drawable.ic_signup_phone_error);
-                    return;
-                } else {
-                    phone_number.setTextColor(getResources().getColor(R.color.gray));
-                    phone_number_ico.setImageResource(R.drawable.ic_signup_phone);
-                }
-
-                User user = User.findById(User.class,(long)1);
-                user.phone = phone_number.getText().toString().replace("(", "").replace(")", "").replace(" ", "-");
-
-                user.save();
-                postUserData();
+                submitForm();
             }
         });
+    }
+
+    private void submitForm () {
+        if (phone_number.getText().toString().length() != 16) {
+            phone_number.setTextColor(getResources().getColor(R.color.orange));
+            phone_number_ico.setImageResource(R.drawable.ic_signup_phone_error);
+            return;
+        } else {
+            phone_number.setTextColor(getResources().getColor(R.color.gray));
+            phone_number_ico.setImageResource(R.drawable.ic_signup_phone);
+        }
+
+        User user = User.findById(User.class,(long)1);
+        user.phone = phone_number.getText().toString().replace("(", "").replace(")", "").replace(" ", "-");
+
+        user.save();
+        postUserData();
     }
 
     private void initActionbar() {

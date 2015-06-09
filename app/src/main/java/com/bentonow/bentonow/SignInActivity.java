@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -105,6 +107,26 @@ public class SignInActivity extends BaseActivity {
             }
         });
 
+        TextWatcher watcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                validate();
+            }
+        };
+
+        email_address.addTextChangedListener(watcher);
+        password.addTextChangedListener(watcher);
+
         password.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (event != null) {
@@ -174,6 +196,15 @@ public class SignInActivity extends BaseActivity {
             postUserData(data.toString(), false);
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void validate() {
+        // EMAIL
+        if (email_address.getText().toString().equals("") || password.getText().toString().equals("")) {
+            btn_sign_in.setBackgroundResource(R.drawable.btn_dark_gray);
+        } else {
+            btn_sign_in.setBackgroundResource(R.drawable.bg_green_cornered);
         }
     }
 
