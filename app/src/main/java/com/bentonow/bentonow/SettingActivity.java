@@ -46,7 +46,13 @@ public class SettingActivity extends BaseActivity {
             phone.setText(user.phone);
             email.setText(user.email);
             user_general_content.setVisibility(View.VISIBLE);
-            btn_setting_creditcard.setVisibility(View.VISIBLE);
+
+            if (user.cardlast4 != null && !user.cardlast4.isEmpty()) {
+                btn_setting_creditcard.setVisibility(View.VISIBLE);
+            } else {
+                btn_setting_creditcard.setVisibility(View.GONE);
+            }
+            
             btn_setting_signin.setVisibility(View.GONE);
         }
     }
