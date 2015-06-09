@@ -61,4 +61,8 @@ public class User extends SugarRecord<User> {
         user.fbgender = "";
         user.save();
     }
+
+    public static User currentUser() {
+        return User.findById(User.class,(long)1);
+    }
 }

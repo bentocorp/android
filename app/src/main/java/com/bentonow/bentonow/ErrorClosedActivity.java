@@ -142,32 +142,36 @@ public class ErrorClosedActivity extends BaseActivity {
             @Override
             public void callback(String url, JSONObject json, AjaxStatus status) {
                 if (json != null) {
-                    try {
-                        Log.i(TAG, "json: " + json.toString());
-                        JSONObject menus = json.getJSONObject("menus");
-                        JSONObject dinner = menus.getJSONObject("dinner");
-                        JSONObject menu = dinner.getJSONObject("Menu");
-                        String day_text = menu.getString("day_text");
-                        String[] tmp = day_text.split(" ");
-                        String day = (tmp[0] != null) ? tmp[0] + "'s Menu" : "";
-                        Log.i(TAG, "menu.getString(day_text): " + day);
-                        if (!day.isEmpty()) {
-                            titleNextDayMenu = day;
-                            btnNextDayMenu.setText(day);
-                            btnNextDayMenu.setVisibility(View.VISIBLE);
-                        }
-                        jsonToSend = dinner.toString();
-                        JSONArray MenuItems = dinner.getJSONArray("MenuItems");
-                        preloadImages(MenuItems);
-                    } catch (JSONException e) {
-                        //Log.e(TAG, status.getError());
-                        e.printStackTrace();
-                    }
+                    processJson(json);
                 } else {
                     Log.e(TAG, status.getError());
                 }
             }
         });
+    }
+
+    private void processJson(JSONObject json) {
+        try {
+            Log.i(TAG, "json: " + json.toString());
+            JSONObject menus = json.getJSONObject("menus");
+            JSONObject dinner = menus.getJSONObject("dinner");
+            JSONObject menu = dinner.getJSONObject("Menu");
+            String day_text = menu.getString("day_text");
+            String[] tmp = day_text.split(" ");
+            String day = (tmp[0] != null) ? tmp[0] + "'s Menu" : "";
+            Log.i(TAG, "menu.getString(day_text): " + day);
+            if (!day.isEmpty()) {
+                titleNextDayMenu = day;
+                btnNextDayMenu.setText(day);
+                btnNextDayMenu.setVisibility(View.VISIBLE);
+            }
+            jsonToSend = dinner.toString();
+            JSONArray MenuItems = dinner.getJSONArray("MenuItems");
+            preloadImages(MenuItems);
+        } catch (JSONException e) {
+            //Log.e(TAG, status.getError());
+            e.printStackTrace();
+        }
     }
 
     private void preloadImages(JSONArray menuItems) {

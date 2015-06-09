@@ -31,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bentonow.bentonow.model.Orders;
+import com.bentonow.bentonow.model.User;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -252,13 +253,16 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
             }
         });
 
-        btn_go_to_current_location = (ImageView) findViewById(R.id.btn_go_to_current_location);
-        btn_go_to_current_location.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToCenterLocation(current_location);
-            }
-        });
+        if( Config.current_location != null ) {
+            btn_go_to_current_location = (ImageView) findViewById(R.id.btn_go_to_current_location);
+            btn_go_to_current_location.setVisibility(View.VISIBLE);
+            btn_go_to_current_location.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    goToCenterLocation(Config.current_location);
+                }
+            });
+        }
 
         btn_continue.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -364,13 +368,20 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                 }
 
                 List<LatLng> sfpolygon = new ArrayList<LatLng>();
-                sfpolygon.add(new LatLng(37.8095806, -122.44983680000001));
+                String[] serviceArea_dinner = Config.serviceArea_dinner.split(" ");
+                for( int i=0; i<serviceArea_dinner.length; i++ ){
+                    String[] loc = serviceArea_dinner[i].split(",");
+                    double lat = Double.valueOf(loc[1]);
+                    double lng = Double.valueOf(loc[0]);
+                    sfpolygon.add(new LatLng(lat, lng));
+                }
+                /*sfpolygon.add(new LatLng(37.8095806, -122.44983680000001));
                 sfpolygon.add(new LatLng(37.77783170000001, -122.44335350000001));
                 sfpolygon.add(new LatLng(37.7460824, -122.43567470000002));
                 sfpolygon.add(new LatLng(37.7490008, -122.37636569999998));
                 sfpolygon.add(new LatLng(37.78611430000001, -122.37928390000002));
                 sfpolygon.add(new LatLng(37.8135812, -122.40348819999998));
-                sfpolygon.add(new LatLng(37.8095806, -122.44983680000001));
+                sfpolygon.add(new LatLng(37.8095806, -122.44983680000001));*/
 
 
                 //Log.i(TAG, "sfpolygon: " + sfpolygon.toString());
@@ -392,23 +403,38 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                         Bentonow.pending_order_id = order.getId();
                         goTo(BuildBentoActivity.class);
                     } else {
-                        order = Orders.findById(Orders.class, Bentonow.pending_order_id);
-                        order.coords_lat = String.valueOf(((LatLng) mMap.getCameraPosition().target).latitude);
-                        order.coords_long = String.valueOf(((LatLng) mMap.getCameraPosition().target).longitude);
-                        order.address_number = address_number;
-                        order.address_street = address_street;
-                        order.address_city = address_city;
-                        order.address_state = address_state;
-                        order.address_zip = address_zip;
-                        order.save();
-                        Log.i(TAG, "Pending order has changed");
-                        goTo(CompleteOrderActivity.class);
+                        User user = User.currentUser();
+                        if( user != null && ( user.stripetoken == null || user.stripetoken.isEmpty() ) ) {
+                            order = Orders.findById(Orders.class, Bentonow.pending_order_id);
+                            order.coords_lat = String.valueOf(((LatLng) mMap.getCameraPosition().target).latitude);
+                            order.coords_long = String.valueOf(((LatLng) mMap.getCameraPosition().target).longitude);
+                            order.address_number = address_number;
+                            order.address_street = address_street;
+                            order.address_city = address_city;
+                            order.address_state = address_state;
+                            order.address_zip = address_zip;
+                            order.save();
+                            startActivity(new Intent(getApplicationContext(), EnterCreditCardActivity.class));
+                            overridePendingTransitionGoRight();
+                        }else{
+                            order = Orders.findById(Orders.class, Bentonow.pending_order_id);
+                            order.coords_lat = String.valueOf(((LatLng) mMap.getCameraPosition().target).latitude);
+                            order.coords_long = String.valueOf(((LatLng) mMap.getCameraPosition().target).longitude);
+                            order.address_number = address_number;
+                            order.address_street = address_street;
+                            order.address_city = address_city;
+                            order.address_state = address_state;
+                            order.address_zip = address_zip;
+                            order.save();
+                            Log.i(TAG, "Pending order has changed");
+                            goTo(CompleteOrderActivity.class);
+                        }
                     }
                 } else {
                     Intent intent = new Intent(getApplicationContext(), ErrorInvalidAddressActivity.class);
                     intent.putExtra(Config.invalid_address_extra_label, newAddress);
                     startActivity(intent);
-                    overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
+                    overridePendingTransitionGoRight();
                     finish();
                 }
             }
@@ -465,9 +491,9 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
             /////////////////////////
             if (mMap != null) {
                 Log.i(TAG,"Bentonow.pending_order_id: "+Bentonow.pending_order_id);
-                if( order == null )
+                if( order == null ) {
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Config.INIT_LAT_LONG, 11.0f));
-                else{
+                }else{
                     double lat = Double.parseDouble(order.coords_lat);
                     double lng = Double.parseDouble(order.coords_long);
                     LatLng LatLong = new LatLng(lat, lng);
@@ -476,7 +502,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                 }
 
                 //setMarkers();
-                if( order == null ){
+                /*if( order == null ){
                     mMap.setMyLocationEnabled(true);
                     mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
                         @Override
@@ -485,7 +511,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                             return false;
                         }
                     });
-                }
+                }*/
 
                 mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
                     @Override
@@ -498,7 +524,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                         new_location.setTime(new Date().getTime());
                         scanCurrentLocation(new_location);
 
-                        GoogleMap.OnMyLocationChangeListener myLocationChangeListener = new GoogleMap.OnMyLocationChangeListener() {
+                        /*GoogleMap.OnMyLocationChangeListener myLocationChangeListener = new GoogleMap.OnMyLocationChangeListener() {
                             @Override
                             public void onMyLocationChange(Location location) {
                                 //Log.i(TAG, "OnMyLocationChangeListener");
@@ -513,10 +539,10 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 16.0f));
                                 }
                             }
-                        };
-                        if( Bentonow.pending_order_id == null ){
+                        };*/
+                        /*if( Bentonow.pending_order_id == null ){
                             mMap.setOnMyLocationChangeListener(myLocationChangeListener);
-                        }
+                        }*/
                         ////Log.i(TAG,"map loaded, mMap.getCameraPosition().target: "+mMap.getCameraPosition().target);
                         mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
                             @Override
@@ -625,7 +651,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
     }
 
     ///////////////////////////////
-
 
     public void goToCenterLocation(Location find_location) {
         double latitude = find_location.getLatitude();

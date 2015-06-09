@@ -1,5 +1,7 @@
 package com.bentonow.bentonow;
 
+import android.location.Location;
+
 import com.google.android.gms.maps.model.LatLng;
 
 /**
@@ -8,7 +10,7 @@ import com.google.android.gms.maps.model.LatLng;
 public class Config {
 
     public static final int current_version = 1;
-    public static final LatLng INIT_LAT_LONG = new LatLng(37.772492, -122.420262);
+    public static LatLng INIT_LAT_LONG = new LatLng(37.772492, -122.420262);
     public static int android_min_version;
     public static final String API_KEY = "AIzaSyDz5MlSeWBUP1iDeSI3j6qeoLbMWDbJgQg";
     public static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place";
@@ -23,6 +25,8 @@ public class Config {
     public static String invalid_address_extra_label = "invalid_address";
     public static int aux_deduct_day = 0;
     public static String aux_initial_stock = "0";
+    public static Location current_location;
+    public static String serviceArea_dinner;
     //public static boolean processing_stock = false;
 
     public static class CurrentOrder {

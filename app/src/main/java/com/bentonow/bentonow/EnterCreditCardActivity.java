@@ -142,8 +142,7 @@ public class EnterCreditCardActivity extends BaseFragmentActivity {
     }
 
     public static void returnToPayment() {
-        Intent intent = new Intent(_this, CompleteOrderActivity.class);
-        _this.startActivity(intent);
+        _this.startActivity(new Intent(_this, CompleteOrderActivity.class));
         _this.finish();
         _this.overridePendingTransition(R.anim.left_slide_in, R.anim.right_slide_out);
     }

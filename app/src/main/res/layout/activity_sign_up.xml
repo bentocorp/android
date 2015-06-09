@@ -126,7 +126,8 @@
                     android:background="@color/transparent"
                     android:padding="@dimen/btn_padding"
                     android:textCursorDrawable="@null"
-                    android:singleLine="true" />
+                    android:singleLine="true"
+                    android:inputType="textCapWords" />
             </LinearLayout>
 
             <!-- divisor -->
