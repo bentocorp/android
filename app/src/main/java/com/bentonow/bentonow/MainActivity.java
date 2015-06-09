@@ -82,6 +82,8 @@ public class MainActivity extends BaseActivity {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
+                        startActivity(new Intent(getApplicationContext(),DeliveryLocationActivity.class));
+                        overridePendingTransitionGoRight();
                     }
                 });
         AlertDialog alert = alertDialogBuilder.create();
