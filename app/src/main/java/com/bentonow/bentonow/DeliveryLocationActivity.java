@@ -404,7 +404,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                         goTo(BuildBentoActivity.class);
                     } else {
                         User user = User.currentUser();
-                        if( user != null && ( user.stripetoken == null || user.stripetoken.isEmpty() ) ) {
+                        if( user != null && ( user.cardlast4 == null || user.cardlast4.isEmpty() ) ) {
+                            Log.i(TAG,"user");
                             order = Orders.findById(Orders.class, Bentonow.pending_order_id);
                             order.coords_lat = String.valueOf(((LatLng) mMap.getCameraPosition().target).latitude);
                             order.coords_long = String.valueOf(((LatLng) mMap.getCameraPosition().target).longitude);
