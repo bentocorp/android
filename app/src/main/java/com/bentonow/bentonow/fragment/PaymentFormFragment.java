@@ -32,6 +32,7 @@ import com.bentonow.bentonow.model.User;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 
 public class PaymentFormFragment extends Fragment implements PaymentForm {
@@ -68,7 +69,7 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
                     hideSoftKeyboard(getActivity());
                     saveForm();
                 }else{
-                    Toast.makeText(getActivity(),"No introduced a card",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(),"Invalid card",Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -103,6 +104,38 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
         this.cvc.setFilters(new InputFilter[]{new InputFilterMinMax("1", "999")});
         ////////////////////
 
+        this.cvc.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                User user = User.findById(User.class, (long) 1);
+
+                if (b) {
+                    if (user.cardbrand.equals("American Express")) {
+                        ic_card.setImageResource(R.drawable.card_cvv_amex);
+                    } else {
+                        ic_card.setImageResource(R.drawable.card_cvv);
+                    }
+                } else {
+                    if (user.cardbrand.equals("American Express")) {
+                        ic_card.setImageResource(R.drawable.card_amex);
+                    } else if (user.cardbrand.equals("Mastercard")) {
+                        ic_card.setImageResource(R.drawable.card_mastercard);
+                    } else if (user.cardbrand.equals("Visa")) {
+                        ic_card.setImageResource(R.drawable.card_visa);
+                    } else if (user.cardbrand.equals("Diners Club")) {
+                        ic_card.setImageResource(R.drawable.card_diners);
+                    } else if (user.cardbrand.equals("Discover Card")) {
+                        ic_card.setImageResource(R.drawable.card_discover);
+                    } else if (user.cardbrand.equals("JCB")) {
+                        ic_card.setImageResource(R.drawable.card_jcb);
+                    } else {
+                        ic_card.setImageResource(R.drawable.card_empty);
+                    }
+                }
+            }
+        });
+
         this.cvc.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -116,7 +149,11 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
 
             @Override
             public void afterTextChanged(Editable s) {
-                chechIfCompleted();
+                if (cvc.getText().length() == 0) {
+                    monthSpinner.requestFocus();
+                } else {
+                    chechIfCompleted();
+                }
             }
         });
 
@@ -137,7 +174,14 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
                 String charSequence = monthSpinner.getText().toString().replaceAll("[^0-9]", "");
                 StringBuilder sb = null;
 
-                if (oldLength != charSequence.length()) {
+                if (charSequence.length() == 0) {
+                    cardNumber.requestFocus();
+                    cardNumber.setVisibility(View.VISIBLE);
+                    cardDigits.setVisibility(View.GONE);
+                    cvc.setVisibility(View.GONE);
+                    monthSpinner.setVisibility(View.GONE);
+                    second_step.setVisibility(View.GONE);
+                } else if (oldLength != charSequence.length()) {
                     oldLength = charSequence.length();
 
                     if (charSequence.length() == 1) {
@@ -215,18 +259,18 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
             }
         });
 
-        this.cvc.setOnEditorActionListener(new EditText.OnEditorActionListener(){
+        this.cvc.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (event != null) {
                     // if shift key is down, then we want to insert the '\n' char in the TextView;
                     // otherwise, the default action is to send the message.
                     if (!event.isShiftPressed()) {
                         if (isPreparedForSending) {
-                            if(completed) {
+                            if (completed) {
                                 hideSoftKeyboard(getActivity());
                                 saveForm();
-                            }else{
-                                Toast.makeText(getActivity(),"No introduced a card",Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getActivity(), "Invalid card", Toast.LENGTH_LONG).show();
                             }
                         }
                         return true;
@@ -235,11 +279,11 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
                 }
 
                 if (isPreparedForSending) {
-                    if(completed) {
+                    if (completed) {
                         hideSoftKeyboard(getActivity());
                         saveForm();
-                    }else{
-                        Toast.makeText(getActivity(),"No introduced a card",Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getActivity(), "Invalid card", Toast.LENGTH_LONG).show();
                     }
                 }
                 return true;
@@ -248,6 +292,7 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
 
         this.cardNumber.addTextChangedListener(new TextWatcher() {
             int oldLength;
+
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -260,6 +305,8 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
 
             @Override
             public void afterTextChanged(Editable editable) {
+                cardNumber.setTextColor(getResources().getColor(R.color.gray));
+
                 String charSequence = cardNumber.getText().toString().replaceAll("[^0-9]", "");
                 StringBuilder sb = null;
 
@@ -271,23 +318,33 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
 
                         if (cardCode.equals("34") || cardCode.equals("37")) {
                             //cardType.setText("American Express");
+                            ic_card.setImageResource(R.drawable.card_amex);
+
+                            User user = User.findById(User.class, (long) 1);
+                            user.cardbrand = "American Express";
+                            user.save();
+
                             if (charSequence.length() == 15) {
                                 hideFullNumber();
                             }
                         } else if (cardCode.equals("36") || cardCode.equals("51") || cardCode.equals("52") || cardCode.equals("53") || cardCode.equals("54") || cardCode.equals("55")) {
                             //cardType.setText("Mastercard");
+                            ic_card.setImageResource(R.drawable.card_mastercard);
+
+                            User user = User.findById(User.class, (long) 1);
+                            user.cardbrand = "Mastercard";
+                            user.save();
+
                             if (charSequence.length() == 16) {
                                 hideFullNumber();
                             }
                         } else if (cardCode.startsWith("4")) {
                             //cardType.setText("Visa");
                             ic_card.setImageResource(R.drawable.card_visa);
-                            User user = User.findById(User.class, (long) 1);
 
-                            if (user != null) {
-                                user.cardbrand = "Visa";
-                                user.save();
-                            }
+                            User user = User.findById(User.class, (long) 1);
+                            user.cardbrand = "Visa";
+                            user.save();
 
                             if (charSequence.length() == 16) {
                                 hideFullNumber();
@@ -295,24 +352,46 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
                         } else if (cardCode.equals("60") || cardCode.equals("65")) {
                             //cardType.setText("Discover Card");
 
+                            ic_card.setImageResource(R.drawable.card_discover);
+
+                            User user = User.findById(User.class, (long) 1);
+                            user.cardbrand = "Discover Card";
+                            user.save();
+
                             if (charSequence.length() == 16) {
                                 hideFullNumber();
                             }
                         } else if (cardCode.equals("30") || cardCode.equals("38")) {
                             //cardType.setText("Diners Club");
 
+                            ic_card.setImageResource(R.drawable.card_diners);
+
+                            User user = User.findById(User.class, (long) 1);
+                            user.cardbrand = "Diners Club";
+                            user.save();
+
                             if (charSequence.length() == 14) {
                                 hideFullNumber();
                             }
                         } else if (cardCode.equals("35")) {
-                            //cardType.setText("JBC");
+                            //cardType.setText("JCB");
+                            ic_card.setImageResource(R.drawable.card_jcb);
+
+                            User user = User.findById(User.class, (long) 1);
+                            user.cardbrand = "JCB";
+                            user.save();
 
                             if (charSequence.length() == 16) {
                                 hideFullNumber();
                             }
                         } else {
-                            ic_card.setImageResource(R.drawable.card_empty);
                             //cardType.setText("Card Type");
+                            ic_card.setImageResource(R.drawable.card_empty);
+
+                            User user = User.findById(User.class, (long) 1);
+                            user.cardbrand = "";
+                            user.save();
+
                             if (charSequence.length() == 16) {
                                 hideFullNumber();
                             }
@@ -369,6 +448,11 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
     }
 
     void hideFullNumber () {
+        if (!isValidLuhn(cardNumber.getText().toString())) {
+            cardNumber.setTextColor(getResources().getColor(R.color.orange));
+            return;
+        }
+
         cardNumber.clearFocus();
 
         if (cardNumber.getText().length() >= 4){
@@ -388,6 +472,27 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
         cvc.setVisibility(View.VISIBLE);
         cardDigits.setVisibility(View.VISIBLE);
         second_step.setVisibility(View.VISIBLE);
+    }
+
+    private boolean isValidLuhn(String _number) {
+        _number = _number.replaceAll("[^0-9]", "");
+
+        boolean odd = true;
+        int sum = 0;
+        String[] digits = new String[_number.length()];
+
+        for (int i=0; i<_number.length(); ++i) {
+            digits[i] = _number.charAt(i) + "";
+        }
+
+        for (int i=_number.length(); i>0; --i) {
+            int digit = Integer.parseInt(digits[i-1]);
+            if ((odd = !odd)) digit *=2;
+            if (digit > 9) digit -= 9;
+            sum += digit;
+        }
+
+        return sum % 10 == 0;
     }
 
     @Override
