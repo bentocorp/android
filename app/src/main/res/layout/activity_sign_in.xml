@@ -15,15 +15,39 @@
         android:layout_centerHorizontal="true"
         >
         <include layout="@layout/actionbar" />
+
     </LinearLayout>
 
     <!-- container -->
+    <LinearLayout
+        android:id="@+id/alert_empty_input"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/orange"
+        android:visibility="gone"
+        android:layout_below="@+id/ActionBarContainer">
+        <ImageView
+            android:padding="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_precaution"
+            />
+        <TextView
+            android:id="@+id/alert_message_textview"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center_vertical"
+            android:textSize="@dimen/text_small"
+            android:textColor="@color/white"
+            />
+    </LinearLayout>
+
     <ScrollView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/scrollView"
-        android:layout_above="@+id/pie"
-        android:layout_below="@+id/ActionBarContainer">
+        android:layout_below="@+id/alert_empty_input">
 
         <LinearLayout
             android:id="@+id/ll_cont"
@@ -35,29 +59,6 @@
             android:layout_alignParentBottom="true">
 
             <!-- alert -->
-            <LinearLayout
-                android:id="@+id/alert_empty_input"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@color/orange"
-                android:visibility="invisible"
-                >
-                <ImageView
-                    android:padding="10dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_precaution"
-                    />
-                <TextView
-                    android:id="@+id/alert_message_textview"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:gravity="center_vertical"
-                    android:textSize="@dimen/text_small"
-                    android:textColor="@color/white"
-                    />
-            </LinearLayout>
 
             <!-- divisor -->
             <View
@@ -220,16 +221,5 @@
     </ScrollView>
 
     <!-- FOOTER -->
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="@dimen/btn_padding"
-        android:id="@+id/pie"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
-
-    </LinearLayout>
 
 </RelativeLayout>

@@ -296,7 +296,7 @@ public class SignUpActivity extends BaseActivity {
 
     private void alertReset() {
         alert_message_textview.setText("");
-        alert_container.setVisibility(View.INVISIBLE);
+        alert_container.setVisibility(View.GONE);
     }
 
     public void postUserData(){
