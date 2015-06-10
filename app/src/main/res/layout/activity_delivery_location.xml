@@ -118,7 +118,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:src="@drawable/ic_curr_loc"
-                android:visibility="invisible"
+                android:visibility="gone"
                 android:paddingStart="1dp"
                 android:paddingEnd="9dp"
                 />
