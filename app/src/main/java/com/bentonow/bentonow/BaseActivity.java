@@ -54,8 +54,8 @@ public class BaseActivity extends Activity {
         String monthString = month < 10 ? "0"+String.valueOf(month+1): String.valueOf(month);
         String dayString = day < 10 ? "0"+String.valueOf(day): String.valueOf(day);
         todayDate = String.valueOf(year)+monthString+dayString;
-        int tday = day+1;
-        String TomorrowDayString = day < 10 ? "0"+String.valueOf(tday): String.valueOf(tday);
+        //int tday = day+1;
+        String TomorrowDayString = day < 10 ? "0"+String.valueOf(day): String.valueOf(day);
         tomorrowDate = String.valueOf(year)+monthString+TomorrowDayString;
     }
 

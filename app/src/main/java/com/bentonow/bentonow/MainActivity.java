@@ -37,8 +37,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 
 
 public class MainActivity extends BaseActivity {
@@ -55,6 +61,17 @@ public class MainActivity extends BaseActivity {
     private Location mLastLocation;
     private String next_day_json;
 
+    public static final String inputFormat = "HH:mm";
+
+    private Date current_time;
+    private Date dateCompareOne;
+    private Date dateCompareTwo;
+
+    private String compareStringOne = "16:30";
+    private String compareStringTwo = "21:30";
+
+    SimpleDateFormat inputParser = new SimpleDateFormat(inputFormat, Locale.US);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +79,8 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         aq = new AQuery(this);
         activity = this;
+        Bentonow.app.current_activity = this;
+        //Log.i(TAG,"Bentonow.app.current_activity.getLocalClassName(): " + Bentonow.app.current_activity.getLocalClassName());
         initElements();
         tx_slogan.setText(Ioscopy.getKeyValue("launch-slogan"));
     }
@@ -82,7 +101,7 @@ public class MainActivity extends BaseActivity {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
-                        startActivity(new Intent(getApplicationContext(),DeliveryLocationActivity.class));
+                        startActivity(new Intent(getApplicationContext(), DeliveryLocationActivity.class));
                         overridePendingTransitionGoRight();
                     }
                 });
@@ -109,7 +128,6 @@ public class MainActivity extends BaseActivity {
             dialog.show();
         }
     }
-
 
     private void tryToGetLocationFromGPS() {
         LocationManager mLocationManager;
@@ -177,11 +195,8 @@ public class MainActivity extends BaseActivity {
         };
 
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
         if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-            //Toast.makeText(this, "GPS is Enabled in your devide", Toast.LENGTH_SHORT).show();
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME, LOCATION_REFRESH_DISTANCE, mLocationListener);
-            //mLocationManager.removeUpdates();
         }else{
             showGPSDisabledAlertToUser();
         }
@@ -218,6 +233,15 @@ public class MainActivity extends BaseActivity {
 
                 }
 
+                // IOSCOPY
+                try {
+                    JSONObject meals = json.getJSONObject(Config.API.meals);
+                    JSONObject m3 = meals.getJSONObject(Config.API.MEALS.m3);
+                    Config.startTime = m3.getString(Config.API.MEALS.M3.startTime);
+                } catch (JSONException ignored) {
+
+                }
+
                 // STATUS/OVERALL
                 try {
                     JSONObject statusall = json.getJSONObject("/status/all");
@@ -240,10 +264,10 @@ public class MainActivity extends BaseActivity {
 
                 // /menu/next/{date}
                 try {
-                    JSONObject menu_date = json.getJSONObject("/menu/next/{date}");
+                    JSONObject menu_next_date = json.getJSONObject("/menu/next/{date}");
 //                    JSONObject menu = menu_date.getJSONObject("menus");
 //                    JSONObject dinner = menu.getJSONObject("dinner");
-                    next_day_json = menu_date.toString();
+                    next_day_json = menu_next_date.toString();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -280,25 +304,50 @@ public class MainActivity extends BaseActivity {
         });
     }
 
+    ///////////////////////
+        private Date parseDate(String date) {
+
+        try {
+            return inputParser.parse(date);
+        } catch (java.text.ParseException e) {
+            return new Date(0);
+        }
+    }
+    ///////////////////////
+
     class JsonProcess {
         public void OverAll( JSONObject json ){
             if( !isFirstInit() ) {
                 Log.i(TAG, "OverAll(json)");
                 try {
-                    // IF BENTO NOW OPEN
-                    String overall = json.getString(Config.API.STATUS_OVERALL_LABEL_VALUE);
-                    if (overall.equals(Config.API.STATUS_OVERALL_MESSAGE_OPEN)) {
-                        Log.i(TAG, "Bentonow.isOpen turn true");
-                        Bentonow.isOpen = true;
-                    }
-                    if (overall.equals(Config.API.STATUS_OVERALL_MESSAGE_SOLDOUT)) {
-                        Bentonow.isSolded = true;
-                        goTo goTo = new goTo();
-                        goTo.ErrorSolded();
-                    } else if (overall.equals(Config.API.STATUS_OVERALL_MESSAGE_CLOSED)) {
+                    Calendar c = GregorianCalendar.getInstance();
+                    int hour = c.get(Calendar.HOUR_OF_DAY);
+                    int minute = c.get(Calendar.MINUTE);
+
+                    int phone_hour = hour * 100 + minute;
+                    int open_hour = Integer.parseInt(Config.startTime.replaceAll("[^0-9]", "").substring(0, 4));
+
+
+                    //if ( current_time.before(dateCompareOne) || current_time.after(dateCompareTwo) ) {
+                    if( phone_hour < open_hour ) {
                         Bentonow.isOpen = false;
                         goTo goTo = new goTo();
                         goTo.ErrorClosed();
+                    }else{
+                        String overall = json.getString(Config.API.STATUS_OVERALL_LABEL_VALUE);
+                        if (overall.equals(Config.API.STATUS_OVERALL_MESSAGE_OPEN)) {
+                            Log.i(TAG, "Bentonow.isOpen turn true");
+                            Bentonow.isOpen = true;
+                        }
+                        if (overall.equals(Config.API.STATUS_OVERALL_MESSAGE_SOLDOUT)) {
+                            Bentonow.isSolded = true;
+                            goTo goTo = new goTo();
+                            goTo.ErrorSolded();
+                        } else if (overall.equals(Config.API.STATUS_OVERALL_MESSAGE_CLOSED)) {
+                            Bentonow.isOpen = false;
+                            goTo goTo = new goTo();
+                            goTo.ErrorClosed();
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

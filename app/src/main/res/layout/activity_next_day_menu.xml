@@ -69,7 +69,7 @@
                 android:id="@+id/menu_item_side_listview"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                tools:listitem="@layout/inc_menu_item_row"
+                tools:listitem="@layout/inc_menu_item_side"
                 android:numColumns="2"
                 android:fillViewport="true"
                 >

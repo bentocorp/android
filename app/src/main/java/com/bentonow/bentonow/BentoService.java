@@ -17,7 +17,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -122,29 +124,40 @@ public class BentoService extends Service {
                     if (json != null) {
                         //Log.i(TAG, "json: " + json.toString());
                         try {
-                            if (Bentonow.isOpen) {
+                            if ( Bentonow.isOpen ) {
                                 // STATUS / MENU
                                 JSONArray menu = json.getJSONArray("menu");
                                 processMenuStock(menu);
                             }
+                            Calendar c = GregorianCalendar.getInstance();
+                            int hour = c.get(Calendar.HOUR_OF_DAY);
+                            int minute = c.get(Calendar.MINUTE);
 
-                            // STATUS / OVERALL
-                            JSONObject overall = json.getJSONObject("overall");
-                            if (overall.get(Config.API.STATUS_OVERALL_LABEL_VALUE).equals(Config.API.STATUS_OVERALL_MESSAGE_OPEN)) {
-                                Log.i(TAG,"Bentonow.isOpen: "+Bentonow.isOpen.toString());
-                                if (!Bentonow.isOpen) {
-                                    Bentonow.isOpen = true;
-                                    goTo(Target.MainActivity);
-                                }
-                            } else if (overall.get(Config.API.STATUS_OVERALL_LABEL_VALUE).equals(Config.API.STATUS_OVERALL_MESSAGE_SOLDOUT)) {
-                                if (!Bentonow.isSolded) {
-                                    Bentonow.isSolded = true;
-                                    goTo(Target.ErrorSoulded);
-                                }
-                            } else if (overall.get(Config.API.STATUS_OVERALL_LABEL_VALUE).equals(Config.API.STATUS_OVERALL_MESSAGE_CLOSED)) {
-                                if (Bentonow.isOpen) {
-                                    Bentonow.isOpen = false;
-                                    goTo(Target.ErrorClosed);
+                            int phone_hour = hour * 100 + minute;
+                            int open_hour = Integer.parseInt(Config.startTime.replaceAll("[^0-9]", "").substring(0, 4));
+
+                            if( phone_hour < open_hour ) {
+                                Bentonow.isOpen = false;
+                                goTo(Target.ErrorClosed);
+                            }else{
+                                // STATUS / OVERALL
+                                JSONObject overall = json.getJSONObject("overall");
+                                if (overall.get(Config.API.STATUS_OVERALL_LABEL_VALUE).equals(Config.API.STATUS_OVERALL_MESSAGE_OPEN)) {
+                                    Log.i(TAG,"Bentonow.isOpen: "+Bentonow.isOpen.toString());
+                                    if (!Bentonow.isOpen) {
+                                        Bentonow.isOpen = true;
+                                        goTo(Target.MainActivity);
+                                    }
+                                } else if (overall.get(Config.API.STATUS_OVERALL_LABEL_VALUE).equals(Config.API.STATUS_OVERALL_MESSAGE_SOLDOUT)) {
+                                    if (!Bentonow.isSolded) {
+                                        Bentonow.isSolded = true;
+                                        goTo(Target.ErrorSoulded);
+                                    }
+                                } else if (overall.get(Config.API.STATUS_OVERALL_LABEL_VALUE).equals(Config.API.STATUS_OVERALL_MESSAGE_CLOSED)) {
+                                    if (Bentonow.isOpen) {
+                                        Bentonow.isOpen = false;
+                                        goTo(Target.ErrorClosed);
+                                    }
                                 }
                             }
                         } catch (JSONException e) {
@@ -163,26 +176,32 @@ public class BentoService extends Service {
         Intent dialogIntent = null;
         switch (deliveryLocation){
             case MainActivity:
-                dialogIntent = new Intent(this, MainActivity.class);
-                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(dialogIntent);
-                //Bentonow.app.current_activity.finish();
-                Bentonow.app.current_activity.overridePendingTransition(R.anim.top_slide_in, R.anim.bottom_slide_out);
+                //if( !Bentonow.app.current_activity.getLocalClassName().equals( "MainActivity" ) ) {
+                    dialogIntent = new Intent(this, MainActivity.class);
+                    dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(dialogIntent);
+                    //Bentonow.app.current_activity.finish();
+                    Bentonow.app.current_activity.overridePendingTransition(R.anim.top_slide_in, R.anim.bottom_slide_out);
+                //}
                 break;
             case ErrorClosed:
-                dialogIntent = new Intent(this, ErrorClosedActivity.class);
-                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                //dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(dialogIntent);
-                //Bentonow.app.current_activity.finish();
-                Bentonow.app.current_activity.overridePendingTransition(R.anim.bottom_slide_in, R.anim.top_slide_out);
+                if( !Bentonow.app.current_activity.getLocalClassName().equals( "ErrorClosedActivity" ) ) {
+                    dialogIntent = new Intent(this, ErrorClosedActivity.class);
+                    dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    //dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(dialogIntent);
+                    //Bentonow.app.current_activity.finish();
+                    Bentonow.app.current_activity.overridePendingTransition(R.anim.bottom_slide_in, R.anim.top_slide_out);
+                }
                 break;
             case ErrorSoulded:
-                dialogIntent = new Intent(this, ErrorOutOfStockActivity.class);
-                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(dialogIntent);
-                //Bentonow.app.current_activity.finish();
-                Bentonow.app.current_activity.overridePendingTransition(R.anim.bottom_slide_in, R.anim.top_slide_out);
+                if( !Bentonow.app.current_activity.getLocalClassName().equals( "ErrorOutOfStockActivity" ) ) {
+                    dialogIntent = new Intent(this, ErrorOutOfStockActivity.class);
+                    dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(dialogIntent);
+                    //Bentonow.app.current_activity.finish();
+                    Bentonow.app.current_activity.overridePendingTransition(R.anim.bottom_slide_in, R.anim.top_slide_out);
+                }
                 break;
         }
     }

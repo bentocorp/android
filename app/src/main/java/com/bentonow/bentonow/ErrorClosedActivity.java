@@ -38,12 +38,11 @@ public class ErrorClosedActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_error_closed);
         aq = new AQuery(this);
-        //Config.aux_deduct_day ++;
+        Bentonow.app.current_activity = this;
         initActionbar();
         initElements();
         addListeners();
         initLegalFooter();
-        tryGetTomorrowMenu();
     }
 
     private void postData() {
@@ -131,21 +130,6 @@ public class ErrorClosedActivity extends BaseActivity {
                 Intent intent = new Intent(getApplicationContext(), TermAndConditionsActivity.class);
                 startActivity(intent);
                 overridePendingTransitionGoRight();
-            }
-        });
-    }
-
-    void tryGetTomorrowMenu(){
-        String uri = Config.API.URL+Config.API.MENU_URN+"/"+ tomorrowDate;
-        Log.i(TAG, "uri: " + uri);
-        aq.ajax(uri, JSONObject.class, new AjaxCallback<JSONObject>() {
-            @Override
-            public void callback(String url, JSONObject json, AjaxStatus status) {
-                if (json != null) {
-                    processJson(json);
-                } else {
-                    Log.e(TAG, status.getError());
-                }
             }
         });
     }

@@ -27,6 +27,7 @@ public class Config {
     public static String aux_initial_stock = "0";
     public static Location current_location;
     public static String serviceArea_dinner;
+    public static String startTime;
     //public static boolean processing_stock = false;
 
     public static class CurrentOrder {
@@ -85,6 +86,8 @@ public class Config {
         public static int DEFAULT_SUCCESS_200 = 200;
         public static int USER_LOGIN_404 = 404;
         public static int USER_LOGIN_403 = 403;
+        public static String meals = "meals";
+        public static String m3 = "3";
 
         public class FACEBOOK {
             public static final String SIGNUP = "/user/fbsignup";
@@ -110,6 +113,14 @@ public class Config {
             public static final String FBSIGNUP = "/user/fbsignup";
             public static final String LOGIN = "/user/login";
             public static final String SIGNUP = "/user/signup";
+        }
+
+        public static class MEALS {
+            public static String m3 = "3";
+
+            public static class M3 {
+                public static String startTime = "startTime";
+            }
         }
     }
 
