@@ -598,7 +598,7 @@ public class CompleteOrderActivity extends BaseActivity {
     private void showOrderDetails() {
         Log.i(TAG, "showOrderDetails()");
         // ORDER ADDRESS
-        address_textview.setText(current_order.getOrderAddress());
+        address_textview.setText(current_order.getOrderAddressStreet());
         // CREDIT CARD
         credit_card_textview.setText(credit_card_data);
         // LOAD ITEMS

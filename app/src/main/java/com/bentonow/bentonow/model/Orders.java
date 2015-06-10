@@ -73,10 +73,19 @@ public class Orders extends SugarRecord<Orders> {
         String address_zip_aux = "";
         if ( this.address_number != null ) address_number_aux = this.address_number;
         if ( this.address_street != null ) address_street_aux = this.address_street;
-//        if ( this.address_city != null ) address_city_aux = this.address_city;
-//        if ( this.address_state != null ) address_state_aux = this.address_state;
-//        if ( this.address_zip != null ) address_zip_aux = this.address_zip;
-        //address = address_number_aux+" "+address_street_aux+", "+address_city_aux+", "+address_zip_aux+" "+address_state_aux;
+        if ( this.address_city != null ) address_city_aux = this.address_city;
+        if ( this.address_state != null ) address_state_aux = this.address_state;
+        if ( this.address_zip != null ) address_zip_aux = this.address_zip;
+        address = address_number_aux+" "+address_street_aux+", "+address_city_aux+", "+address_zip_aux+" "+address_state_aux;
+        return address;
+    }
+
+    public String getOrderAddressStreet(){
+        String address = "";
+        String address_number_aux = "";
+        String address_street_aux = "";
+        if ( this.address_number != null ) address_number_aux = this.address_number;
+        if ( this.address_street != null ) address_street_aux = this.address_street;
         address = address_number_aux+" "+address_street_aux;
         return address;
     }
