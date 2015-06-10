@@ -34,6 +34,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 
@@ -614,11 +615,11 @@ public class CompleteOrderActivity extends BaseActivity {
 //        String tip_percent = String.format("%.2f", double_tip_percent );
         tip_percentTextView.setText(Config.CurrentOrder.tip_percent+"%");
         // SHOW TAX
-        String total_tax = String.valueOf(String.format("%.2f", Config.CurrentOrder.total_tax_cost));
+        String total_tax = String.valueOf(String.format(Locale.US,"%.2f", Config.CurrentOrder.total_tax_cost));
         tax_detail.setText("$" + total_tax);
 
         // SHOW TOTAL
-        String total_order_cost = String.valueOf(String.format("%.2f", Config.CurrentOrder.total_order_cost));
+        String total_order_cost = String.valueOf(String.format(Locale.US,"%.2f", Config.CurrentOrder.total_order_cost));
         order_total_textview.setText("$" + total_order_cost);
     }
 
