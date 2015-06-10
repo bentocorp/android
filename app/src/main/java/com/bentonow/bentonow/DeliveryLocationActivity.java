@@ -126,7 +126,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                 if(!autoCompView.getText().toString().isEmpty()){
                     btn_clear.setVisibility(View.VISIBLE);
                 }
-                return true;
+                return false;
             }
         });
         //////////// END GOOGLE PLACE AUTOCOMPLETE //////////////
