@@ -193,7 +193,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
 
         //
         actionbar_right_btn = (ImageView)findViewById(R.id.actionbar_right_btn);
-        actionbar_right_btn.setImageResource(R.drawable.ic_ab_question_mark);
+        actionbar_right_btn.setImageResource(R.drawable.ic_ab_help);
         actionbar_right_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
