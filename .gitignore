@@ -6,3 +6,4 @@ local.properties
 build
 captures
 node_modules
+*.log
