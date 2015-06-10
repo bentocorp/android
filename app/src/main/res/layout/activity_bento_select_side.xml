@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     tools:context="com.bentonow.bentonow.ErrorClosedActivity"
     android:id="@+id/base_relative_layout"
-    android:background="@color/bgcolor">
+    android:background="@color/btn_green">
 
     <RelativeLayout
         android:layout_width="match_parent"
