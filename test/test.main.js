@@ -50,7 +50,13 @@ describe("Bento", function () {
 
   it("Tap on Get Started", function () {
     return driver
-      .elementById('com.bentonow.bentonow:id/btn_get_started')
+      .waitForElementById('com.bentonow.bentonow:id/btn_get_started')
+        .click()
+  });
+
+  it("Close GPS alert (if present)", function () {
+    return driver
+      .waitForElementById('android:id/button2')
         .click()
   });
 
@@ -97,7 +103,7 @@ describe("Bento", function () {
       .waitForElementById('com.bentonow.bentonow:id/btn_continue')
         .click()
   });
-
+  
   it("Check TOS", function () {
     return driver
       .waitForElementById('com.bentonow.bentonow:id/chckIagree')
@@ -116,18 +122,14 @@ describe("Bento", function () {
         .click()
       .waitForElementById('com.bentonow.bentonow:id/main_menu_list_items')
       .then(function(){
-        var touch1 = new wd.TouchAction();
-        touch1
-          .tap({x:300, y:400});
-
-        var touch2 = new wd.TouchAction();
-        touch2
+        var touch = new wd.TouchAction();
+        touch
           .tap({x:300, y:400});
 
         return driver
-          .performTouchAction(touch1)
-          .waitForElementById('com.bentonow.bentonow:id/btn_add_to_bento_main')
-          .performTouchAction(touch2);
+          .performTouchAction(touch)
+          .waitForElementById('com.bentonow.bentonow:id/btn_add_to_bento')
+            .click();
       });
   });
 
@@ -137,18 +139,14 @@ describe("Bento", function () {
         .click()
       .waitForElementById('com.bentonow.bentonow:id/menu_item_side_listview')
       .then(function(){
-        var touch1 = new wd.TouchAction();
-        touch1
-          .tap({x:200, y:400});
-
-        var touch2 = new wd.TouchAction();
-        touch2
+        var touch = new wd.TouchAction();
+        touch
           .tap({x:200, y:400});
 
         return driver
-          .performTouchAction(touch1)
-          .waitForElementById('com.bentonow.bentonow:id/btn_add_to_bento_side1')
-          .performTouchAction(touch2);
+          .performTouchAction(touch)
+          .waitForElementById('com.bentonow.bentonow:id/btn_add_to_bento')
+            .click();
       });
   });
 
@@ -158,18 +156,14 @@ describe("Bento", function () {
         .click()
       .waitForElementById('com.bentonow.bentonow:id/menu_item_side_listview')
       .then(function(){
-        var touch1 = new wd.TouchAction();
-        touch1
-          .tap({x:550, y:400});
-
-        var touch2 = new wd.TouchAction();
-        touch2
+        var touch = new wd.TouchAction();
+        touch
           .tap({x:550, y:400});
 
         return driver
-          .performTouchAction(touch1)
-          .waitForElementById('com.bentonow.bentonow:id/btn_add_to_bento_side2')
-          .performTouchAction(touch2);
+          .performTouchAction(touch)
+          .waitForElementById('com.bentonow.bentonow:id/btn_add_to_bento')
+            .click();
       });
   });
 
@@ -179,18 +173,14 @@ describe("Bento", function () {
         .click()
       .waitForElementById('com.bentonow.bentonow:id/menu_item_side_listview')
       .then(function(){
-        var touch1 = new wd.TouchAction();
-        touch1
-          .tap({x:200, y:775});
-
-        var touch2 = new wd.TouchAction();
-        touch2
+        var touch = new wd.TouchAction();
+        touch
           .tap({x:200, y:775});
 
         return driver
-          .performTouchAction(touch1)
-          .waitForElementById('com.bentonow.bentonow:id/btn_add_to_bento_side1')
-          .performTouchAction(touch2);
+          .performTouchAction(touch)
+          .waitForElementById('com.bentonow.bentonow:id/btn_add_to_bento')
+            .click();
       });
   });
 
@@ -200,32 +190,20 @@ describe("Bento", function () {
         .click()
       .waitForElementById('com.bentonow.bentonow:id/menu_item_side_listview')
       .then(function(){
-        var touch1 = new wd.TouchAction();
-        touch1
-          .tap({x:550, y:775});
-
-        var touch2 = new wd.TouchAction();
-        touch2
+        var touch = new wd.TouchAction();
+        touch
           .tap({x:550, y:775});
 
         return driver
-          .performTouchAction(touch1)
-          .waitForElementById('com.bentonow.bentonow:id/btn_add_to_bento_side2')
-          .performTouchAction(touch2);
+          .performTouchAction(touch)
+          .waitForElementById('com.bentonow.bentonow:id/btn_add_to_bento')
+            .click();
       });
   });
 
-  it('Add another bento', function(){
+  it('Finalize Order', function(){
     return driver
-      .waitForElementById('com.bentonow.bentonow:id/btn_add_another_bento')
-        .click();
-  });
-
-  it('Autocomplete bento', function(){
-    return driver
-      .waitForElementById('com.bentonow.bentonow:id/btn_continue_inactive')
-        .click()
-      .waitForElementById('com.bentonow.bentonow:id/btn_yes_complete_for_me')
+      .waitForElementById('com.bentonow.bentonow:id/btn_continue_active')
         .click();
   });
 
@@ -233,6 +211,8 @@ describe("Bento", function () {
     var email_address = 'vincent+5@bentonow.com';
     var password = 'somepassword716*';
     return driver
+      .waitForElementById('com.bentonow.bentonow:id/btn_go_to_sign_in_activity')
+        .click()
       .waitForElementById('com.bentonow.bentonow:id/email_address')
         .setText(email_address)
       .waitForElementById('com.bentonow.bentonow:id/password')
@@ -241,20 +221,7 @@ describe("Bento", function () {
       .waitForElementById('com.bentonow.bentonow:id/btn_sign_in')
         .click();
   });
-
-<<<<<<< HEAD
-
-  // it('Change Address', function(){
-  //   return driver
-  //     .sleep(5000)
-  //     .waitForElementById('com.bentonow.bentonow:id/btn_edit_address')
-  //       .click()
-  //     .waitForElementById('com.bentonow.bentonow:id/autoCompleteTextView')
-  //       .setText('Kearny St, San Francisco, CA 94108, USA')
-  //     .back()
-  //     .back();
-  // });
-=======
+  
   it('Change Address', function(){
     return driver
       .sleep(5000)
@@ -263,10 +230,11 @@ describe("Bento", function () {
       .waitForElementById('com.bentonow.bentonow:id/autoCompleteTextView')
         .setText('Kearny St, San Francisco, CA 94108, USA')
       .back()
-      .back();
+      .back()
+      .waitForElementById('com.bentonow.bentonow:id/btn_confirm_address')
+        .click();
   });
->>>>>>> origin/master
-
+  
   it ('Change Credit Card', function(){
     return driver
       .waitForElementById('com.bentonow.bentonow:id/btn_edit_credit_card')
@@ -274,22 +242,17 @@ describe("Bento", function () {
       .waitForElementById('com.bentonow.bentonow:id/number')
         .setText('4242424242424242')
       .waitForElementById('com.bentonow.bentonow:id/expMonth')
-        .setText('10')
-      .waitForElementById('com.bentonow.bentonow:id/ExpYear')
-        .setText('2020')
+        .setText('1020')
       .waitForElementById('com.bentonow.bentonow:id/cvc')
         .setText('123')
       .waitForElementById('com.bentonow.bentonow:id/save')
-        .click()
-      .sleep(5000)
-      .waitForElementById('btn_continue_to_payment')
         .click();
   });
 
   it ('Check total', function(){
     return driver
       .waitForElementById('com.bentonow.bentonow:id/order_total_textview')
-        .text().should.become('$28.5');
+        .text().should.become('$14.25');
   });
 
   it ('Change delivery tip', function(){
@@ -301,9 +264,9 @@ describe("Bento", function () {
         .click()
         .click()
       .waitForElementById('com.bentonow.bentonow:id/tip_percent')
-        .text().should.become('15%')
+        .text().should.become('30%')
       .waitForElementById('com.bentonow.bentonow:id/order_total_textview')
-        .text().should.become('$29.7');
+        .text().should.become('$16.65');
   });
 
   it ('Let eat', function(){
