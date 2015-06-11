@@ -1,7 +1,6 @@
 package com.bentonow.bentonow.fragment;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -14,26 +13,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.androidquery.AQuery;
-import com.androidquery.auth.FacebookHandle;
 import com.bentonow.bentonow.InputFilterMinMax;
 import com.bentonow.bentonow.PaymentForm;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.EnterCreditCardActivity;
 import com.bentonow.bentonow.model.User;
 
-import org.json.JSONObject;
-
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 
 public class PaymentFormFragment extends Fragment implements PaymentForm {
@@ -69,8 +61,6 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
                 if(completed) {
                     hideSoftKeyboard(getActivity());
                     saveForm();
-                }else{
-                    Toast.makeText(getActivity(),"Invalid card",Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -272,8 +262,6 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
                             if (completed) {
                                 hideSoftKeyboard(getActivity());
                                 saveForm();
-                            } else {
-                                Toast.makeText(getActivity(), "Invalid card", Toast.LENGTH_LONG).show();
                             }
                         }
                         return true;
@@ -285,8 +273,6 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
                     if (completed) {
                         hideSoftKeyboard(getActivity());
                         saveForm();
-                    } else {
-                        Toast.makeText(getActivity(), "Invalid card", Toast.LENGTH_LONG).show();
                     }
                 }
                 return true;
