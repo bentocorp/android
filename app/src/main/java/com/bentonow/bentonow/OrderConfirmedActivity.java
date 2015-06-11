@@ -28,10 +28,16 @@ public class OrderConfirmedActivity extends BaseActivity {
         btn_build_another_bento.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(),DeliveryLocationActivity.class);
+                Intent intent = new Intent(getApplicationContext(), BuildBentoActivity.class);
                 startActivity(intent);
                 finish();
                 overridePendingTransitionGoLeft();
+            }
+        });
+        findViewById(R.id.btn_faq).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                goToFAQ();
             }
         });
     }

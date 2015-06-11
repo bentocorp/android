@@ -63,6 +63,18 @@
                     android:gravity="center"
                     android:text="We'll send you text message updates while your delivery is on the way."
                     android:textAppearance="@style/NormalText"
+                    android:layout_marginTop="15dp"
+                    />
+                <TextView
+                    android:id="@+id/btn_faq"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Questions or Concerns?"
+                    android:textAppearance="@style/NormalText"
+                    android:textColor="@color/btn_green"
+                    android:textStyle="bold"
+                    android:layout_marginTop="15dp"
                     />
             </LinearLayout>
 
@@ -80,7 +92,7 @@
         >
         <TextView
             android:id="@+id/btn_build_another_bento"
-            android:background="@color/gray"
+            android:background="@color/btn_green"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
