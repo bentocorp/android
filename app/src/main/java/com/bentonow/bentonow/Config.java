@@ -123,6 +123,18 @@ public class Config {
                 public static String startTime = "startTime";
             }
         }
+
+        public class SERVER_STATUS {
+            public class ORDER {
+                public class NUMBER {
+                    public static final int _402 = 402;
+                }
+
+                public class MESSAGE {
+                    public static final String _402 = "No payment specified, and no payment on file.";
+                }
+            }
+        }
     }
 
     public class IOSCOPY {
