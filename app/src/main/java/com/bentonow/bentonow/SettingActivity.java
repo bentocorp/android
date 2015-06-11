@@ -44,7 +44,7 @@ public class SettingActivity extends BaseActivity {
 
         user = User.findById(User.class, (long) 1);
         if (user != null && user.apitoken != null && !user.apitoken.isEmpty()) {
-            user_name.setText(user.firstname + " " + user.lastname);
+            user_name.setText(user.firstname);
             phone.setText(user.phone);
             email.setText(user.email);
             user_general_content.setVisibility(View.VISIBLE);
