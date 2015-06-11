@@ -31,6 +31,7 @@ import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -319,6 +320,11 @@ public class SignUpActivity extends BaseActivity {
             @Override
             public void callback(String url, JSONObject json, AjaxStatus status) {
                 //Toast.makeText(getApplicationContext(), status.getMessage(), Toast.LENGTH_LONG).show();
+                Log.i(TAG, "status.getCode(): " + status.getCode());
+                Log.i(TAG, "status.getError(): " + status.getError());
+                Log.i(TAG, "status.getMessage(): " + status.getMessage());
+                Log.i(TAG, "status.getCode(): " + status.getCode());
+
                 if (status.getCode() == Config.API.USER_SIGNUP_200) {
                     Log.i(TAG, "json: " + json.toString());
                     long users = User.count(User.class, null, null);
@@ -366,11 +372,18 @@ public class SignUpActivity extends BaseActivity {
                 }
                 if (status.getCode() == Config.API.USER_SIGNUP_400) {
                     try {
-                        JSONObject error_message = new JSONObject(status.getError());
-                        alert(error_message.getString("error"));
+                        String message = "";
+                        JSONArray error_message = new JSONArray(status.getError());
+                        for(int i = 0; i<error_message.length(); i++ ) {
+                            message += String.valueOf(error_message.get(i));
+                            if(i+1<error_message.length()){
+                                message += "\n";
+                            }
+                        }
+                        alert(message);
                     } catch (JSONException e) {
                         //e.printStackTrace();
-                        alert("An error have ocurred.");
+                        alert(status.getMessage());
                     }
                 }
                 if (status.getCode() == Config.API.USER_SIGNUP_409) {
@@ -381,7 +394,7 @@ public class SignUpActivity extends BaseActivity {
                         alert(error_message.getString("error"));
                     } catch (JSONException e) {
                         //e.printStackTrace();
-                        alert("An error has occurred.");
+                        alert(status.getMessage());
                     }
                 }
             }
