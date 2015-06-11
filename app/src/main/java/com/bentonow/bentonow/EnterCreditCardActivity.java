@@ -1,6 +1,8 @@
 package com.bentonow.bentonow;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -68,6 +70,8 @@ public class EnterCreditCardActivity extends BaseFragmentActivity {
 
     public void saveCreditCard(PaymentForm form) {
 
+        final ProgressDialog dialog = ProgressDialog.show(this, null, "Processing...", true);
+
         Card card = new Card(
                 form.getCardNumber(),
                 form.getExpMonth(),
@@ -88,9 +92,12 @@ public class EnterCreditCardActivity extends BaseFragmentActivity {
                             user.stripetoken = token.getId();
                             user.save();
 
+                            dialog.dismiss();
+                            returnToPayment();
                             //getTokenList().addToList(token);
                         }
                         public void onError(Exception error) {
+                            dialog.dismiss();
                             Log.i(TAG, error.getLocalizedMessage());
                             //finishProgress();
                         }
