@@ -1,6 +1,7 @@
 package com.bentonow.bentonow;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
@@ -314,12 +315,17 @@ public class SignUpActivity extends BaseActivity {
             e.printStackTrace();
         }
 
+        final ProgressDialog dialog = ProgressDialog.show(this, null, "Registering...", true);
+
         Log.i(TAG,"data: "+data.toString());
         params.put("data", data.toString());
         aq.ajax(uri, params, JSONObject.class, new AjaxCallback<JSONObject>() {
             @Override
             public void callback(String url, JSONObject json, AjaxStatus status) {
                 //Toast.makeText(getApplicationContext(), status.getMessage(), Toast.LENGTH_LONG).show();
+
+                dialog.dismiss();
+
                 Log.i(TAG, "status.getCode(): " + status.getCode());
                 Log.i(TAG, "status.getError(): " + status.getError());
                 Log.i(TAG, "status.getMessage(): " + status.getMessage());
