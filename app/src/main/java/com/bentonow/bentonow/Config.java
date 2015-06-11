@@ -31,7 +31,7 @@ public class Config {
     //public static boolean processing_stock = false;
 
     public static class CurrentOrder {
-        public static int tip_percent = 10; // will be modified in the interface
+        public static int tip_percent = 15; // will be modified in the interface
         public static double tax = 0; // will be changed in the interface
         public static double item_price = 0; // will be modified in the interface
         public static int total_items = 0; // will be modified in the interface
