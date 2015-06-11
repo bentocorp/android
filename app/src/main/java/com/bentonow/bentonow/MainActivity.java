@@ -59,7 +59,7 @@ public class MainActivity extends BaseActivity {
     private Activity activity;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
-    private String next_day_json;
+    //private String next_day_json;
 
     public static final String inputFormat = "HH:mm";
 
@@ -241,6 +241,15 @@ public class MainActivity extends BaseActivity {
                 } catch (JSONException ignored) {
 
                 }
+                // /menu/next/{date}
+                try {
+                    JSONObject menu_next_date = json.getJSONObject("/menu/next/{date}");
+                    //JSONObject menu = menu_next_date.getJSONObject("menus");
+                    //JSONObject dinner = menu.getJSONObject("dinner");
+                    Config.next_day_json = menu_next_date.toString();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
                 // STATUS/OVERALL
                 try {
@@ -258,16 +267,6 @@ public class MainActivity extends BaseActivity {
                     //JSONObject dinner = menu.getJSONObject("lunch");
                     JSONArray MenuItems = (JSONArray) dinner.get(Config.API_MENUITEMS_TAG);
                     JsonProcess.MenuItems(MenuItems);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                // /menu/next/{date}
-                try {
-                    JSONObject menu_next_date = json.getJSONObject("/menu/next/{date}");
-//                    JSONObject menu = menu_date.getJSONObject("menus");
-//                    JSONObject dinner = menu.getJSONObject("dinner");
-                    next_day_json = menu_next_date.toString();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -451,7 +450,6 @@ public class MainActivity extends BaseActivity {
             handler.postDelayed(new Runnable() {
                 public void run() {
                     Intent intent = new Intent(getApplicationContext(), ErrorClosedActivity.class);
-                    if(next_day_json!=null) intent.putExtra("json",next_day_json);
                     startActivity(intent);
                     overridePendingTransition(R.anim.bottom_slide_in, R.anim.none);
                     finish();
@@ -464,7 +462,6 @@ public class MainActivity extends BaseActivity {
             handler.postDelayed(new Runnable() {
                 public void run() {
                     Intent intent = new Intent(getApplicationContext(), ErrorOutOfStockActivity.class);
-                    if(next_day_json!=null) intent.putExtra("json",next_day_json);
                     startActivity(intent);
                     overridePendingTransition(R.anim.bottom_slide_in, R.anim.none);
                     finish();

@@ -31,7 +31,7 @@ public class EnterCreditCardActivity extends BaseFragmentActivity {
 
     private static final String TAG = "EnterCreditCardActivity";
     public static final String PUBLISHABLE_KEY = "pk_test_hFtlMiWcGFn9TvcyrLDI4Y6P";
-    private static Activity _this;
+    public static Activity _this;
 
     private ProgressDialogFragment progressFragment;
 

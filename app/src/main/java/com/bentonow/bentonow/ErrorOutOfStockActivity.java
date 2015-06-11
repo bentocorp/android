@@ -40,21 +40,18 @@ public class ErrorOutOfStockActivity extends BaseActivity {
         aq = new AQuery(this);
         Bentonow.app.current_activity = this;
 
-        //Intent intent = getIntent();
-        //Bundle extras = intent.getExtras();
-        String next_day_json = savedInstanceState.getString("json");
-        if(next_day_json!=null){
-            try {
-                processJson(new JSONObject(next_day_json));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
         initActionbar();
         initElements();
         addListeners();
         initLegalFooter();
+
+        if(Config.next_day_json!=null){
+            try {
+                processJson(new JSONObject(Config.next_day_json));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void postData() {
