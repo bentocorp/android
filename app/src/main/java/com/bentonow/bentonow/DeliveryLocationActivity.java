@@ -40,6 +40,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
 
 
@@ -267,7 +269,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         btn_continue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO
                 Animation animFadeIn = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadein);
                 if (!chckIagree.isChecked()) {
                     alert_iagree.startAnimation(animFadeIn);
@@ -369,19 +370,12 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
 
                 List<LatLng> sfpolygon = new ArrayList<LatLng>();
                 String[] serviceArea_dinner = Config.serviceArea_dinner.split(" ");
-                for( int i=0; i<serviceArea_dinner.length; i++ ){
-                    String[] loc = serviceArea_dinner[i].split(",");
+                for (String aServiceArea_dinner : serviceArea_dinner) {
+                    String[] loc = aServiceArea_dinner.split(",");
                     double lat = Double.valueOf(loc[1]);
                     double lng = Double.valueOf(loc[0]);
                     sfpolygon.add(new LatLng(lat, lng));
                 }
-                /*sfpolygon.add(new LatLng(37.8095806, -122.44983680000001));
-                sfpolygon.add(new LatLng(37.77783170000001, -122.44335350000001));
-                sfpolygon.add(new LatLng(37.7460824, -122.43567470000002));
-                sfpolygon.add(new LatLng(37.7490008, -122.37636569999998));
-                sfpolygon.add(new LatLng(37.78611430000001, -122.37928390000002));
-                sfpolygon.add(new LatLng(37.8135812, -122.40348819999998));
-                sfpolygon.add(new LatLng(37.8095806, -122.44983680000001));*/
 
 
                 //Log.i(TAG, "sfpolygon: " + sfpolygon.toString());
@@ -514,6 +508,18 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                     });
                 }*/
 
+                //List<LatLng> sfpolygon = new ArrayList<LatLng>();
+                /*PolylineOptions rectOptions = new PolylineOptions();
+                String[] serviceArea_dinner = Config.serviceArea_dinner.split(" ");
+                for (String aServiceArea_dinner : serviceArea_dinner) {
+                    String[] loc = aServiceArea_dinner.split(",");
+                    double lat = Double.valueOf(loc[1]);
+                    double lng = Double.valueOf(loc[0]);
+                    //sfpolygon.add(new LatLng(lat, lng));
+                    rectOptions.add(new LatLng(lat, lng));
+                }
+                Polyline polyline = mMap.addPolyline(rectOptions);*/
+
                 mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
                     @Override
                     public void onMapLoaded() {
@@ -604,7 +610,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
             bestMatch = matches.isEmpty() ? null : matches.get(0);
         }
 
-        //TODO
         //assert bestMatch != null;
         try{
             newAddress = "";
