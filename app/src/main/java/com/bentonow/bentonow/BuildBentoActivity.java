@@ -15,6 +15,7 @@ import com.bentonow.bentonow.model.Dish;
 import com.bentonow.bentonow.model.Item;
 import com.bentonow.bentonow.model.Orders;
 import com.bentonow.bentonow.model.User;
+import com.google.android.gms.maps.model.LatLng;
 import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
@@ -136,33 +137,62 @@ public class BuildBentoActivity extends BaseActivity {
         Log.i(TAG, "checkPendingBuildBento()");
         long pending_order_id = Orders.findPendingOrderId(todayDate);
         Log.i(TAG, "pending_order_id: " + pending_order_id);
-        Bentonow.pending_order_id = pending_order_id;
-        Log.i(TAG, "Bentonow.pending_bento_id: " + Bentonow.pending_bento_id);
-        if( Bentonow.pending_bento_id == null ) {
-            List<Item> pending_bento = Item.find(Item.class, "orderid=?", new String[]{String.valueOf(Bentonow.pending_order_id)}, null, "id DESC", "1");
-            if (pending_bento.isEmpty()) {
-                createNewBentoBox();
-            } else {
-                for (Item item : pending_bento) {
-                    Log.i(TAG, "Each pending item: " + pending_bento.toString());
-                    bento_count++;
-                    Bentonow.pending_bento_id = item.getId();
-                    if (Bentonow.pending_bento_id != null) {
-                        Item current_betno = Item.findById(Item.class, Bentonow.pending_bento_id);
-                        showCurrentBento(current_betno);
-                    } else {
-                        createNewBentoBox();
+        if( pending_order_id != 0 ) {
+            Bentonow.pending_order_id = pending_order_id;
+            Log.i(TAG, "Bentonow.pending_bento_id: " + Bentonow.pending_bento_id);
+            if (Bentonow.pending_bento_id == null) {
+                List<Item> pending_bento = Item.find(Item.class, "orderid=?", new String[]{String.valueOf(Bentonow.pending_order_id)}, null, "id DESC", "1");
+                if (pending_bento.isEmpty()) {
+                    createNewBentoBox();
+                } else {
+                    for (Item item : pending_bento) {
+                        Log.i(TAG, "Each pending item: " + pending_bento.toString());
+                        bento_count++;
+                        Bentonow.pending_bento_id = item.getId();
+                        if (Bentonow.pending_bento_id != null) {
+                            Item current_betno = Item.findById(Item.class, Bentonow.pending_bento_id);
+                            showCurrentBento(current_betno);
+                        } else {
+                            createNewBentoBox();
+                        }
                     }
                 }
+            } else {
+                Item current_betno = Item.findById(Item.class, Bentonow.pending_bento_id);
+                showCurrentBento(current_betno);
             }
         }else{
-            Item current_betno = Item.findById(Item.class, Bentonow.pending_bento_id);
-            showCurrentBento(current_betno);
+            createNewOrder();
+        }
+    }
+
+    private void createNewOrder() {
+        if (Bentonow.pending_order_id == null) {
+
+            List<Orders> pending_orders = Orders.find(Orders.class, null, null);
+
+            Orders order = new Orders();
+            order.today = todayDate;
+            for (Orders o : pending_orders) {
+                if(o.coords_lat!=null && !o.coords_lat.isEmpty() ){
+                    order.coords_lat = o.coords_lat;
+                    order.coords_long = o.coords_long;
+                    order.address_number = o.address_number;
+                    order.address_street = o.address_street;
+                    order.address_city = o.address_city;
+                    order.address_state = o.address_state;
+                    order.address_zip = o.address_zip;
+                }
+            }
+            order.completed = Config.ORDER.STATUS.UNCOMPLETED;
+            order.save();
+            Log.i(TAG, "New order generated");
+            Bentonow.pending_order_id = order.getId();
+            createNewBentoBox();
         }
     }
 
     public void createNewBentoBox() {
-        Log.i(TAG,"createNewBentoBox()");
         Item item = new Item();
         item.completed = "no";
         item.orderid = String.valueOf(Bentonow.pending_order_id);
