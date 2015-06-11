@@ -28,6 +28,7 @@ public class Config {
     public static Location current_location;
     public static String serviceArea_dinner;
     public static String startTime;
+    public static String next_day_json;
     //public static boolean processing_stock = false;
 
     public static class CurrentOrder {

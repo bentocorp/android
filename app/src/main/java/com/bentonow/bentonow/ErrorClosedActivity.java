@@ -39,10 +39,20 @@ public class ErrorClosedActivity extends BaseActivity {
         setContentView(R.layout.activity_error_closed);
         aq = new AQuery(this);
         Bentonow.app.current_activity = this;
+
         initActionbar();
         initElements();
         addListeners();
         initLegalFooter();
+
+
+        if(Config.next_day_json!=null){
+            try {
+                processJson(new JSONObject(Config.next_day_json));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void postData() {
