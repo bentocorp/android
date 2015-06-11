@@ -1,5 +1,6 @@
 package com.bentonow.bentonow;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -497,6 +498,8 @@ public class CompleteOrderActivity extends BaseActivity {
     }
 
     public void postOrderData(String data){
+        final ProgressDialog dialog = ProgressDialog.show(this, null, "Processing...", true);
+
         if (!processing) {
             processing = true;
             Log.i(TAG, "postOrderData(data)");
@@ -510,6 +513,8 @@ public class CompleteOrderActivity extends BaseActivity {
                 aq.ajax(uri, params, String.class, new AjaxCallback<String>() {
                     @Override
                     public void callback(String url, String json, AjaxStatus status) {
+                        dialog.dismiss();
+                        
                         Log.i(TAG, "status.getCode(): " + status.getCode());
                         Log.i(TAG, "status.getError(): " + status.getError());
                         Log.i(TAG, "status.getMessage(): " + status.getMessage());

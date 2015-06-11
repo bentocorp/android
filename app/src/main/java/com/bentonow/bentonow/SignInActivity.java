@@ -1,6 +1,7 @@
 package com.bentonow.bentonow;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -209,6 +210,8 @@ public class SignInActivity extends BaseActivity {
     }
 
     public void postUserData( String dataJson, boolean facebookMethod ){
+        final ProgressDialog dialog = ProgressDialog.show(this, null, "Logging in...", true);
+
         Log.i(TAG,"postUserData( String dataJson )");
         String uri;
         if(facebookMethod) {
@@ -224,7 +227,7 @@ public class SignInActivity extends BaseActivity {
         aq.ajax(uri, params, JSONObject.class, new AjaxCallback<JSONObject>() {
             @Override
             public void callback(String url, JSONObject json, AjaxStatus status) {
-
+                dialog.dismiss();
                 if (json != null) Log.i(TAG, "json: " + json.toString());
                 else Log.i(TAG, "json IS NULL");
 
@@ -335,11 +338,10 @@ public class SignInActivity extends BaseActivity {
     private void initCallBackManager() {
         callbackManager = CallbackManager.Factory.create();
 
-
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-
+                final ProgressDialog dialog = ProgressDialog.show(_this, null, "Logging in...", true);
                 GraphRequest request = GraphRequest.newMeRequest(
                         loginResult.getAccessToken(),
                         new GraphRequest.GraphJSONObjectCallback() {
@@ -347,6 +349,7 @@ public class SignInActivity extends BaseActivity {
                             public void onCompleted(
                                     JSONObject object,
                                     GraphResponse response) {
+                                dialog.dismiss();
                                 // Application code
                                 JSONObject responseJSONObject = response.getJSONObject();
                                 Log.v("LoginActivity", "graphObject: " + responseJSONObject);

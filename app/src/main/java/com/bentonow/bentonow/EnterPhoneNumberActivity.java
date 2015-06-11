@@ -1,5 +1,6 @@
 package com.bentonow.bentonow;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.PhoneNumberFormattingTextWatcher;
@@ -205,6 +206,8 @@ public class EnterPhoneNumberActivity extends BaseActivity {
     }
 
     public void postUserData(){
+        final ProgressDialog dialog = ProgressDialog.show(this, null, "Registering...", true);
+
         String uri = Config.API.URL + Config.API.USER.FBSIGNUP;
         Log.i(TAG,"uri: "+uri);
         Map<String, Object> params = new HashMap<String, Object>();
@@ -234,6 +237,7 @@ public class EnterPhoneNumberActivity extends BaseActivity {
             @Override
             public void callback(String url, JSONObject json, AjaxStatus status) {
 
+                dialog.dismiss();
 
                 // CASE 200 IF OK
                 if (status.getCode() == Config.API.DEFAULT_SUCCESS_200) {
