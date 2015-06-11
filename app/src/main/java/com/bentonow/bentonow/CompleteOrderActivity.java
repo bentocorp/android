@@ -519,14 +519,19 @@ public class CompleteOrderActivity extends BaseActivity {
                             Orders current_order = Orders.findById(Orders.class, Bentonow.pending_order_id);
                             current_order.completed = Config.ORDER.STATUS.COMPLETED;
                             current_order.save();
+                            current_user.stripetoken = null;
+                            current_user.save();
                             Bentonow.pending_order_id = null;
                             Bentonow.pending_bento_id = null;
                             Intent intent = new Intent(getApplicationContext(), OrderConfirmedActivity.class);
                             startActivity(intent);
                             finish();
                             overridePendingTransitionGoRight();
-                        }else if (status.getCode() == Config.API.USER_LOGIN_403) {
-                            // CASE 403 BAD PASSWORD
+                        }else if (status.getCode() == Config.API.SERVER_STATUS.ORDER.NUMBER._402) {
+                            Toast.makeText(getApplicationContext(),Config.API.SERVER_STATUS.ORDER.MESSAGE._402,Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(),status.getMessage(),Toast.LENGTH_LONG).show();
+                            startActivity(new Intent(getApplicationContext(), EnterCreditCardActivity.class));
+                            overridePendingTransitionGoRight();
                             processing = false;
                         }else {
                             processing = false;
