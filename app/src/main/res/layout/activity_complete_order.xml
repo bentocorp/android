@@ -329,16 +329,19 @@
                     />
                 <TextView
                     android:id="@+id/btn_add_promo"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
                     android:gravity="center_vertical"
                     android:textStyle="bold"
                     android:text="ADD PROMO"
                     android:textColor="@color/btn_green"
                     android:padding="@dimen/btn_padding"
-                    android:layout_weight="1"
                     android:textSize="@dimen/text_very_very_small"
                     />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"></LinearLayout>
                 <TextView
                     android:id="@+id/order_total_textview"
                     android:layout_width="wrap_content"
