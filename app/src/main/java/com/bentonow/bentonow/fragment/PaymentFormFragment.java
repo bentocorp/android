@@ -1,6 +1,7 @@
 package com.bentonow.bentonow.fragment;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -195,9 +196,11 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
                     } else if (charSequence.length() == 2) {
                         try {
                             int month = Integer.parseInt(charSequence);
-
                             if (month > 12) {
+                                Log.i(TAG,"month: "+month);
                                 charSequence = charSequence.substring(0, 1);
+                                monthSpinner.setText(charSequence);
+                                monthSpinner.setSelection(charSequence.length());
                             }
                         } catch (Exception e) {}
                     }
@@ -305,8 +308,6 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                cardNumber.setTextColor(getResources().getColor(R.color.gray));
-
                 String charSequence = cardNumber.getText().toString().replaceAll("[^0-9]", "");
                 StringBuilder sb = null;
 
@@ -315,7 +316,7 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
 
                     if (charSequence.length() > 1) {
                         String cardCode = charSequence.substring(0, 2);
-
+                        cardNumber.setTextColor(getResources().getColor(R.color.gray));
                         if (cardCode.equals("34") || cardCode.equals("37")) {
                             //cardType.setText("American Express");
                             ic_card.setImageResource(R.drawable.card_amex);

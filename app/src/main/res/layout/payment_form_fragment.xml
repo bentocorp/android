@@ -30,15 +30,17 @@
                 android:gravity="center_vertical"
                 >
                 <EditText
+                    android:id="@+id/number"
+                    android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
                     android:maxLength="@integer/max_length_card"
                     android:textCursorDrawable="@null"
                     android:background="@color/transparent"
-                    android:id="@+id/number"
-                    style="@style/CardNumber"
-                    android:hint="1234 5678 9012 3456"
+                    android:hint="@string/cardNumber"
                     android:inputType="number"
+                    android:textColor="@color/gray"
+                    android:textSize="@dimen/text_small"
                     android:singleLine="true" />
 
                 <LinearLayout
@@ -64,7 +66,9 @@
                         android:inputType="number"
                         android:textCursorDrawable="@null"
                         android:singleLine="true"
-                        style="@style/CardNumber"/>
+                        android:textColor="@color/gray"
+                        android:textSize="@dimen/text_small"
+                        />
 
                     <EditText
                         android:layout_width="wrap_content"
@@ -84,7 +88,9 @@
                         android:nextFocusRight="@+id/cvc"
                         android:nextFocusForward="@+id/cvc"
                         android:singleLine="true"
-                        style="@style/CardNumber"/>
+                        android:textColor="@color/gray"
+                        android:textSize="@dimen/text_small"
+                        />
 
                     <EditText
                         android:id="@+id/cvc"
@@ -101,7 +107,9 @@
                         android:visibility="gone"
                         android:textCursorDrawable="@null"
                         android:singleLine="true"
-                        style="@style/CardNumber"/>
+                        android:textColor="@color/gray"
+                        android:textSize="@dimen/text_small"
+                        />
 
                 </LinearLayout>
 
