@@ -67,6 +67,9 @@ public class CompleteOrderActivity extends BaseActivity {
     private TextView coupon_result_message;
     private TextView discount_cents;
     private boolean processing = false;
+    private TextView result_message_souldout;
+    private TextView btn_ok_souldout;
+    private RelativeLayout overlay_souldout;
 
 
     @Override
@@ -151,9 +154,20 @@ public class CompleteOrderActivity extends BaseActivity {
         row_discount = (LinearLayout)findViewById(R.id.row_discount);
         discount_cents = (TextView)findViewById(R.id.discount_cents);
 
+        overlay_souldout = (RelativeLayout)findViewById(R.id.overlay_souldout);
+        result_message_souldout = (TextView)findViewById(R.id.result_message_souldout);
+        //btn_ok_souldout = (TextView) findViewById(R.id.btn_ok_souldout);
+
     }
 
     private void addListeners() {
+
+        findViewById(R.id.btn_ok_souldout).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                overlay_souldout.setVisibility(View.GONE);
+            }
+        });
 
         findViewById(R.id.btn_ok).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -306,20 +320,30 @@ public class CompleteOrderActivity extends BaseActivity {
                     for (Item orderItem : orderItems) {
                         try {
                             JSONObject item = new JSONObject();
-                            JSONObject itemBento = new JSONObject();
+                            JSONObject itemBento;
                             JSONArray items = new JSONArray();
+
+                            itemBento = new JSONObject();
                             itemBento.put("type", "main");
                             itemBento.put("id", Integer.valueOf(orderItem.main));
                             items.put(itemBento);
+
+                            itemBento = new JSONObject();
                             itemBento.put("type", "side1");
                             itemBento.put("id", Integer.valueOf(orderItem.side1));
                             items.put(itemBento);
+
+                            itemBento = new JSONObject();
                             itemBento.put("type", "side2");
                             itemBento.put("id", Integer.valueOf(orderItem.side2));
                             items.put(itemBento);
+
+                            itemBento = new JSONObject();
                             itemBento.put("type", "side3");
                             itemBento.put("id", Integer.valueOf(orderItem.side3));
                             items.put(itemBento);
+
+                            itemBento = new JSONObject();
                             itemBento.put("type", "side4");
                             itemBento.put("id", Integer.valueOf(orderItem.side4));
                             items.put(itemBento);
@@ -538,6 +562,23 @@ public class CompleteOrderActivity extends BaseActivity {
                             startActivity(new Intent(getApplicationContext(), EnterCreditCardActivity.class));
                             overridePendingTransitionGoRight();
                             processing = false;
+                        }else if ( status.getCode() == 410 ){
+                            try {
+                                JSONObject error_message = new JSONObject(status.getError());
+                                result_message_souldout.setText(error_message.getString("error"));
+                                overlay_souldout.setVisibility(View.VISIBLE);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }else if( status.getCode() == 401 ){
+                            //result_message_souldout.setText(status.getMessage());
+                            //overlay_souldout.setVisibility(View.VISIBLE);
+                            Toast.makeText(getApplicationContext(),status.getMessage(),Toast.LENGTH_LONG).show();
+                            startActivity(new Intent(getApplicationContext(), SignInActivity.class));
+                            User user = User.currentUser();
+                            user.reset();
+                            finish();
+                            overridePendingTransitionGoLeft();
                         }else {
                             processing = false;
                         }

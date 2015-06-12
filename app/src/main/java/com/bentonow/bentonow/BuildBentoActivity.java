@@ -627,7 +627,7 @@ public class BuildBentoActivity extends BaseActivity {
 
         Item autocomplete_bento = Item.findById(Item.class, Bentonow.pending_bento_id);
 
-        if( !autocomplete_bento.isFull() ) stockProcess();
+        //if( !autocomplete_bento.isFull() ) stockProcess();
 
         processHolder ph = new processHolder();
 
@@ -776,7 +776,7 @@ public class BuildBentoActivity extends BaseActivity {
         }
     }
 
-    private void stockProcess() {
+    /*private void stockProcess() {
         Log.i(TAG, "stockProcess()");
         //Config.processing_stock = true;
         List<Item> order_items = Item.find(Item.class, "orderid=?", String.valueOf(Bentonow.pending_order_id));
@@ -826,7 +826,7 @@ public class BuildBentoActivity extends BaseActivity {
                 Log.i(TAG,"item.isEmpty");
             }
         }
-    }
+    }*/
 
     class processHolder {
         public Dish mDish;

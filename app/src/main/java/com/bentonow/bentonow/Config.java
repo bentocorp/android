@@ -127,7 +127,9 @@ public class Config {
         public class SERVER_STATUS {
             public class ORDER {
                 public class NUMBER {
-                    public static final int _402 = 402;
+                    public static final int _200 = 200; //if ok.
+                    public static final int _402 = 402; // if No payment specified, and no payment on file.
+                    public static final int _410 = 410; //if the inventory is not available. The UI should be updated, and the return includes the inventory:
                 }
 
                 public class MESSAGE {
