@@ -92,7 +92,6 @@ public class Dish extends SugarRecord<Dish> {
             int qty = Integer.parseInt(dishInfo.qty);
             if (dishInfo != null && qty > 0) return false;
         } catch ( Exception e ) {
-            Log.i(TAG, e.getMessage());
         }
 
         return true;
