@@ -85,17 +85,17 @@ public class Dish extends SugarRecord<Dish> {
         return true;
     }
 
-    public static boolean isSoldOut ( String menuDate ) {
-        List<Dish> main_dishes = Dish.find(Dish.class, "today = ?",menuDate);
-        for( Dish dish : main_dishes ){
-            try {
-                if (Integer.parseInt(dish.qty, 0) > 0) return false;
-            } catch (Exception e) {
-            }
-            return true;
+    public static boolean isSoldOut ( String dish_id ) {
+        Dish dishInfo = Dish.findDish(dish_id);
+
+        try {
+            int qty = Integer.parseInt(dishInfo.qty);
+            if (dishInfo != null && qty > 0) return false;
+        } catch ( Exception e ) {
+            Log.i(TAG, e.getMessage());
         }
 
-        return false;
+        return true;
     }
 
     @Override
