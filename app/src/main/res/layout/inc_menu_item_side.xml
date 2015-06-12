@@ -51,6 +51,16 @@
                 android:padding="10dp"
                 />
 
+            <ImageView
+                android:id="@+id/soldout_flag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/banner_sold_out"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:visibility="invisible"
+                />
+
             <RelativeLayout
                 android:id="@+id/overlay_menu_detail"
                 android:visibility="gone"

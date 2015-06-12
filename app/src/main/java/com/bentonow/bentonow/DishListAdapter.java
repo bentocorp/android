@@ -17,14 +17,12 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bentonow.bentonow.model.Dish;
 import com.bentonow.bentonow.model.Item;
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 
 public class DishListAdapter extends BaseAdapter {
@@ -67,18 +65,14 @@ public class DishListAdapter extends BaseAdapter {
             holder.desc_title = (TextView) view.findViewById(R.id.main_menu_item_name_2);
             holder.overlay_menu_detail = (RelativeLayout) view.findViewById(R.id.overlay_menu_detail);
             holder.main_menu_item_description = (TextView)view.findViewById(R.id.main_menu_item_description);
-            //holder.btn_add_to_bento = (LinearLayout)view.findViewById(R.id.btn_add_to_bento_side1);
             holder.btn_add_to_bento = (TextView)view.findViewById(R.id.btn_add_to_bento);
             holder.btn_add_to_bento_solded  = (TextView)view.findViewById(R.id.btn_add_to_bento_solded);
-            //holder.col1_solded_flag = (ImageView)view.findViewById(R.id.col1_solded_flag);
+            holder.soldOutFlag = (ImageView)view.findViewById(R.id.soldout_flag);
             holder.btn_added = (LinearLayout)view.findViewById(R.id.btn_added);
             view.setTag(holder);
         } else {
             holder = (Holder) view.getTag();
         }
-
-        //Log.i(TAG,Bentonow.current_side);
-        List<Item> allOrderItems = Item.find(Item.class, "orderid=?", String.valueOf(Bentonow.pending_order_id));
 
         try {
             holder.row = data.get(position);
@@ -86,6 +80,9 @@ public class DishListAdapter extends BaseAdapter {
             final Holder finalHolder = holder;
             Item bento = Item.findById(Item.class, Bentonow.pending_bento_id);
             finalHolder.iid = holder.row.get(Config.DISH._ID);
+
+            checkStatus(holder);
+
             switch (Bentonow.current_side){
                 case Config.SIDE.MAIN:
                     if( finalHolder.iid.equals(bento.main) ){
@@ -114,130 +111,104 @@ public class DishListAdapter extends BaseAdapter {
                     break;
             }
 
-            long order_dish_id_total = 0;
-            for (Item oItem : allOrderItems) {
-                if (oItem.side1 != null && oItem.side1.equals(finalHolder.iid))
-                    order_dish_id_total++;
-                if (oItem.side2 != null && oItem.side2.equals(finalHolder.iid))
-                    order_dish_id_total++;
-                if (oItem.side3 != null && oItem.side3.equals(finalHolder.iid))
-                    order_dish_id_total++;
-                if (oItem.side4 != null && oItem.side4.equals(finalHolder.iid))
-                    order_dish_id_total++;
-            }
-            int rest_quantity = (int) (Integer.valueOf(holder.row.get("qty")) - order_dish_id_total);
-
-            // IF !STOCK NO ADD LISTENERS
-            /*if ( rest_quantity == 0 ) {
-                //holder.col1_solded_flag.setVisibility(View.VISIBLE);
-            } else {*/
-                //holder.col1_solded_flag.setVisibility(View.GONE);
-                //ADD LISTENERS
-                holder.main_title.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if ( current_holder != null ) {
-                            if (current_holder.pressed && !current_holder.selected ) {
-                                hideItemDetails(current_holder);
-                            }
+            holder.main_title.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if ( current_holder != null ) {
+                        if (current_holder.pressed && !current_holder.selected ) {
+                            hideItemDetails(current_holder);
                         }
-
-                        current_holder = finalHolder;
-                        showItemDetails(finalHolder);
                     }
-                });
 
-                holder.overlay_menu_detail.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //Log.i(TAG, "finalHolder.pressed: " + finalHolder.pressed.toString());
-                        if (!finalHolder.selected && !finalHolder.iid.equals(Bentonow.current_dish_selected)) {
-                            hideItemDetails(finalHolder);
-                        }
-                        //if(finalHolder.pressed) {}
-                    }
-                });
-
-
-                // ADD TO BENTO
-                if ( rest_quantity == 0 ) {
-                    holder.btn_add_to_bento.setVisibility(View.GONE);
-                    holder.btn_add_to_bento_solded.setVisibility(View.VISIBLE);
+                    current_holder = finalHolder;
+                    showItemDetails(finalHolder);
                 }
-                holder.btn_add_to_bento.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Log.i(TAG, "btn_add_to_bento row.get(itemId): " + finalHolder.row.get(Config.DISH._ID));
-                        Item bento = Item.findById(Item.class, Bentonow.pending_bento_id);
-                        Log.i(TAG, bento.toString());
-                        Log.i(TAG, "Bentonow.current_side: " + Bentonow.current_side);
-                        switch (Bentonow.current_side) {
-                            case Config.SIDE.MAIN:
-                                Log.i(TAG, "btn0 side0");
-                                bento.main = String.valueOf(finalHolder.row.get(Config.DISH._ID));
-                                break;
-                            case Config.SIDE.SIDE_1:
-                                Log.i(TAG, "btn1 side1");
-                                bento.side1 = String.valueOf(finalHolder.row.get(Config.DISH._ID));
-                                break;
-                            case Config.SIDE.SIDE_2:
-                                Log.i(TAG, "btn1 side2");
-                                bento.side2 = String.valueOf(finalHolder.row.get(Config.DISH._ID));
-                                break;
-                            case Config.SIDE.SIDE_3:
-                                Log.i(TAG, "btn1 side3");
-                                bento.side3 = String.valueOf(finalHolder.row.get(Config.DISH._ID));
-                                break;
-                            case Config.SIDE.SIDE_4:
-                                Log.i(TAG, "btn1 side4");
-                                bento.side4 = String.valueOf(finalHolder.row.get(Config.DISH._ID));
-                                break;
-                        }
-                        bento.save();
-                        //SelectSideActivity.goToMain();
-                        Intent intent = new Intent(activity, BuildBentoActivity.class);
-                        activity.startActivity(intent);
-                        activity.finish();
-                        activity.overridePendingTransition(R.anim.left_slide_in, R.anim.right_slide_out);
-                    }
-                });
+            });
 
-                // REMOVE FROM BENTO
-                holder.btn_added.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Log.i(TAG, "btn_add_to_bento row.get(itemId): " + finalHolder.row.get(Config.DISH._ID));
-                        Item bento = Item.findById(Item.class, Bentonow.pending_bento_id);
-                        Log.i(TAG, bento.toString());
-                        Log.i(TAG, "Bentonow.current_side: " + Bentonow.current_side);
-                        finalHolder.iid = "";
-                        switch (Bentonow.current_side) {
-                            case Config.SIDE.MAIN:
-                                Log.i(TAG, "removed side0");
-                                bento.main = null;
-                                break;
-                            case Config.SIDE.SIDE_1:
-                                Log.i(TAG, "removed side1");
-                                bento.side1 = null;
-                                break;
-                            case Config.SIDE.SIDE_2:
-                                Log.i(TAG, "removed side2");
-                                bento.side2 = null;
-                                break;
-                            case Config.SIDE.SIDE_3:
-                                Log.i(TAG, "removed side3");
-                                bento.side3 = null;
-                                break;
-                            case Config.SIDE.SIDE_4:
-                                Log.i(TAG, "removed side4");
-                                bento.side4 = null;
-                                break;
-                        }
-                        bento.save();
-                        unSelectDish(finalHolder);
+            holder.overlay_menu_detail.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Log.i(TAG, "finalHolder.pressed: " + finalHolder.pressed.toString());
+                    if (!finalHolder.selected && !finalHolder.iid.equals(Bentonow.current_dish_selected)) {
+                        hideItemDetails(finalHolder);
                     }
-                });
-            //}
+                    //if(finalHolder.pressed) {}
+                }
+            });
+
+            holder.btn_add_to_bento.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i(TAG, "btn_add_to_bento row.get(itemId): " + finalHolder.row.get(Config.DISH._ID));
+                    Item bento = Item.findById(Item.class, Bentonow.pending_bento_id);
+                    Log.i(TAG, bento.toString());
+                    Log.i(TAG, "Bentonow.current_side: " + Bentonow.current_side);
+                    switch (Bentonow.current_side) {
+                        case Config.SIDE.MAIN:
+                            Log.i(TAG, "btn0 side0");
+                            bento.main = String.valueOf(finalHolder.row.get(Config.DISH._ID));
+                            break;
+                        case Config.SIDE.SIDE_1:
+                            Log.i(TAG, "btn1 side1");
+                            bento.side1 = String.valueOf(finalHolder.row.get(Config.DISH._ID));
+                            break;
+                        case Config.SIDE.SIDE_2:
+                            Log.i(TAG, "btn1 side2");
+                            bento.side2 = String.valueOf(finalHolder.row.get(Config.DISH._ID));
+                            break;
+                        case Config.SIDE.SIDE_3:
+                            Log.i(TAG, "btn1 side3");
+                            bento.side3 = String.valueOf(finalHolder.row.get(Config.DISH._ID));
+                            break;
+                        case Config.SIDE.SIDE_4:
+                            Log.i(TAG, "btn1 side4");
+                            bento.side4 = String.valueOf(finalHolder.row.get(Config.DISH._ID));
+                            break;
+                    }
+                    bento.save();
+                    //SelectSideActivity.goToMain();
+                    Intent intent = new Intent(activity, BuildBentoActivity.class);
+                    activity.startActivity(intent);
+                    activity.finish();
+                    activity.overridePendingTransition(R.anim.left_slide_in, R.anim.right_slide_out);
+                }
+            });
+
+            // REMOVE FROM BENTO
+            holder.btn_added.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i(TAG, "btn_add_to_bento row.get(itemId): " + finalHolder.row.get(Config.DISH._ID));
+                    Item bento = Item.findById(Item.class, Bentonow.pending_bento_id);
+                    Log.i(TAG, bento.toString());
+                    Log.i(TAG, "Bentonow.current_side: " + Bentonow.current_side);
+                    finalHolder.iid = "";
+                    switch (Bentonow.current_side) {
+                        case Config.SIDE.MAIN:
+                            Log.i(TAG, "removed side0");
+                            bento.main = null;
+                            break;
+                        case Config.SIDE.SIDE_1:
+                            Log.i(TAG, "removed side1");
+                            bento.side1 = null;
+                            break;
+                        case Config.SIDE.SIDE_2:
+                            Log.i(TAG, "removed side2");
+                            bento.side2 = null;
+                            break;
+                        case Config.SIDE.SIDE_3:
+                            Log.i(TAG, "removed side3");
+                            bento.side3 = null;
+                            break;
+                        case Config.SIDE.SIDE_4:
+                            Log.i(TAG, "removed side4");
+                            bento.side4 = null;
+                            break;
+                    }
+                    bento.save();
+                    unSelectDish(finalHolder);
+                }
+            });
 
             /// COL 1 ADD LABELS
             String title = "";
@@ -275,6 +246,7 @@ public class DishListAdapter extends BaseAdapter {
         aHolder.pressed = true;
         aHolder.main_title.setVisibility(View.GONE);
         aHolder.btn_add_to_bento.setVisibility(View.GONE);
+        aHolder.btn_add_to_bento_solded.setVisibility(View.GONE);
         aHolder.btn_added.setVisibility(View.VISIBLE);
         aHolder.overlay_menu_detail.setVisibility(View.VISIBLE);
     }
@@ -285,21 +257,47 @@ public class DishListAdapter extends BaseAdapter {
         aHolder.pressed = false;
         aHolder.selected = false;
         aHolder.main_title.setVisibility(View.VISIBLE);
-        aHolder.btn_add_to_bento.setVisibility(View.VISIBLE);
         aHolder.btn_added.setVisibility(View.GONE);
         aHolder.overlay_menu_detail.setVisibility(View.GONE);
+
+        checkStatus(aHolder);
+    }
+
+    private void checkStatus (Holder holder) {
+        if (Dish.isSoldOut(holder.iid) || !Dish.canBeAdded(holder.iid)) {
+            holder.btn_add_to_bento.setVisibility(View.GONE);
+            holder.btn_add_to_bento_solded.setVisibility(View.VISIBLE);
+
+            if (Dish.isSoldOut(holder.iid)) {
+                holder.btn_add_to_bento_solded.setText("Sold Out");
+                holder.soldOutFlag.setVisibility(View.VISIBLE);
+            } else {
+                holder.soldOutFlag.setVisibility(View.INVISIBLE);
+                holder.btn_add_to_bento_solded.setText("Reached to max");
+            }
+        } else {
+            holder.soldOutFlag.setVisibility(View.INVISIBLE);
+        }
     }
 
     private void showItemDetails(Holder aHolder) {
         aHolder.pressed = true;
         aHolder.overlay_menu_detail.setVisibility(View.VISIBLE);
         aHolder.main_title.setVisibility(View.GONE);
+
+        if (Dish.isSoldOut(aHolder.iid)) {
+            aHolder.soldOutFlag.setVisibility(View.INVISIBLE);
+        }
     }
 
     private void hideItemDetails(Holder aHolder) {
         aHolder.pressed = false;
         aHolder.overlay_menu_detail.setVisibility(View.GONE);
         aHolder.main_title.setVisibility(View.VISIBLE);
+
+        if (Dish.isSoldOut(aHolder.iid)) {
+            aHolder.soldOutFlag.setVisibility(View.VISIBLE);
+        }
     }
 
     private static class Holder {
@@ -314,6 +312,7 @@ public class DishListAdapter extends BaseAdapter {
         public RelativeLayout container;
         public HashMap<String, String> row;
         public LinearLayout btn_added;
+        public ImageView soldOutFlag;
         public String iid;
         public TextView btn_add_to_bento_solded;
     }
