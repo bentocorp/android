@@ -180,22 +180,23 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
-
+                Log.i(TAG,"onStatusChanged(String provider, int status, Bundle extras)");
             }
 
             @Override
             public void onProviderEnabled(String provider) {
-
+                Log.i(TAG,"onProviderEnabled(String provider)");
             }
 
             @Override
             public void onProviderDisabled(String provider) {
-
+                Log.i(TAG,"onProviderDisabled(String provider)");
             }
         };
 
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            Log.i(TAG,"start search location");
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME, LOCATION_REFRESH_DISTANCE, mLocationListener);
         }else{
             showGPSDisabledAlertToUser();
@@ -303,16 +304,6 @@ public class MainActivity extends BaseActivity {
         });
     }
 
-    ///////////////////////
-        private Date parseDate(String date) {
-
-        try {
-            return inputParser.parse(date);
-        } catch (java.text.ParseException e) {
-            return new Date(0);
-        }
-    }
-    ///////////////////////
 
     class JsonProcess {
         public void OverAll( JSONObject json ){
