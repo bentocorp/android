@@ -188,11 +188,26 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
 
 
     private void initActionbar() {
+
+        Intent intent = getIntent();
+
+
         TextView actionbar_title = (TextView) findViewById(R.id.actionbar_title);
         actionbar_title.setText(getResources().getString(R.string.delivery_location_actionbar_title));
 
         final Activity _this = this;
 
+        if (getIntent() != null && getIntent().getBooleanExtra("backbtn",false)){
+            ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
+            actionbar_left_btn.setImageResource(R.drawable.ic_ab_back);
+            actionbar_left_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    finish();
+                    overridePendingTransitionGoRight();
+                }
+            });
+        }
         //
         actionbar_right_btn = (ImageView)findViewById(R.id.actionbar_right_btn);
         actionbar_right_btn.setImageResource(R.drawable.ic_ab_help);
@@ -398,8 +413,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                         goTo(BuildBentoActivity.class);
                     } else {
                         User user = User.currentUser();
-                        if( user != null && ( user.cardlast4 == null || user.cardlast4.isEmpty() ) ) {
-                            Log.i(TAG,"user");
+                        if (user != null && (user.cardlast4 == null || user.cardlast4.isEmpty())) {
+                            Log.i(TAG, "user");
                             order = Orders.findById(Orders.class, Bentonow.pending_order_id);
                             order.coords_lat = String.valueOf(((LatLng) mMap.getCameraPosition().target).latitude);
                             order.coords_long = String.valueOf(((LatLng) mMap.getCameraPosition().target).longitude);
@@ -411,7 +426,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                             order.save();
                             startActivity(new Intent(getApplicationContext(), EnterCreditCardActivity.class));
                             overridePendingTransitionGoRight();
-                        }else{
+                        } else {
                             order = Orders.findById(Orders.class, Bentonow.pending_order_id);
                             order.coords_lat = String.valueOf(((LatLng) mMap.getCameraPosition().target).latitude);
                             order.coords_long = String.valueOf(((LatLng) mMap.getCameraPosition().target).longitude);
@@ -430,7 +445,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                     intent.putExtra(Config.invalid_address_extra_label, newAddress);
                     startActivity(intent);
                     overridePendingTransitionGoRight();
-                    finish();
+                    //finish();
                 }
             }
         });
@@ -802,4 +817,12 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
     }
     ////////////// END AUTOCOMPLETE GOOGLE PLACE /////////////////
 
+
+    @Override
+    public void onBackPressed() {
+        if (getIntent() != null && getIntent().getBooleanExtra("backbtn",false)){
+            finish();
+            overridePendingTransitionGoRight();
+        }
+    }
 }

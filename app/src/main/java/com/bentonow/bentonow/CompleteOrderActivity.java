@@ -246,8 +246,8 @@ public class CompleteOrderActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), DeliveryLocationActivity.class);
+                intent.putExtra("backbtn",true);
                 startActivity(intent);
-                finish();
                 overridePendingTransitionGoLeft();
             }
         });
