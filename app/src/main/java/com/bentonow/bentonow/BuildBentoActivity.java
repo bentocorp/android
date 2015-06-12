@@ -58,6 +58,7 @@ public class BuildBentoActivity extends BaseActivity {
     private TextView main_title;
     private RelativeLayout side1_title_container, side2_title_container, side3_title_container, side4_title_container;
     private TextView side1_title,side2_title,side3_title,side4_title;
+    private ImageView flag_soldout_main, flag_soldout_side_1, flag_soldout_side_2, flag_soldout_side_3, flag_soldout_side_4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +109,13 @@ public class BuildBentoActivity extends BaseActivity {
         overlay_autocomplete_bento = (RelativeLayout)findViewById(R.id.overlay_autocomplete_bento);
         btn_no_complete_for_me = (TextView)findViewById(R.id.btn_no_complete_for_me);
         btn_yes_complete_for_me = (TextView)findViewById(R.id.btn_yes_complete_for_me);
+
+        // Flags
+        flag_soldout_main = (ImageView) findViewById(R.id.soldout_flag_main);
+        flag_soldout_side_1 = (ImageView) findViewById(R.id.soldout_flag_side_1);
+        flag_soldout_side_2 = (ImageView) findViewById(R.id.soldout_flag_side_2);
+        flag_soldout_side_3 = (ImageView) findViewById(R.id.soldout_flag_side_3);
+        flag_soldout_side_4 = (ImageView) findViewById(R.id.soldout_flag_side_4);
     }
 
     @Override
@@ -221,9 +229,20 @@ public class BuildBentoActivity extends BaseActivity {
             disableBtnAddAnotherBento();
         }
 
+        flag_soldout_main.setVisibility(View.INVISIBLE);
+        flag_soldout_side_1.setVisibility(View.INVISIBLE);
+        flag_soldout_side_2.setVisibility(View.INVISIBLE);
+        flag_soldout_side_3.setVisibility(View.INVISIBLE);
+        flag_soldout_side_4.setVisibility(View.INVISIBLE);
+
         // MAIN DISH
         if( current_bento.main != null ) {
             Dish main_dish = findDish(current_bento.main);
+
+            if (Dish.isSoldOut(main_dish._id)) {
+                flag_soldout_main.setVisibility(View.VISIBLE);
+            }
+
             if (!main_dish.image1.isEmpty()) {
                 build_main_label_textview.setVisibility(View.INVISIBLE);
                 build_main_imageview.setVisibility(View.VISIBLE);
@@ -252,6 +271,11 @@ public class BuildBentoActivity extends BaseActivity {
         // SIDE 1 DISH
         if( current_bento.side1 != null ) {
             Dish side1_dish = findDish(current_bento.side1);
+
+            if (Dish.isSoldOut(side1_dish._id)) {
+                flag_soldout_side_1.setVisibility(View.VISIBLE);
+            }
+
             if (!side1_dish.image1.isEmpty()) {
                 Log.i(TAG, "side1_dish.image1: " + side1_dish.image1);
                 build_side1_label_textview.setVisibility(View.INVISIBLE);
@@ -281,6 +305,11 @@ public class BuildBentoActivity extends BaseActivity {
         // SIDE 2 DISH
         if( current_bento.side2 != null ) {
             Dish side2_dish = findDish(current_bento.side2);
+
+            if (Dish.isSoldOut(side2_dish._id)) {
+                flag_soldout_side_2.setVisibility(View.VISIBLE);
+            }
+
             if (!side2_dish.image1.isEmpty()) {
                 Log.i(TAG, "side2_dish.image1: " + side2_dish.image1);
                 build_side2_label_textview.setVisibility(View.INVISIBLE);
@@ -310,6 +339,11 @@ public class BuildBentoActivity extends BaseActivity {
         // SIDE 3 DISH
         if( current_bento.side3 != null ) {
             Dish side3_dish = findDish(current_bento.side3);
+
+            if (Dish.isSoldOut(side3_dish._id)) {
+                flag_soldout_side_3.setVisibility(View.VISIBLE);
+            }
+
             if (!side3_dish.image1.isEmpty()) {
                 Log.i(TAG, "side3_dish.image1: " + side3_dish.image1);
                 build_side3_label_textview.setVisibility(View.INVISIBLE);
@@ -339,6 +373,11 @@ public class BuildBentoActivity extends BaseActivity {
         // SIDE 4 DISH
         if( current_bento.side4 != null ) {
             Dish side4_dish = findDish(current_bento.side4);
+
+            if (Dish.isSoldOut(side4_dish._id)) {
+                flag_soldout_side_4.setVisibility(View.VISIBLE);
+            }
+
             if (!side4_dish.image1.isEmpty()) {
                 Log.i(TAG, "side4_dish.image1: " + side4_dish.image1);
                 build_side4_label_textview.setVisibility(View.INVISIBLE);

@@ -98,6 +98,15 @@
                         android:layout_centerVertical="true"
                         android:layout_centerHorizontal="true"
                         />
+                    <ImageView
+                        android:id="@+id/soldout_flag_main"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/banner_sold_out"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:visibility="invisible"
+                        />
                 </RelativeLayout>
             </LinearLayout>
             <LinearLayout
@@ -157,6 +166,15 @@
                             android:layout_centerVertical="true"
                             android:layout_centerHorizontal="true"
                             />
+                        <ImageView
+                            android:id="@+id/soldout_flag_side_1"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:src="@drawable/banner_sold_out"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentEnd="true"
+                            android:visibility="invisible"
+                            />
                     </RelativeLayout>
                 </LinearLayout>
                 <LinearLayout
@@ -209,6 +227,15 @@
                             android:textColor="@color/btn_green"
                             android:layout_centerVertical="true"
                             android:layout_centerHorizontal="true"
+                            />
+                        <ImageView
+                            android:id="@+id/soldout_flag_side_2"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:src="@drawable/banner_sold_out"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentEnd="true"
+                            android:visibility="invisible"
                             />
                     </RelativeLayout>
                 </LinearLayout>
@@ -270,6 +297,15 @@
                             android:layout_centerVertical="true"
                             android:layout_centerHorizontal="true"
                             />
+                        <ImageView
+                            android:id="@+id/soldout_flag_side_3"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:src="@drawable/banner_sold_out"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentEnd="true"
+                            android:visibility="invisible"
+                            />
                     </RelativeLayout>
                 </LinearLayout>
 
@@ -324,7 +360,15 @@
                             android:layout_centerVertical="true"
                             android:layout_centerHorizontal="true"
                             />
-
+                        <ImageView
+                            android:id="@+id/soldout_flag_side_4"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:src="@drawable/banner_sold_out"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentEnd="true"
+                            android:visibility="invisible"
+                            />
                     </RelativeLayout>
                 </LinearLayout>
             </LinearLayout>
