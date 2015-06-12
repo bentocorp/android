@@ -20,8 +20,6 @@ import android.widget.TextView;
 import com.bentonow.bentonow.model.Item;
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +68,7 @@ public class DishListAdapter extends BaseAdapter {
             //holder.btn_add_to_bento = (LinearLayout)view.findViewById(R.id.btn_add_to_bento_side1);
             holder.btn_add_to_bento = (TextView)view.findViewById(R.id.btn_add_to_bento);
             holder.btn_add_to_bento_solded  = (TextView)view.findViewById(R.id.btn_add_to_bento_solded);
-            //holder.col1_solded_flag = (ImageView)view.findViewById(R.id.col1_solded_flag);
+            holder.soldout_flag = (ImageView)view.findViewById(R.id.soldout_flag);
             holder.btn_added = (LinearLayout)view.findViewById(R.id.btn_added);
             view.setTag(holder);
         } else {
@@ -86,6 +84,20 @@ public class DishListAdapter extends BaseAdapter {
             final Holder finalHolder = holder;
             Item bento = Item.findById(Item.class, Bentonow.pending_bento_id);
             finalHolder.iid = holder.row.get(Config.DISH._ID);
+
+            int order_dish_id_total = 0;
+            for (Item oItem : allOrderItems) {
+                if (oItem.side1 != null && oItem.side1.equals(finalHolder.iid))
+                    order_dish_id_total++;
+                if (oItem.side2 != null && oItem.side2.equals(finalHolder.iid))
+                    order_dish_id_total++;
+                if (oItem.side3 != null && oItem.side3.equals(finalHolder.iid))
+                    order_dish_id_total++;
+                if (oItem.side4 != null && oItem.side4.equals(finalHolder.iid))
+                    order_dish_id_total++;
+            }
+            holder.rest_quantity = (int) (Integer.valueOf(holder.row.get("qty")) - order_dish_id_total);
+
             switch (Bentonow.current_side){
                 case Config.SIDE.MAIN:
                     if( finalHolder.iid.equals(bento.main) ){
@@ -114,30 +126,13 @@ public class DishListAdapter extends BaseAdapter {
                     break;
             }
 
-            long order_dish_id_total = 0;
-            for (Item oItem : allOrderItems) {
-                if (oItem.side1 != null && oItem.side1.equals(finalHolder.iid))
-                    order_dish_id_total++;
-                if (oItem.side2 != null && oItem.side2.equals(finalHolder.iid))
-                    order_dish_id_total++;
-                if (oItem.side3 != null && oItem.side3.equals(finalHolder.iid))
-                    order_dish_id_total++;
-                if (oItem.side4 != null && oItem.side4.equals(finalHolder.iid))
-                    order_dish_id_total++;
-            }
-            int rest_quantity = (int) (Integer.valueOf(holder.row.get("qty")) - order_dish_id_total);
 
-            // IF !STOCK NO ADD LISTENERS
-            /*if ( rest_quantity == 0 ) {
-                //holder.col1_solded_flag.setVisibility(View.VISIBLE);
-            } else {*/
-                //holder.col1_solded_flag.setVisibility(View.GONE);
                 //ADD LISTENERS
                 holder.main_title.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if ( current_holder != null ) {
-                            if (current_holder.pressed && !current_holder.selected ) {
+                            if ( current_holder.pressed ) {
                                 hideItemDetails(current_holder);
                             }
                         }
@@ -151,19 +146,24 @@ public class DishListAdapter extends BaseAdapter {
                     @Override
                     public void onClick(View v) {
                         //Log.i(TAG, "finalHolder.pressed: " + finalHolder.pressed.toString());
-                        if (!finalHolder.selected && !finalHolder.iid.equals(Bentonow.current_dish_selected)) {
+                        //if (!finalHolder.iid.equals(Bentonow.current_dish_selected)) {
                             hideItemDetails(finalHolder);
-                        }
+                        //}
                         //if(finalHolder.pressed) {}
                     }
                 });
 
 
                 // ADD TO BENTO
-                if ( rest_quantity == 0 ) {
+                if ( holder.rest_quantity == 0 && !holder.pressed ) {
+                    //holder.soldout_flag.setImageResource(R.drawable.tmp_trans);
+                    holder.soldout_flag.setVisibility(View.VISIBLE);
                     holder.btn_add_to_bento.setVisibility(View.GONE);
                     holder.btn_add_to_bento_solded.setVisibility(View.VISIBLE);
+                }else{
+                    holder.soldout_flag.setImageResource(R.drawable.tmp_trans);
                 }
+
                 holder.btn_add_to_bento.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -292,12 +292,14 @@ public class DishListAdapter extends BaseAdapter {
 
     private void showItemDetails(Holder aHolder) {
         aHolder.pressed = true;
+        aHolder.soldout_flag.setVisibility(View.INVISIBLE);
         aHolder.overlay_menu_detail.setVisibility(View.VISIBLE);
         aHolder.main_title.setVisibility(View.GONE);
     }
 
     private void hideItemDetails(Holder aHolder) {
         aHolder.pressed = false;
+        aHolder.soldout_flag.setVisibility(View.VISIBLE);
         aHolder.overlay_menu_detail.setVisibility(View.GONE);
         aHolder.main_title.setVisibility(View.VISIBLE);
     }
@@ -316,5 +318,7 @@ public class DishListAdapter extends BaseAdapter {
         public LinearLayout btn_added;
         public String iid;
         public TextView btn_add_to_bento_solded;
+        public ImageView soldout_flag;
+        public int rest_quantity;
     }
 }

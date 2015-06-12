@@ -176,7 +176,7 @@ public class NextDayMenuActivity extends BaseActivity {
                 holder.desc_title = (TextView) view.findViewById(R.id.main_menu_item_name_2);
                 holder.overlay_menu_detail = (RelativeLayout) view.findViewById(R.id.overlay_menu_detail);
                 holder.main_menu_item_description = (TextView)view.findViewById(R.id.main_menu_item_description);
-                //holder.col1_solded_flag = (ImageView)view.findViewById(R.id.col1_solded_flag);
+                //holder.soldout_flag = (ImageView)view.findViewById(R.id.soldout_flag);
                 holder.btn_added = (LinearLayout)view.findViewById(R.id.btn_added);
                 view.setTag(holder);
             } else {
