@@ -2,8 +2,11 @@ package com.bentonow.bentonow.model;
 
 import android.util.Log;
 
+import com.bentonow.bentonow.Bentonow;
+import com.bentonow.bentonow.Config;
 import com.orm.SugarRecord;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -43,13 +46,56 @@ public class Dish extends SugarRecord<Dish> {
         return dish_id;
     }
 
-    Dish findDish( String dish_id ){
+    public static Dish findDish( String dish_id ){
         List<Dish> dishes = Dish.find(Dish.class, "_id=?", dish_id);
         Long main_dish_id = null;
         for (Dish dsh : dishes) {
             main_dish_id = dsh.getId();
         }
         return Dish.findById(Dish.class, main_dish_id);
+    }
+
+    public static boolean canBeAdded ( String dish_id ) {
+        Dish dishInfo = Dish.findDish(dish_id );
+
+        if (dishInfo == null) return false;
+        if (dishInfo.max_per_order == null) return true;
+
+        try {
+            int maxPerOrder = Integer.parseInt(dishInfo.max_per_order);
+
+            List<Item> allOrderItems = Item.find(Item.class, "orderid=?", String.valueOf(Bentonow.pending_order_id));
+
+            for (Item oItem : allOrderItems) {
+                if (oItem.side1 != null && oItem.side1.equals(dish_id))
+                    maxPerOrder--;
+                if (oItem.side2 != null && oItem.side2.equals(dish_id))
+                    maxPerOrder--;
+                if (oItem.side3 != null && oItem.side3.equals(dish_id))
+                    maxPerOrder--;
+                if (oItem.side4 != null && oItem.side4.equals(dish_id))
+                    maxPerOrder--;
+            }
+
+            if (maxPerOrder <= 0) return false;
+        } catch (Exception e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean isSoldOut ( String menuDate ) {
+        List<Dish> main_dishes = Dish.find(Dish.class, "today = ?",menuDate);
+        for( Dish dish : main_dishes ){
+            try {
+                if (Integer.parseInt(dish.qty, 0) > 0) return false;
+            } catch (Exception e) {
+            }
+            return true;
+        }
+
+        return false;
     }
 
     @Override
