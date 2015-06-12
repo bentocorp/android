@@ -178,4 +178,10 @@ public class ErrorOutOfStockActivity extends BaseActivity {
             }
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 }
