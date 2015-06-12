@@ -8,7 +8,11 @@ import android.util.Log;
 
 import com.bentonow.bentonow.model.Checkpoint;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -46,17 +50,8 @@ public class BaseActivity extends Activity {
     }
 
     private void setTodayDate() {
-        Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
-        day = day-Config.aux_deduct_day;
-        String monthString = month < 10 ? "0"+String.valueOf(month+1): String.valueOf(month);
-        String dayString = day < 10 ? "0"+String.valueOf(day): String.valueOf(day);
-        todayDate = String.valueOf(year)+monthString+dayString;
-        //int tday = day+1;
-        String TomorrowDayString = day < 10 ? "0"+String.valueOf(day): String.valueOf(day);
-        tomorrowDate = String.valueOf(year)+monthString+TomorrowDayString;
+        SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd",Locale.US);
+        todayDate = df.format(new Date());
     }
 
     @Override
