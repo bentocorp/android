@@ -226,4 +226,10 @@ public class NextDayMenuActivity extends BaseActivity {
             public LinearLayout btn_added;
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransitionGoLeft();
+    }
 }
