@@ -521,7 +521,7 @@ public class CompleteOrderActivity extends BaseActivity {
         overridePendingTransitionGoRight();
     }
 
-    public void postOrderData(String data){
+    public void postOrderData(final String data){
         final ProgressDialog dialog = ProgressDialog.show(this, null, "Processing...", true);
 
         if (!processing) {
@@ -544,7 +544,7 @@ public class CompleteOrderActivity extends BaseActivity {
                         Log.i(TAG, "status.getMessage(): " + status.getMessage());
                         Log.i(TAG, "status.getCode(): " + status.getCode());
                         // CASE 200 IF OK
-                        if (status.getCode() == Config.API.DEFAULT_SUCCESS_200) {
+                        if (status.getCode() == 200) {
                             Orders current_order = Orders.findById(Orders.class, Bentonow.pending_order_id);
                             current_order.completed = Config.ORDER.STATUS.COMPLETED;
                             current_order.save();
@@ -556,7 +556,12 @@ public class CompleteOrderActivity extends BaseActivity {
                             startActivity(intent);
                             finish();
                             overridePendingTransitionGoRight();
-                        }else if (status.getCode() == Config.API.SERVER_STATUS.ORDER.NUMBER._402) {
+                        }else if (status.getCode() == 406) { //{"error":"You cannot use a Stripe token more than once:tok_16DJ8QEmZcPNENoGBop6zv3A."}
+                            //Toast.makeText(getApplicationContext(),status.getMessage(),Toast.LENGTH_LONG).show();
+                            current_user.stripetoken = null;
+                            current_user.save();
+                            postOrderData(data);
+                        }else if (status.getCode() == 402) {
                             Toast.makeText(getApplicationContext(),Config.API.SERVER_STATUS.ORDER.MESSAGE._402,Toast.LENGTH_LONG).show();
                             Toast.makeText(getApplicationContext(),status.getMessage(),Toast.LENGTH_LONG).show();
                             startActivity(new Intent(getApplicationContext(), EnterCreditCardActivity.class));
@@ -565,7 +570,7 @@ public class CompleteOrderActivity extends BaseActivity {
                         }else if ( status.getCode() == 410 ){
                             try {
                                 JSONObject error_message = new JSONObject(status.getError());
-                                result_message_souldout.setText(error_message.getString("error"));
+                                result_message_souldout.setText(error_message.getString("Error"));
                                 overlay_souldout.setVisibility(View.VISIBLE);
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -580,6 +585,7 @@ public class CompleteOrderActivity extends BaseActivity {
                             finish();
                             overridePendingTransitionGoLeft();
                         }else {
+                            Toast.makeText(getApplicationContext(),status.getMessage(),Toast.LENGTH_LONG).show();
                             processing = false;
                         }
 
