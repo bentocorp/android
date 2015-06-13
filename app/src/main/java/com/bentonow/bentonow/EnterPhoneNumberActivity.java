@@ -176,7 +176,7 @@ public class EnterPhoneNumberActivity extends BaseActivity {
         user.phone = phone_number.getText().toString().replace("(", "").replace(")", "").replace(" ", "-");
 
         user.save();
-        postUserData();
+        postUserData(true);
     }
 
     private void initActionbar() {
@@ -205,10 +205,10 @@ public class EnterPhoneNumberActivity extends BaseActivity {
         });
     }
 
-    public void postUserData(){
+    public void postUserData(boolean login){
         final ProgressDialog dialog = ProgressDialog.show(this, null, "Registering...", true);
 
-        String uri = Config.API.URL + Config.API.USER.FBSIGNUP;
+        String uri = login ? Config.API.URL + Config.API.USER.FBLOGIN : Config.API.URL + Config.API.USER.FBSIGNUP ;
         Log.i(TAG,"uri: "+uri);
         Map<String, Object> params = new HashMap<String, Object>();
         User user = User.findById(User.class, (long) 1);
@@ -242,8 +242,27 @@ public class EnterPhoneNumberActivity extends BaseActivity {
                 // CASE 200 IF OK
                 if (status.getCode() == Config.API.DEFAULT_SUCCESS_200) {
                     Log.i(TAG, "json: " + json.toString());
+                    String firstname = "";
+                    String lastname = "";
+                    String email = "";
+                    String phone = "";
+                    String couponcode = "";
                     String apitoken = "";
+                    String card_brand = "";
+                    String card_last4 = "";
                     try {
+                        try {
+                            JSONObject card = json.getJSONObject("card");
+                            card_brand = card.getString("brand");
+                            card_last4 = card.getString("last4");
+                        } catch (JSONException ignore) {
+                            //e1.printStackTrace();
+                        }
+                        firstname = json.getString("firstname");
+                        lastname = json.getString("lastname");
+                        email = json.getString("email");
+                        phone = json.getString("phone");
+                        couponcode = json.getString("coupon_code");
                         apitoken = json.getString("api_token");
                     } catch (JSONException e) {
                         //e.printStackTrace();
@@ -252,10 +271,17 @@ public class EnterPhoneNumberActivity extends BaseActivity {
                     Log.i(TAG, "apitoken: " + apitoken);
 
                     User user = User.findById(User.class, (long) 1);
+                    user.firstname = firstname;
+                    user.lastname = lastname;
+                    user.email = email;
+                    user.phone = phone;
+                    user.couponcode = couponcode;
                     user.apitoken = apitoken;
+                    user.cardbrand = card_brand;
+                    user.cardlast4 = card_last4;
                     user.save();
 
-                    if ( Config.AppNavigateMap.from.equals(Config.from.SettingActivity) ) {
+                    if ( Config.AppNavigateMap.from != null && Config.AppNavigateMap.from.equals(Config.from.SettingActivity) ) {
                         Config.AppNavigateMap.from = null;
                         Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
                         startActivity(intent);
@@ -266,7 +292,7 @@ public class EnterPhoneNumberActivity extends BaseActivity {
                             startActivity(new Intent(getApplicationContext(), DeliveryLocationActivity.class));
                             overridePendingTransitionGoLeft();
                         }else{
-                            if( user.stripetoken == null || user.stripetoken.isEmpty() ) {
+                            if( user.cardlast4 == null || user.cardlast4.isEmpty() ) {
                                 startActivity(new Intent(getApplicationContext(), EnterCreditCardActivity.class));
                                 overridePendingTransitionGoLeft();
                             }else {
@@ -281,16 +307,18 @@ public class EnterPhoneNumberActivity extends BaseActivity {
                         JSONObject error_message = null;
                         error_message = new JSONObject(status.getError());
                         Toast.makeText(getApplicationContext(),error_message.getString("error"),Toast.LENGTH_LONG).show();
+                        postUserData(false);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }else {
-                    try {
+                    /*try {
                         JSONObject error_message = new JSONObject(status.getError());
                         Toast.makeText(getApplicationContext(),error_message.getString("error"),Toast.LENGTH_LONG).show();
                     } catch (JSONException e) {
                         e.printStackTrace();
-                    }
+                    }*/
+                    //Toast.makeText(getApplicationContext(),status.getMessage(),Toast.LENGTH_LONG).show();
                 }
 
 
