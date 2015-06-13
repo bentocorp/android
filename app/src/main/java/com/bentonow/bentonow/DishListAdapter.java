@@ -85,27 +85,27 @@ public class DishListAdapter extends BaseAdapter {
 
             switch (Bentonow.current_side){
                 case Config.SIDE.MAIN:
-                    if( finalHolder.iid.equals(bento.main) ){
+                    if( bento.main != null && finalHolder.iid.equals(bento.main) ){
                         selectedDish(finalHolder);
                     }
                     break;
                 case Config.SIDE.SIDE_1:
-                    if( finalHolder.iid.equals(bento.side1) ){
+                    if( bento.side1 != null && finalHolder.iid.equals(bento.side1) ){
                         selectedDish(finalHolder);
                     }
                     break;
                 case Config.SIDE.SIDE_2:
-                    if( finalHolder.iid.equals(bento.side2) ){
+                    if( bento.side2 != null && finalHolder.iid.equals(bento.side2) ){
                         selectedDish(finalHolder);
                     }
                     break;
                 case Config.SIDE.SIDE_3:
-                    if( finalHolder.iid.equals(bento.side3) ){
+                    if( bento.side3 != null && finalHolder.iid.equals(bento.side3) ){
                         selectedDish(finalHolder);
                     }
                     break;
                 case Config.SIDE.SIDE_4:
-                    if( finalHolder.iid.equals(bento.side4) ){
+                    if( bento.side4 != null && finalHolder.iid.equals(bento.side4) ){
                         selectedDish(finalHolder);
                     }
                     break;
