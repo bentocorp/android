@@ -103,10 +103,8 @@ public class ErrorInvalidAddressActivity extends BaseActivity {
         actionbar_left_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), DeliveryLocationActivity.class);
-                startActivity(intent);
                 finish();
-                overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
+                overridePendingTransitionGoLeft();
             }
         });
     }
@@ -140,6 +138,7 @@ public class ErrorInvalidAddressActivity extends BaseActivity {
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+        overridePendingTransitionGoLeft();
     }
 
 }

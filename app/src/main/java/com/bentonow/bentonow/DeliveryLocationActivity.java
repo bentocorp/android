@@ -430,7 +430,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                     intent.putExtra(Config.invalid_address_extra_label, newAddress);
                     startActivity(intent);
                     overridePendingTransitionGoRight();
-                    finish();
                 }
             }
         });
