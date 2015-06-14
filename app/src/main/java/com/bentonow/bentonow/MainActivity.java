@@ -209,7 +209,7 @@ public class MainActivity extends BaseActivity {
                 goTo goTo = new goTo();
                 goTo.HomeAbout();
             } else {
-                if(Bentonow.isOpen) checkForPendingOrder();
+                if( Bentonow.isOpen && !Bentonow.isSolded ) checkForPendingOrder();
             }
         }else {
             goTo goTo = new goTo();
@@ -221,7 +221,7 @@ public class MainActivity extends BaseActivity {
         Log.i(TAG,"tryGetInit()");
         String uri = Config.API.URL+Config.API.INIT+"/"+date;
         Log.i(TAG, "uri: " + uri);
-        aq.ajax(uri, JSONObject.class, 30*1000, new AjaxCallback<JSONObject>() {
+        aq.ajax(uri, JSONObject.class, new AjaxCallback<JSONObject>() {
             @Override
             public void callback(String url, JSONObject json, AjaxStatus status) {
                 JsonProcess JsonProcess = new JsonProcess();
@@ -268,10 +268,14 @@ public class MainActivity extends BaseActivity {
                     JSONArray MenuItems = (JSONArray) dinner.get(Config.API_MENUITEMS_TAG);
                     JsonProcess.MenuItems(MenuItems);
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
+                    Bentonow.isSolded = true;
+                    Bentonow.isSolded = true;
+                    goTo goTo = new goTo();
+                    goTo.ErrorSolded();
                 }
 
-                if (Bentonow.isOpen) {
+                if ( Bentonow.isOpen && !Bentonow.isSolded ) {
                     // /status/all | menu
                     try {
                         JSONObject status_all = json.getJSONObject("/status/all");
