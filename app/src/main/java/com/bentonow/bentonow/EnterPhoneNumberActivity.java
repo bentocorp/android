@@ -240,7 +240,7 @@ public class EnterPhoneNumberActivity extends BaseActivity {
                 dialog.dismiss();
 
                 // CASE 200 IF OK
-                if (status.getCode() == Config.API.DEFAULT_SUCCESS_200) {
+                if (status.getCode() == 200) {
                     Log.i(TAG, "json: " + json.toString());
                     String firstname = "";
                     String lastname = "";
@@ -302,15 +302,25 @@ public class EnterPhoneNumberActivity extends BaseActivity {
                         }
                     }
 
-                } if (status.getCode() == Config.API.DEFAULT_ERROR_409) {
+                } if (status.getCode() == 409) {
                     try {
                         JSONObject error_message = null;
                         error_message = new JSONObject(status.getError());
                         Toast.makeText(getApplicationContext(),error_message.getString("error"),Toast.LENGTH_LONG).show();
-                        postUserData(false);
+                        //postUserData(false);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                }else if(status.getCode() == 404 ){
+                    try {
+                        JSONObject error_message = null;
+                        error_message = new JSONObject(status.getError());
+                        Toast.makeText(getApplicationContext(),error_message.getString("error"),Toast.LENGTH_LONG).show();
+                        //postUserData(false);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    postUserData(false);
                 }else {
                     /*try {
                         JSONObject error_message = new JSONObject(status.getError());
@@ -318,7 +328,7 @@ public class EnterPhoneNumberActivity extends BaseActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }*/
-                    //Toast.makeText(getApplicationContext(),status.getMessage(),Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(),status.getMessage(),Toast.LENGTH_LONG).show();
                 }
 
 
