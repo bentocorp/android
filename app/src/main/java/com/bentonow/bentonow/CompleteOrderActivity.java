@@ -67,9 +67,9 @@ public class CompleteOrderActivity extends BaseActivity {
     private TextView coupon_result_message;
     private TextView discount_cents;
     private boolean processing = false;
-    private TextView result_message_souldout;
+    private TextView generical_overlay_message;
     private TextView btn_ok_souldout;
-    private RelativeLayout overlay_souldout;
+    private RelativeLayout ok_overlay;
 
 
     @Override
@@ -154,8 +154,8 @@ public class CompleteOrderActivity extends BaseActivity {
         row_discount = (LinearLayout)findViewById(R.id.row_discount);
         discount_cents = (TextView)findViewById(R.id.discount_cents);
 
-        overlay_souldout = (RelativeLayout)findViewById(R.id.overlay_souldout);
-        result_message_souldout = (TextView)findViewById(R.id.result_message_souldout);
+        ok_overlay = (RelativeLayout)findViewById(R.id.overlay_souldout);
+        generical_overlay_message = (TextView)findViewById(R.id.result_message_souldout);
         //btn_ok_souldout = (TextView) findViewById(R.id.btn_ok_souldout);
 
     }
@@ -165,7 +165,7 @@ public class CompleteOrderActivity extends BaseActivity {
         findViewById(R.id.btn_ok_souldout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                overlay_souldout.setVisibility(View.GONE);
+                ok_overlay.setVisibility(View.GONE);
             }
         });
 
@@ -571,20 +571,28 @@ public class CompleteOrderActivity extends BaseActivity {
                         }else if ( status.getCode() == 410 ){
                             try {
                                 JSONObject error_message = new JSONObject(status.getError());
-                                result_message_souldout.setText(error_message.getString("Error"));
-                                overlay_souldout.setVisibility(View.VISIBLE);
+                                generical_overlay_message.setText(error_message.getString("Error"));
+                                ok_overlay.setVisibility(View.VISIBLE);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
                         }else if( status.getCode() == 401 ){
-                            //result_message_souldout.setText(status.getMessage());
-                            //overlay_souldout.setVisibility(View.VISIBLE);
+                            //generical_overlay_message.setText(status.getMessage());
+                            //ok_overlay.setVisibility(View.VISIBLE);
                             Toast.makeText(getApplicationContext(),status.getMessage(),Toast.LENGTH_LONG).show();
                             startActivity(new Intent(getApplicationContext(), SignInActivity.class));
                             User user = User.currentUser();
                             user.reset();
                             finish();
                             overridePendingTransitionGoLeft();
+                        } else if( status.getCode() == 423 ) {
+                            try {
+                                JSONObject error_message = new JSONObject(status.getError());
+                                generical_overlay_message.setText(error_message.getString("error"));
+                                ok_overlay.setVisibility(View.VISIBLE);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }else {
                             Toast.makeText(getApplicationContext(),status.getMessage(),Toast.LENGTH_LONG).show();
                             processing = false;
