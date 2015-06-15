@@ -1,5 +1,6 @@
 package com.bentonow.bentonow.model;
 
+import com.bentonow.bentonow.Bentonow;
 import com.orm.SugarRecord;
 
 /**
@@ -60,6 +61,11 @@ public class User extends SugarRecord<User> {
         user.fbagerange = "";
         user.fbgender = "";
         user.save();
+
+        Orders corder = Orders.findById(Orders.class, Bentonow.pending_order_id);
+        corder.couponcode = null;
+        corder.amountoff = null;
+        corder.save();
     }
 
     public static User currentUser() {
