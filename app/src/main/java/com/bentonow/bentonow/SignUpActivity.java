@@ -360,18 +360,22 @@ public class SignUpActivity extends BaseActivity {
                         Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
                         startActivity(intent);
                         overridePendingTransitionGoLeft();
+                        finish();
                     }else{
                         Orders current_order = Orders.findById(Orders.class, Bentonow.pending_order_id);
                         if ( current_order.coords_lat == null || current_order.coords_long == null ) {
                             startActivity(new Intent(getApplicationContext(), DeliveryLocationActivity.class));
                             overridePendingTransitionGoLeft();
+                            finish();
                         }else {
                             if( user.stripetoken == null || user.stripetoken.isEmpty() ) {
                                 startActivity(new Intent(getApplicationContext(), EnterCreditCardActivity.class));
                                 overridePendingTransitionGoLeft();
+                                finish();
                             }else{
                                 startActivity(new Intent(getApplicationContext(), CompleteOrderActivity.class));
                                 overridePendingTransitionGoLeft();
+                                finish();
                             }
                         }
                     }
