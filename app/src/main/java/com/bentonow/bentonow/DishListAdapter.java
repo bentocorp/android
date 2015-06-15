@@ -7,6 +7,7 @@ package com.bentonow.bentonow;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -225,6 +226,7 @@ public class DishListAdapter extends BaseAdapter {
             holder.main_menu_item_description.setText(description);
 
             if(!holder.row.get("image1").isEmpty()) {
+                //stripImageView(holder.img);
                 Picasso.with(activity)
                         .load(holder.row.get("image1"))
                         .placeholder(R.drawable.tmp_trans)
@@ -238,6 +240,16 @@ public class DishListAdapter extends BaseAdapter {
         }
 
         return view;
+    }
+
+    public static void stripImageView(ImageView view) {
+        if ( view.getDrawable() instanceof BitmapDrawable) {
+            ((BitmapDrawable)view.getDrawable()).getBitmap().recycle();
+        }
+        view.getDrawable().setCallback(null);
+        view.setImageDrawable(null);
+        view.getResources().flushLayoutCache();
+        view.destroyDrawingCache();
     }
 
     private void selectedDish(Holder aHolder) {

@@ -101,4 +101,6 @@ public class SelectMainActivity extends BaseActivity {
        finish();
         overridePendingTransitionGoLeft();
     }
+
+
 }
