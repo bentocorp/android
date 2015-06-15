@@ -86,12 +86,12 @@ public class BentoService extends Service {
             Log.i(TAG, "date: " + date);
             //Dish.executeQuery("UPDATE DISH SET TODAY = '' WHERE TODAY = '"+date+"'");
 
-            /*List<Dish> menu_de_hoy = Dish.find(Dish.class, "TODAY=?", date);
+            List<Dish> menu_de_hoy = Dish.find(Dish.class, "TODAY=?", date);
             for( Dish d : menu_de_hoy ){
                 Log.i(TAG,"d: "+d.toString());
                 d.today = "";
                 d.save();
-            }*/
+            }
 
 
             for (int i = 0; i < menu.length(); i++) {
