@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +36,8 @@ public class EnterPhoneNumberActivity extends BaseActivity {
     private ImageView phone_number_ico;
     private AQuery aq;
     private TextView btn_done;
+    private RelativeLayout overlay;
+    private TextView overlay_message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,9 +82,22 @@ public class EnterPhoneNumberActivity extends BaseActivity {
 
         phone_number.requestFocus();
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+        overlay = (RelativeLayout)findViewById(R.id.overlay);
+        overlay_message = (TextView)findViewById(R.id.overlay_message);
     }
 
     private void addListeners(){
+
+        findViewById(R.id.overlay_btn_ok).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //overlay.setVisibility(View.GONE);
+                finish();
+                overridePendingTransitionGoLeft();
+            }
+        });
+
         phone_number.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (event != null) {
@@ -286,18 +302,22 @@ public class EnterPhoneNumberActivity extends BaseActivity {
                         Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
                         startActivity(intent);
                         overridePendingTransitionGoLeft();
+                        finish();
                     }else{
                         Orders current_order = Orders.findById(Orders.class, Bentonow.pending_order_id);
                         if ( current_order.coords_lat == null || current_order.coords_long == null ) {
                             startActivity(new Intent(getApplicationContext(), DeliveryLocationActivity.class));
                             overridePendingTransitionGoLeft();
+                            finish();
                         }else{
                             if( user.cardlast4 == null || user.cardlast4.isEmpty() ) {
                                 startActivity(new Intent(getApplicationContext(), EnterCreditCardActivity.class));
                                 overridePendingTransitionGoLeft();
+                                finish();
                             }else {
                                 startActivity(new Intent(getApplicationContext(), CompleteOrderActivity.class));
                                 overridePendingTransitionGoLeft();
+                                finish();
                             }
                         }
                     }
@@ -306,17 +326,18 @@ public class EnterPhoneNumberActivity extends BaseActivity {
                     try {
                         JSONObject error_message = null;
                         error_message = new JSONObject(status.getError());
-                        Toast.makeText(getApplicationContext(),error_message.getString("error"),Toast.LENGTH_LONG).show();
-                        //postUserData(false);
+                        //Toast.makeText(getApplicationContext(),error_message.getString("error"),Toast.LENGTH_LONG).show();
+                        overlay_message.setText(error_message.getString("error"));
+                        overlay.setVisibility(View.VISIBLE);
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        //e.printStackTrace();
+                        Toast.makeText(getApplicationContext(),status.getMessage(),Toast.LENGTH_LONG).show();
                     }
                 }else if(status.getCode() == 404 ){
                     try {
                         JSONObject error_message = null;
                         error_message = new JSONObject(status.getError());
-                        Toast.makeText(getApplicationContext(),error_message.getString("error"),Toast.LENGTH_LONG).show();
-                        //postUserData(false);
+                        //Toast.makeText(getApplicationContext(),error_message.getString("error"),Toast.LENGTH_LONG).show();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
