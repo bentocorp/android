@@ -55,25 +55,22 @@ public class Dish extends SugarRecord<Dish> {
         return Dish.findById(Dish.class, main_dish_id);
     }
 
-    public static boolean canBeAdded ( String dish_id ) {
-        Dish dishInfo = Dish.findDish(dish_id );
-
-        if (dishInfo == null) return false;
-        if (dishInfo.max_per_order == null) return true;
+    public boolean canBeAdded () {
+        if (max_per_order == null) return true;
 
         try {
-            int maxPerOrder = Integer.parseInt(dishInfo.max_per_order);
+            int maxPerOrder = Integer.parseInt(max_per_order);
 
             List<Item> allOrderItems = Item.find(Item.class, "orderid=?", String.valueOf(Bentonow.pending_order_id));
 
             for (Item oItem : allOrderItems) {
-                if (oItem.side1 != null && oItem.side1.equals(dish_id))
+                if (oItem.side1 != null && oItem.side1.equals(_id))
                     maxPerOrder--;
-                if (oItem.side2 != null && oItem.side2.equals(dish_id))
+                if (oItem.side2 != null && oItem.side2.equals(_id))
                     maxPerOrder--;
-                if (oItem.side3 != null && oItem.side3.equals(dish_id))
+                if (oItem.side3 != null && oItem.side3.equals(_id))
                     maxPerOrder--;
-                if (oItem.side4 != null && oItem.side4.equals(dish_id))
+                if (oItem.side4 != null && oItem.side4.equals(_id))
                     maxPerOrder--;
             }
 
@@ -85,12 +82,10 @@ public class Dish extends SugarRecord<Dish> {
         return true;
     }
 
-    public static boolean isSoldOut ( String dish_id ) {
-        Dish dishInfo = Dish.findDish(dish_id);
-
+    public boolean isSoldOut () {
         try {
-            int qty = Integer.parseInt(dishInfo.qty);
-            if (dishInfo != null && qty > 0) return false;
+            int quantity = Integer.parseInt(qty);
+            if (quantity > 0) return false;
         } catch ( Exception e ) {
         }
 

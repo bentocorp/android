@@ -239,7 +239,7 @@ public class BuildBentoActivity extends BaseActivity {
         if( current_bento.main != null ) {
             Dish main_dish = findDish(current_bento.main);
 
-            if (Dish.isSoldOut(main_dish._id)) {
+            if (main_dish.isSoldOut()) {
                 flag_soldout_main.setVisibility(View.VISIBLE);
             }
 
@@ -272,7 +272,7 @@ public class BuildBentoActivity extends BaseActivity {
         if( current_bento.side1 != null ) {
             Dish side1_dish = findDish(current_bento.side1);
 
-            if (Dish.isSoldOut(side1_dish._id)) {
+            if (side1_dish.isSoldOut()) {
                 flag_soldout_side_1.setVisibility(View.VISIBLE);
             }
 
@@ -306,7 +306,7 @@ public class BuildBentoActivity extends BaseActivity {
         if( current_bento.side2 != null ) {
             Dish side2_dish = findDish(current_bento.side2);
 
-            if (Dish.isSoldOut(side2_dish._id)) {
+            if (side2_dish.isSoldOut()) {
                 flag_soldout_side_2.setVisibility(View.VISIBLE);
             }
 
@@ -340,7 +340,7 @@ public class BuildBentoActivity extends BaseActivity {
         if( current_bento.side3 != null ) {
             Dish side3_dish = findDish(current_bento.side3);
 
-            if (Dish.isSoldOut(side3_dish._id)) {
+            if (side3_dish.isSoldOut()) {
                 flag_soldout_side_3.setVisibility(View.VISIBLE);
             }
 
@@ -374,7 +374,7 @@ public class BuildBentoActivity extends BaseActivity {
         if( current_bento.side4 != null ) {
             Dish side4_dish = findDish(current_bento.side4);
 
-            if (Dish.isSoldOut(side4_dish._id)) {
+            if (side4_dish.isSoldOut()) {
                 flag_soldout_side_4.setVisibility(View.VISIBLE);
             }
 

@@ -81,6 +81,7 @@ public class DishListAdapter extends BaseAdapter {
             final Holder finalHolder = holder;
             Item bento = Item.findById(Item.class, Bentonow.pending_bento_id);
             finalHolder.iid = holder.row.get(Config.DISH._ID);
+            finalHolder.dish = Dish.findDish( finalHolder.iid );
 
             checkStatus(holder);
 
@@ -270,45 +271,54 @@ public class DishListAdapter extends BaseAdapter {
         aHolder.selected = false;
         aHolder.main_title.setVisibility(View.VISIBLE);
         aHolder.btn_added.setVisibility(View.GONE);
+        aHolder.btn_add_to_bento.setVisibility(View.VISIBLE);
+        aHolder.btn_add_to_bento_solded.setVisibility(View.GONE);
         aHolder.overlay_menu_detail.setVisibility(View.GONE);
 
         checkStatus(aHolder);
     }
 
     private void checkStatus (Holder holder) {
-        if (Dish.isSoldOut(holder.iid) || !Dish.canBeAdded(holder.iid)) {
+        Dish dish = holder.dish;
+
+        if (dish.isSoldOut()) {
+            holder.btn_add_to_bento_solded.setText("Sold Out");
+            holder.soldOutFlag.setVisibility(View.VISIBLE);
+
             holder.btn_add_to_bento.setVisibility(View.GONE);
             holder.btn_add_to_bento_solded.setVisibility(View.VISIBLE);
+        } else if (!dish.canBeAdded()) {
+            holder.soldOutFlag.setVisibility(View.INVISIBLE);
+            holder.btn_add_to_bento_solded.setText("Reached to max");
 
-            if (Dish.isSoldOut(holder.iid)) {
-                holder.btn_add_to_bento_solded.setText("Sold Out");
-                holder.soldOutFlag.setVisibility(View.VISIBLE);
-            } else {
-                holder.soldOutFlag.setVisibility(View.INVISIBLE);
-                holder.btn_add_to_bento_solded.setText("Reached to max");
-            }
+            holder.btn_add_to_bento.setVisibility(View.GONE);
+            holder.btn_add_to_bento_solded.setVisibility(View.VISIBLE);
         } else {
             holder.soldOutFlag.setVisibility(View.INVISIBLE);
         }
     }
 
-    private void showItemDetails(Holder aHolder) {
-        aHolder.pressed = true;
-        aHolder.overlay_menu_detail.setVisibility(View.VISIBLE);
-        aHolder.main_title.setVisibility(View.GONE);
+    private void showItemDetails(Holder holder) {
+        Dish dish = holder.dish;
 
-        if (Dish.isSoldOut(aHolder.iid)) {
-            aHolder.soldOutFlag.setVisibility(View.INVISIBLE);
+        holder.pressed = true;
+        holder.overlay_menu_detail.setVisibility(View.VISIBLE);
+        holder.main_title.setVisibility(View.GONE);
+
+        if (dish.isSoldOut()) {
+            holder.soldOutFlag.setVisibility(View.INVISIBLE);
         }
     }
 
-    private void hideItemDetails(Holder aHolder) {
-        aHolder.pressed = false;
-        aHolder.overlay_menu_detail.setVisibility(View.GONE);
-        aHolder.main_title.setVisibility(View.VISIBLE);
+    private void hideItemDetails(Holder holder) {
+        Dish dish = holder.dish;
 
-        if (Dish.isSoldOut(aHolder.iid)) {
-            aHolder.soldOutFlag.setVisibility(View.VISIBLE);
+        holder.pressed = false;
+        holder.overlay_menu_detail.setVisibility(View.GONE);
+        holder.main_title.setVisibility(View.VISIBLE);
+
+        if (dish.isSoldOut()) {
+            holder.soldOutFlag.setVisibility(View.VISIBLE);
         }
     }
 
@@ -327,5 +337,6 @@ public class DishListAdapter extends BaseAdapter {
         public ImageView soldOutFlag;
         public String iid;
         public TextView btn_add_to_bento_solded;
+        public Dish dish;
     }
 }
