@@ -388,6 +388,36 @@ public class CompleteOrderActivity extends BaseActivity {
                         e.printStackTrace();
                     }
 
+
+                /*
+                 *  STRIPE
+                 */
+                    if (current_user.stripetoken != null && !current_user.stripetoken.isEmpty() ) {
+                        JSONObject Stripe = new JSONObject();
+                        try {
+                            Stripe.put("stripeToken", current_user.stripetoken);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        try {
+                            data.put("Stripe", Stripe);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    //Orders order = Orders.findById(Orders.class,Bentonow.pending_order_id);
+                    if (current_order.amountoff != null && !current_order.amountoff.isEmpty() ) {
+                        try {
+                            data.put("CouponCode", current_order.couponcode);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Log.i(TAG, "No hay promo. current_order.amountoff ");
+                    }
+
+
             /*
              *  coords
              */
@@ -405,35 +435,6 @@ public class CompleteOrderActivity extends BaseActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
-                /*
-                 *  STRIPE
-                 */
-                    if (current_user.stripetoken != null) {
-                        JSONObject Stripe = new JSONObject();
-                        try {
-                            Stripe.put("stripeToken", current_user.stripetoken);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            data.put("Stripe", Stripe);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    //Orders order = Orders.findById(Orders.class,Bentonow.pending_order_id);
-                    if (current_order.amountoff != null) {
-                        try {
-                            data.put("CouponCode", current_order.couponcode);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        Log.i(TAG, "No hay promo. current_order.amountoff ");
-                    }
-
 
                     postOrderData(data.toString());
                 } else {
