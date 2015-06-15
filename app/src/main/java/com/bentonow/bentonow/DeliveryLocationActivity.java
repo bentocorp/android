@@ -86,6 +86,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
     private FragmentActivity activity;
     private ImageView btn_clear;
     private ProgressBar progressBar;
+    Address bestMatch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -190,6 +191,18 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
     private void initActionbar() {
         TextView actionbar_title = (TextView) findViewById(R.id.actionbar_title);
         actionbar_title.setText(getResources().getString(R.string.delivery_location_actionbar_title));
+
+        if (getIntent() != null && getIntent().getBooleanExtra("btnBack", false)) {
+            ImageView actionbar_left_btn = (ImageView)findViewById(R.id.actionbar_left_btn);
+            actionbar_left_btn.setImageResource(R.drawable.ic_ab_back);
+            actionbar_left_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    finish();
+                    overridePendingTransitionGoRight();
+                }
+            });
+        }
 
         final Activity _this = this;
 
@@ -323,50 +336,15 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                     checkAddress(autoCompView.getText().toString());
                 }
 
-                String[] address = newAddress.split(", ");
-                String address_number = "";
-                String address_street = "";
-                String address_city = "";
-                String address_state = "";
-                String address_zip = "";
-
-                try {
-                    //if (address[0]!=null) {
-                    Log.i(TAG, "address[0]: " + address[0]);
-                    String[] tmp = address[0].split(" ");
-                    for (int i = 0; i < tmp.length; i++) {
-                        if (i == 0) {
-                            address_number = tmp[i];
-                        } else {
-                            address_street += tmp[i] + " ";
-                        }
-                    }
-                } catch (ArrayIndexOutOfBoundsException ignored) {
-
+                if (bestMatch == null) {
+                    return;
                 }
 
-                try {
-                    //if (address[1]!=null) {
-                    Log.i(TAG, "address[1]: " + address[1]);
-                    address_city = address[1];
-                } catch (ArrayIndexOutOfBoundsException ignored) {
-
-                }
-
-                try {
-                    //if (address[2]!=null) {
-                    Log.i(TAG, "address[2]: " + address[2]);
-                    String[] tmp = address[2].split(" ");
-                    for (int i = 0; i < tmp.length; i++) {
-                        if (i == tmp.length - 1) {
-                            address_zip = tmp[i];
-                        } else {
-                            address_state += tmp[i] + " ";
-                        }
-                    }
-                } catch (ArrayIndexOutOfBoundsException ignored) {
-
-                }
+                String address_number = bestMatch.getSubThoroughfare();
+                String address_street = bestMatch.getThoroughfare();
+                String address_city = bestMatch.getLocality();
+                String address_state = bestMatch.getAdminArea();
+                String address_zip = bestMatch.getPostalCode();
 
                 List<LatLng> sfpolygon = new ArrayList<LatLng>();
                 String[] serviceArea_dinner = Config.serviceArea_dinner.split(" ");
@@ -495,30 +473,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLong, 16.0f));
                 }
 
-                //setMarkers();
-                /*if( order == null ){
-                    mMap.setMyLocationEnabled(true);
-                    mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
-                        @Override
-                        public boolean onMyLocationButtonClick() {
-                            mMap.setMyLocationEnabled(false);
-                            return false;
-                        }
-                    });
-                }*/
-
-                //List<LatLng> sfpolygon = new ArrayList<LatLng>();
-                /*PolylineOptions rectOptions = new PolylineOptions();
-                String[] serviceArea_dinner = Config.serviceArea_dinner.split(" ");
-                for (String aServiceArea_dinner : serviceArea_dinner) {
-                    String[] loc = aServiceArea_dinner.split(",");
-                    double lat = Double.valueOf(loc[1]);
-                    double lng = Double.valueOf(loc[0]);
-                    //sfpolygon.add(new LatLng(lat, lng));
-                    rectOptions.add(new LatLng(lat, lng));
-                }
-                Polyline polyline = mMap.addPolyline(rectOptions);*/
-
                 mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
                     @Override
                     public void onMapLoaded() {
@@ -530,31 +484,16 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                         new_location.setTime(new Date().getTime());
                         scanCurrentLocation(new_location);
 
-                        /*GoogleMap.OnMyLocationChangeListener myLocationChangeListener = new GoogleMap.OnMyLocationChangeListener() {
-                            @Override
-                            public void onMyLocationChange(Location location) {
-                                //Log.i(TAG, "OnMyLocationChangeListener");
-                                if (!FLAG_LOCALIZED) {
-                                    mMap.setMyLocationEnabled(false);
-                                    current_location = location;
-                                    btn_go_to_current_location.setVisibility(View.VISIBLE);
-                                    FLAG_LOCALIZED = true;
-                                    scanCurrentLocation(location);
-
-                                    LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
-                                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 16.0f));
-                                }
-                            }
-                        };*/
-                        /*if( Bentonow.pending_order_id == null ){
-                            mMap.setOnMyLocationChangeListener(myLocationChangeListener);
-                        }*/
-                        ////Log.i(TAG,"map loaded, mMap.getCameraPosition().target: "+mMap.getCameraPosition().target);
                         mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
                             @Override
                             public void onCameraChange(CameraPosition cameraPosition) {
                                 Log.i(TAG, "mMap.getCameraPosition().target: " + mMap.getCameraPosition().target);
-                                //auxTarget = mMap.getCameraPosition().target;
+
+                                autoCompView.setText("");
+                                bestMatch = null;
+
+                                btn_confirm_address.setVisibility(View.GONE);
+                                btn_continue.setVisibility(View.VISIBLE);
 
                                 Location new_location = new Location("newLocation");
                                 LatLng point = mMap.getCameraPosition().target;
@@ -562,21 +501,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                                 new_location.setLongitude(point.longitude);
                                 new_location.setTime(new Date().getTime());
                                 scanCurrentLocation(new_location);
-
-                                /*Handler handler = new Handler();
-                                handler.postDelayed(new Runnable() {
-                                    public void run() {
-                                        if ( auxTarget.equals(mMap.getCameraPosition().target) ) {
-                                            Log.i(TAG,"call google api");
-                                            Location new_location = new Location("newLocation");
-                                            LatLng point = mMap.getCameraPosition().target;
-                                            new_location.setLatitude(point.latitude);
-                                            new_location.setLongitude(point.longitude);
-                                            new_location.setTime(new Date().getTime());
-                                            scanCurrentLocation(new_location);
-                                        }
-                                    }
-                                }, 3500);*/
                             }
                         });
                     }
@@ -604,9 +528,13 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
             Log.i(TAG, "e.getMessage(): " + e.getMessage());
             Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
         }
-        Address bestMatch = null;
+
+        bestMatch = null;
         if( matches != null ) {
             bestMatch = matches.isEmpty() ? null : matches.get(0);
+
+            btn_confirm_address.setVisibility(View.VISIBLE);
+            btn_continue.setVisibility(View.GONE);
         }
 
         //assert bestMatch != null;
