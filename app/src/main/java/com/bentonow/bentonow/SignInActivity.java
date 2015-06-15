@@ -288,10 +288,12 @@ public class SignInActivity extends BaseActivity {
                         Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
                         startActivity(intent);
                         overridePendingTransitionGoLeft();
+                        finish();
                     }else{
                         Intent intent = new Intent(getApplicationContext(), CompleteOrderActivity.class);
                         startActivity(intent);
                         overridePendingTransitionGoLeft();
+                        finish();
                     }
                 }
 
