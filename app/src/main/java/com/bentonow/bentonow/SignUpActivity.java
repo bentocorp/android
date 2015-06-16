@@ -355,24 +355,24 @@ public class SignUpActivity extends BaseActivity {
                     user.save();
 
                     // GO TO ORDER DETAIL
-                    if (Config.AppNavigateMap.from != null && Config.AppNavigateMap.from.equals(Config.from.SettingActivity) ) {
+                    if (Config.AppNavigateMap.from != null && Config.AppNavigateMap.from.equals(Config.from.SettingActivity)) {
                         Config.AppNavigateMap.from = null;
                         Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
                         startActivity(intent);
                         overridePendingTransitionGoLeft();
                         finish();
-                    }else{
+                    } else {
                         Orders current_order = Orders.findById(Orders.class, Bentonow.pending_order_id);
-                        if ( current_order.coords_lat == null || current_order.coords_long == null ) {
+                        if (current_order.coords_lat == null || current_order.coords_long == null) {
                             startActivity(new Intent(getApplicationContext(), DeliveryLocationActivity.class));
                             overridePendingTransitionGoLeft();
                             finish();
-                        }else {
-                            if( user.stripetoken == null || user.stripetoken.isEmpty() ) {
+                        } else {
+                            if (user.stripetoken == null || user.stripetoken.isEmpty()) {
                                 startActivity(new Intent(getApplicationContext(), EnterCreditCardActivity.class));
                                 overridePendingTransitionGoLeft();
                                 finish();
-                            }else{
+                            } else {
                                 startActivity(new Intent(getApplicationContext(), CompleteOrderActivity.class));
                                 overridePendingTransitionGoLeft();
                                 finish();
@@ -384,9 +384,9 @@ public class SignUpActivity extends BaseActivity {
                     try {
                         String message = "";
                         JSONArray error_message = new JSONArray(status.getError());
-                        for(int i = 0; i<error_message.length(); i++ ) {
+                        for (int i = 0; i < error_message.length(); i++) {
                             message += String.valueOf(error_message.get(i));
-                            if(i+1<error_message.length()){
+                            if (i + 1 < error_message.length()) {
                                 message += "\n";
                             }
                         }
@@ -438,7 +438,7 @@ public class SignUpActivity extends BaseActivity {
 
                                 try {
                                     AccessToken accessToken = AccessToken.getCurrentAccessToken();
-                                    Log.i(TAG,"accessToken: "+accessToken.toString());
+                                    Log.i(TAG, "accessToken: " + accessToken.toString());
                                     user.firstname = responseJSONObject.getString("first_name");
                                     user.lastname = responseJSONObject.getString("last_name");
                                     user.email = responseJSONObject.getString("email");
@@ -452,11 +452,7 @@ public class SignUpActivity extends BaseActivity {
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-
-                                Intent intent = new Intent(getApplicationContext(), EnterPhoneNumberActivity.class);
-                                startActivity(intent);
-                                finish();
-                                overridePendingTransitionGoRight();
+                                postUserData(true);
                             }
                         }
                 );
@@ -465,12 +461,12 @@ public class SignUpActivity extends BaseActivity {
 
             @Override
             public void onCancel() {
-                Log.i(TAG,"onCancel()");
+                Log.i(TAG, "onCancel()");
             }
 
             @Override
             public void onError(FacebookException e) {
-                Log.i(TAG,"onError(FacebookException)");
+                Log.i(TAG, "onError(FacebookException)");
                 Log.i(TAG, "error: " + e.getMessage());
             }
         });
@@ -499,5 +495,132 @@ public class SignUpActivity extends BaseActivity {
         super.onBackPressed();
         finish();
         overridePendingTransitionGoLeft();
+    }
+
+    public void postUserData(boolean login){
+        final ProgressDialog dialog = ProgressDialog.show(this, null, "Registering...", true);
+
+        String uri = login ? Config.API.URL + Config.API.USER.FBLOGIN : Config.API.URL + Config.API.USER.FBSIGNUP ;
+        Log.i(TAG,"uri: "+uri);
+        Map<String, Object> params = new HashMap<String, Object>();
+        User user = User.findById(User.class, (long) 1);
+        JSONObject data = new JSONObject();
+        try {
+            data.put(Config.FACEBOOK.SIGNUP.firstname, user.firstname);
+            data.put(Config.FACEBOOK.SIGNUP.lastname, user.lastname);
+            data.put(Config.FACEBOOK.SIGNUP.email, user.email);
+            data.put(Config.FACEBOOK.SIGNUP.phone, user.phone);
+            data.put(Config.FACEBOOK.SIGNUP.fb_id, user.fbid);
+            data.put(Config.FACEBOOK.SIGNUP.fb_token, user.fbtoken);
+            data.put(Config.FACEBOOK.SIGNUP.fb_profile_pic, user.fbprofilepic);
+            data.put(Config.FACEBOOK.SIGNUP.fb_age_range, user.fbagerange);
+            data.put(Config.FACEBOOK.SIGNUP.fb_gender, user.fbgender);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String dataJson = data.toString();
+
+        Log.i(TAG, "dataJson: " + dataJson);
+
+        params.put("data", dataJson);
+        aq.ajax(uri, params, JSONObject.class, new AjaxCallback<JSONObject>() {
+            @Override
+            public void callback(String url, JSONObject json, AjaxStatus status) {
+
+                dialog.dismiss();
+
+                // CASE 200 IF OK
+                if (status.getCode() == 200) {
+                    Log.i(TAG, "json: " + json.toString());
+                    String firstname = "";
+                    String lastname = "";
+                    String email = "";
+                    String phone = "";
+                    String couponcode = "";
+                    String apitoken = "";
+                    String card_brand = "";
+                    String card_last4 = "";
+                    try {
+                        try {
+                            JSONObject card = json.getJSONObject("card");
+                            card_brand = card.getString("brand");
+                            card_last4 = card.getString("last4");
+                        } catch (JSONException ignore) {
+                            //e1.printStackTrace();
+                        }
+                        firstname = json.getString("firstname");
+                        lastname = json.getString("lastname");
+                        email = json.getString("email");
+                        phone = json.getString("phone");
+                        couponcode = json.getString("coupon_code");
+                        apitoken = json.getString("api_token");
+                    } catch (JSONException e) {
+                        //e.printStackTrace();
+                    }
+
+                    Log.i(TAG, "apitoken: " + apitoken);
+
+                    User user = User.findById(User.class, (long) 1);
+                    user.firstname = firstname;
+                    user.lastname = lastname;
+                    user.email = email;
+                    user.phone = phone;
+                    user.couponcode = couponcode;
+                    user.apitoken = apitoken;
+                    user.cardbrand = card_brand;
+                    user.cardlast4 = card_last4;
+                    user.save();
+
+                    if (Config.AppNavigateMap.from != null && Config.AppNavigateMap.from.equals(Config.from.SettingActivity)) {
+                        Config.AppNavigateMap.from = null;
+                        Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
+                        startActivity(intent);
+                        overridePendingTransitionGoLeft();
+                        finish();
+                    } else {
+                        Orders current_order = Orders.findById(Orders.class, Bentonow.pending_order_id);
+                        if (current_order.coords_lat == null || current_order.coords_long == null) {
+                            startActivity(new Intent(getApplicationContext(), DeliveryLocationActivity.class));
+                            overridePendingTransitionGoLeft();
+                            finish();
+                        } else {
+                            if (user.cardlast4 == null || user.cardlast4.isEmpty()) {
+                                startActivity(new Intent(getApplicationContext(), EnterCreditCardActivity.class));
+                                overridePendingTransitionGoLeft();
+                                finish();
+                            } else {
+                                startActivity(new Intent(getApplicationContext(), CompleteOrderActivity.class));
+                                overridePendingTransitionGoLeft();
+                                finish();
+                            }
+                        }
+                    }
+
+                } else if (status.getCode() == 404) {
+                    try {
+                        JSONObject error_message = null;
+                        error_message = new JSONObject(status.getError());
+                        //Toast.makeText(getApplicationContext(),error_message.getString("error"),Toast.LENGTH_LONG).show();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    startActivity(new Intent(getApplicationContext(), EnterPhoneNumberActivity.class));
+                    finish();
+                    overridePendingTransitionGoRight();
+                } else {
+                    /*try {
+                        JSONObject error_message = new JSONObject(status.getError());
+                        Toast.makeText(getApplicationContext(),error_message.getString("error"),Toast.LENGTH_LONG).show();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }*/
+                    Toast.makeText(getApplicationContext(), status.getMessage(), Toast.LENGTH_LONG).show();
+                }
+
+
+            }
+        });
     }
 }
