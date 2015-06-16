@@ -151,6 +151,7 @@ public class OrderItemsListAdapter extends BaseAdapter implements ConfirmDialogI
         lastItemSelected.holder.main_title.setVisibility(View.VISIBLE);
 
         lastItemSelected = null;
+        Bentonow.pending_bento_id = null;
     }
 
     private static class Holder {
