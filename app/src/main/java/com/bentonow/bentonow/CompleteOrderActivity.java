@@ -223,10 +223,12 @@ public class CompleteOrderActivity extends BaseActivity {
                 if(editMode){
                     editMode = false;
                     initAll();
-                    btn_edit_items.setText("EDIT");
+                    btn_edit_items.setTextColor(getResources().getColor(R.color.btn_green));
+                    btn_edit_items.setText("DELETE");
                 }else {
                     editMode = true;
                     loadOrderItems();
+                    btn_edit_items.setTextColor(getResources().getColor(R.color.orange));
                     btn_edit_items.setText("DONE");
                 }
             }
