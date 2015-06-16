@@ -225,6 +225,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
             public void onClick(View v) {
                 autoCompView.setText("");
                 btn_clear.setVisibility(View.INVISIBLE);
+                btn_confirm_address.setVisibility(View.GONE);
+                btn_continue.setVisibility(View.VISIBLE);
             }
         });
 
@@ -376,8 +378,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                         goTo(BuildBentoActivity.class);
                     } else {
                         User user = User.currentUser();
-                        if( user != null && ( user.cardlast4 == null || user.cardlast4.isEmpty() ) ) {
-                            Log.i(TAG,"user");
+                        if (user != null && (user.cardlast4 == null || user.cardlast4.isEmpty())) {
+                            Log.i(TAG, "user");
                             order = Orders.findById(Orders.class, Bentonow.pending_order_id);
                             order.coords_lat = String.valueOf(((LatLng) mMap.getCameraPosition().target).latitude);
                             order.coords_long = String.valueOf(((LatLng) mMap.getCameraPosition().target).longitude);
@@ -389,7 +391,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                             order.save();
                             startActivity(new Intent(getApplicationContext(), EnterCreditCardActivity.class));
                             overridePendingTransitionGoRight();
-                        }else{
+                        } else {
                             order = Orders.findById(Orders.class, Bentonow.pending_order_id);
                             order.coords_lat = String.valueOf(((LatLng) mMap.getCameraPosition().target).latitude);
                             order.coords_long = String.valueOf(((LatLng) mMap.getCameraPosition().target).longitude);
@@ -464,7 +466,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
             if (mMap != null) {
                 Log.i(TAG,"Bentonow.pending_order_id: "+Bentonow.pending_order_id);
                 if( order == null ) {
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Config.INIT_LAT_LONG, 11.0f));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Config.INIT_LAT_LONG, 16.0f));
                 }else{
                     double lat = Double.parseDouble(order.coords_lat);
                     double lng = Double.parseDouble(order.coords_long);
@@ -533,8 +535,10 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         if( matches != null ) {
             bestMatch = matches.isEmpty() ? null : matches.get(0);
 
-            btn_confirm_address.setVisibility(View.VISIBLE);
-            btn_continue.setVisibility(View.GONE);
+            if (chckIagree.isChecked()) {
+                btn_confirm_address.setVisibility(View.VISIBLE);
+                btn_continue.setVisibility(View.GONE);
+            }
         }
 
         //assert bestMatch != null;
@@ -580,7 +584,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
-        mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
+        //mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
     }
 
     ///////////////////////////////
