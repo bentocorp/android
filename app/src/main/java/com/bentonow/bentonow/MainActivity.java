@@ -224,85 +224,95 @@ public class MainActivity extends BaseActivity {
         aq.ajax(uri, JSONObject.class, new AjaxCallback<JSONObject>() {
             @Override
             public void callback(String url, JSONObject json, AjaxStatus status) {
-                JsonProcess JsonProcess = new JsonProcess();
-                // IOSCOPY
-                try {
-                    JSONArray IOSCOPY = json.getJSONArray(Config.API.IOSCOPY);
-                    JsonProcess.ioscopy(IOSCOPY);
-                } catch (JSONException ignored) {
 
-                }
+                Log.i(TAG, "status.getCode(): " + status.getCode());
+                Log.i(TAG, "status.getError(): " + status.getError());
+                Log.i(TAG, "status.getMessage(): " + status.getMessage());
+                Log.i(TAG, "status.getCode(): " + status.getCode());
 
-                // IOSCOPY
-                try {
-                    JSONObject meals = json.getJSONObject(Config.API.meals);
-                    JSONObject m3 = meals.getJSONObject(Config.API.MEALS.m3);
-                    Config.startTime = m3.getString(Config.API.MEALS.M3.startTime);
-                } catch (JSONException ignored) {
-
-                }
-                // /menu/next/{date}
-                try {
-                    JSONObject menu_next_date = json.getJSONObject("/menu/next/{date}");
-                    //JSONObject menu = menu_next_date.getJSONObject("menus");
-                    //JSONObject dinner = menu.getJSONObject("dinner");
-                    Config.next_day_json = menu_next_date.toString();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                // STATUS/OVERALL
-                try {
-                    JSONObject statusall = json.getJSONObject("/status/all");
-                    JsonProcess.OverAll(statusall.getJSONObject("overall"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                // /menu/{date}
-                try {
-                    JSONObject menu_date = json.getJSONObject("/menu/{date}");
-                    JSONObject menu = menu_date.getJSONObject("menus");
-                    JSONObject dinner = menu.getJSONObject("dinner");
-                    //JSONObject dinner = menu.getJSONObject("lunch");
-                    JSONArray MenuItems = (JSONArray) dinner.get(Config.API_MENUITEMS_TAG);
-                    JsonProcess.MenuItems(MenuItems);
-                } catch (JSONException e) {
-                    //e.printStackTrace();
-                    Bentonow.isSolded = true;
-                    Bentonow.isSolded = true;
-                    goTo goTo = new goTo();
-                    goTo.ErrorSolded();
-                }
-
-                if ( Bentonow.isOpen && !Bentonow.isSolded ) {
-                    // /status/all | menu
+                if(status.getCode()==200) {
+                    JsonProcess JsonProcess = new JsonProcess();
+                    // IOSCOPY
                     try {
-                        JSONObject status_all = json.getJSONObject("/status/all");
-                        JSONArray menu = status_all.getJSONArray("menu");
-                        BentoService.processMenuStock(menu);
+                        JSONArray IOSCOPY = json.getJSONArray(Config.API.IOSCOPY);
+                        JsonProcess.ioscopy(IOSCOPY);
+                    } catch (JSONException ignored) {
+
+                    }
+
+                    // IOSCOPY
+                    try {
+                        JSONObject meals = json.getJSONObject(Config.API.meals);
+                        JSONObject m3 = meals.getJSONObject(Config.API.MEALS.m3);
+                        Config.startTime = m3.getString(Config.API.MEALS.M3.startTime);
+                    } catch (JSONException ignored) {
+
+                    }
+                    // /menu/next/{date}
+                    try {
+                        JSONObject menu_next_date = json.getJSONObject("/menu/next/{date}");
+                        //JSONObject menu = menu_next_date.getJSONObject("menus");
+                        //JSONObject dinner = menu.getJSONObject("dinner");
+                        Config.next_day_json = menu_next_date.toString();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    // STATUS/OVERALL
+                    try {
+                        JSONObject statusall = json.getJSONObject("/status/all");
+                        JsonProcess.OverAll(statusall.getJSONObject("overall"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    // /menu/{date}
+                    try {
+                        JSONObject menu_date = json.getJSONObject("/menu/{date}");
+                        JSONObject menu = menu_date.getJSONObject("menus");
+                        JSONObject dinner = menu.getJSONObject("dinner");
+                        //JSONObject dinner = menu.getJSONObject("lunch");
+                        JSONArray MenuItems = (JSONArray) dinner.get(Config.API_MENUITEMS_TAG);
+                        JsonProcess.MenuItems(MenuItems);
                     } catch (JSONException e) {
                         //e.printStackTrace();
+                        Bentonow.isSolded = true;
+                        Bentonow.isSolded = true;
+                        goTo goTo = new goTo();
+                        goTo.ErrorSolded();
                     }
-                }
 
-                try {
-                    Log.i(TAG,"Config.android_min_version: "+Config.android_min_version);
-                    Config.android_min_version = json.getInt("android_min_version");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                    if (Bentonow.isOpen && !Bentonow.isSolded) {
+                        // /status/all | menu
+                        try {
+                            JSONObject status_all = json.getJSONObject("/status/all");
+                            JSONArray menu = status_all.getJSONArray("menu");
+                            BentoService.processMenuStock(menu);
+                        } catch (JSONException e) {
+                            //e.printStackTrace();
+                        }
+                    }
 
-                /////////////////////////////////
-                try {
-                    JSONObject settings = json.getJSONObject("settings");
-                    Config.serviceArea_dinner = settings.getString("serviceArea_dinner");
-                    Log.i(TAG,"Config.serviceArea_dinner: "+Config.serviceArea_dinner);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                    try {
+                        Log.i(TAG, "Config.android_min_version: " + Config.android_min_version);
+                        Config.android_min_version = json.getInt("android_min_version");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
-                init();
+                    /////////////////////////////////
+                    try {
+                        JSONObject settings = json.getJSONObject("settings");
+                        Config.serviceArea_dinner = settings.getString("serviceArea_dinner");
+                        Log.i(TAG, "Config.serviceArea_dinner: " + Config.serviceArea_dinner);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    init();
+                }else{
+                    Toast.makeText(getApplicationContext(), status.getMessage(), Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
