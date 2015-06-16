@@ -175,6 +175,7 @@ public class BuildBentoActivity extends BaseActivity {
     }
 
     private void createNewOrder() {
+        Log.i(TAG,"createNewOrder()");
         if (Bentonow.pending_order_id == null) {
 
             List<Orders> pending_orders = Orders.find(Orders.class, null, null);
@@ -201,6 +202,7 @@ public class BuildBentoActivity extends BaseActivity {
     }
 
     public void createNewBentoBox() {
+        Log.i(TAG,"createNewBentoBox()");
         Item item = new Item();
         item.completed = "no";
         item.orderid = String.valueOf(Bentonow.pending_order_id);
@@ -214,6 +216,7 @@ public class BuildBentoActivity extends BaseActivity {
         Log.i(TAG,"showCurrentBento(Item current_bento)");
         if( current_bento == null ){
             Log.i(TAG, "current_bento isNULL");
+            createNewBentoBox();
             return;
         }
         Log.i(TAG,"current_bento: " + current_bento.toString());
