@@ -285,15 +285,13 @@ public class SignInActivity extends BaseActivity {
 
                     if ( Config.AppNavigateMap.from != null && Config.AppNavigateMap.from.equals(Config.from.SettingActivity) ) {
                         Config.AppNavigateMap.from = null;
-                        Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
-                        startActivity(intent);
-                        overridePendingTransitionGoLeft();
+                        //startActivity(new Intent(getApplicationContext(), SettingActivity.class));
                         finish();
+                        overridePendingTransitionGoLeft();
                     }else{
-                        Intent intent = new Intent(getApplicationContext(), CompleteOrderActivity.class);
-                        startActivity(intent);
-                        overridePendingTransitionGoLeft();
+                        startActivity(new Intent(getApplicationContext(), CompleteOrderActivity.class));
                         finish();
+                        overridePendingTransitionGoRight();
                     }
                 }
 
