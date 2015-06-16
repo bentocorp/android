@@ -6,43 +6,6 @@
     android:id="@+id/base_relative_layout"
     android:background="@color/bgcolor">
 
-    <!-- background -->
-    <!--<ImageView
-        android:id="@+id/bg"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:src="@drawable/bg_error_closed"
-        android:scaleType="centerCrop"/>-->
-
-    <!-- actionbar -->
-    <!--<LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/bg_actionbar"
-        android:gravity="center"
-        android:padding="@dimen/actionbar_padding"
-        android:id="@+id/ActionBar">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Delivery Location"
-            android:textSize="@dimen/title2"
-            />
-    </LinearLayout>
-
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_ab_bento"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:padding="@dimen/actionbar_padding2"
-         />-->
-
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
