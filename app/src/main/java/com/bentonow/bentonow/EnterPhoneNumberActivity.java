@@ -322,7 +322,7 @@ public class EnterPhoneNumberActivity extends BaseActivity {
                         }
                     }
 
-                } if (status.getCode() == 409) {
+                } else if (status.getCode() == 409) {
                     try {
                         JSONObject error_message = null;
                         error_message = new JSONObject(status.getError());
