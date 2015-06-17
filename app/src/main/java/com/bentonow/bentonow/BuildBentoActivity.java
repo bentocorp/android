@@ -630,10 +630,6 @@ public class BuildBentoActivity extends BaseActivity {
 
         Item autocomplete_bento = Item.findById(Item.class, Bentonow.pending_bento_id);
 
-        //if( !autocomplete_bento.isFull() ) stockProcess();
-
-        processHolder ph = new processHolder();
-
         if ( autocomplete_bento.main == null ) {
             List<Dish> main_dishes = Dish.find(Dish.class,"type=? and today = ? and qty!=?", new String[]{"main",todayDate,"0"}, null, "RANDOM()", "1");
             for( Dish dish : main_dishes ) {
@@ -778,58 +774,6 @@ public class BuildBentoActivity extends BaseActivity {
             finalizeOrder();
         }
     }
-
-    /*private void stockProcess() {
-        Log.i(TAG, "stockProcess()");
-        //Config.processing_stock = true;
-        List<Item> order_items = Item.find(Item.class, "orderid=?", String.valueOf(Bentonow.pending_order_id));
-        Log.i(TAG,"order_items.size(): "+order_items.size());
-        for( Item item : order_items ){
-            if(item.isFull()) {
-                Log.i(TAG,"item.isFull");
-                processHolder ph = new processHolder();
-                ph.mDish = Dish.findById(Dish.class, Dish.getIdBy_id(item.main));
-                ph.mQty = Integer.valueOf(ph.mDish.qty);
-                ph.mDish.qty = String.valueOf(ph.mQty - 1);
-                ph.mDish.save();
-
-                ph.s1Dish = Dish.findById(Dish.class, Dish.getIdBy_id(item.side1));
-                ph.s1Qty = Integer.valueOf(ph.s1Dish.qty);
-                if(ph.s1Qty>0) {
-                    ph.s1Qty--;
-                    ph.s1Dish.qty = String.valueOf(ph.s1Qty);
-                    ph.s1Dish.save();
-                }
-
-                ph.s2Dish = Dish.findById(Dish.class, Dish.getIdBy_id(item.side2));
-                ph.s2Qty = Integer.valueOf(ph.s2Dish.qty);
-                if(ph.s2Qty>0) {
-                    ph.s2Qty--;
-                    ph.s2Dish.qty = String.valueOf(ph.s2Qty);
-                    ph.s2Dish.save();
-                }
-
-                ph.s3Dish = Dish.findById(Dish.class, Dish.getIdBy_id(item.side3));
-                ph.s3Qty = Integer.valueOf(ph.s3Dish.qty);
-                if(ph.s3Qty>0) {
-                    ph.s3Qty--;
-                    ph.s3Dish.qty = String.valueOf(ph.s3Qty);
-                    ph.s3Dish.save();
-                }
-
-                ph.s4Dish = Dish.findById(Dish.class, Dish.getIdBy_id(item.side4));
-                ph.s4Qty = Integer.valueOf(ph.s4Dish.qty);
-                if(ph.s4Qty>0) {
-                    ph.s4Qty--;
-                    ph.s4Dish.qty = String.valueOf(ph.s4Qty);
-                    ph.s4Dish.save();
-                }
-
-            }else{
-                Log.i(TAG,"item.isEmpty");
-            }
-        }
-    }*/
 
     class processHolder {
         public Dish mDish;
