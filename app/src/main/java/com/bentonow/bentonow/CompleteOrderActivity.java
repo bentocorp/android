@@ -82,6 +82,7 @@ public class CompleteOrderActivity extends BaseActivity {
     }
 
     private void initAll() {
+
         initActionbar();
         initElemnts();
         changeInitialsValues();
@@ -102,6 +103,13 @@ public class CompleteOrderActivity extends BaseActivity {
 
         // INITIATE FIELD ORDER
         current_order = Orders.findById(Orders.class,Bentonow.pending_order_id);
+        if ( current_order.coords_lat == null || current_order.address_street == null ) {
+            startActivity(new Intent(getApplicationContext(), DeliveryLocationActivity.class));
+            finish();
+            overridePendingTransitionGoLeft();
+        }
+
+
 
         // INITIATE USER
         current_user = User.findById(User.class, (long) 1);
