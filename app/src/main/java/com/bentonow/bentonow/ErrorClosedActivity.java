@@ -19,6 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,7 +45,7 @@ public class ErrorClosedActivity extends BaseActivity {
         initElements();
         addListeners();
         initLegalFooter();
-
+        setClosedText();
 
         if(Config.next_day_json!=null){
             try {
@@ -52,6 +53,26 @@ public class ErrorClosedActivity extends BaseActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void setClosedText () {
+        TextView textView = (TextView) findViewById(R.id.textView2);
+
+        String weekend = "Have a great weekend! We're back on Monday at 5pm with more deliciousness.";
+        String weekdays = "That's it for tonight! We're back tomorrow at 5pm...oh yeah!";
+        String _else = "Bento opens at 5pm today! We're cookin' up some delicious dinner. Get excited!";
+
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_WEEK);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+
+        if ((day == Calendar.FRIDAY && hour >= 20) || day == Calendar.SATURDAY || day == Calendar.SUNDAY) {
+            textView.setText(weekend);
+        } else if ((Calendar.MONDAY == day || Calendar.TUESDAY == day || Calendar.WEDNESDAY == day || Calendar.THURSDAY == day) && hour >= 20) {
+            textView.setText(weekdays);
+        } else {
+            textView.setText(_else);
         }
     }
 
