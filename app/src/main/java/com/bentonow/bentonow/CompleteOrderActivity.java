@@ -280,14 +280,15 @@ public class CompleteOrderActivity extends BaseActivity {
         btn_add_another_bento.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Item current_betno = Item.findById(Item.class, Bentonow.pending_bento_id);
-                if ( current_betno != null && current_betno.isFull()) {
-                    current_betno.completed = "yes";
-                    current_betno.save();
-                    createNewBentoBox();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Current Bento Box is not completed", Toast.LENGTH_LONG).show();
+                if(Bentonow.pending_bento_id!=null) {
+                    Item current_betno = Item.findById(Item.class, Bentonow.pending_bento_id);
+                    if (current_betno != null && current_betno.isFull()) {
+                        current_betno.completed = "yes";
+                        current_betno.save();
+                        createNewBentoBox();
+                    }
                 }
+                createNewBentoBox();
                 Intent intent = new Intent(getApplicationContext(), BuildBentoActivity.class);
                 startActivity(intent);
                 finish();
