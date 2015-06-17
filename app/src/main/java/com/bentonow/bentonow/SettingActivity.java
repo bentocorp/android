@@ -49,7 +49,7 @@ public class SettingActivity extends BaseActivity {
 
         user = User.findById(User.class, (long) 1);
         if (user != null && user.apitoken != null && !user.apitoken.isEmpty()) {
-            user_name.setText(user.firstname);
+            user_name.setText(user.firstname + (user.lastname != null ? user.lastname : ""));
             phone.setText(user.phone);
             email.setText(user.email);
             user_general_content.setVisibility(View.VISIBLE);
