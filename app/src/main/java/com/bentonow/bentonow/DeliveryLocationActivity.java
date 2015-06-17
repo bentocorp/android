@@ -468,8 +468,17 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                 if( order == null ) {
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Config.INIT_LAT_LONG, 16.0f));
                 }else{
-                    double lat = Double.parseDouble(order.coords_lat);
-                    double lng = Double.parseDouble(order.coords_long);
+                    double lat, lng;
+                    if( order.coords_lat != null ) {
+                        lat = Double.parseDouble(order.coords_lat);
+                        lng = Double.parseDouble(order.coords_long);
+                    }else if ( Config.current_location != null ) {
+                        lat = Config.current_location.getLatitude();
+                        lng = Config.current_location.getLongitude();
+                    }else{
+                        lat = Config.INIT_LAT_LONG.latitude;
+                        lng = Config.INIT_LAT_LONG.longitude;
+                    }
                     LatLng LatLong = new LatLng(lat, lng);
                     Log.i( TAG, "LatLong: "+LatLong.toString() );
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLong, 16.0f));
