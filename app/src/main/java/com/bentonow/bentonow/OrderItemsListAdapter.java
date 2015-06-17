@@ -98,7 +98,7 @@ public class OrderItemsListAdapter extends BaseAdapter implements ConfirmDialogI
                     Long itemId = Long.valueOf(row.get(Config.DISH.ITEM_ID));
                     Log.i(TAG, "itemId: " + itemId);
 
-                    long count = Item.count(Item.class, null, null);
+                    long count = Item.count(Item.class, "orderid=?", new String[]{String.valueOf(Bentonow.pending_order_id)});
 
                     if (count == 1) {
                         lastItemSelected = new Data();
