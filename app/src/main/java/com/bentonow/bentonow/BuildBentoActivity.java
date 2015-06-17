@@ -656,8 +656,8 @@ public class BuildBentoActivity extends BaseActivity {
                     if (qty > 0) {
                         Log.i(TAG, "String.valueOf(qty-1): " + String.valueOf(qty - 1));
                         autocomplete_bento.side1 = dish._id;
-                        dish.qty = String.valueOf(qty - 1);
-                        dish.save();
+                        //dish.qty = String.valueOf(qty - 1);
+                        //dish.save();
                     }
                 }
             }
@@ -667,8 +667,8 @@ public class BuildBentoActivity extends BaseActivity {
                     if(qty>0) {
                         Log.i(TAG,"String.valueOf(qty-1): "+String.valueOf(qty-1));
                         autocomplete_bento.side1 = dish._id;
-                        dish.qty = String.valueOf(qty-1);
-                        dish.save();
+                        //dish.qty = String.valueOf(qty-1);
+                        //dish.save();
                     }
                 }
             }
@@ -686,8 +686,8 @@ public class BuildBentoActivity extends BaseActivity {
                     if(qty>0) {
                         Log.i(TAG,"String.valueOf(qty-1): "+String.valueOf(qty-1));
                         autocomplete_bento.side2 = dish._id;
-                        dish.qty = String.valueOf(qty-1);
-                        dish.save();
+                        //dish.qty = String.valueOf(qty-1);
+                        //dish.save();
                     }
                 }
             }
@@ -697,8 +697,8 @@ public class BuildBentoActivity extends BaseActivity {
                     if(qty>0) {
                         Log.i(TAG,"String.valueOf(qty-1): "+String.valueOf(qty-1));
                         autocomplete_bento.side2 = dish._id;
-                        dish.qty = String.valueOf(qty-1);
-                        dish.save();
+                        //dish.qty = String.valueOf(qty-1);
+                        //dish.save();
                     }
                 }
             }
@@ -716,8 +716,8 @@ public class BuildBentoActivity extends BaseActivity {
                     if(qty>0) {
                         Log.i(TAG,"String.valueOf(qty-1): "+String.valueOf(qty-1));
                         autocomplete_bento.side3 = dish._id;
-                        dish.qty = String.valueOf(qty-1);
-                        dish.save();
+                        //dish.qty = String.valueOf(qty-1);
+                        //dish.save();
                     }
                 }
             }
@@ -727,8 +727,8 @@ public class BuildBentoActivity extends BaseActivity {
                     if(qty>0) {
                         Log.i(TAG,"String.valueOf(qty-1): "+String.valueOf(qty-1));
                         autocomplete_bento.side3 = dish._id;
-                        dish.qty = String.valueOf(qty-1);
-                        dish.save();
+                        //dish.qty = String.valueOf(qty-1);
+                        //dish.save();
                     }
                 }
             }
@@ -746,8 +746,8 @@ public class BuildBentoActivity extends BaseActivity {
                     if(qty>0) {
                         Log.i(TAG,"String.valueOf(qty-1): "+String.valueOf(qty-1));
                         autocomplete_bento.side4 = dish._id;
-                        dish.qty = String.valueOf(qty-1);
-                        dish.save();
+                        //dish.qty = String.valueOf(qty-1);
+                        //dish.save();
                     }
                 }
             }
@@ -757,8 +757,8 @@ public class BuildBentoActivity extends BaseActivity {
                     if(qty>0) {
                         Log.i(TAG,"String.valueOf(qty-1): "+String.valueOf(qty-1));
                         autocomplete_bento.side4 = dish._id;
-                        dish.qty = String.valueOf(qty-1);
-                        dish.save();
+                        //dish.qty = String.valueOf(qty-1);
+                        //dish.save();
                     }
                 }
             }
