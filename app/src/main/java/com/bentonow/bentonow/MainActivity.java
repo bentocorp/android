@@ -266,20 +266,21 @@ public class MainActivity extends BaseActivity {
                         e.printStackTrace();
                     }
 
-                    // /menu/{date}
-                    try {
-                        JSONObject menu_date = json.getJSONObject("/menu/{date}");
-                        JSONObject menu = menu_date.getJSONObject("menus");
-                        JSONObject dinner = menu.getJSONObject("dinner");
-                        //JSONObject dinner = menu.getJSONObject("lunch");
-                        JSONArray MenuItems = (JSONArray) dinner.get(Config.API_MENUITEMS_TAG);
-                        JsonProcess.MenuItems(MenuItems);
-                    } catch (JSONException e) {
-                        //e.printStackTrace();
-                        Bentonow.isSolded = true;
-                        Bentonow.isSolded = true;
-                        goTo goTo = new goTo();
-                        goTo.ErrorSolded();
+                    if (Bentonow.isOpen) {
+                        // /menu/{date}
+                        try {
+                            JSONObject menu_date = json.getJSONObject("/menu/{date}");
+                            JSONObject menu = menu_date.getJSONObject("menus");
+                            JSONObject dinner = menu.getJSONObject("dinner");
+                            //JSONObject dinner = menu.getJSONObject("lunch");
+                            JSONArray MenuItems = (JSONArray) dinner.get(Config.API_MENUITEMS_TAG);
+                            JsonProcess.MenuItems(MenuItems);
+                        } catch (JSONException e) {
+                            //e.printStackTrace();
+                            //Bentonow.isSolded = true;
+                            //goTo goTo = new goTo();
+                            //goTo.ErrorSolded();
+                        }
                     }
 
                     if (Bentonow.isOpen && !Bentonow.isSolded) {
