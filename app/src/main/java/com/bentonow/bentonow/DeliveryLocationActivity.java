@@ -22,6 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -126,10 +127,27 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         autoCompView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if(!autoCompView.getText().toString().isEmpty()){
+                if (!autoCompView.getText().toString().isEmpty()) {
                     btn_clear.setVisibility(View.VISIBLE);
                 }
                 return false;
+            }
+        });
+        final InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        autoCompView.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (event != null) {
+                    // if shift key is down, then we want to insert the '\n' char in the TextView;
+                    // otherwise, the default action is to send the message.
+                    if (!event.isShiftPressed()) {
+                        imm.hideSoftInputFromWindow(autoCompView.getWindowToken(), 0);
+                        return true;
+                    }
+                    return false;
+                }
+
+                imm.hideSoftInputFromWindow(autoCompView.getWindowToken(), 0);
+                return true;
             }
         });
         //////////// END GOOGLE PLACE AUTOCOMPLETE //////////////
