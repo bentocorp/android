@@ -27,6 +27,8 @@ import com.bentonow.bentonow.model.Ioscopy;
 import com.bentonow.bentonow.model.Item;
 import com.bentonow.bentonow.model.Orders;
 import com.bentonow.bentonow.model.User;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.PolyUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -70,6 +72,7 @@ public class CompleteOrderActivity extends BaseActivity {
     private TextView generical_overlay_message;
     private TextView btn_ok_souldout;
     private RelativeLayout ok_overlay;
+    private RelativeLayout overlay_bad_address;
 
 
     @Override
@@ -166,9 +169,27 @@ public class CompleteOrderActivity extends BaseActivity {
         generical_overlay_message = (TextView)findViewById(R.id.result_message_souldout);
         //btn_ok_souldout = (TextView) findViewById(R.id.btn_ok_souldout);
 
+        overlay_bad_address = (RelativeLayout)findViewById(R.id.overlay_bad_address);
     }
 
     private void addListeners() {
+
+        findViewById(R.id.btn_change_address_cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                overlay_bad_address.setVisibility(View.GONE);
+            }
+        });
+
+        findViewById(R.id.btn_change_address_ok).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), DeliveryLocationActivity.class);
+                intent.putExtra("btnBack", true);
+                startActivity(intent);
+                overridePendingTransitionGoLeft();
+            }
+        });
 
         findViewById(R.id.btn_ok_souldout).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -320,6 +341,11 @@ public class CompleteOrderActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Log.i(TAG, "user: " + current_user.toString());
+
+                if(!Orders.addressVerification(new LatLng(Double.valueOf(current_order.coords_lat),Double.valueOf(current_order.coords_long)))){
+                    overlay_bad_address.setVisibility(View.VISIBLE);
+                }
+
                 if (current_user != null && current_user.cardlast4 != null && !current_user.cardlast4.isEmpty()) {
                     JSONObject data = new JSONObject();
                     Orders current_order = Orders.findById(Orders.class, Bentonow.pending_order_id);
@@ -711,7 +737,7 @@ public class CompleteOrderActivity extends BaseActivity {
 
     private void tryGetPendingOrder() {
         Log.i(TAG, "checkForPendingOrder()");
-        List<Orders> pending_orders = Orders.find(Orders.class, "completed = ? AND today = ?", "no",todayDate);
+        List<Orders> pending_orders = Orders.find(Orders.class, "completed = ? AND today = ?", "no", todayDate);
         if( !pending_orders.isEmpty() ) {
             for ( Orders order : pending_orders) {
                 Bentonow.pending_order_id = order.getId();

@@ -1,10 +1,16 @@
 package com.bentonow.bentonow.model;
 
+import android.content.Intent;
 import android.util.Log;
 
 import com.bentonow.bentonow.Bentonow;
+import com.bentonow.bentonow.Config;
+import com.bentonow.bentonow.ErrorInvalidAddressActivity;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.PolyUtil;
 import com.orm.SugarRecord;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -97,5 +103,22 @@ public class Orders extends SugarRecord<Orders> {
             last_order_address = lastOrder.getId();
         }
         return last_order_address;
+    }
+
+    public static boolean addressVerification(LatLng location) {
+        List<LatLng> sfpolygon = new ArrayList<LatLng>();
+        String[] serviceArea_dinner = Config.serviceArea_dinner.split(" ");
+        for (String aServiceArea_dinner : serviceArea_dinner) {
+            String[] loc = aServiceArea_dinner.split(",");
+            double lat = Double.valueOf(loc[1]);
+            double lng = Double.valueOf(loc[0]);
+            sfpolygon.add(new LatLng(lat, lng));
+        }
+
+        if ( PolyUtil.containsLocation(new LatLng(location.latitude, location.longitude), sfpolygon, false) ) {
+            return true;
+        }else{
+            return false;
+        }
     }
 }
