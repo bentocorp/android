@@ -136,16 +136,6 @@ public class EnterCreditCardActivity extends BaseFragmentActivity {
                 //overridePendingTransitionGoLeft();
             }
         });
-
-        ImageView actionbar_right_btn = (ImageView) findViewById(R.id.actionbar_right_btn);
-        actionbar_right_btn.setImageResource(R.drawable.ic_ab_help);
-        actionbar_right_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToFAQ();
-            }
-        });
-
     }
 
     public static void returnToPayment() {
