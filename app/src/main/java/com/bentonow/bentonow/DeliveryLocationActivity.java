@@ -507,7 +507,12 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                     public void onMapLoaded() {
 
                         Location new_location = new Location("newLocation");
-                        LatLng point = Config.INIT_LAT_LONG;
+                        LatLng point;
+                        if (order != null){
+                            point = order.coords_lat == null ? Config.INIT_LAT_LONG : new LatLng(Double.valueOf(order.coords_lat),Double.valueOf(order.coords_long)) ;
+                        }else{
+                            point = Config.INIT_LAT_LONG;
+                        }
                         new_location.setLatitude(point.latitude);
                         new_location.setLongitude(point.longitude);
                         new_location.setTime(new Date().getTime());
