@@ -16,9 +16,16 @@ repositories {
 
 
 android {
+    signingConfigs {
+        Bento {
+            keyAlias 'bento'
+            keyPassword 'bentonow'
+            storeFile file('/Users/gonzalo/Developments/RocketShip/Bento/android/bento.keystore')
+            storePassword 'bentonow'
+        }
+    }
     compileSdkVersion 21
     buildToolsVersion "21.1.2"
-
     defaultConfig {
         applicationId "com.bentonow.bentonow"
         minSdkVersion 17
@@ -30,6 +37,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.main_title'), 'proguard-rules.pro'
+            debuggable false
         }
     }
 }
