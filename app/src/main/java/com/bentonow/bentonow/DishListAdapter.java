@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Debug;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -89,26 +90,48 @@ public class DishListAdapter extends BaseAdapter {
                 case Config.SIDE.MAIN:
                     if( bento.main != null && finalHolder.iid.equals(bento.main) ){
                         selectedDish(finalHolder);
+
+                        Log.i(TAG, "status: " + (finalHolder.dish.isSoldOut(false) ? "soldOut" : "available"));
+
+                        if (!finalHolder.dish.isSoldOut(false)) {
+                            holder.soldOutFlag.setVisibility(View.GONE);
+                        }
                     }
                     break;
                 case Config.SIDE.SIDE_1:
                     if( bento.side1 != null && finalHolder.iid.equals(bento.side1) ){
                         selectedDish(finalHolder);
+
+                        if (!finalHolder.dish.isSoldOut(false)) {
+                            holder.soldOutFlag.setVisibility(View.GONE);
+                        }
                     }
                     break;
                 case Config.SIDE.SIDE_2:
                     if( bento.side2 != null && finalHolder.iid.equals(bento.side2) ){
                         selectedDish(finalHolder);
+
+                        if (!finalHolder.dish.isSoldOut(false)) {
+                            holder.soldOutFlag.setVisibility(View.GONE);
+                        }
                     }
                     break;
                 case Config.SIDE.SIDE_3:
                     if( bento.side3 != null && finalHolder.iid.equals(bento.side3) ){
                         selectedDish(finalHolder);
+
+                        if (!finalHolder.dish.isSoldOut(false)) {
+                            holder.soldOutFlag.setVisibility(View.GONE);
+                        }
                     }
                     break;
                 case Config.SIDE.SIDE_4:
                     if( bento.side4 != null && finalHolder.iid.equals(bento.side4) ){
                         selectedDish(finalHolder);
+
+                        if (!finalHolder.dish.isSoldOut(false)) {   
+                            holder.soldOutFlag.setVisibility(View.GONE);
+                        }
                     }
                     break;
             }
@@ -281,7 +304,7 @@ public class DishListAdapter extends BaseAdapter {
     private void checkStatus (Holder holder) {
         Dish dish = holder.dish;
 
-        if (dish.isSoldOut()) {
+        if (dish.isSoldOut(true)) {
             holder.btn_add_to_bento_solded.setText("Sold Out");
             holder.soldOutFlag.setVisibility(View.VISIBLE);
 
@@ -305,7 +328,7 @@ public class DishListAdapter extends BaseAdapter {
         holder.overlay_menu_detail.setVisibility(View.VISIBLE);
         holder.main_title.setVisibility(View.GONE);
 
-        if (dish.isSoldOut()) {
+        if (dish.isSoldOut(true)) {
             holder.soldOutFlag.setVisibility(View.INVISIBLE);
         }
     }
@@ -317,7 +340,7 @@ public class DishListAdapter extends BaseAdapter {
         holder.overlay_menu_detail.setVisibility(View.GONE);
         holder.main_title.setVisibility(View.VISIBLE);
 
-        if (dish.isSoldOut()) {
+        if (dish.isSoldOut(true)) {
             holder.soldOutFlag.setVisibility(View.VISIBLE);
         }
     }

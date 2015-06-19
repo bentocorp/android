@@ -1,5 +1,6 @@
 package com.bentonow.bentonow.model;
 
+import android.os.Debug;
 import android.util.Log;
 
 import com.bentonow.bentonow.Bentonow;
@@ -64,13 +65,15 @@ public class Dish extends SugarRecord<Dish> {
             List<Item> allOrderItems = Item.find(Item.class, "orderid=?", String.valueOf(Bentonow.pending_order_id));
 
             for (Item oItem : allOrderItems) {
-                if (oItem.side1 != null && oItem.side1.equals(_id))
+                if (oItem.main != null && oItem.main.equals(_id))
                     maxPerOrder--;
-                if (oItem.side2 != null && oItem.side2.equals(_id))
+                else if (oItem.side1 != null && oItem.side1.equals(_id))
                     maxPerOrder--;
-                if (oItem.side3 != null && oItem.side3.equals(_id))
+                else  if (oItem.side2 != null && oItem.side2.equals(_id))
                     maxPerOrder--;
-                if (oItem.side4 != null && oItem.side4.equals(_id))
+                else if (oItem.side3 != null && oItem.side3.equals(_id))
+                    maxPerOrder--;
+                else if (oItem.side4 != null && oItem.side4.equals(_id))
                     maxPerOrder--;
             }
 
@@ -82,10 +85,31 @@ public class Dish extends SugarRecord<Dish> {
         return true;
     }
 
-    public boolean isSoldOut () {
+    public boolean isSoldOut (boolean ifChoosing) {
         try {
             int quantity = Integer.parseInt(qty);
-            if (quantity > 0) return false;
+            if (quantity > 0) {
+                List<Item> allOrderItems = Item.find(Item.class, "orderid=?", String.valueOf(Bentonow.pending_order_id));
+
+                for (Item oItem : allOrderItems) {
+                    if (oItem.main != null && oItem.main.equals(_id))
+                        quantity--;
+                    else if (oItem.side1 != null && oItem.side1.equals(_id))
+                        quantity--;
+                    else if (oItem.side2 != null && oItem.side2.equals(_id))
+                        quantity--;
+                    else if (oItem.side3 != null && oItem.side3.equals(_id))
+                        quantity--;
+                    else if (oItem.side4 != null && oItem.side4.equals(_id))
+                        quantity--;
+                }
+
+                Log.i(TAG, quantity + "");
+
+                int minQuantity = -1;
+                if (ifChoosing) minQuantity = 0;
+                if (quantity > minQuantity) return false;
+            }
         } catch ( Exception e ) {
         }
 
