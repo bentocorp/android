@@ -28,7 +28,6 @@ import com.bentonow.bentonow.model.Item;
 import com.bentonow.bentonow.model.Orders;
 import com.bentonow.bentonow.model.User;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.maps.android.PolyUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -69,9 +68,13 @@ public class CompleteOrderActivity extends BaseActivity {
     private TextView coupon_result_message;
     private TextView discount_cents;
     private boolean processing = false;
-    private TextView generical_overlay_message;
-    private TextView btn_ok_souldout;
-    private RelativeLayout ok_overlay;
+
+    private TextView closed_text;
+    private RelativeLayout oberlay_closed;
+
+    private TextView outofstock_text;
+    private RelativeLayout oberlay_out_of_stock;
+
     private RelativeLayout overlay_bad_address;
 
 
@@ -165,9 +168,12 @@ public class CompleteOrderActivity extends BaseActivity {
         row_discount = (LinearLayout)findViewById(R.id.row_discount);
         discount_cents = (TextView)findViewById(R.id.discount_cents);
 
-        ok_overlay = (RelativeLayout)findViewById(R.id.overlay_souldout);
-        generical_overlay_message = (TextView)findViewById(R.id.result_message_souldout);
+        oberlay_out_of_stock = (RelativeLayout)findViewById(R.id.overlay_souldout);
+        outofstock_text = (TextView)findViewById(R.id.result_message_souldout);
         //btn_ok_souldout = (TextView) findViewById(R.id.btn_ok_souldout);
+
+        oberlay_closed = (RelativeLayout)findViewById(R.id.overlay_closed);
+        closed_text = (TextView)findViewById(R.id.text_closed);
 
         overlay_bad_address = (RelativeLayout)findViewById(R.id.overlay_bad_address);
     }
@@ -191,10 +197,24 @@ public class CompleteOrderActivity extends BaseActivity {
             }
         });
 
+        findViewById(R.id.btn_ok_closed).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                oberlay_closed.setVisibility(View.GONE);
+                Bentonow.isOpen = false;
+                startActivity(new Intent(getApplicationContext(), ErrorClosedActivity.class));
+                overridePendingTransition(R.anim.bottom_slide_in, R.anim.none);
+                finish();
+            }
+        });
+
         findViewById(R.id.btn_ok_souldout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ok_overlay.setVisibility(View.GONE);
+                oberlay_out_of_stock.setVisibility(View.GONE);
+                Bentonow.pending_bento_id = Orders.itemWithDishOutOfStock();
+                startActivity(new Intent(getApplicationContext(), BuildBentoActivity.class));
+                overridePendingTransitionGoLeft();
             }
         });
 
@@ -353,7 +373,7 @@ public class CompleteOrderActivity extends BaseActivity {
              *  ORDER ITEMS
              */
                     JSONArray OrderItems = new JSONArray();
-                    List<Item> orderItems = Item.find(Item.class, "orderid=?", String.valueOf(Bentonow.pending_order_id));
+                    List<Item> orderItems = Item.find(Item.class, "orderid=? and completed = ?", String.valueOf(Bentonow.pending_order_id), Config.ORDER.STATUS.COMPLETED);
                     for (Item orderItem : orderItems) {
                         try {
                             JSONObject item = new JSONObject();
@@ -594,39 +614,39 @@ public class CompleteOrderActivity extends BaseActivity {
                             startActivity(intent);
                             finish();
                             overridePendingTransitionGoRight();
-                        }else if (status.getCode() == 406) { //{"error":"You cannot use a Stripe token more than once:tok_16DJ8QEmZcPNENoGBop6zv3A."}
+                        }else if (status.getCode() == 406) { // Payment failed. //{"error":"You cannot use a Stripe token more than once:tok_16DJ8QEmZcPNENoGBop6zv3A."}
                             //Toast.makeText(getApplicationContext(),status.getMessage(),Toast.LENGTH_LONG).show();
                             current_user.stripetoken = null;
                             current_user.save();
                             postOrderData(data);
-                        }else if (status.getCode() == 402) {
+                        }else if (status.getCode() == 402) { // Not payment especified
                             Toast.makeText(getApplicationContext(),Config.API.SERVER_STATUS.ORDER.MESSAGE._402,Toast.LENGTH_LONG).show();
                             Toast.makeText(getApplicationContext(),status.getMessage(),Toast.LENGTH_LONG).show();
                             startActivity(new Intent(getApplicationContext(), EnterCreditCardActivity.class));
                             overridePendingTransitionGoRight();
                             processing = false;
-                        }else if ( status.getCode() == 410 ){
+                        }else if ( status.getCode() == 410 ){ //if the inventory is not available.
                             try {
                                 JSONObject error_message = new JSONObject(status.getError());
-                                generical_overlay_message.setText(error_message.getString("Error"));
-                                ok_overlay.setVisibility(View.VISIBLE);
+                                outofstock_text.setText(error_message.getString("Error"));
+                                JSONArray MenuStatus = error_message.getJSONArray("MenuStatus");
+                                BentoService.processMenuStock(MenuStatus);
+                                oberlay_out_of_stock.setVisibility(View.VISIBLE);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                        }else if( status.getCode() == 401 ){
-                            //generical_overlay_message.setText(status.getMessage());
-                            //ok_overlay.setVisibility(View.VISIBLE);
+                        }else if( status.getCode() == 401 ){ // Unautorized
                             Toast.makeText(getApplicationContext(),status.getMessage(),Toast.LENGTH_LONG).show();
                             startActivity(new Intent(getApplicationContext(), SignInActivity.class));
                             User user = User.currentUser();
                             user.reset();
                             finish();
                             overridePendingTransitionGoLeft();
-                        } else if( status.getCode() == 423 ) {
+                        } else if( status.getCode() == 423 ) { // if the restaurant is not open.
                             try {
                                 JSONObject error_message = new JSONObject(status.getError());
-                                generical_overlay_message.setText(error_message.getString("error"));
-                                ok_overlay.setVisibility(View.VISIBLE);
+                                outofstock_text.setText(error_message.getString("error"));
+                                oberlay_out_of_stock.setVisibility(View.VISIBLE);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }

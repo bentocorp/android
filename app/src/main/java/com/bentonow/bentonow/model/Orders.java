@@ -121,4 +121,50 @@ public class Orders extends SugarRecord<Orders> {
             return false;
         }
     }
+
+    public static Long itemWithDishOutOfStock() {
+        List<Item> pendingOrderItems = Item.find(Item.class, "orderid = ?", String.valueOf(Bentonow.pending_order_id));
+        for ( Item item : pendingOrderItems ){
+            if ( item.main!=null && !item.main.isEmpty() ) {
+                Dish dish = Dish.findDish(item.main);
+                if (dish.isSoldOut(false)){
+                    return item.getId();
+                }
+            }
+            if ( item.side1!=null && !item.side1.isEmpty() ) {
+                Dish dish = Dish.findDish(item.side1);
+                if (dish.isSoldOut(false)){
+                    return item.getId();
+                }
+            }
+            if ( item.side2!=null && !item.side2.isEmpty() ) {
+                Dish dish = Dish.findDish(item.side2);
+                if (dish.isSoldOut(false)){
+                    return item.getId();
+                }
+            }
+            if ( item.side3!=null && !item.side3.isEmpty() ) {
+                Dish dish = Dish.findDish(item.side3);
+                if (dish.isSoldOut(false)){
+                    return item.getId();
+                }
+            }
+            if ( item.side4!=null && !item.side4.isEmpty() ) {
+                Dish dish = Dish.findDish(item.side4);
+                if (dish.isSoldOut(false)){
+                    return item.getId();
+                }
+            }
+        }
+        return null;
+    }
+
+    public static Long getLastItemId() {
+        Long last_item_id = null;
+        List<Orders> orders = Orders.find(Orders.class, null, null);
+        for( Orders lastOrder : orders ){
+            last_item_id = lastOrder.getId();
+        }
+        return last_item_id;
+    }
 }
