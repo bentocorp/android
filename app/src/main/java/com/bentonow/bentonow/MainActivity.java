@@ -464,8 +464,7 @@ public class MainActivity extends BaseActivity {
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 public void run() {
-                    Intent intent = new Intent(getApplicationContext(), ErrorClosedActivity.class);
-                    startActivity(intent);
+                    startActivity(new Intent(getApplicationContext(), ErrorClosedActivity.class));
                     overridePendingTransition(R.anim.bottom_slide_in, R.anim.none);
                     finish();
                 }
