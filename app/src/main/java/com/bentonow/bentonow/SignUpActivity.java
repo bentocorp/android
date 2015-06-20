@@ -236,7 +236,7 @@ public class SignUpActivity extends BaseActivity {
     }
 
     private void validate () {
-        if (user_name.getText().toString().equals("") || email_address.getText().toString().equals("") || phone_number.getText().length() != 16 || password.getText().toString().equals("")) {
+        if (user_name.getText().toString().equals("") || email_address.getText().toString().equals("") || phone_number.getText().length() != 16 || password.getText().toString().equals("") || password.getText().toString().length() < 6 ) {
             btn_register.setBackgroundResource(R.drawable.btn_dark_gray);
         } else {
             btn_register.setBackgroundResource(R.drawable.bg_green_cornered);
@@ -279,7 +279,7 @@ public class SignUpActivity extends BaseActivity {
         }
 
         // PASSWORD
-        if (password.getText().toString().equals("")) {
+        if ( password.getText().toString().equals("") ) {
             password.setTextColor(getResources().getColor(R.color.orange));
             signup_key_ico.setImageResource(R.drawable.ic_signup_key_error);
             alert("Please enter a password.");
