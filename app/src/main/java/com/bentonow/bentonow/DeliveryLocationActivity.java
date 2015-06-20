@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -37,9 +38,13 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.IndoorBuilding;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -88,6 +93,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
     private ImageView btn_clear;
     private ProgressBar progressBar;
     Address bestMatch;
+    private Marker marker;
+    private String newAddressToCompare;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,8 +177,9 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
     }
 
     private void checkAddress (String str) {
-        if (!newAddress.equals(str)) {
-            newAddress = str;
+        Log.i(TAG,"checkAddress()");
+        if (!newAddressToCompare.equals(str)) {
+            newAddressToCompare = str;
             Geocoder geoCoderClick = new Geocoder(getApplicationContext(), Locale.getDefault());
             try {
                 List<Address> addresses = geoCoderClick.getFromLocationName(str, 5);
@@ -183,7 +191,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                     searched_location.setLatitude(addresses.get(0).getLatitude());
                     searched_location.setLongitude(addresses.get(0).getLongitude());
                     searched_location.setTime(new Date().getTime());
-                    //scanCurrentLocation(searched_location);
                     goToCenterLocation(searched_location);
                 }
             } catch (IOException e) {
@@ -479,67 +486,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
             mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
                     .getMap();
 
-
-            /////////////////////////
-            if (mMap != null) {
-                Log.i(TAG,"Bentonow.pending_order_id: "+Bentonow.pending_order_id);
-                if( order == null ) {
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Config.INIT_LAT_LONG, 16.0f));
-                }else{
-                    double lat, lng;
-                    if( order.coords_lat != null ) {
-                        lat = Double.parseDouble(order.coords_lat);
-                        lng = Double.parseDouble(order.coords_long);
-                    }else if ( Config.current_location != null ) {
-                        lat = Config.current_location.getLatitude();
-                        lng = Config.current_location.getLongitude();
-                    }else{
-                        lat = Config.INIT_LAT_LONG.latitude;
-                        lng = Config.INIT_LAT_LONG.longitude;
-                    }
-                    LatLng LatLong = new LatLng(lat, lng);
-                    Log.i( TAG, "LatLong: "+LatLong.toString() );
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLong, 16.0f));
-                }
-
-                mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
-                    @Override
-                    public void onMapLoaded() {
-
-                        Location new_location = new Location("newLocation");
-                        LatLng point;
-                        if (order != null){
-                            point = order.coords_lat == null ? Config.INIT_LAT_LONG : new LatLng(Double.valueOf(order.coords_lat),Double.valueOf(order.coords_long)) ;
-                        }else{
-                            point = Config.INIT_LAT_LONG;
-                        }
-                        new_location.setLatitude(point.latitude);
-                        new_location.setLongitude(point.longitude);
-                        new_location.setTime(new Date().getTime());
-                        scanCurrentLocation(new_location);
-
-                        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
-                            @Override
-                            public void onCameraChange(CameraPosition cameraPosition) {
-                                Log.i(TAG, "mMap.getCameraPosition().target: " + mMap.getCameraPosition().target);
-
-                                autoCompView.setText("");
-                                bestMatch = null;
-
-                                btn_confirm_address.setVisibility(View.GONE);
-                                btn_continue.setVisibility(View.VISIBLE);
-
-                                Location new_location = new Location("newLocation");
-                                LatLng point = mMap.getCameraPosition().target;
-                                new_location.setLatitude(point.latitude);
-                                new_location.setLongitude(point.longitude);
-                                new_location.setTime(new Date().getTime());
-                                scanCurrentLocation(new_location);
-                            }
-                        });
-                    }
-                });
-            }
             ///////////////////////////
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
@@ -548,65 +494,55 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         }
     }
 
-    private void scanCurrentLocation(Location location) {
+    private void scanCurrentLocation(final Location location) {
 
+        Log.i(TAG, "scanCurrentLocation()");
+
+        autoCompView.setText("");
         btn_clear.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
 
-        Geocoder geoCoder = new Geocoder(getApplicationContext());
-        List<Address> matches = null;
-        try {
-            matches = geoCoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.i(TAG, "e.getMessage(): " + e.getMessage());
-            Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
-        }
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                Geocoder geoCoder = new Geocoder(getApplicationContext());
+                List<Address> matches = null;
+                try {
+                    matches = geoCoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.i(TAG, "e.getMessage(): " + e.getMessage());
+                    Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
+                }
 
-        bestMatch = null;
-        if( matches != null ) {
-            bestMatch = matches.isEmpty() ? null : matches.get(0);
+                bestMatch = null;
+                if( matches != null ) {
+                    bestMatch = matches.isEmpty() ? null : matches.get(0);
 
-            if (chckIagree.isChecked()) {
-                btn_confirm_address.setVisibility(View.VISIBLE);
-                btn_continue.setVisibility(View.GONE);
-            }
-        }
+                    if (chckIagree.isChecked()) {
+                        btn_confirm_address.setVisibility(View.VISIBLE);
+                        btn_continue.setVisibility(View.GONE);
+                    }
+                }
 
-        //assert bestMatch != null;
-        try{
-            newAddress = "";
-            if( bestMatch != null ) {
-                newAddress += bestMatch.getAddressLine(0) != null ? bestMatch.getAddressLine(0) : "";
-                newAddress += bestMatch.getAddressLine(1) != null ? ", " + bestMatch.getAddressLine(1) : "";
-                newAddress += bestMatch.getAddressLine(2) != null ? ", " + bestMatch.getAddressLine(2) : "";
-                autoCompView.setText(newAddress);
-                btn_clear.setVisibility(View.VISIBLE);
-                progressBar.setVisibility(View.INVISIBLE);
+                //assert bestMatch != null;
+                try{
+                    newAddress = "";
+                    if( bestMatch != null ) {
+                        newAddress += bestMatch.getAddressLine(0) != null ? bestMatch.getAddressLine(0) : "";
+                        newAddress += bestMatch.getAddressLine(1) != null ? ", " + bestMatch.getAddressLine(1) : "";
+                        newAddress += bestMatch.getAddressLine(2) != null ? ", " + bestMatch.getAddressLine(2) : "";
+                        autoCompView.setText(newAddress);
+                        newAddressToCompare = bestMatch.toString();
+                        btn_clear.setVisibility(View.VISIBLE);
+                        progressBar.setVisibility(View.GONE);
+                    }
+                }catch (NullPointerException ignored){
+                    btn_clear.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.GONE);
+                }
             }
-        }catch (NullPointerException ignored){
-            btn_clear.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.INVISIBLE);
-        }
-        ///////////////////////
-        //geoCoder = new Geocoder(this, Locale.getDefault());
-        /*try {
-            List<Address> addresses = geoCoder.getFromLocationName(newAddress, 5);
-            String add = "";
-            if (addresses.size() > 0) {
-                //String coords = "geo:" + String.valueOf(addresses.get(0).getLatitude()) + "," + String.valueOf(addresses.get(0).getLongitude());
-                Location searched_location = new Location("searchedLocation");
-                //LatLng point = mMap.getCameraPosition().target;
-                location.setLatitude(addresses.get(0).getLatitude());
-                location.setLongitude(addresses.get(0).getLongitude());
-                location.setTime(new Date().getTime());
-                scanCurrentLocation(location);
-                //goToCenterLocation(searched_location);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-        /////////////////////////
+        }, 2000);
     }
 
     /**
@@ -617,16 +553,68 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
      */
     private void setUpMap() {
         //mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
+        Log.i(TAG, "Bentonow.pending_order_id: " + Bentonow.pending_order_id);
+        mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+            @Override
+            public void onMapLoaded() {
+
+                final LatLng point;
+                if (order != null) {
+                    point = order.coords_lat == null ? Config.INIT_LAT_LONG : new LatLng(Double.valueOf(order.coords_lat), Double.valueOf(order.coords_long));
+                } else {
+                    point = Config.INIT_LAT_LONG;
+                }
+
+                markerLocation(point);
+
+                mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                    @Override
+                    public void onMapClick(final LatLng latLng) {
+
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16.0f));
+                        autoCompView.setText("");
+                        bestMatch = null;
+
+                        btn_confirm_address.setVisibility(View.GONE);
+                        btn_continue.setVisibility(View.VISIBLE);
+
+                        markerLocation(latLng);
+                    }
+                });
+            }
+        });
     }
 
     ///////////////////////////////
 
     public void goToCenterLocation(Location find_location) {
+        Log.i(TAG,"goToCenterLocation()");
         double latitude = find_location.getLatitude();
         double longitude = find_location.getLongitude();
         LatLng latLng = new LatLng(latitude, longitude);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        //mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+        markerLocation(latLng);
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+        final Location location = new Location("newLocation");
+        scanCurrentLocation(find_location);
+    }
+
+    private void markerLocation(LatLng latLng) {
+        Log.i(TAG, "markerLocation()");
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17.0f));
+        if(marker==null) {
+            marker = mMap.addMarker(new MarkerOptions()
+                            .position(latLng)
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.location_marker_hi))
+            );
+        }else{
+            marker.setPosition(latLng);
+        }
+        Location searched_location = new Location("searchedLocation");
+        //LatLng point = mMap.getCameraPosition().target;
+        searched_location.setLatitude(latLng.latitude);
+        searched_location.setLongitude(latLng.longitude);
+        searched_location.setTime(new Date().getTime());
+        scanCurrentLocation(searched_location);
     }
 
     private void openOverlayMessage() {
