@@ -542,8 +542,6 @@ public class BuildBentoActivity extends BaseActivity {
                     current_betno.completed = "yes";
                     current_betno.save();
                     createNewBentoBox();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Current Bento Box is not completed", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -611,7 +609,13 @@ public class BuildBentoActivity extends BaseActivity {
         btn_no_complete_for_me.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Item last_item = Item.findById(Item.class,Bentonow.pending_bento_id);
+                if ( last_item != null ) {
+                    last_item.delete();
+                }
+                Bentonow.pending_bento_id = Orders.getLastItemId();
                 overlay_autocomplete_bento.setVisibility(View.INVISIBLE);
+                finalizeOrder();
             }
         });
 
