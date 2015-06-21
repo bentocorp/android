@@ -2,7 +2,6 @@ package com.bentonow.bentonow;
 
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
@@ -13,7 +12,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -34,20 +32,13 @@ import android.widget.Toast;
 
 import com.bentonow.bentonow.model.Orders;
 import com.bentonow.bentonow.model.User;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.IndoorBuilding;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
 
 
@@ -122,8 +113,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         autoCompView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                InputMethodManager imm = (InputMethodManager) getSystemService(
-                        Context.INPUT_METHOD_SERVICE);
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(autoCompView.getWindowToken(), 0);
                 String str = (String) adapterView.getItemAtPosition(position);
                 if (str != null) {
@@ -571,7 +561,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                     @Override
                     public void onMapClick(final LatLng latLng) {
 
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16.0f));
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, Config.DEFAULT_ZOOM));
                         autoCompView.setText("");
                         bestMatch = null;
 
@@ -593,14 +583,14 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         double longitude = find_location.getLongitude();
         LatLng latLng = new LatLng(latitude, longitude);
         markerLocation(latLng);
-        mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, Config.DEFAULT_ZOOM));
         final Location location = new Location("newLocation");
         scanCurrentLocation(find_location);
     }
 
     private void markerLocation(LatLng latLng) {
         Log.i(TAG, "markerLocation()");
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17.0f));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, Config.DEFAULT_ZOOM));
         if(marker==null) {
             marker = mMap.addMarker(new MarkerOptions()
                             .position(latLng)

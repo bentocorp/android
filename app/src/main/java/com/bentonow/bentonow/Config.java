@@ -10,6 +10,7 @@ import com.google.android.gms.maps.model.LatLng;
 public class Config {
 
     public static final int current_version = 1;
+    public static final float DEFAULT_ZOOM = 17.0f;
     public static LatLng INIT_LAT_LONG = new LatLng(37.772492, -122.420262);
     public static int android_min_version;
     public static final String API_KEY = "AIzaSyDz5MlSeWBUP1iDeSI3j6qeoLbMWDbJgQg";
