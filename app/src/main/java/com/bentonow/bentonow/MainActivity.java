@@ -138,39 +138,8 @@ public class MainActivity extends BaseActivity {
                     Config.current_location = location;
                     Config.INIT_LAT_LONG = new LatLng(Config.current_location.getLatitude(), Config.current_location.getLongitude());
 
-                    ///////////////////////
-                    List<LatLng> sfpolygon = new ArrayList<LatLng>();
-                    String[] serviceArea_dinner = Config.serviceArea_dinner.split(" ");
-                    for (int i = 0; i < serviceArea_dinner.length; i++) {
-                        String[] loc = serviceArea_dinner[i].split(",");
-                        double lat = Double.valueOf(loc[1]);
-                        double lng = Double.valueOf(loc[0]);
-                        sfpolygon.add(new LatLng(lat, lng));
-                    }
-                /*sfpolygon.add(new LatLng(37.8095806, -122.44983680000001));
-                sfpolygon.add(new LatLng(37.77783170000001, -122.44335350000001));
-                sfpolygon.add(new LatLng(37.7460824, -122.43567470000002));
-                sfpolygon.add(new LatLng(37.7490008, -122.37636569999998));
-                sfpolygon.add(new LatLng(37.78611430000001, -122.37928390000002));
-                sfpolygon.add(new LatLng(37.8135812, -122.40348819999998));
-                sfpolygon.add(new LatLng(37.8095806, -122.44983680000001));*/
-
-
-                    //Log.i(TAG, "sfpolygon: " + sfpolygon.toString());
-                    if (PolyUtil.containsLocation(Config.INIT_LAT_LONG, sfpolygon, false)) {
-                        startActivity(new Intent(getApplicationContext(), BuildBentoActivity.class));
-                        overridePendingTransitionGoRight();
-                        finish();
-                    } else {
-                        Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            public void run() {
-                                startActivity(new Intent(getApplicationContext(), DeliveryLocationActivity.class));
-                                overridePendingTransitionGoRight();
-                                finish();
-                            }
-                        }, 2000);
-                    }
+                    LatLng latlng = Config.INIT_LAT_LONG;
+                    checkLocation(latlng);
                 }else{
                     //finalMLocationManager.removeUpdates(mLocationListener);
                 }
@@ -201,6 +170,34 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    private void checkLocation(LatLng latlng) {
+        ///////////////////////
+        List<LatLng> sfpolygon = new ArrayList<LatLng>();
+        String[] serviceArea_dinner = Config.serviceArea_dinner.split(" ");
+        for (int i = 0; i < serviceArea_dinner.length; i++) {
+            String[] loc = serviceArea_dinner[i].split(",");
+            double lat = Double.valueOf(loc[1]);
+            double lng = Double.valueOf(loc[0]);
+            sfpolygon.add(new LatLng(lat, lng));
+        }
+
+        if (PolyUtil.containsLocation(latlng, sfpolygon, false)) {
+            startActivity(new Intent(getApplicationContext(), BuildBentoActivity.class));
+            overridePendingTransitionGoRight();
+            finish();
+        } else {
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    startActivity(new Intent(getApplicationContext(), DeliveryLocationActivity.class));
+                    overridePendingTransitionGoRight();
+                    finish();
+                }
+            }, 2000);
+        }
+
+    }
+
     private void init() {
         Log.i(TAG, "Config.android_min_version: " + Config.android_min_version);
         if ( Config.current_version >= Config.android_min_version ) {
@@ -213,6 +210,22 @@ public class MainActivity extends BaseActivity {
         }else {
             goTo goTo = new goTo();
             goTo.ErrorVersion();
+        }
+    }
+
+    private void checkForPendingOrder() {
+        Log.i(TAG, "checkForPendingOrder()");
+        List<Orders> pending_orders = Orders.find(Orders.class, "completed = ? AND today = ?", "no", todayDate);
+        if (pending_orders.isEmpty()) {
+            tryToGetLocationFromGPS();
+        } else {
+            for (Orders order : pending_orders) {
+                Bentonow.pending_order_id = order.getId();
+            }
+            Intent intent = new Intent(getApplicationContext(), BuildBentoActivity.class);
+            startActivity(intent);
+            overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
+            finish();
         }
     }
 
@@ -440,22 +453,6 @@ public class MainActivity extends BaseActivity {
                 }
             }
             //tryToGetMenuSock();
-        }
-    }
-
-    private void checkForPendingOrder() {
-        Log.i(TAG, "checkForPendingOrder()");
-        List<Orders> pending_orders = Orders.find(Orders.class, "completed = ? AND today = ?", "no", todayDate);
-        if (pending_orders.isEmpty()) {
-            tryToGetLocationFromGPS();
-        } else {
-            for (Orders order : pending_orders) {
-                Bentonow.pending_order_id = order.getId();
-            }
-            Intent intent = new Intent(getApplicationContext(), BuildBentoActivity.class);
-            startActivity(intent);
-            overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
-            finish();
         }
     }
 

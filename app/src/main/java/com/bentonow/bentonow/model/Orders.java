@@ -97,7 +97,7 @@ public class Orders extends SugarRecord<Orders> {
     }
 
     public static Long getLastOrderId() {
-        Long last_order_address = (long) 0;
+        Long last_order_address = null;
         List<Orders> orders = Orders.find(Orders.class, null, null);
         for( Orders lastOrder : orders ){
             last_order_address = lastOrder.getId();
