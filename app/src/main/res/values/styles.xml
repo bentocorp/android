@@ -5,6 +5,21 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="Theme.BentoTheme" parent="AppTheme">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@color/btn_green</item>
+        <item name="android:windowDisablePreview">true</item>
+    </style>
+
+    <style name="fullscreen" parent="AppTheme">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@color/btn_green</item>
+        
+    </style>
+
     <!--<style name="AudioFileInfoOverlayText">
         <item name="android:paddingLeft">4px</item>
         <item name="android:paddingBottom">4px</item>

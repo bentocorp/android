@@ -20,11 +20,12 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_bento"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        com.bentonow.bentonow:replace="android:icon" >
+        android:theme="@style/Theme.BentoTheme"
+        com.bentonow.bentonow:replace="android:icon"
+        >
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id" />
+            android:value="@string/facebook_app_id_release" />
         <meta-data
             android:name="DATABASE"
             android:value="bento.db" />
@@ -52,7 +53,8 @@
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+            android:theme="@style/fullscreen"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
