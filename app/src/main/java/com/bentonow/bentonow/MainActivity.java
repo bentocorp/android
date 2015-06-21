@@ -82,7 +82,6 @@ public class MainActivity extends BaseActivity {
         Bentonow.app.current_activity = this;
         //Log.i(TAG,"Bentonow.app.current_activity.getLocalClassName(): " + Bentonow.app.current_activity.getLocalClassName());
         initElements();
-        tx_slogan.setText(Ioscopy.getKeyValue("launch-slogan"));
     }
 
     private void showGPSDisabledAlertToUser(){
@@ -236,6 +235,7 @@ public class MainActivity extends BaseActivity {
                     try {
                         JSONArray IOSCOPY = json.getJSONArray(Config.API.IOSCOPY);
                         JsonProcess.ioscopy(IOSCOPY);
+                        tx_slogan.setText(Ioscopy.getKeyValue("launch-slogan"));
                     } catch (JSONException ignored) {
 
                     }
