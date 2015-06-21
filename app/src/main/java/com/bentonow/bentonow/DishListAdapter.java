@@ -56,6 +56,7 @@ public class DishListAdapter extends BaseAdapter {
     public long getItemId(int i) {
         return i;
     }
+
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
         Holder holder = new Holder();
@@ -86,52 +87,34 @@ public class DishListAdapter extends BaseAdapter {
 
             checkStatus(holder);
 
+            if (finalHolder.dish.isSoldOut(true)) {
+                holder.soldOutFlag.setVisibility(View.VISIBLE);
+            }
+
             switch (Bentonow.current_side){
                 case Config.SIDE.MAIN:
                     if( bento.main != null && finalHolder.iid.equals(bento.main) ){
                         selectedDish(finalHolder);
-
-                        Log.i(TAG, "status: " + (finalHolder.dish.isSoldOut(false) ? "soldOut" : "available"));
-
-                        if (!finalHolder.dish.isSoldOut(false)) {
-                            holder.soldOutFlag.setVisibility(View.GONE);
-                        }
                     }
                     break;
                 case Config.SIDE.SIDE_1:
                     if( bento.side1 != null && finalHolder.iid.equals(bento.side1) ){
                         selectedDish(finalHolder);
-
-                        if (!finalHolder.dish.isSoldOut(false)) {
-                            holder.soldOutFlag.setVisibility(View.GONE);
-                        }
                     }
                     break;
                 case Config.SIDE.SIDE_2:
                     if( bento.side2 != null && finalHolder.iid.equals(bento.side2) ){
                         selectedDish(finalHolder);
-
-                        if (!finalHolder.dish.isSoldOut(false)) {
-                            holder.soldOutFlag.setVisibility(View.GONE);
-                        }
                     }
                     break;
                 case Config.SIDE.SIDE_3:
                     if( bento.side3 != null && finalHolder.iid.equals(bento.side3) ){
                         selectedDish(finalHolder);
-
-                        if (!finalHolder.dish.isSoldOut(false)) {
-                            holder.soldOutFlag.setVisibility(View.GONE);
-                        }
                     }
                     break;
                 case Config.SIDE.SIDE_4:
                     if( bento.side4 != null && finalHolder.iid.equals(bento.side4) ){
                         selectedDish(finalHolder);
-
-                        if (!finalHolder.dish.isSoldOut(false)) {   
-                            holder.soldOutFlag.setVisibility(View.GONE);
-                        }
                     }
                     break;
             }
@@ -171,23 +154,23 @@ public class DishListAdapter extends BaseAdapter {
                     switch (Bentonow.current_side) {
                         case Config.SIDE.MAIN:
                             Log.i(TAG, "btn0 side0");
-                            bento.main = String.valueOf(finalHolder.row.get(Config.DISH._ID));
+                            bento.main = String.valueOf(finalHolder.iid);
                             break;
                         case Config.SIDE.SIDE_1:
                             Log.i(TAG, "btn1 side1");
-                            bento.side1 = String.valueOf(finalHolder.row.get(Config.DISH._ID));
+                            bento.side1 = String.valueOf(finalHolder.iid);
                             break;
                         case Config.SIDE.SIDE_2:
                             Log.i(TAG, "btn1 side2");
-                            bento.side2 = String.valueOf(finalHolder.row.get(Config.DISH._ID));
+                            bento.side2 = String.valueOf(finalHolder.iid);
                             break;
                         case Config.SIDE.SIDE_3:
                             Log.i(TAG, "btn1 side3");
-                            bento.side3 = String.valueOf(finalHolder.row.get(Config.DISH._ID));
+                            bento.side3 = String.valueOf(finalHolder.iid);
                             break;
                         case Config.SIDE.SIDE_4:
                             Log.i(TAG, "btn1 side4");
-                            bento.side4 = String.valueOf(finalHolder.row.get(Config.DISH._ID));
+                            bento.side4 = String.valueOf(finalHolder.iid);
                             break;
                     }
                     bento.save();
@@ -258,7 +241,7 @@ public class DishListAdapter extends BaseAdapter {
                         .into(holder.img);
             }
         }catch (IndexOutOfBoundsException ignore){
-            Log.i(TAG,"Col 1 empty");
+            Log.i(TAG,"empty");
             holder.main_title.setText("");
             holder.img.setImageResource(R.drawable.tmp_trans);
         }
@@ -303,7 +286,6 @@ public class DishListAdapter extends BaseAdapter {
 
     private void checkStatus (Holder holder) {
         Dish dish = holder.dish;
-
         if (dish.isSoldOut(true)) {
             holder.btn_add_to_bento_solded.setText("Sold Out");
             holder.soldOutFlag.setVisibility(View.VISIBLE);

@@ -71,6 +71,7 @@ public class SelectSideActivity extends BaseActivity {
         List<Dish> main_dishes = Dish.find(Dish.class, "today = ?",todayDate);
         for( Dish dish : main_dishes ){
             if( dish.type.equals("side") ) {
+                Log.i(TAG,"SIDE: "+dish.toString());
                 HashMap<String, String> map = new HashMap<String, String>();
                 map.put(Config.DISH._ID, dish._id);
                 map.put(Config.DISH.NAME, dish.name);

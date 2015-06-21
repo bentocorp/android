@@ -94,17 +94,17 @@ public class Dish extends SugarRecord<Dish> {
                 for (Item oItem : allOrderItems) {
                     if (oItem.main != null && oItem.main.equals(_id))
                         quantity--;
-                    else if (oItem.side1 != null && oItem.side1.equals(_id))
+                    if (oItem.side1 != null && oItem.side1.equals(_id))
                         quantity--;
-                    else if (oItem.side2 != null && oItem.side2.equals(_id))
+                    if (oItem.side2 != null && oItem.side2.equals(_id))
                         quantity--;
-                    else if (oItem.side3 != null && oItem.side3.equals(_id))
+                    if (oItem.side3 != null && oItem.side3.equals(_id))
                         quantity--;
-                    else if (oItem.side4 != null && oItem.side4.equals(_id))
+                    if (oItem.side4 != null && oItem.side4.equals(_id))
                         quantity--;
                 }
 
-                Log.i(TAG, quantity + "");
+                Log.i(TAG, "_id: "+_id+", name: "+name+", quantity: " + quantity);
 
                 int minQuantity = -1;
                 if (ifChoosing) minQuantity = 0;
