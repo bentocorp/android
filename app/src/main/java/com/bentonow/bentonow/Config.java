@@ -27,7 +27,7 @@ public class Config {
     public static String aux_initial_stock = "0";
     public static Location current_location;
     public static String serviceArea_dinner;
-    public static String startTime;
+    public static String startTime = "16:30:00";
     public static String next_day_json;
     //public static boolean processing_stock = false;
 
@@ -52,7 +52,7 @@ public class Config {
         public static final String ORDER = "/order";
         public static final String COUPON_REQUEST = "/couponcode/request";
         public static final int DEFAULT_ERROR_409 = 409;
-        public static String URL = APP_DEV_STATUS.equals(appStatus.PRODUCTION) ? "https://api.bentonow.com" : "https://api2.dev.bentonow.com";
+        public static String URL = APP_DEV_STATUS.equals(appStatus.PRODUCTION) ? "https://api2.bentonow.com" : "https://api2.dev.bentonow.com";
         public static final String MENU_URN = "/menu";
 
         // INIT
