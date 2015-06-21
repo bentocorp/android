@@ -16,8 +16,8 @@
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowBackground">@color/btn_green</item>
-        
+        <item name="android:windowBackground">@drawable/bg_home</item>
+
     </style>
 
     <!--<style name="AudioFileInfoOverlayText">
