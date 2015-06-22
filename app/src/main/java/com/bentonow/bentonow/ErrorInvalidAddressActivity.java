@@ -215,7 +215,6 @@ public class ErrorInvalidAddressActivity extends BaseFragmentActivity {
                     String[] loc = aServiceArea_dinner.split(",");
                     double lat = Double.valueOf(loc[1]);
                     double lng = Double.valueOf(loc[0]);
-                    //sfpolygon.add(new LatLng(lat, lng));
                     rectOptions.add(new LatLng(lat, lng));
                 }
                 rectOptions.fillColor(getResources().getColor(R.color.btn_green_trans));
