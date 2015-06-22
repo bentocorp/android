@@ -32,7 +32,7 @@ import java.util.Map;
 public class EnterCreditCardActivity extends BaseFragmentActivity {
 
     private static final String TAG = "EnterCreditCardActivity";
-    public static final String PUBLISHABLE_KEY = "pk_test_hFtlMiWcGFn9TvcyrLDI4Y6P";
+    public static final String PUBLISHABLE_KEY = Config.STRIPE_KEY;
     public static Activity _this;
 
     private ProgressDialogFragment progressFragment;
