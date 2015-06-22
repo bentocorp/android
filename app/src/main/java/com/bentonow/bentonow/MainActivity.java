@@ -263,7 +263,17 @@ public class MainActivity extends BaseActivity {
                     }
                     // /menu/next/{date}
                     try {
-                        JSONObject menu_next_date = json.getJSONObject("/menu/next/{date}");
+                        Calendar calendar = Calendar.getInstance();
+                        int hour = (calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE));
+                        JSONObject menu_next_date = null;
+
+                        if (hour < 2000) {
+                            menu_next_date = json.getJSONObject("/menu/{date}");
+                        }
+
+                        if (menu_next_date == null){
+                            menu_next_date = json.getJSONObject("/menu/next/{date}");
+                        }
                         //JSONObject menu = menu_next_date.getJSONObject("menus");
                         //JSONObject dinner = menu.getJSONObject("dinner");
                         Config.next_day_json = menu_next_date.toString();
