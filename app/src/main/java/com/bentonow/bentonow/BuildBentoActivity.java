@@ -242,27 +242,36 @@ public class BuildBentoActivity extends BaseActivity {
         if( current_bento.main != null ) {
             Dish main_dish = findDish(current_bento.main);
 
-            if (main_dish.isSoldOut(false)) {
-                flag_soldout_main.setVisibility(View.VISIBLE);
+            if ( main_dish != null ) {
+                if (main_dish.isSoldOut(false)) {
+                    flag_soldout_main.setVisibility(View.VISIBLE);
+                }
+
+                if (!main_dish.image1.isEmpty()) {
+                    build_main_label_textview.setVisibility(View.INVISIBLE);
+                    build_main_imageview.setVisibility(View.VISIBLE);
+                    main_title.setText(main_dish.name.toUpperCase());
+                    main_title_container.setVisibility(View.VISIBLE);
+                    Picasso.with(getApplicationContext())
+                            .load(main_dish.image1)
+                            .placeholder(R.drawable.tmp_trans)
+                            .error(R.drawable.tmp_trans)
+                            .into(build_main_imageview);
+                } else {
+                    build_main_label_textview.setVisibility(View.INVISIBLE);
+                    build_main_imageview.setVisibility(View.VISIBLE);
+                    build_main_imageview.setImageResource(R.drawable.tmp_trans);
+                    main_title.setText(main_dish.name.toUpperCase());
+                    main_title_container.setVisibility(View.VISIBLE);
+                }
+            }else{
+                build_main_label_textview.setVisibility(View.VISIBLE);
+                build_main_imageview.setImageResource(R.drawable.tmp_trans);
+                build_main_imageview.setVisibility(View.INVISIBLE);
+                main_title.setText("");
+                main_title_container.setVisibility(View.GONE);
             }
 
-            if (!main_dish.image1.isEmpty()) {
-                build_main_label_textview.setVisibility(View.INVISIBLE);
-                build_main_imageview.setVisibility(View.VISIBLE);
-                main_title.setText(main_dish.name.toUpperCase());
-                main_title_container.setVisibility(View.VISIBLE);
-                Picasso.with(getApplicationContext())
-                        .load(main_dish.image1)
-                        .placeholder(R.drawable.tmp_trans)
-                        .error(R.drawable.tmp_trans)
-                        .into(build_main_imageview);
-            }else{
-                build_main_label_textview.setVisibility(View.INVISIBLE);
-                build_main_imageview.setVisibility(View.VISIBLE);
-                build_main_imageview.setImageResource(R.drawable.tmp_trans);
-                main_title.setText(main_dish.name.toUpperCase());
-                main_title_container.setVisibility(View.VISIBLE);
-            }
         }else{
             build_main_label_textview.setVisibility(View.VISIBLE);
             build_main_imageview.setImageResource(R.drawable.tmp_trans);
@@ -275,27 +284,35 @@ public class BuildBentoActivity extends BaseActivity {
         if( current_bento.side1 != null ) {
             Dish side1_dish = findDish(current_bento.side1);
 
-            if (side1_dish.isSoldOut(false)) {
-                flag_soldout_side_1.setVisibility(View.VISIBLE);
-            }
+            if ( side1_dish != null ) {
+                if (side1_dish.isSoldOut(false)) {
+                    flag_soldout_side_1.setVisibility(View.VISIBLE);
+                }
 
-            if (!side1_dish.image1.isEmpty()) {
-                Log.i(TAG, "side1_dish.image1: " + side1_dish.image1);
-                build_side1_label_textview.setVisibility(View.INVISIBLE);
-                build_side1_imageview.setVisibility(View.VISIBLE);
-                side1_title.setText(side1_dish.name.toUpperCase());
-                side1_title_container.setVisibility(View.VISIBLE);
-                Picasso.with(getApplicationContext())
-                        .load(side1_dish.image1)
-                        .placeholder(R.drawable.tmp_trans)
-                        .error(R.drawable.tmp_trans)
-                        .into(build_side1_imageview);
+                if (!side1_dish.image1.isEmpty()) {
+                    Log.i(TAG, "side1_dish.image1: " + side1_dish.image1);
+                    build_side1_label_textview.setVisibility(View.INVISIBLE);
+                    build_side1_imageview.setVisibility(View.VISIBLE);
+                    side1_title.setText(side1_dish.name.toUpperCase());
+                    side1_title_container.setVisibility(View.VISIBLE);
+                    Picasso.with(getApplicationContext())
+                            .load(side1_dish.image1)
+                            .placeholder(R.drawable.tmp_trans)
+                            .error(R.drawable.tmp_trans)
+                            .into(build_side1_imageview);
+                } else {
+                    build_side1_label_textview.setVisibility(View.INVISIBLE);
+                    build_side1_imageview.setVisibility(View.VISIBLE);
+                    build_side1_imageview.setImageResource(R.drawable.tmp_trans);
+                    side1_title.setText(side1_dish.name.toUpperCase());
+                    side1_title_container.setVisibility(View.VISIBLE);
+                }
             }else{
-                build_side1_label_textview.setVisibility(View.INVISIBLE);
-                build_side1_imageview.setVisibility(View.VISIBLE);
+                build_side1_label_textview.setVisibility(View.VISIBLE);
+                build_side1_imageview.setVisibility(View.INVISIBLE);
                 build_side1_imageview.setImageResource(R.drawable.tmp_trans);
-                side1_title.setText(side1_dish.name.toUpperCase());
-                side1_title_container.setVisibility(View.VISIBLE);
+                side1_title.setText("");
+                side1_title_container.setVisibility(View.GONE);
             }
         }else{
             build_side1_label_textview.setVisibility(View.VISIBLE);
@@ -309,27 +326,35 @@ public class BuildBentoActivity extends BaseActivity {
         if( current_bento.side2 != null ) {
             Dish side2_dish = findDish(current_bento.side2);
 
-            if (side2_dish.isSoldOut(false)) {
-                flag_soldout_side_2.setVisibility(View.VISIBLE);
-            }
+            if( side2_dish != null ) {
+                if (side2_dish.isSoldOut(false)) {
+                    flag_soldout_side_2.setVisibility(View.VISIBLE);
+                }
 
-            if (!side2_dish.image1.isEmpty()) {
-                Log.i(TAG, "side2_dish.image1: " + side2_dish.image1);
-                build_side2_label_textview.setVisibility(View.INVISIBLE);
-                build_side2_imageview.setVisibility(View.VISIBLE);
-                side2_title.setText(side2_dish.name.toUpperCase());
-                side2_title_container.setVisibility(View.VISIBLE);
-                Picasso.with(getApplicationContext())
-                        .load(side2_dish.image1)
-                        .placeholder(R.drawable.tmp_trans)
-                        .error(R.drawable.tmp_trans)
-                        .into(build_side2_imageview);
+                if (!side2_dish.image1.isEmpty()) {
+                    Log.i(TAG, "side2_dish.image1: " + side2_dish.image1);
+                    build_side2_label_textview.setVisibility(View.INVISIBLE);
+                    build_side2_imageview.setVisibility(View.VISIBLE);
+                    side2_title.setText(side2_dish.name.toUpperCase());
+                    side2_title_container.setVisibility(View.VISIBLE);
+                    Picasso.with(getApplicationContext())
+                            .load(side2_dish.image1)
+                            .placeholder(R.drawable.tmp_trans)
+                            .error(R.drawable.tmp_trans)
+                            .into(build_side2_imageview);
+                } else {
+                    build_side2_label_textview.setVisibility(View.INVISIBLE);
+                    build_side2_imageview.setVisibility(View.VISIBLE);
+                    build_side2_imageview.setImageResource(R.drawable.tmp_trans);
+                    side2_title.setText(side2_dish.name.toUpperCase());
+                    side2_title_container.setVisibility(View.VISIBLE);
+                }
             }else{
-                build_side2_label_textview.setVisibility(View.INVISIBLE);
-                build_side2_imageview.setVisibility(View.VISIBLE);
+                build_side2_label_textview.setVisibility(View.VISIBLE);
+                build_side2_imageview.setVisibility(View.INVISIBLE);
                 build_side2_imageview.setImageResource(R.drawable.tmp_trans);
-                side2_title.setText(side2_dish.name.toUpperCase());
-                side2_title_container.setVisibility(View.VISIBLE);
+                side2_title.setText("");
+                side2_title_container.setVisibility(View.GONE);
             }
         }else{
             build_side2_label_textview.setVisibility(View.VISIBLE);
@@ -343,27 +368,35 @@ public class BuildBentoActivity extends BaseActivity {
         if( current_bento.side3 != null ) {
             Dish side3_dish = findDish(current_bento.side3);
 
-            if (side3_dish.isSoldOut(false)) {
-                flag_soldout_side_3.setVisibility(View.VISIBLE);
-            }
+            if ( side3_dish != null ) {
+                if (side3_dish.isSoldOut(false)) {
+                    flag_soldout_side_3.setVisibility(View.VISIBLE);
+                }
 
-            if (!side3_dish.image1.isEmpty()) {
-                Log.i(TAG, "side3_dish.image1: " + side3_dish.image1);
-                build_side3_label_textview.setVisibility(View.INVISIBLE);
-                build_side3_imageview.setVisibility(View.VISIBLE);
-                side3_title.setText(side3_dish.name.toUpperCase());
-                side3_title_container.setVisibility(View.VISIBLE);
-                Picasso.with(getApplicationContext())
-                        .load(side3_dish.image1)
-                        .placeholder(R.drawable.tmp_trans)
-                        .error(R.drawable.tmp_trans)
-                        .into(build_side3_imageview);
+                if (!side3_dish.image1.isEmpty()) {
+                    Log.i(TAG, "side3_dish.image1: " + side3_dish.image1);
+                    build_side3_label_textview.setVisibility(View.INVISIBLE);
+                    build_side3_imageview.setVisibility(View.VISIBLE);
+                    side3_title.setText(side3_dish.name.toUpperCase());
+                    side3_title_container.setVisibility(View.VISIBLE);
+                    Picasso.with(getApplicationContext())
+                            .load(side3_dish.image1)
+                            .placeholder(R.drawable.tmp_trans)
+                            .error(R.drawable.tmp_trans)
+                            .into(build_side3_imageview);
+                } else {
+                    build_side3_label_textview.setVisibility(View.INVISIBLE);
+                    build_side3_imageview.setVisibility(View.VISIBLE);
+                    build_side3_imageview.setImageResource(R.drawable.tmp_trans);
+                    side3_title.setText(side3_dish.name.toUpperCase());
+                    side3_title_container.setVisibility(View.VISIBLE);
+                }
             }else{
-                build_side3_label_textview.setVisibility(View.INVISIBLE);
-                build_side3_imageview.setVisibility(View.VISIBLE);
+                build_side3_label_textview.setVisibility(View.VISIBLE);
+                build_side3_imageview.setVisibility(View.INVISIBLE);
                 build_side3_imageview.setImageResource(R.drawable.tmp_trans);
-                side3_title.setText(side3_dish.name.toUpperCase());
-                side3_title_container.setVisibility(View.VISIBLE);
+                side3_title.setText("");
+                side3_title_container.setVisibility(View.GONE);
             }
         }else{
             build_side3_label_textview.setVisibility(View.VISIBLE);
@@ -377,27 +410,35 @@ public class BuildBentoActivity extends BaseActivity {
         if( current_bento.side4 != null ) {
             Dish side4_dish = findDish(current_bento.side4);
 
-            if (side4_dish.isSoldOut(false)) {
-                flag_soldout_side_4.setVisibility(View.VISIBLE);
-            }
+            if ( side4_dish != null ) {
+                if (side4_dish.isSoldOut(false)) {
+                    flag_soldout_side_4.setVisibility(View.VISIBLE);
+                }
 
-            if (!side4_dish.image1.isEmpty()) {
-                Log.i(TAG, "side4_dish.image1: " + side4_dish.image1);
-                build_side4_label_textview.setVisibility(View.INVISIBLE);
-                build_side4_imageview.setVisibility(View.VISIBLE);
-                side4_title.setText(side4_dish.name.toUpperCase());
-                side4_title_container.setVisibility(View.VISIBLE);
-                Picasso.with(getApplicationContext())
-                        .load(side4_dish.image1)
-                        .placeholder(R.drawable.tmp_trans)
-                        .error(R.drawable.tmp_trans)
-                        .into(build_side4_imageview);
+                if (!side4_dish.image1.isEmpty()) {
+                    Log.i(TAG, "side4_dish.image1: " + side4_dish.image1);
+                    build_side4_label_textview.setVisibility(View.INVISIBLE);
+                    build_side4_imageview.setVisibility(View.VISIBLE);
+                    side4_title.setText(side4_dish.name.toUpperCase());
+                    side4_title_container.setVisibility(View.VISIBLE);
+                    Picasso.with(getApplicationContext())
+                            .load(side4_dish.image1)
+                            .placeholder(R.drawable.tmp_trans)
+                            .error(R.drawable.tmp_trans)
+                            .into(build_side4_imageview);
+                } else {
+                    build_side4_label_textview.setVisibility(View.INVISIBLE);
+                    build_side4_imageview.setVisibility(View.VISIBLE);
+                    build_side4_imageview.setImageResource(R.drawable.tmp_trans);
+                    side4_title.setText(side4_dish.name.toUpperCase());
+                    side4_title_container.setVisibility(View.VISIBLE);
+                }
             }else{
-                build_side4_label_textview.setVisibility(View.INVISIBLE);
-                build_side4_imageview.setVisibility(View.VISIBLE);
+                build_side4_label_textview.setVisibility(View.VISIBLE);
+                build_side4_imageview.setVisibility(View.INVISIBLE);
                 build_side4_imageview.setImageResource(R.drawable.tmp_trans);
-                side4_title.setText(side4_dish.name.toUpperCase());
-                side4_title_container.setVisibility(View.VISIBLE);
+                side4_title.setText("");
+                side4_title_container.setVisibility(View.GONE);
             }
         }else{
             build_side4_label_textview.setVisibility(View.VISIBLE);
