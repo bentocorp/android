@@ -163,11 +163,12 @@ public class MainActivity extends BaseActivity {
         };
 
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME, LOCATION_REFRESH_DISTANCE, mLocationListener);
+        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, LOCATION_REFRESH_TIME, LOCATION_REFRESH_DISTANCE, mLocationListener);
+        /*if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, LOCATION_REFRESH_TIME, LOCATION_REFRESH_DISTANCE, mLocationListener);
         }else{
             showGPSDisabledAlertToUser();
-        }
+        }*/
     }
 
     private void checkLocation(LatLng latlng) {
