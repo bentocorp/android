@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +39,9 @@ public class EnterCreditCardActivity extends BaseFragmentActivity {
     private ProgressDialogFragment progressFragment;
 
     AQuery aq;
+    private RelativeLayout ok_overlay;
+    private TextView ok_btn;
+    private TextView ok_message;
     //private TextView btn_continue_to_payment;
 
     @Override
@@ -57,9 +61,18 @@ public class EnterCreditCardActivity extends BaseFragmentActivity {
 
     private void initElements() {
         //btn_continue_to_payment = (TextView)findViewById(R.id.btn_continue_to_payment);
+        ok_overlay = (RelativeLayout)findViewById(R.id.ok_overlay);
+        ok_btn = (TextView)findViewById(R.id.ok_btn);
+        ok_message = (TextView)findViewById(R.id.ok_message);
     }
 
     private void addListeners(){
+        ok_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ok_overlay.setVisibility(View.GONE);
+            }
+        });
         /*btn_continue_to_payment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,26 +111,27 @@ public class EnterCreditCardActivity extends BaseFragmentActivity {
                         }
                         public void onError(Exception error) {
                             dialog.dismiss();
-                            Log.i(TAG, error.getLocalizedMessage());
-                            //finishProgress();
+                            String msg = error.getLocalizedMessage();
+                            ok_message.setText(msg);
+                            ok_overlay.setVisibility(View.VISIBLE);
                         }
                     });
         } else if (!card.validateNumber()) {
             String msg = "The card number that you entered is invalid";
-            Log.i(TAG,msg);
-            Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_LONG).show();
+            ok_message.setText(msg);
+            ok_overlay.setVisibility(View.VISIBLE);
         } else if (!card.validateExpiryDate()) {
             String msg = "The expiration date that you entered is invalid";
-            Log.i(TAG, msg );
-            Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_LONG).show();
+            ok_message.setText(msg);
+            ok_overlay.setVisibility(View.VISIBLE);
         } else if (!card.validateCVC()) {
             String msg = "The CVC code that you entered is invalid";
-            Log.i(TAG, msg);
-            Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_LONG).show();
+            ok_message.setText(msg);
+            ok_overlay.setVisibility(View.VISIBLE);
         } else {
             String msg = "The card details that you entered are invalid";
-            Log.i(TAG, msg );
-            Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_LONG).show();
+            ok_message.setText(msg);
+            ok_overlay.setVisibility(View.VISIBLE);
         }
     }
 
