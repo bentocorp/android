@@ -88,7 +88,7 @@ public class BentoService extends Service {
 
             List<Dish> menu_de_hoy = Dish.find(Dish.class, "TODAY=?", date);
             for( Dish d : menu_de_hoy ){
-                Log.i(TAG,"d: "+d.toString());
+                //Log.i(TAG,"d: "+d.toString());
                 d.today = "";
                 d.save();
             }
@@ -102,11 +102,11 @@ public class BentoService extends Service {
                 if (did != 0) {
                     Dish dish = Dish.findById(Dish.class, did);
                     //Log.i(TAG,"dish: "+dish.toString());
-                    //if (!dish.qty.equals(qty)) {
+                    if (!dish.qty.equals(qty)) {
                         dish.qty = qty;
                         dish.today = date;
                         dish.save();
-                    //}
+                    }
                 }
             }
         } catch (JSONException e) {
