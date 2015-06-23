@@ -36,6 +36,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -86,6 +87,11 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
     Address bestMatch;
     private Marker marker;
     private String newAddressToCompare;
+    private LatLng current_latlng;
+    private LatLng onCameraChangePosition;
+    private Location lastScanedLocation;
+    private String lastUrl;
+    private LatLng point;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -168,7 +174,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
 
     private void checkAddress (String str) {
         Log.i(TAG,"checkAddress()");
-        if (!newAddressToCompare.equals(str)) {
+        if ( newAddressToCompare == null || !newAddressToCompare.equals(str)) {
             newAddressToCompare = str;
             Geocoder geoCoderClick = new Geocoder(getApplicationContext(), Locale.getDefault());
             try {
@@ -238,7 +244,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         btn_clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                autoCompView.setText("");
+                autoCompView.setText("",false);
                 btn_clear.setVisibility(View.INVISIBLE);
                 btn_confirm_address.setVisibility(View.GONE);
                 btn_continue.setVisibility(View.VISIBLE);
@@ -487,52 +493,58 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
     private void scanCurrentLocation(final Location location) {
 
         Log.i(TAG, "scanCurrentLocation()");
+        Log.i(TAG, "lastScanedLocation: " + lastScanedLocation);
+        Log.i(TAG, "location: " + location);
 
-        autoCompView.setText("");
-        btn_clear.setVisibility(View.INVISIBLE);
-        progressBar.setVisibility(View.VISIBLE);
+        float distanceInMetersOne = lastScanedLocation == null ? 1000 : lastScanedLocation.distanceTo(location);
+        Log.i(TAG, "distanceInMetersOne: " + distanceInMetersOne);
+        if ( lastScanedLocation == null || distanceInMetersOne > 0 ) {
+            lastScanedLocation = location;
 
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                Geocoder geoCoder = new Geocoder(getApplicationContext());
-                List<Address> matches = null;
-                try {
-                    matches = geoCoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Log.i(TAG, "e.getMessage(): " + e.getMessage());
-                    Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
+            Log.i(TAG,"NEW lastScanedLocation: "+lastScanedLocation);
+
+            autoCompView.setText("",false);
+            btn_clear.setVisibility(View.INVISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
+
+            Log.d(TAG, "lastScanedLocation: " + lastScanedLocation.toString());
+            Geocoder geoCoder = new Geocoder(getApplicationContext());
+            List<Address> matches = null;
+            try {
+                matches = geoCoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.i(TAG, "e.getMessage(): " + e.getMessage());
+                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+
+            bestMatch = null;
+            if (matches != null) {
+                bestMatch = matches.isEmpty() ? null : matches.get(0);
+
+                if (chckIagree.isChecked()) {
+                    btn_confirm_address.setVisibility(View.VISIBLE);
+                    btn_continue.setVisibility(View.GONE);
                 }
+            }
 
-                bestMatch = null;
-                if( matches != null ) {
-                    bestMatch = matches.isEmpty() ? null : matches.get(0);
-
-                    if (chckIagree.isChecked()) {
-                        btn_confirm_address.setVisibility(View.VISIBLE);
-                        btn_continue.setVisibility(View.GONE);
-                    }
-                }
-
-                //assert bestMatch != null;
-                try{
-                    newAddress = "";
-                    if( bestMatch != null ) {
-                        newAddress += bestMatch.getAddressLine(0) != null ? bestMatch.getAddressLine(0) : "";
-                        newAddress += bestMatch.getAddressLine(1) != null ? ", " + bestMatch.getAddressLine(1) : "";
-                        newAddress += bestMatch.getAddressLine(2) != null ? ", " + bestMatch.getAddressLine(2) : "";
-                        autoCompView.setText(newAddress);
-                        newAddressToCompare = bestMatch.toString();
-                        btn_clear.setVisibility(View.VISIBLE);
-                        progressBar.setVisibility(View.GONE);
-                    }
-                }catch (NullPointerException ignored){
+            //assert bestMatch != null;
+            try {
+                newAddress = "";
+                if (bestMatch != null) {
+                    newAddress += bestMatch.getAddressLine(0) != null ? bestMatch.getAddressLine(0) : "";
+                    newAddress += bestMatch.getAddressLine(1) != null ? ", " + bestMatch.getAddressLine(1) : "";
+                    newAddress += bestMatch.getAddressLine(2) != null ? ", " + bestMatch.getAddressLine(2) : "";
+                    autoCompView.setText(newAddress,false);
+                    newAddressToCompare = bestMatch.toString();
                     btn_clear.setVisibility(View.VISIBLE);
                     progressBar.setVisibility(View.GONE);
                 }
+            } catch (NullPointerException ignored) {
+                btn_clear.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
             }
-        }, 2000);
+        }
     }
 
     /**
@@ -544,17 +556,16 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
     private void setUpMap() {
         //mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
         Log.i(TAG, "Bentonow.pending_order_id: " + Bentonow.pending_order_id);
+        if (order != null) {
+            point = order.coords_lat == null ? Config.INIT_LAT_LONG : new LatLng(Double.valueOf(order.coords_lat), Double.valueOf(order.coords_long));
+        } else {
+            point = Config.INIT_LAT_LONG;
+        }
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, Config.DEFAULT_ZOOM));
+
         mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
-
-                final LatLng point;
-                if (order != null) {
-                    point = order.coords_lat == null ? Config.INIT_LAT_LONG : new LatLng(Double.valueOf(order.coords_lat), Double.valueOf(order.coords_long));
-                } else {
-                    point = Config.INIT_LAT_LONG;
-                }
-
                 markerLocation(point);
 
                 mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
@@ -562,7 +573,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                     public void onMapClick(final LatLng latLng) {
 
                         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, Config.DEFAULT_ZOOM));
-                        autoCompView.setText("");
+                        autoCompView.setText("", false);
                         bestMatch = null;
 
                         btn_confirm_address.setVisibility(View.GONE);
@@ -571,6 +582,21 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                         markerLocation(latLng);
                     }
                 });
+
+                /*mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+                    @Override
+                    public void onCameraChange(CameraPosition cameraPosition) {
+                        onCameraChangePosition = mMap.getCameraPosition().target;
+                        Log.i(TAG, "onCameraChange() onCameraChangePosition: " + onCameraChangePosition);
+                        autoCompView.setText("",false);
+                        bestMatch = null;
+
+                        btn_confirm_address.setVisibility(View.GONE);
+                        btn_continue.setVisibility(View.VISIBLE);
+
+                        markerLocation(mMap.getCameraPosition().target);
+                    }
+                });*/
             }
         });
     }
@@ -578,7 +604,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
     ///////////////////////////////
 
     public void goToCenterLocation(Location find_location) {
-        Log.i(TAG,"goToCenterLocation()");
+        Log.i(TAG, "goToCenterLocation()");
         double latitude = find_location.getLatitude();
         double longitude = find_location.getLongitude();
         LatLng latLng = new LatLng(latitude, longitude);
@@ -589,22 +615,25 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
     }
 
     private void markerLocation(LatLng latLng) {
-        Log.i(TAG, "markerLocation()");
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, Config.DEFAULT_ZOOM));
-        if(marker==null) {
-            marker = mMap.addMarker(new MarkerOptions()
-                            .position(latLng)
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.location_marker_hi))
-            );
-        }else{
-            marker.setPosition(latLng);
+        if( current_latlng == null || !current_latlng.equals(latLng) ) {
+            current_latlng = latLng;
+            Log.i(TAG, "markerLocation()");
+            float zoom = mMap.getCameraPosition().zoom;
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, mMap.getCameraPosition().zoom > Config.MIN_ZOOM ? mMap.getCameraPosition().zoom : Config.DEFAULT_ZOOM ));
+            if (marker == null) {
+                marker = mMap.addMarker(new MarkerOptions()
+                                .position(latLng)
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.location_marker_hi))
+                );
+            } else {
+                marker.setPosition(latLng);
+            }
+            Location searched_location = new Location("searchedLocation");
+            searched_location.setLatitude(latLng.latitude);
+            searched_location.setLongitude(latLng.longitude);
+            searched_location.setTime(new Date().getTime());
+            scanCurrentLocation(searched_location);
         }
-        Location searched_location = new Location("searchedLocation");
-        //LatLng point = mMap.getCameraPosition().target;
-        searched_location.setLatitude(latLng.latitude);
-        searched_location.setLongitude(latLng.longitude);
-        searched_location.setTime(new Date().getTime());
-        scanCurrentLocation(searched_location);
     }
 
     private void openOverlayMessage() {
@@ -637,6 +666,9 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
 
     ////////////// INI AUTOCOMPLETE GOOGLE PLACE /////////////////
     public ArrayList<String> autocomplete(String input) {
+
+        Log.i(TAG,"input: "+input);
+
         ArrayList<String> resultList = null;
 
         HttpURLConnection conn = null;
@@ -649,6 +681,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
             URL url = new URL(sb.toString());
 
             Log.i(TAG,"URL: " + url);
+            lastUrl = url.toString();
             conn = (HttpURLConnection) url.openConnection();
             InputStreamReader in = new InputStreamReader(conn.getInputStream());
 
