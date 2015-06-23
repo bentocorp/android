@@ -11,6 +11,7 @@ public class Config {
 
     public static final int current_version = 1;
     public static final float DEFAULT_ZOOM = 17.0f;
+    public static final float MIN_ZOOM = 11.0f;
     public static LatLng INIT_LAT_LONG = new LatLng(37.772492, -122.420262);
     public static int android_min_version;
     public static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place";
@@ -20,9 +21,9 @@ public class Config {
     public static final long CACHE_REST_DURATION_TIME = 5 * 60 * 1000;
     public static final String API_MENUITEMS_TAG = "MenuItems";
     public static final String PHONE_NUMBER = "4153001332";
-    public static appStatus APP_DEV_STATUS = appStatus.PRODUCTION;
+    public static appStatus APP_DEV_STATUS = appStatus.DEVELOPMENT;
     public static final String API_KEY = APP_DEV_STATUS.equals(appStatus.PRODUCTION) ? "AIzaSyBHK_SgMFpIUB7szZy7E_z2MO6Wf407WPg" : "AIzaSyDz5MlSeWBUP1iDeSI3j6qeoLbMWDbJgQg";
-    public static final String STRIPE_KEY = APP_DEV_STATUS.equals(appStatus.PRODUCTION) ? "pk_test_hFtlMiWcGFn9TvcyrLDI4Y6P" : "pk_live_UBeYAiCH0XezHA8r7Nmu9Jxz";
+    public static final String STRIPE_KEY = APP_DEV_STATUS.equals(appStatus.PRODUCTION) ? "pk_live_UBeYAiCH0XezHA8r7Nmu9Jxz" : "pk_test_hFtlMiWcGFn9TvcyrLDI4Y6P";
 
 
     public static String invalid_address_extra_label = "invalid_address";
