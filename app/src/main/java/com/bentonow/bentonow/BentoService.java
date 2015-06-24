@@ -102,11 +102,11 @@ public class BentoService extends Service {
                 if (did != 0) {
                     Dish dish = Dish.findById(Dish.class, did);
                     //Log.i(TAG,"dish: "+dish.toString());
-                    if (!dish.qty.equals(qty)) {
+                    //if (!dish.qty.equals(qty)) {
                         dish.qty = qty;
                         dish.today = date;
                         dish.save();
-                    }
+                    //}
                 }
             }
         } catch (JSONException e) {
