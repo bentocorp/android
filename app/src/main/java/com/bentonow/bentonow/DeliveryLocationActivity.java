@@ -355,9 +355,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         btn_confirm_address.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (BuildConfig.DEBUG) {
-                    checkAddress(autoCompView.getText().toString());
-                }
 
                 if (bestMatch == null) {
                     return;
