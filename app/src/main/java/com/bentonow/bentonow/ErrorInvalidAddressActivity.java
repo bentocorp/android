@@ -204,26 +204,27 @@ public class ErrorInvalidAddressActivity extends BaseFragmentActivity {
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
-        mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.772492, -122.420262), 11.0f));
+        PolygonOptions rectOptions = new PolygonOptions();
+        String[] serviceArea_dinner = Config.serviceArea_dinner.split(" ");
+        for (String aServiceArea_dinner : serviceArea_dinner) {
+            String[] loc = aServiceArea_dinner.split(",");
+            double lat = Double.valueOf(loc[1]);
+            double lng = Double.valueOf(loc[0]);
+            rectOptions.add(new LatLng(lat, lng));
+        }
+        rectOptions.fillColor(getResources().getColor(R.color.btn_green_trans));
+        rectOptions.strokeWidth(5);
+        rectOptions.strokeColor(getResources().getColor(R.color.btn_green));
+
+        Polygon polygon = mMap.addPolygon(rectOptions);
+        /*mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.772492, -122.420262), 11.0f));
                 //List<LatLng> sfpolygon = new ArrayList<LatLng>();
-                PolygonOptions rectOptions = new PolygonOptions();
-                String[] serviceArea_dinner = Config.serviceArea_dinner.split(" ");
-                for (String aServiceArea_dinner : serviceArea_dinner) {
-                    String[] loc = aServiceArea_dinner.split(",");
-                    double lat = Double.valueOf(loc[1]);
-                    double lng = Double.valueOf(loc[0]);
-                    rectOptions.add(new LatLng(lat, lng));
-                }
-                rectOptions.fillColor(getResources().getColor(R.color.btn_green_trans));
-                rectOptions.strokeWidth(5);
-                rectOptions.strokeColor(getResources().getColor(R.color.btn_green));
 
-                Polygon polygon = mMap.addPolygon(rectOptions);
             }
-        });
+        });*/
     }
 
 }
