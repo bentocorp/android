@@ -71,6 +71,9 @@ public class EnterCreditCardActivity extends BaseFragmentActivity {
             @Override
             public void onClick(View view) {
                 ok_overlay.setVisibility(View.GONE);
+                startActivity(new Intent(getApplicationContext(),CompleteOrderActivity.class));
+                finish();
+                overridePendingTransitionGoRight();
             }
         });
         /*btn_continue_to_payment.setOnClickListener(new View.OnClickListener() {
