@@ -21,7 +21,7 @@ public class Config {
     public static final long CACHE_REST_DURATION_TIME = 5 * 60 * 1000;
     public static final String API_MENUITEMS_TAG = "MenuItems";
     public static final String PHONE_NUMBER = "4153001332";
-    public static appStatus APP_DEV_STATUS = appStatus.DEVELOPMENT;
+    public static appStatus APP_DEV_STATUS = appStatus.PRODUCTION;
     public static final String API_KEY = APP_DEV_STATUS.equals(appStatus.PRODUCTION) ? "AIzaSyBHK_SgMFpIUB7szZy7E_z2MO6Wf407WPg" : "AIzaSyDz5MlSeWBUP1iDeSI3j6qeoLbMWDbJgQg";
     public static final String STRIPE_KEY = APP_DEV_STATUS.equals(appStatus.PRODUCTION) ? "pk_live_UBeYAiCH0XezHA8r7Nmu9Jxz" : "pk_test_hFtlMiWcGFn9TvcyrLDI4Y6P";
 
