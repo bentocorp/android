@@ -59,9 +59,12 @@ public class ErrorClosedActivity extends BaseActivity {
     private void setClosedText () {
         TextView textView = (TextView) findViewById(R.id.textView2);
 
-        String weekend = "Have a great weekend! We're back on Monday at 5pm with more deliciousness.";
-        String weekdays = "That's it for tonight! We're back tomorrow at 5pm...oh yeah!";
-        String _else = "Bento opens at 5pm today! We're cookin' up some delicious dinner. Get excited!";
+        //String weekend = "Have a great weekend! We're back on Monday at 5pm with more deliciousness.";
+        String weekend = "Have a great weekend! We're back on Monday with more deliciousness. Lunch: 11am-2pm, Dinner: 5pm-10pm";
+        //String weekdays = "That's it for tonight! We're back tomorrow at 5pm...oh yeah!";
+        String weekdays = "That's it for tonight! We're back tomorrow...oh yeah! Lunch: 11am-2pm, Dinner: 5pm-10pm";
+        //String _else = "Bento opens at 5pm today! We're cookin' up some delicious dinner. Get excited!";
+        String _else = "We're cookin' up something really delicious today. Get excited! Lunch: 11am-2pm, Dinner: 5pm-10pm";
 
         Calendar calendar = Calendar.getInstance();
         int day = calendar.get(Calendar.DAY_OF_WEEK);
@@ -169,19 +172,21 @@ public class ErrorClosedActivity extends BaseActivity {
         try {
             Log.i(TAG, "json: " + json.toString());
             JSONObject menus = json.getJSONObject("menus");
-            JSONObject dinner = menus.getJSONObject("dinner");
-            JSONObject menu = dinner.getJSONObject("Menu");
-            String day_text = menu.getString("day_text");
-            String[] tmp = day_text.split(" ");
-            String day = (tmp[0] != null) ? tmp[0] + "'s Menu" : "";
-            Log.i(TAG, "menu.getString(day_text): " + day);
-            if (!day.isEmpty()) {
-                titleNextDayMenu = day;
-                btnNextDayMenu.setText(day);
-                btnNextDayMenu.setVisibility(View.VISIBLE);
+
+            JSONObject meals;
+            if (getCurrentHourInt() < 1430) {
+                meals = menus.getJSONObject("lunch");
+            }else{
+                meals = menus.getJSONObject("dinner");
             }
-            jsonToSend = dinner.toString();
-            JSONArray MenuItems = dinner.getJSONArray("MenuItems");
+
+            JSONObject menu = meals.getJSONObject("Menu");
+            String meal_name = menu.getString("meal_name");
+            titleNextDayMenu = meal_name;
+            btnNextDayMenu.setText(meal_name);
+            btnNextDayMenu.setVisibility(View.VISIBLE);
+            jsonToSend = meals.toString();
+            JSONArray MenuItems = meals.getJSONArray("MenuItems");
             preloadImages(MenuItems);
         } catch (JSONException e) {
             //Log.e(TAG, status.getError());

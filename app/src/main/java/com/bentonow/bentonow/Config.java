@@ -29,8 +29,8 @@ public class Config {
     public static String aux_initial_stock = "0";
     public static Location current_location;
     public static String serviceArea_dinner;
-    public static String DinnerStartTime;
-    public static String LunchStartTime;
+    public static int DinnerStartTime;
+    public static int LunchStartTime;
     public static String next_day_json;
     //public static boolean processing_stock = false;
 

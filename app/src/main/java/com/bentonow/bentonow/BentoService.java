@@ -134,9 +134,8 @@ public class BentoService extends Service {
                             int minute = c.get(Calendar.MINUTE);
 
                             int phone_hour = hour * 100 + minute;
-                            int open_hour = Integer.parseInt(Config.DinnerStartTime.replaceAll("[^0-9]", "").substring(0, 4));
 
-                            if( phone_hour < open_hour ) {
+                            if( phone_hour < Config.LunchStartTime ) {
                                 Bentonow.isOpen = false;
                                 goTo(Target.ErrorClosed);
                             }else{

@@ -59,6 +59,7 @@ public class MainActivity extends BaseActivity {
 
 
     SimpleDateFormat inputParser = new SimpleDateFormat(inputFormat, Locale.US);
+    private String goingTo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -245,20 +246,21 @@ public class MainActivity extends BaseActivity {
                     // IOSCOPY
                     try {
                         JSONObject meals = json.getJSONObject("meals");
+
+                        JSONObject m2 = meals.getJSONObject("2");
+                        Config.LunchStartTime = Integer.parseInt(m2.getString("startTime").replaceAll("[^0-9]", "").substring(0, 4));
+
                         JSONObject m3 = meals.getJSONObject("3");
-                        Config.DinnerStartTime = m3.getString("startTime");
-                        JSONObject m2 = meals.getJSONObject("3");
-                        Config.LunchStartTime = m2.getString("startTime");
+                        Config.DinnerStartTime = Integer.parseInt(m3.getString("startTime").replaceAll("[^0-9]", "").substring(0, 4));
                     } catch (JSONException ignored) {
 
                     }
                     // /menu/next/{date}
                     try {
-                        Calendar calendar = Calendar.getInstance();
-                        int hour = (calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE));
+
                         JSONObject menu_next_date = null;
 
-                        if (hour < 2000) {
+                        if (getCurrentHourInt() < 2000) {
                             menu_next_date = json.getJSONObject("/menu/{date}");
                         }
 
@@ -285,9 +287,20 @@ public class MainActivity extends BaseActivity {
                         try {
                             JSONObject menu_date = json.getJSONObject("/menu/{date}");
                             JSONObject menu = menu_date.getJSONObject("menus");
-                            JSONObject dinner = menu.getJSONObject("dinner");
-                            //JSONObject dinner = menu.getJSONObject("lunch");
-                            JSONArray MenuItems = (JSONArray) dinner.get(Config.API_MENUITEMS_TAG);
+                            JSONArray MenuItems;
+                            int hora = getCurrentHourInt();
+                            if (hora < Config.DinnerStartTime) {
+                                JSONObject lunch = menu.getJSONObject("lunch");
+                                JSONObject Menu = lunch.getJSONObject("Menu");
+                                String menu_type = Menu.getString("menu_type");
+                                if( !menu_type.equals("custom") ){
+                                    Bentonow.isOpen = false;
+                                }
+                                MenuItems = (JSONArray) lunch.get(Config.API_MENUITEMS_TAG);
+                            }else{
+                                JSONObject dinner = menu.getJSONObject("dinner");
+                                MenuItems = (JSONArray) dinner.get(Config.API_MENUITEMS_TAG);
+                            }
                             JsonProcess.MenuItems(MenuItems);
                         } catch (JSONException e) {
                             //e.printStackTrace();
@@ -353,11 +366,10 @@ public class MainActivity extends BaseActivity {
                     int minute = c.get(Calendar.MINUTE);
 
                     int phone_hour = hour * 100 + minute;
-                    int open_hour = Integer.parseInt(Config.DinnerStartTime.replaceAll("[^0-9]", "").substring(0, 4));
 
 
                     //if ( current_time.before(dateCompareOne) || current_time.after(dateCompareTwo) ) {
-                    if( phone_hour < open_hour ) {
+                    if( phone_hour < Config.LunchStartTime ) {
                         Bentonow.isOpen = false;
                         goTo goTo = new goTo();
                         goTo.ErrorClosed();
@@ -411,10 +423,10 @@ public class MainActivity extends BaseActivity {
         }
 
         public void MenuItems(JSONArray MenuItems){
-            if (BuildConfig.DEBUG) {
-                Picasso.with(getApplicationContext()).setIndicatorsEnabled(true);
-                Picasso.with(getApplicationContext()).setLoggingEnabled(true);
-            }
+//            if (BuildConfig.DEBUG) {
+//                Picasso.with(getApplicationContext()).setIndicatorsEnabled(true);
+//                Picasso.with(getApplicationContext()).setLoggingEnabled(true);
+//            }
             for (int i = 0; i < MenuItems.length(); i++) {
                 JSONObject gDish;
                 try {
@@ -459,26 +471,32 @@ public class MainActivity extends BaseActivity {
 
     class goTo{
         private void ErrorClosed() {
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                public void run() {
-                    startActivity(new Intent(getApplicationContext(), ErrorClosedActivity.class));
-                    overridePendingTransition(R.anim.bottom_slide_in, R.anim.none);
-                    finish();
-                }
-            }, 2000);
+            if( goingTo == null || !goingTo.equals("closed")) {
+                goingTo = "closed";
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    public void run() {
+                        startActivity(new Intent(getApplicationContext(), ErrorClosedActivity.class));
+                        overridePendingTransition(R.anim.bottom_slide_in, R.anim.none);
+                        finish();
+                    }
+                }, 2000);
+            }
         }
 
         void ErrorSolded() {
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                public void run() {
-                    Intent intent = new Intent(getApplicationContext(), ErrorOutOfStockActivity.class);
-                    startActivity(intent);
-                    overridePendingTransition(R.anim.bottom_slide_in, R.anim.none);
-                    finish();
-                }
-            }, 2000);
+            if( goingTo == null || !goingTo.equals("solded")) {
+                goingTo = "solded";
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    public void run() {
+                        Intent intent = new Intent(getApplicationContext(), ErrorOutOfStockActivity.class);
+                        startActivity(intent);
+                        overridePendingTransition(R.anim.bottom_slide_in, R.anim.none);
+                        finish();
+                    }
+                }, 2000);
+            }
         }
 
         void ErrorVersion() {

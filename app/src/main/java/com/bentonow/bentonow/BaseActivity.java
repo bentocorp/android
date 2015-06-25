@@ -59,6 +59,12 @@ public class BaseActivity extends Activity {
         tomorrowDate = String.valueOf(year)+monthString+TomorrowDayString;
     }
 
+    public int getCurrentHourInt(){
+        Calendar calendar = Calendar.getInstance();
+        int hour = (calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE));
+        return hour;
+    }
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
