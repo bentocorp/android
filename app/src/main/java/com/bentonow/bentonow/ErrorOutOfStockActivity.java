@@ -55,7 +55,7 @@ public class ErrorOutOfStockActivity extends BaseActivity {
     }
 
     private void postData() {
-        String uri = Config.API.URL + Config.API.COUPON_REQUEST;
+        String uri = getResources().getString(R.string.server_api_url) + Config.API.COUPON_REQUEST;
         String email = email_address.getText().toString();
 
         if( email.isEmpty() || !Email.isEmailValid(email)){

@@ -117,7 +117,7 @@ public class BentoService extends Service {
     public void checkAll(){
         Log.i(TAG, "checkOverAll()" );
         if( Bentonow.app.isFocused && !Bentonow.app.is_first_access ) {
-            String uri = Config.API.URL + Config.API.STATUS_ALL_URN;
+            String uri = getResources().getString(R.string.server_api_url) + Config.API.STATUS_ALL_URN;
             aq.ajax(uri, JSONObject.class, new AjaxCallback<JSONObject>() {
                 @Override
                 public void callback(String url, JSONObject json, AjaxStatus status) {
@@ -134,7 +134,7 @@ public class BentoService extends Service {
                             int minute = c.get(Calendar.MINUTE);
 
                             int phone_hour = hour * 100 + minute;
-                            int open_hour = Integer.parseInt(Config.startTime.replaceAll("[^0-9]", "").substring(0, 4));
+                            int open_hour = Integer.parseInt(Config.DinnerStartTime.replaceAll("[^0-9]", "").substring(0, 4));
 
                             if( phone_hour < open_hour ) {
                                 Bentonow.isOpen = false;

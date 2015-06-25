@@ -215,9 +215,9 @@ public class SignInActivity extends BaseActivity {
         Log.i(TAG,"postUserData( String dataJson )");
         String uri;
         if(facebookMethod) {
-            uri = Config.API.URL + Config.API.USER.FBLOGIN;
+            uri = getResources().getString(R.string.server_api_url) + Config.API.USER.FBLOGIN;
         }else{
-            uri = Config.API.URL + Config.API.USER.LOGIN;
+            uri = getResources().getString(R.string.server_api_url) + Config.API.USER.LOGIN;
         }
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("data", dataJson);

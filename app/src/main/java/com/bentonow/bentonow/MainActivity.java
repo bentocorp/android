@@ -26,8 +26,6 @@ import com.bentonow.bentonow.model.Orders;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
 import com.squareup.picasso.Picasso;
@@ -37,7 +35,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -57,18 +54,9 @@ public class MainActivity extends BaseActivity {
     private TextView splash_message;
     private TextView tx_slogan;
     private Activity activity;
-    private GoogleApiClient mGoogleApiClient;
-    private Location mLastLocation;
-    //private String next_day_json;
 
     public static final String inputFormat = "HH:mm";
 
-    private Date current_time;
-    private Date dateCompareOne;
-    private Date dateCompareTwo;
-
-    private String compareStringOne = "16:30";
-    private String compareStringTwo = "21:30";
 
     SimpleDateFormat inputParser = new SimpleDateFormat(inputFormat, Locale.US);
 
@@ -232,7 +220,7 @@ public class MainActivity extends BaseActivity {
 
     void tryGetAll( String date ){
         Log.i(TAG,"tryGetInit()");
-        String uri = Config.API.URL+Config.API.INIT+"/"+date;
+        String uri = getResources().getString(R.string.server_api_url)+Config.API.INIT+"/"+date;
         Log.i(TAG, "uri: " + uri);
         aq.ajax(uri, JSONObject.class, new AjaxCallback<JSONObject>() {
             @Override
@@ -256,9 +244,11 @@ public class MainActivity extends BaseActivity {
 
                     // IOSCOPY
                     try {
-                        JSONObject meals = json.getJSONObject(Config.API.meals);
-                        JSONObject m3 = meals.getJSONObject(Config.API.MEALS.m3);
-                        Config.startTime = m3.getString(Config.API.MEALS.M3.startTime);
+                        JSONObject meals = json.getJSONObject("meals");
+                        JSONObject m3 = meals.getJSONObject("3");
+                        Config.DinnerStartTime = m3.getString("startTime");
+                        JSONObject m2 = meals.getJSONObject("3");
+                        Config.LunchStartTime = m2.getString("startTime");
                     } catch (JSONException ignored) {
 
                     }
@@ -363,7 +353,7 @@ public class MainActivity extends BaseActivity {
                     int minute = c.get(Calendar.MINUTE);
 
                     int phone_hour = hour * 100 + minute;
-                    int open_hour = Integer.parseInt(Config.startTime.replaceAll("[^0-9]", "").substring(0, 4));
+                    int open_hour = Integer.parseInt(Config.DinnerStartTime.replaceAll("[^0-9]", "").substring(0, 4));
 
 
                     //if ( current_time.before(dateCompareOne) || current_time.after(dateCompareTwo) ) {

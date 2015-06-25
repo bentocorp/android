@@ -74,7 +74,7 @@ public class OrderConfirmedActivity extends BaseActivity {
 
     void updateStock( ){
         Log.i(TAG, "updateStock()");
-        String uri = Config.API.URL+"/status/menu";
+        String uri = getResources().getString(R.string.server_api_url)+"/status/menu";
         Log.i(TAG, "uri: " + uri);
         aq.ajax(uri, JSONArray.class, new AjaxCallback<JSONArray>() {
             @Override

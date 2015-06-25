@@ -302,7 +302,7 @@ public class SignUpActivity extends BaseActivity {
     }
 
     public void postUserData(){
-        String uri = Config.API.URL + Config.API.USER.SIGNUP;
+        String uri = getResources().getString(R.string.server_api_url) + Config.API.USER.SIGNUP;
         Map<String, Object> params = new HashMap<String, Object>();
         //String dataJson = "{\"name\":\""+user_name.getText().toString()+"\", \"email\": \""+email_address.getText().toString()+"\", \"phone\": \""+phone_number.getText().toString()+"\", \"password\": \""+password.getText().toString()+"\"}";
         JSONObject data = new JSONObject();
@@ -500,7 +500,7 @@ public class SignUpActivity extends BaseActivity {
     public void postUserData(boolean login){
         final ProgressDialog dialog = ProgressDialog.show(this, null, "Registering...", true);
 
-        String uri = login ? Config.API.URL + Config.API.USER.FBLOGIN : Config.API.URL + Config.API.USER.FBSIGNUP ;
+        String uri = login ? getResources().getString(R.string.server_api_url) + Config.API.USER.FBLOGIN : getResources().getString(R.string.server_api_url) + Config.API.USER.FBSIGNUP ;
         Log.i(TAG,"uri: "+uri);
         Map<String, Object> params = new HashMap<String, Object>();
         User user = User.findById(User.class, (long) 1);

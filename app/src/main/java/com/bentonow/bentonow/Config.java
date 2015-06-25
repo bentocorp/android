@@ -22,8 +22,6 @@ public class Config {
     public static final String API_MENUITEMS_TAG = "MenuItems";
     public static final String PHONE_NUMBER = "4153001332";
     public static appStatus APP_DEV_STATUS = appStatus.PRODUCTION;
-    public static final String API_KEY = APP_DEV_STATUS.equals(appStatus.PRODUCTION) ? "AIzaSyBHK_SgMFpIUB7szZy7E_z2MO6Wf407WPg" : "AIzaSyDz5MlSeWBUP1iDeSI3j6qeoLbMWDbJgQg";
-    public static final String STRIPE_KEY = APP_DEV_STATUS.equals(appStatus.PRODUCTION) ? "pk_live_UBeYAiCH0XezHA8r7Nmu9Jxz" : "pk_test_hFtlMiWcGFn9TvcyrLDI4Y6P";
 
 
     public static String invalid_address_extra_label = "invalid_address";
@@ -31,7 +29,8 @@ public class Config {
     public static String aux_initial_stock = "0";
     public static Location current_location;
     public static String serviceArea_dinner;
-    public static String startTime = "16:30:00";
+    public static String DinnerStartTime;
+    public static String LunchStartTime;
     public static String next_day_json;
     //public static boolean processing_stock = false;
 
@@ -56,7 +55,6 @@ public class Config {
         public static final String ORDER = "/order";
         public static final String COUPON_REQUEST = "/couponcode/request";
         public static final int DEFAULT_ERROR_409 = 409;
-        public static String URL = APP_DEV_STATUS.equals(appStatus.PRODUCTION) ? "https://api2.bentonow.com" : "https://api2.dev.bentonow.com";
         public static final String MENU_URN = "/menu";
 
         // INIT
@@ -124,7 +122,7 @@ public class Config {
             public static String m3 = "3";
 
             public static class M3 {
-                public static String startTime = "startTime";
+                public static String startTime = "DinnerStartTime";
             }
         }
 

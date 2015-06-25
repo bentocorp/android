@@ -672,7 +672,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         StringBuilder jsonResults = new StringBuilder();
         try {
             StringBuilder sb = new StringBuilder(Config.PLACES_API_BASE + Config.TYPE_AUTOCOMPLETE + Config.OUT_JSON);
-            sb.append("?key=" + Config.API_KEY);
+            sb.append("?key=" + getResources().getString(R.string.google_server_key));
             sb.append("&input=" + URLEncoder.encode(input, "utf8"));
 
             URL url = new URL(sb.toString());

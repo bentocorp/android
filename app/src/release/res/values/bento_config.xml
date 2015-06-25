@@ -1,0 +1,14 @@
+<resources>
+    <string name="google_server_key" translatable="false" templateMergeStrategy="preserve">
+        AIzaSyBHK_SgMFpIUB7szZy7E_z2MO6Wf407WPg
+    </string>
+    <string name="stripe_key" translatable="false" templateMergeStrategy="preserve">
+        pk_live_UBeYAiCH0XezHA8r7Nmu9Jxz
+    </string>
+    <string name="facebook_app_id" translatable="false" templateMergeStrategy="preserve">
+        791688527544905
+    </string>
+    <string name="server_api_url" translatable="false" templateMergeStrategy="preserve">
+        https://api2.bentonow.com
+    </string>
+</resources>

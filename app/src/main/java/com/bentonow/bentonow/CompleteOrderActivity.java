@@ -516,7 +516,7 @@ public class CompleteOrderActivity extends BaseActivity {
 
     private void postPromoCode(final String promo_code) {
         //User user = User.findById(User.class, (long) 1);
-        String uri = Config.API.URL+Config.API.COUPON.APPLY+promo_code+"?api_token="+current_user.apitoken;
+        String uri = getResources().getString(R.string.server_api_url)+Config.API.COUPON.APPLY+promo_code+"?api_token="+current_user.apitoken;
         Log.i(TAG, "uri: " + uri);
         aq.ajax(uri, JSONObject.class, new AjaxCallback<JSONObject>() {
             @Override
@@ -586,7 +586,7 @@ public class CompleteOrderActivity extends BaseActivity {
             processing = true;
             Log.i(TAG, "postOrderData(data)");
             if (current_user != null && current_user.apitoken != null && !current_user.apitoken.isEmpty()) {
-                String uri = Config.API.URL + Config.API.ORDER;
+                String uri = getResources().getString(R.string.server_api_url) + Config.API.ORDER;
                 Log.i(TAG, "uri: " + uri);
                 Log.i(TAG, "api_token: " + current_user.apitoken);
                 Map<String, Object> params = new HashMap<String, Object>();

@@ -33,7 +33,6 @@ import java.util.Map;
 public class EnterCreditCardActivity extends BaseFragmentActivity {
 
     private static final String TAG = "EnterCreditCardActivity";
-    public static final String PUBLISHABLE_KEY = Config.STRIPE_KEY;
     public static Activity _this;
 
     private ProgressDialogFragment progressFragment;
@@ -99,7 +98,7 @@ public class EnterCreditCardActivity extends BaseFragmentActivity {
             //startProgress();
             new Stripe().createToken(
                     card,
-                    PUBLISHABLE_KEY,
+                    getResources().getString(R.string.stripe_key),
                     new TokenCallback() {
                         public void onSuccess(Token token) {
                             Log.i("PaymentActivity", "TOKEN: " + token.toString());
