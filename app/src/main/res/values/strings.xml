@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">Bento</string>
     <string name="facebook_app_id_debug">823525551027869</string>
     <string name="facebook_app_id_release">791688527544905</string>
     <string name="hello_world">Hello world!</string>
