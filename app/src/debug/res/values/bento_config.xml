@@ -1,4 +1,5 @@
 <resources>
+    <string name="app_name">Bento Dev</string>
     <string name="google_server_key" translatable="false" templateMergeStrategy="preserve">
         AIzaSyDz5MlSeWBUP1iDeSI3j6qeoLbMWDbJgQg
     </string>
