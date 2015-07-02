@@ -22,9 +22,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Created by gonzalo on 28/01/2015.
- */
 public class BentoService extends Service {
 
     private static final String TAG = "BentoService";
@@ -64,7 +61,6 @@ public class BentoService extends Service {
 
     private void initTimerChecker() {
         Handler handler = new Handler();
-        //handler.removeCallbacks();
         handler.postDelayed(new Runnable() {
             public void run() {
                 checkAll();
@@ -77,11 +73,9 @@ public class BentoService extends Service {
         try {
             String date = new SimpleDateFormat("yyyyMMdd", Locale.US).format(new Date());
             Log.i(TAG, "date: " + date);
-            //Dish.executeQuery("UPDATE DISH SET TODAY = '' WHERE TODAY = '"+date+"'");
 
             List<Dish> menu_de_hoy = Dish.find(Dish.class, "TODAY=?", date);
             for( Dish d : menu_de_hoy ){
-                //Log.i(TAG,"d: "+d.toString());
                 d.today = "";
                 d.save();
             }
@@ -93,12 +87,9 @@ public class BentoService extends Service {
                 long did = Dish.getIdBy_id(dish_id);
                 if (did != 0) {
                     Dish dish = Dish.findById(Dish.class, did);
-                    //Log.i(TAG,"dish: "+dish.toString());
-                    //if (!dish.qty.equals(qty)) {
-                        dish.qty = qty;
-                        dish.today = date;
-                        dish.save();
-                    //}
+                    dish.qty = qty;
+                    dish.today = date;
+                    dish.save();
                 }
             }
         } catch (JSONException e) {
@@ -117,9 +108,10 @@ public class BentoService extends Service {
                         //Log.i(TAG, "json: " + json.toString());
                         try {
                             JSONObject overall = json.getJSONObject("overall");
+
                             String lastStatus = Shop.status;
                             Shop.status = overall.getString(Config.API.STATUS_OVERALL_LABEL_VALUE);
-                            Log.i(TAG, "status: " + Shop.status + " : " + lastStatus);
+                            Log.i(TAG, "appStatus: " + Shop.status + " serverStatus: " + lastStatus);
                             if (!lastStatus.equals(Shop.status)) {
 
                                 if (Shop.isOpen()) {
@@ -152,32 +144,26 @@ public class BentoService extends Service {
         switch (deliveryLocation){
             case MainActivity:
                 Log.i(TAG, "goTo: MainActivity");
-                //if( !Bentonow.app.current_activity.getLocalClassName().equals( "MainActivity" ) ) {
-                    dialogIntent = new Intent(this, MainActivity.class);
-                    dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(dialogIntent);
-                    //Bentonow.app.current_activity.finish();
-                    Bentonow.app.current_activity.overridePendingTransition(R.anim.top_slide_in, R.anim.bottom_slide_out);
-                //}
+                dialogIntent = new Intent(this, MainActivity.class);
+                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(dialogIntent);
+                Bentonow.app.current_activity.overridePendingTransition(R.anim.top_slide_in, R.anim.bottom_slide_out);
                 break;
             case ErrorClosed:
                 Log.i(TAG, "goTo: ClosedActivity");
                 if( !Bentonow.app.current_activity.getLocalClassName().equals( "ErrorClosedActivity" ) ) {
                     dialogIntent = new Intent(this, ErrorClosedActivity.class);
-                    dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    //dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(dialogIntent);
-                    //Bentonow.app.current_activity.finish();
                     Bentonow.app.current_activity.overridePendingTransition(R.anim.bottom_slide_in, R.anim.top_slide_out);
                 }
                 break;
             case ErrorSold:
-                Log.i(TAG, "goTo: SoldedActivity");
+                Log.i(TAG, "goTo: SoldActivity");
                 if( !Bentonow.app.current_activity.getLocalClassName().equals( "ErrorOutOfStockActivity" ) ) {
                     dialogIntent = new Intent(this, ErrorOutOfStockActivity.class);
-                    dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(dialogIntent);
-                    //Bentonow.app.current_activity.finish();
                     Bentonow.app.current_activity.overridePendingTransition(R.anim.bottom_slide_in, R.anim.top_slide_out);
                 }
                 break;
