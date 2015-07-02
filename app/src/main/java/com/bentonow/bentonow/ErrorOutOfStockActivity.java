@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -13,13 +12,18 @@ import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
 import com.bentonow.bentonow.Utils.Email;
+import com.bentonow.bentonow.model.Shop;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 
@@ -44,14 +48,13 @@ public class ErrorOutOfStockActivity extends BaseActivity {
         initElements();
         addListeners();
         initLegalFooter();
+    }
 
-        if(Config.next_day_json!=null){
-            try {
-                processJson(new JSONObject(Config.next_day_json));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        showNextMenu();
     }
 
     private void postData() {
@@ -61,7 +64,7 @@ public class ErrorOutOfStockActivity extends BaseActivity {
         if( email.isEmpty() || !Email.isEmailValid(email)){
             Toast.makeText(getApplicationContext(),"Invalid email address.",Toast.LENGTH_LONG).show();
         }else {
-            Map<String, Object> params = new HashMap<String, Object>();
+            Map<String, Object> params = new HashMap<>();
             params.put("data", "{\n" +
                     "    \"reason\": \"OUT OF STOCK\",\n" +
                     "    \"email\": \"" + email + "\"\n" +
@@ -140,28 +143,27 @@ public class ErrorOutOfStockActivity extends BaseActivity {
         });
     }
 
-    private void processJson(JSONObject json) {
+    private void showNextMenu() {
         try {
-            Log.i(TAG, "json: " + json.toString());
-            JSONObject menus = json.getJSONObject("menus");
-
-            JSONObject meals;
-            if (getCurrentHourInt() < 1430) {
-                meals = menus.getJSONObject("lunch");
-            }else{
-                meals = menus.getJSONObject("dinner");
-            }
+            Log.i(TAG, "json: " + Shop.getNextMenu().toString());
+            JSONObject meals = Shop.getNextMenu();
 
             JSONObject menu = meals.getJSONObject("Menu");
-            String meal_name = menu.getString("meal_name");
-            titleNextDayMenu = meal_name;
-            btnNextDayMenu.setText(meal_name);
+
+            DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+            String day = new SimpleDateFormat("EEEE", Locale.ENGLISH).format(format.parse(menu.getString("for_date")));
+
+            titleNextDayMenu = day + "'s " + Shop.getNextMenuType() + " Menu";
+            btnNextDayMenu.setText("See " + titleNextDayMenu);
             btnNextDayMenu.setVisibility(View.VISIBLE);
             jsonToSend = meals.toString();
             JSONArray MenuItems = meals.getJSONArray("MenuItems");
             preloadImages(MenuItems);
         } catch (JSONException e) {
-            //Log.e(TAG, status.getError());
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

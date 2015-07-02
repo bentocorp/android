@@ -9,7 +9,6 @@ import com.google.android.gms.maps.model.LatLng;
  */
 public class Config {
 
-    public static final int current_version = 1;
     public static final float DEFAULT_ZOOM = 17.0f;
     public static final float MIN_ZOOM = 11.0f;
     public static LatLng INIT_LAT_LONG = new LatLng(37.772492, -122.420262);
@@ -31,7 +30,6 @@ public class Config {
     public static String serviceArea_dinner;
     public static int DinnerStartTime;
     public static int LunchStartTime;
-    public static String next_day_json;
     //public static boolean processing_stock = false;
 
     public static class CurrentOrder {

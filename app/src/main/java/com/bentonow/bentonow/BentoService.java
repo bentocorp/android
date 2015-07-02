@@ -11,15 +11,14 @@ import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
 import com.bentonow.bentonow.model.Dish;
+import com.bentonow.bentonow.model.Shop;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -28,7 +27,6 @@ import java.util.Locale;
  */
 public class BentoService extends Service {
 
-    public static String IMEI;
     private static final String TAG = "BentoService";
     private static BentoService instance;
     private AQuery aq;
@@ -55,11 +53,6 @@ public class BentoService extends Service {
         instance = null;
         Log.i(TAG, "onDestroy()");
         super.onDestroy();
-    }
-
-    @Override
-    public void onStart(Intent intent, int startid) {
-        Log.i(TAG, "Servicio MyService iniciado");
     }
 
     @Override
@@ -93,7 +86,6 @@ public class BentoService extends Service {
                 d.save();
             }
 
-
             for (int i = 0; i < menu.length(); i++) {
                 JSONObject obj = menu.getJSONObject(i);
                 String dish_id = obj.getString("itemId");
@@ -124,39 +116,23 @@ public class BentoService extends Service {
                     if (json != null) {
                         //Log.i(TAG, "json: " + json.toString());
                         try {
-                            if ( Bentonow.isOpen ) {
-                                // STATUS / MENU
-                                JSONArray menu = json.getJSONArray("menu");
-                                processMenuStock(menu);
-                            }
-                            Calendar c = GregorianCalendar.getInstance();
-                            int hour = c.get(Calendar.HOUR_OF_DAY);
-                            int minute = c.get(Calendar.MINUTE);
+                            JSONObject overall = json.getJSONObject("overall");
+                            String lastStatus = Shop.status;
+                            Shop.status = overall.getString(Config.API.STATUS_OVERALL_LABEL_VALUE);
+                            Log.i(TAG, "status: " + Shop.status + " : " + lastStatus);
+                            if (!lastStatus.equals(Shop.status)) {
 
-                            int phone_hour = hour * 100 + minute;
+                                if (Shop.isOpen()) {
+                                    // STATUS / MENU
+                                    JSONArray menu = json.getJSONArray("menu");
+                                    processMenuStock(menu);
 
-                            if( phone_hour < Config.LunchStartTime ) {
-                                Bentonow.isOpen = false;
-                                goTo(Target.ErrorClosed);
-                            }else{
-                                // STATUS / OVERALL
-                                JSONObject overall = json.getJSONObject("overall");
-                                if (overall.get(Config.API.STATUS_OVERALL_LABEL_VALUE).equals(Config.API.STATUS_OVERALL_MESSAGE_OPEN)) {
-                                    Log.i(TAG,"Bentonow.isOpen: "+Bentonow.isOpen.toString());
-                                    if (!Bentonow.isOpen) {
-                                        Bentonow.isOpen = true;
-                                        goTo(Target.MainActivity);
-                                    }
-                                } else if (overall.get(Config.API.STATUS_OVERALL_LABEL_VALUE).equals(Config.API.STATUS_OVERALL_MESSAGE_SOLDOUT)) {
-                                    if (!Bentonow.isSolded) {
-                                        Bentonow.isSolded = true;
-                                        goTo(Target.ErrorSoulded);
-                                    }
-                                } else if (overall.get(Config.API.STATUS_OVERALL_LABEL_VALUE).equals(Config.API.STATUS_OVERALL_MESSAGE_CLOSED)) {
-                                    if (Bentonow.isOpen) {
-                                        Bentonow.isOpen = false;
-                                        goTo(Target.ErrorClosed);
-                                    }
+                                    // STATUS / OVERALL
+                                    goTo(Target.MainActivity);
+                                } else if (Shop.isSoldOut()) {
+                                    goTo(Target.ErrorSold);
+                                } else {
+                                    goTo(Target.ErrorClosed);
                                 }
                             }
                         } catch (JSONException e) {
@@ -172,9 +148,10 @@ public class BentoService extends Service {
     }
 
     private void goTo(Target deliveryLocation) {
-        Intent dialogIntent = null;
+        Intent dialogIntent;
         switch (deliveryLocation){
             case MainActivity:
+                Log.i(TAG, "goTo: MainActivity");
                 //if( !Bentonow.app.current_activity.getLocalClassName().equals( "MainActivity" ) ) {
                     dialogIntent = new Intent(this, MainActivity.class);
                     dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -184,6 +161,7 @@ public class BentoService extends Service {
                 //}
                 break;
             case ErrorClosed:
+                Log.i(TAG, "goTo: ClosedActivity");
                 if( !Bentonow.app.current_activity.getLocalClassName().equals( "ErrorClosedActivity" ) ) {
                     dialogIntent = new Intent(this, ErrorClosedActivity.class);
                     dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -193,7 +171,8 @@ public class BentoService extends Service {
                     Bentonow.app.current_activity.overridePendingTransition(R.anim.bottom_slide_in, R.anim.top_slide_out);
                 }
                 break;
-            case ErrorSoulded:
+            case ErrorSold:
+                Log.i(TAG, "goTo: SoldedActivity");
                 if( !Bentonow.app.current_activity.getLocalClassName().equals( "ErrorOutOfStockActivity" ) ) {
                     dialogIntent = new Intent(this, ErrorOutOfStockActivity.class);
                     dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -206,7 +185,7 @@ public class BentoService extends Service {
     }
 
     private enum Target {
-        MainActivity, ErrorClosed, ErrorSoulded;
+        MainActivity, ErrorClosed, ErrorSold
     }
 }
 

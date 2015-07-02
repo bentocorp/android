@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -13,14 +12,19 @@ import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
 import com.bentonow.bentonow.Utils.Email;
+import com.bentonow.bentonow.model.Shop;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 
@@ -45,25 +49,21 @@ public class ErrorClosedActivity extends BaseActivity {
         initElements();
         addListeners();
         initLegalFooter();
-        setClosedText();
+    }
 
-        if(Config.next_day_json!=null){
-            try {
-                processJson(new JSONObject(Config.next_day_json));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        setClosedText();
+        showNextMenu();
     }
 
     private void setClosedText () {
         TextView textView = (TextView) findViewById(R.id.textView2);
 
-        //String weekend = "Have a great weekend! We're back on Monday at 5pm with more deliciousness.";
         String weekend = "Have a great weekend! We're back on Monday with more deliciousness. Lunch: 11am-2pm, Dinner: 5pm-10pm";
-        //String weekdays = "That's it for tonight! We're back tomorrow at 5pm...oh yeah!";
         String weekdays = "That's it for tonight! We're back tomorrow...oh yeah! Lunch: 11am-2pm, Dinner: 5pm-10pm";
-        //String _else = "Bento opens at 5pm today! We're cookin' up some delicious dinner. Get excited!";
         String _else = "We're cookin' up something really delicious today. Get excited! Lunch: 11am-2pm, Dinner: 5pm-10pm";
 
         Calendar calendar = Calendar.getInstance();
@@ -86,7 +86,7 @@ public class ErrorClosedActivity extends BaseActivity {
             Toast.makeText(getApplicationContext(), "Invalid email address.", Toast.LENGTH_LONG).show();
         }else {
 
-            Map<String, Object> params = new HashMap<String, Object>();
+            Map<String, Object> params = new HashMap<>();
             params.put("data", "{\n" +
                     "    \"reason\": \"closed\",\n" +
                     "    \"email\": \"" + email + "\"\n" +
@@ -168,34 +168,32 @@ public class ErrorClosedActivity extends BaseActivity {
         });
     }
 
-    private void processJson(JSONObject json) {
+    private void showNextMenu() {
         try {
-            Log.i(TAG, "json: " + json.toString());
-            JSONObject menus = json.getJSONObject("menus");
-
-            JSONObject meals;
-            if (getCurrentHourInt() < 1430) {
-                meals = menus.getJSONObject("lunch");
-            }else{
-                meals = menus.getJSONObject("dinner");
-            }
+            Log.i(TAG, "json: " + Shop.getNextMenu().toString());
+            JSONObject meals = Shop.getNextMenu();
 
             JSONObject menu = meals.getJSONObject("Menu");
-            String meal_name = menu.getString("meal_name");
-            titleNextDayMenu = meal_name;
-            btnNextDayMenu.setText(meal_name);
+
+            DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+            String day = new SimpleDateFormat("EEEE", Locale.ENGLISH).format(format.parse(menu.getString("for_date")));
+
+            titleNextDayMenu = day + "'s " + Shop.getNextMenuType() + " Menu";
+            btnNextDayMenu.setText("See " + titleNextDayMenu);
             btnNextDayMenu.setVisibility(View.VISIBLE);
             jsonToSend = meals.toString();
             JSONArray MenuItems = meals.getJSONArray("MenuItems");
             preloadImages(MenuItems);
         } catch (JSONException e) {
-            //Log.e(TAG, status.getError());
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void preloadImages(JSONArray menuItems) {
-        LinearLayout list = (LinearLayout)findViewById(R.id.tomorrow_main_dishes_container);
         for( int i = 0; i < menuItems.length(); i++ ){
             try {
                 JSONObject row = menuItems.getJSONObject(i);

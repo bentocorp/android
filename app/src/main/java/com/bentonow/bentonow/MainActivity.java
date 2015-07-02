@@ -1,9 +1,7 @@
 package com.bentonow.bentonow;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
@@ -12,7 +10,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +20,7 @@ import com.bentonow.bentonow.model.Dish;
 import com.bentonow.bentonow.model.Ioscopy;
 import com.bentonow.bentonow.model.Orders;
 
+import com.bentonow.bentonow.model.Shop;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -35,13 +33,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Locale;
 
 
 public class MainActivity extends BaseActivity {
@@ -50,15 +43,9 @@ public class MainActivity extends BaseActivity {
     private static final long LOCATION_REFRESH_TIME = 1;
     private static final float LOCATION_REFRESH_DISTANCE = 1;
     private AQuery aq;
-    private ProgressBar home_preloader;
-    private TextView splash_message;
     private TextView tx_slogan;
     private Activity activity;
 
-    public static final String inputFormat = "HH:mm";
-
-
-    SimpleDateFormat inputParser = new SimpleDateFormat(inputFormat, Locale.US);
     private String goingTo;
 
     @Override
@@ -69,37 +56,10 @@ public class MainActivity extends BaseActivity {
         aq = new AQuery(this);
         activity = this;
         Bentonow.app.current_activity = this;
-        //Log.i(TAG,"Bentonow.app.current_activity.getLocalClassName(): " + Bentonow.app.current_activity.getLocalClassName());
         initElements();
     }
 
-    private void showGPSDisabledAlertToUser(){
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        alertDialogBuilder.setMessage("GPS is disabled in your device. Would you like to enable it?")
-                .setCancelable(false)
-                .setPositiveButton("Goto Settings Page To Enable GPS",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                Intent callGPSSettingIntent = new Intent(
-                                        android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                                startActivity(callGPSSettingIntent);
-                            }
-                        });
-        alertDialogBuilder.setNegativeButton("Cancel",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                        startActivity(new Intent(getApplicationContext(), DeliveryLocationActivity.class));
-                        overridePendingTransitionGoRight();
-                    }
-                });
-        AlertDialog alert = alertDialogBuilder.create();
-        alert.show();
-    }
-
     private void initElements() {
-        home_preloader = (ProgressBar)findViewById(R.id.home_preloader);
-        splash_message = (TextView) findViewById(R.id.splash_message);
         tx_slogan = (TextView) findViewById(R.id.tx_slogan);
     }
 
@@ -129,10 +89,7 @@ public class MainActivity extends BaseActivity {
 
                     LatLng latlng = Config.INIT_LAT_LONG;
                     checkLocation(latlng);
-                }else{
-                    //finalMLocationManager.removeUpdates(mLocationListener);
                 }
-                ///////////////////////
             }
 
             @Override
@@ -153,16 +110,10 @@ public class MainActivity extends BaseActivity {
 
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, LOCATION_REFRESH_TIME, LOCATION_REFRESH_DISTANCE, mLocationListener);
-        /*if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, LOCATION_REFRESH_TIME, LOCATION_REFRESH_DISTANCE, mLocationListener);
-        }else{
-            showGPSDisabledAlertToUser();
-        }*/
     }
 
     private void checkLocation(LatLng latlng) {
-        ///////////////////////
-        List<LatLng> sfpolygon = new ArrayList<LatLng>();
+        List<LatLng> sfpolygon = new ArrayList<>();
         String[] serviceArea_dinner = Config.serviceArea_dinner.split(" ");
         for (int i = 0; i < serviceArea_dinner.length; i++) {
             String[] loc = serviceArea_dinner[i].split(",");
@@ -190,12 +141,13 @@ public class MainActivity extends BaseActivity {
 
     private void init() {
         Log.i(TAG, "Config.android_min_version: " + Config.android_min_version);
-        if ( Config.current_version >= Config.android_min_version ) {
+        Log.i(TAG, "BuildConfig.VERSION_CODE: " + BuildConfig.VERSION_CODE);
+        if ( BuildConfig.VERSION_CODE >= Config.android_min_version ) {
             if (isFirstInit()) {
                 goTo goTo = new goTo();
                 goTo.HomeAbout();
             } else {
-                if( Bentonow.isOpen && !Bentonow.isSolded ) checkForPendingOrder();
+                if(Shop.isOpen()) checkForPendingOrder();
             }
         }else {
             goTo goTo = new goTo();
@@ -255,34 +207,30 @@ public class MainActivity extends BaseActivity {
                     } catch (JSONException ignored) {
 
                     }
+
                     // /menu/next/{date}
                     try {
+                        Shop.currentMenu = json.getJSONObject("/menu/{date}").getJSONObject("menus");
+                        Log.i(TAG, "/menu/{date}: " + json.getJSONObject("/menu/{date}").getString("menus"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
-                        JSONObject menu_next_date = null;
-
-                        if (getCurrentHourInt() < 2000) {
-                            menu_next_date = json.getJSONObject("/menu/{date}");
-                        }
-
-                        if (menu_next_date == null){
-                            menu_next_date = json.getJSONObject("/menu/next/{date}");
-                        }
-                        //JSONObject menu = menu_next_date.getJSONObject("menus");
-                        //JSONObject dinner = menu.getJSONObject("dinner");
-                        Config.next_day_json = menu_next_date.toString();
+                    try {
+                        Shop.nextMenu = json.getJSONObject("/menu/next/{date}").getJSONObject("menus");
+                        Log.i(TAG, "/menu/next/{date}: " + json.getJSONObject("/menu/next/{date}").getString("menus"));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
                     // STATUS/OVERALL
                     try {
-                        JSONObject statusall = json.getJSONObject("/status/all");
-                        JsonProcess.OverAll(statusall.getJSONObject("overall"));
+                        Shop.status = json.getJSONObject("/status/all").getJSONObject("overall").getString("value");
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
-                    if (Bentonow.isOpen) {
+                    if (Shop.isOpen()) {
                         // /menu/{date}
                         try {
                             JSONObject menu_date = json.getJSONObject("/menu/{date}");
@@ -297,32 +245,30 @@ public class MainActivity extends BaseActivity {
                                     Bentonow.isOpen = false;
                                 }
                                 MenuItems = (JSONArray) lunch.get(Config.API_MENUITEMS_TAG);
-                            }else{
+                            } else {
                                 JSONObject dinner = menu.getJSONObject("dinner");
                                 MenuItems = (JSONArray) dinner.get(Config.API_MENUITEMS_TAG);
                             }
                             JsonProcess.MenuItems(MenuItems);
                         } catch (JSONException e) {
-                            //e.printStackTrace();
-                            //Bentonow.isSolded = true;
-                            //goTo goTo = new goTo();
-                            //goTo.ErrorSolded();
+                            e.printStackTrace();
                         }
-                    }
 
-                    if (Bentonow.isOpen && !Bentonow.isSolded) {
                         // /status/all | menu
                         try {
                             JSONObject status_all = json.getJSONObject("/status/all");
                             JSONArray menu = status_all.getJSONArray("menu");
                             BentoService.processMenuStock(menu);
                         } catch (JSONException e) {
-                            //e.printStackTrace();
+                            e.printStackTrace();
                         }
+                    } else if (Shop.isSoldOut()) {
+                        new goTo().ErrorSolded();
+                    } else {
+                        new goTo().ErrorClosed();
                     }
 
                     try {
-                        Log.i(TAG, "Config.android_min_version: " + Config.android_min_version);
                         Config.android_min_version = json.getInt("android_min_version");
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -345,56 +291,7 @@ public class MainActivity extends BaseActivity {
         });
     }
 
-    ///////////////////////
-        private Date parseDate(String date) {
-
-        try {
-            return inputParser.parse(date);
-        } catch (java.text.ParseException e) {
-            return new Date(0);
-        }
-    }
-    ///////////////////////
-
     class JsonProcess {
-        public void OverAll( JSONObject json ){
-            if( !isFirstInit() ) {
-                Log.i(TAG, "OverAll(json)");
-                try {
-                    Calendar c = GregorianCalendar.getInstance();
-                    int hour = c.get(Calendar.HOUR_OF_DAY);
-                    int minute = c.get(Calendar.MINUTE);
-
-                    int phone_hour = hour * 100 + minute;
-
-
-                    //if ( current_time.before(dateCompareOne) || current_time.after(dateCompareTwo) ) {
-                    if( phone_hour < Config.LunchStartTime ) {
-                        Bentonow.isOpen = false;
-                        goTo goTo = new goTo();
-                        goTo.ErrorClosed();
-                    }else{
-                        String overall = json.getString(Config.API.STATUS_OVERALL_LABEL_VALUE);
-                        if (overall.equals(Config.API.STATUS_OVERALL_MESSAGE_OPEN)) {
-                            Log.i(TAG, "Bentonow.isOpen turn true");
-                            Bentonow.isOpen = true;
-                        }
-                        if (overall.equals(Config.API.STATUS_OVERALL_MESSAGE_SOLDOUT)) {
-                            Bentonow.isSolded = true;
-                            goTo goTo = new goTo();
-                            goTo.ErrorSolded();
-                        } else if (overall.equals(Config.API.STATUS_OVERALL_MESSAGE_CLOSED)) {
-                            Bentonow.isOpen = false;
-                            goTo goTo = new goTo();
-                            goTo.ErrorClosed();
-                        }
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
         public void ioscopy(JSONArray IOSCOPY) {
             for (int i = 0; i < IOSCOPY.length(); i++) {
                 JSONObject row;
@@ -419,14 +316,9 @@ public class MainActivity extends BaseActivity {
                     e.printStackTrace();
                 }
             }
-            //init();
         }
 
         public void MenuItems(JSONArray MenuItems){
-//            if (BuildConfig.DEBUG) {
-//                Picasso.with(getApplicationContext()).setIndicatorsEnabled(true);
-//                Picasso.with(getApplicationContext()).setLoggingEnabled(true);
-//            }
             for (int i = 0; i < MenuItems.length(); i++) {
                 JSONObject gDish;
                 try {
@@ -462,15 +354,15 @@ public class MainActivity extends BaseActivity {
                         }
                     }
                 } catch (JSONException e) {
-                    //e.printStackTrace();
+                    e.printStackTrace();
                 }
             }
-            //tryToGetMenuSock();
         }
     }
 
     class goTo{
         private void ErrorClosed() {
+            Log.i(TAG, "goto: ClosedActivity");
             if( goingTo == null || !goingTo.equals("closed")) {
                 goingTo = "closed";
                 Handler handler = new Handler();
@@ -485,6 +377,7 @@ public class MainActivity extends BaseActivity {
         }
 
         void ErrorSolded() {
+            Log.i(TAG, "goto: SoldedActivity");
             if( goingTo == null || !goingTo.equals("solded")) {
                 goingTo = "solded";
                 Handler handler = new Handler();
@@ -500,6 +393,7 @@ public class MainActivity extends BaseActivity {
         }
 
         void ErrorVersion() {
+            Log.i(TAG, "goto: ErrorActivity");
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 public void run() {
@@ -512,6 +406,7 @@ public class MainActivity extends BaseActivity {
         }
 
         void HomeAbout() {
+            Log.i(TAG, "goto: HomeActivity");
             Log.i(TAG,"HomeAbout()");
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
@@ -522,6 +417,7 @@ public class MainActivity extends BaseActivity {
         }
 
         void HomeAboutActivity(){
+            Log.i(TAG, "goto: HomeAboutActivity");
             Log.i(TAG,"HomeAboutActivity()");
             Intent intent = new Intent(getApplicationContext(), HomeAboutActivity.class);
             startActivity(intent);
