@@ -21,11 +21,7 @@ public class Shop {
         int hour = calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE);
 
         try {
-            if (hour >= Config.LunchStartTime && status.equals("open")) {
-                return true;
-            } else if (hour >= Config.DinnerStartTime && status.equals("open")) {
-                return true;
-            }
+            return status.equals("open");
         } catch (Exception e) {
             e.printStackTrace();
         }
