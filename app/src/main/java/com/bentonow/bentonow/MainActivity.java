@@ -78,6 +78,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void tryToGetLocationFromGPS() {
+        Log.i(TAG, "tryToGetLocationFromGPS");
         LocationManager mLocationManager;
         final LocationListener mLocationListener = new LocationListener() {
             @Override
@@ -104,7 +105,7 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onProviderDisabled(String provider) {
-
+                checkLocation(null);
             }
         };
 
@@ -113,30 +114,28 @@ public class MainActivity extends BaseActivity {
     }
 
     private void checkLocation(LatLng latlng) {
-        List<LatLng> sfpolygon = new ArrayList<>();
-        String[] serviceArea_dinner = Config.serviceArea_dinner.split(" ");
-        for (int i = 0; i < serviceArea_dinner.length; i++) {
-            String[] loc = serviceArea_dinner[i].split(",");
-            double lat = Double.valueOf(loc[1]);
-            double lng = Double.valueOf(loc[0]);
-            sfpolygon.add(new LatLng(lat, lng));
+
+        if (latlng != null) {
+            List<LatLng> sfpolygon = new ArrayList<>();
+            String[] serviceArea_dinner = Config.serviceArea_dinner.split(" ");
+            for (String aServiceArea_dinner : serviceArea_dinner) {
+                String[] loc = aServiceArea_dinner.split(",");
+                double lat = Double.valueOf(loc[1]);
+                double lng = Double.valueOf(loc[0]);
+                sfpolygon.add(new LatLng(lat, lng));
+            }
+
+            if (PolyUtil.containsLocation(latlng, sfpolygon, false)) {
+                startActivity(new Intent(getApplicationContext(), BuildBentoActivity.class));
+                overridePendingTransitionGoRight();
+                finish();
+                return;
+            }
         }
 
-        if (PolyUtil.containsLocation(latlng, sfpolygon, false)) {
-            startActivity(new Intent(getApplicationContext(), BuildBentoActivity.class));
-            overridePendingTransitionGoRight();
-            finish();
-        } else {
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                public void run() {
-                    startActivity(new Intent(getApplicationContext(), DeliveryLocationActivity.class));
-                    overridePendingTransitionGoRight();
-                    finish();
-                }
-            }, 2000);
-        }
-
+        startActivity(new Intent(getApplicationContext(), DeliveryLocationActivity.class));
+        overridePendingTransitionGoRight();
+        finish();
     }
 
     private void init() {
