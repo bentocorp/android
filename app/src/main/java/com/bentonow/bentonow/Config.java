@@ -4,9 +4,6 @@ import android.location.Location;
 
 import com.google.android.gms.maps.model.LatLng;
 
-/**
- * Created by gonzalo on 07/04/2015.
- */
 public class Config {
 
     public static final float DEFAULT_ZOOM = 17.0f;
@@ -17,10 +14,8 @@ public class Config {
     public static final String TYPE_AUTOCOMPLETE = "/autocomplete";
     public static final String OUT_JSON = "/json";
     public static final long TIME_TO_CHECK_IF_BENTO_OPEN = 1000 * 30;
-    public static final long CACHE_REST_DURATION_TIME = 5 * 60 * 1000;
     public static final String API_MENUITEMS_TAG = "MenuItems";
     public static final String PHONE_NUMBER = "4153001332";
-    public static appStatus APP_DEV_STATUS = appStatus.PRODUCTION;
 
 
     public static String invalid_address_extra_label = "invalid_address";
@@ -30,7 +25,6 @@ public class Config {
     public static String serviceArea_dinner;
     public static int DinnerStartTime;
     public static int LunchStartTime;
-    //public static boolean processing_stock = false;
 
     public static class CurrentOrder {
         public static int tip_percent = 15; // will be modified in the interface
@@ -43,17 +37,11 @@ public class Config {
         public static double total_order_cost = 0; // total_tax_cost+total_items_cost;
     }
 
-    public static enum appStatus{
-        PRODUCTION,DEVELOPMENT;
-    }
-
     public static class API{
         public static final String INIT = "/init";
         public static final String IOSCOPY = "/ioscopy";
         public static final String ORDER = "/order";
         public static final String COUPON_REQUEST = "/couponcode/request";
-        public static final int DEFAULT_ERROR_409 = 409;
-        public static final String MENU_URN = "/menu";
 
         // INIT
         public static String INIT_KEY = "key";
@@ -61,40 +49,20 @@ public class Config {
         public static String INIT_TYPE = "type";
 
         //STATUS OVERALL
-        public static String STATUS_OVERALL_URN = "/status/overall";
         public static final String STATUS_ALL_URN = "/status/all";
         public static String STATUS_OVERALL_LABEL_VALUE = "value";
-        public static final String STATUS_OVERALL_MESSAGE_OPEN = "open";
-        public static final String STATUS_OVERALL_MESSAGE_CLOSED = "closed";
-        public static final String STATUS_OVERALL_MESSAGE_SOLDOUT = "sold out";
-        //STATUS MENU
-        public static String STATUS_MENU = "/status/menu";
-        public static String STATUS_ALL_LABEL_MENU = "menu";
-        public static String STATUS_ALL_LABEL_OVERALL = "overall";
-
-        public static String STATUS_ALL = "/status/all";
 
         // USER SIGN UP
-        public static String USER_SIGNUP = "/user/signup";
 
         public static int USER_SIGNUP_200 = 200;
         public static int USER_SIGNUP_400 = 400;
         public static int USER_SIGNUP_409 = 409;
 
         // USER SIGN IN
-        public static String USER_LOGIN = "/user/login";
 
         public static int DEFAULT_SUCCESS_200 = 200;
         public static int USER_LOGIN_404 = 404;
         public static int USER_LOGIN_403 = 403;
-        public static String meals = "meals";
-        public static String m3 = "3";
-
-        public class FACEBOOK {
-            public static final String SIGNUP = "/user/fbsignup";
-            public static final int BAD_TOKEN_403 = 403;
-            public static final String SIGNIN = "/user/fbsignup";
-        }
 
         public class COUPON {
             public static final String APPLY = "/coupon/apply/";
@@ -102,10 +70,6 @@ public class Config {
             public class RESPONSE {
                 public static final int OK200 = 200;
                 public static final int INVALID_COUPON_400 = 400;
-            }
-
-            public class LABELS {
-                public static final String AMOUNTOFF = "amountOff";
             }
         }
 
@@ -116,22 +80,8 @@ public class Config {
             public static final String SIGNUP = "/user/signup";
         }
 
-        public static class MEALS {
-            public static String m3 = "3";
-
-            public static class M3 {
-                public static String startTime = "DinnerStartTime";
-            }
-        }
-
         public class SERVER_STATUS {
             public class ORDER {
-                public class NUMBER {
-                    public static final int _200 = 200; //if ok.
-                    public static final int _402 = 402; // if No payment specified, and no payment on file.
-                    public static final int _410 = 410; //if the inventory is not available. The UI should be updated, and the return includes the inventory:
-                }
-
                 public class MESSAGE {
                     public static final String _402 = "No payment specified, and no payment on file.";
                 }
@@ -145,7 +95,6 @@ public class Config {
         public static final String FAQ_BODY = "faq-body";
         public static final String PRIVACY_POLICY_BODY = "privacy-policy-body";
         public static final String TERMS_CONDITIONS_BODY = "terms-conditions-body";
-        public static final String ANDROID_MIN_VERSION = "current_version";
     }
 
     public class DISH {
@@ -200,7 +149,7 @@ public class Config {
         public static from from;
     }
 
-    static enum from {
+    enum from {
         BuildBentoActivity, SettingActivity
     }
 

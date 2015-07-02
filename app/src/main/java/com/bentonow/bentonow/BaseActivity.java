@@ -13,13 +13,9 @@ import java.util.Calendar;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-/**
- * Created by gonzalo on 21/04/2015.
- */
 public class BaseActivity extends Activity {
 
     private static final String BASE_TAG = "BaseActivity";
-    private Intent service_intent;
     protected String todayDate;
     protected String tomorrowDate;
 
@@ -28,7 +24,7 @@ public class BaseActivity extends Activity {
         super.onCreate(savedInstanceState);
         Log.i(BASE_TAG, "onCreate()");
         if ( !BentoService.isRunning() ){
-            service_intent = new Intent(getApplicationContext(), BentoService.class);
+            Intent service_intent = new Intent(getApplicationContext(), BentoService.class);
             startService(service_intent);
         }
 
@@ -61,8 +57,7 @@ public class BaseActivity extends Activity {
 
     public int getCurrentHourInt(){
         Calendar calendar = Calendar.getInstance();
-        int hour = (calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE));
-        return hour;
+        return (calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE));
     }
 
     @Override
