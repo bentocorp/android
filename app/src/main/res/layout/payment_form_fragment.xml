@@ -100,7 +100,7 @@
                         android:nextFocusForward="@+id/save"
                         android:background="@color/transparent"
                         android:hint="CVC"
-                        android:maxLength="3"
+                        android:maxLength="4"
                         android:gravity="center"
                         android:padding="7dp"
                         android:inputType="number"
