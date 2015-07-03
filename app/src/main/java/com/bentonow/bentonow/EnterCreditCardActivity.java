@@ -35,13 +35,10 @@ public class EnterCreditCardActivity extends BaseFragmentActivity {
     private static final String TAG = "EnterCreditCardActivity";
     public static Activity _this;
 
-    private ProgressDialogFragment progressFragment;
-
     AQuery aq;
     private RelativeLayout ok_overlay;
     private TextView ok_btn;
     private TextView ok_message;
-    //private TextView btn_continue_to_payment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,12 +51,9 @@ public class EnterCreditCardActivity extends BaseFragmentActivity {
         initActionbar();
         initElements();
         addListeners();
-
-        //progressFragment = ProgressDialogFragment.newInstance(R.string.progressMessage);
     }
 
     private void initElements() {
-        //btn_continue_to_payment = (TextView)findViewById(R.id.btn_continue_to_payment);
         ok_overlay = (RelativeLayout)findViewById(R.id.ok_overlay);
         ok_btn = (TextView)findViewById(R.id.ok_btn);
         ok_message = (TextView)findViewById(R.id.ok_message);
@@ -75,16 +69,9 @@ public class EnterCreditCardActivity extends BaseFragmentActivity {
                 overridePendingTransitionGoRight();
             }
         });
-        /*btn_continue_to_payment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                returnToPayment();
-            }
-        });*/
     }
 
     public void saveCreditCard(PaymentForm form) {
-
         final ProgressDialog dialog = ProgressDialog.show(this, null, "Processing...", true);
 
         Card card = new Card(
@@ -95,13 +82,12 @@ public class EnterCreditCardActivity extends BaseFragmentActivity {
 
         boolean validation = card.validateCard();
         if (validation) {
-            //startProgress();
             new Stripe().createToken(
                     card,
                     getResources().getString(R.string.stripe_key),
                     new TokenCallback() {
                         public void onSuccess(Token token) {
-                            Log.i("PaymentActivity", "TOKEN: " + token.toString());
+                            Log.i(TAG, "TOKEN: " + token.toString());
 
                             User user = User.findById(User.class,(long)1);
                             user.stripetoken = token.getId();
@@ -109,7 +95,6 @@ public class EnterCreditCardActivity extends BaseFragmentActivity {
 
                             dialog.dismiss();
                             returnToPayment();
-                            //getTokenList().addToList(token);
                         }
                         public void onError(Exception error) {
                             dialog.dismiss();
@@ -147,9 +132,7 @@ public class EnterCreditCardActivity extends BaseFragmentActivity {
         actionbar_left_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //finishThisActivity();
                 returnToPayment();
-                //overridePendingTransitionGoLeft();
             }
         });
     }
