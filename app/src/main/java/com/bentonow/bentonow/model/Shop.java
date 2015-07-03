@@ -2,6 +2,7 @@ package com.bentonow.bentonow.model;
 
 import android.util.Log;
 
+import com.bentonow.bentonow.BuildConfig;
 import com.bentonow.bentonow.Config;
 
 import org.json.JSONException;
@@ -21,7 +22,29 @@ public class Shop {
         int hour = calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE);
 
         try {
-            return status.equals("open");
+            JSONObject menu = null;
+
+            // Check if there is a menu
+            if (hour < Config.DinnerStartTime) {
+                menu = getMenu(currentMenu, "lunch");
+
+                // We only support custom lunch
+                if (menu != null && !menu.getJSONObject("Menu").getString("menu_type").equals("custom"))
+                    return false;
+            } else {
+                menu = getMenu(currentMenu, "dinner");
+            }
+
+            // This is only for debug the application
+            if (BuildConfig.DEBUG) {
+                if (hour < Config.LunchStartTime) {
+                    return false;
+                } else if (hour < Config.DinnerStartTime && hour > Config.LunchStartTime + 300) {
+                    return false;
+                }
+            }
+
+            if (menu != null) return status.equals("open");
         } catch (Exception e) {
             e.printStackTrace();
         }

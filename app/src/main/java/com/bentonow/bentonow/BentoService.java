@@ -111,6 +111,13 @@ public class BentoService extends Service {
 
                             String lastStatus = Shop.status;
                             Shop.status = overall.getString(Config.API.STATUS_OVERALL_LABEL_VALUE);
+
+                            // Checks if the store is open from app logic
+                            if (!Shop.isOpen() && Shop.status.equals("open")) {
+                                lastStatus = Shop.status;
+                                Shop.status = "closed";
+                            }
+
                             Log.i(TAG, "appStatus: " + Shop.status + " serverStatus: " + lastStatus);
                             if (!lastStatus.equals(Shop.status)) {
 
