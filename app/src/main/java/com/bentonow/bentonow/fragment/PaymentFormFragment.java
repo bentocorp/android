@@ -16,7 +16,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.InputFilterMinMax;
@@ -27,25 +26,27 @@ import com.bentonow.bentonow.model.User;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 public class PaymentFormFragment extends Fragment implements PaymentForm {
 
     private static final String TAG = "PaymentFormFragment";
     TextView saveButton;
     EditText cardNumber;
-    //TextView cardType;
     ImageView ic_card;
     EditText cardDigits;
     EditText cvc;
     EditText monthSpinner;
     private LinearLayout second_step;
-    private ImageView btn_clear;
     private boolean completed;
     private boolean isPreparedForSending = true;
 
     public static void hideSoftKeyboard(Activity activity) {
         InputMethodManager inputMethodManager = (InputMethodManager)  activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+
+        if (activity.getCurrentFocus() != null && activity.getCurrentFocus().getWindowToken() != null) {
+            inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+        }
     }
 
     @Override
@@ -66,13 +67,12 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
         });
 
         this.ic_card = (ImageView) view.findViewById(R.id.ic_card);
-        //this.cardType = (TextView) view.findViewById(R.id.cardType);
         this.cardDigits = (EditText) view.findViewById(R.id.cardDigits);
         this.cardNumber = (EditText) view.findViewById(R.id.number);
         this.cvc = (EditText) view.findViewById(R.id.cvc);
         this.monthSpinner = (EditText) view.findViewById(R.id.expMonth);
         this.second_step = (LinearLayout) view.findViewById(R.id.second_step);
-        this.btn_clear = (ImageView)view.findViewById(R.id.btn_clear);
+        ImageView btn_clear = (ImageView) view.findViewById(R.id.btn_clear);
 
         btn_clear.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,7 +92,7 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
         });
 
         ////////////////////
-        this.cvc.setFilters(new InputFilter[]{new InputFilterMinMax("1", "999")});
+        this.cvc.setFilters(new InputFilter[]{new InputFilterMinMax("1", "9999")});
         ////////////////////
 
         this.cvc.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -108,20 +108,28 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
                         ic_card.setImageResource(R.drawable.card_cvv);
                     }
                 } else {
-                    if (user.cardbrand.equals("American Express")) {
-                        ic_card.setImageResource(R.drawable.card_amex);
-                    } else if (user.cardbrand.equals("Mastercard")) {
-                        ic_card.setImageResource(R.drawable.card_mastercard);
-                    } else if (user.cardbrand.equals("Visa")) {
-                        ic_card.setImageResource(R.drawable.card_visa);
-                    } else if (user.cardbrand.equals("Diners Club")) {
-                        ic_card.setImageResource(R.drawable.card_diners);
-                    } else if (user.cardbrand.equals("Discover Card")) {
-                        ic_card.setImageResource(R.drawable.card_discover);
-                    } else if (user.cardbrand.equals("JCB")) {
-                        ic_card.setImageResource(R.drawable.card_jcb);
-                    } else {
-                        ic_card.setImageResource(R.drawable.card_empty);
+                    switch (user.cardbrand) {
+                        case "American Express":
+                            ic_card.setImageResource(R.drawable.card_amex);
+                            break;
+                        case "Mastercard":
+                            ic_card.setImageResource(R.drawable.card_mastercard);
+                            break;
+                        case "Visa":
+                            ic_card.setImageResource(R.drawable.card_visa);
+                            break;
+                        case "Diners Club":
+                            ic_card.setImageResource(R.drawable.card_diners);
+                            break;
+                        case "Discover Card":
+                            ic_card.setImageResource(R.drawable.card_discover);
+                            break;
+                        case "JCB":
+                            ic_card.setImageResource(R.drawable.card_jcb);
+                            break;
+                        default:
+                            ic_card.setImageResource(R.drawable.card_empty);
+                            break;
                     }
                 }
             }
@@ -182,7 +190,7 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
                             if (month > 1) {
                                 charSequence = "0" + charSequence;
                             }
-                        } catch (Exception e) {}
+                        } catch (Exception ignored) {}
                     } else if (charSequence.length() == 2) {
                         try {
                             int month = Integer.parseInt(charSequence);
@@ -192,7 +200,7 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
                                 monthSpinner.setText(charSequence);
                                 monthSpinner.setSelection(charSequence.length());
                             }
-                        } catch (Exception e) {}
+                        } catch (Exception ignored) {}
                     }
 
                     if (charSequence.length() == 3) {
@@ -202,18 +210,18 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
                             if (year == 0) {
                                 charSequence = charSequence.substring(0, 2);
                             }
-                        } catch (Exception e) {}
+                        } catch (Exception ignored) {}
                     } else if (charSequence.length() == 4) {
                         try {
                             int year = Integer.parseInt(charSequence.substring(2));
 
-                            SimpleDateFormat sdf = new SimpleDateFormat("yy"); // Just the year, with 2 digits
+                            SimpleDateFormat sdf = new SimpleDateFormat("yy", Locale.US); // Just the year, with 2 digits
                             int currYear = Integer.parseInt(sdf.format(Calendar.getInstance().getTime()));
 
                             if (year < currYear) {
                                 charSequence = charSequence.substring(0, 3);
                             }
-                        } catch (Exception e) {}
+                        } catch (Exception ignored) {}
                     }
 
                     if (charSequence.length() >= 2) {
@@ -415,16 +423,7 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
     }
 
     private void chechIfCompleted() {
-        completed = true;
-        if( cardNumber.getText().toString().length() < 14){
-            completed = false;
-        }
-        if( cvc.getText().toString().length() < 3 ){
-            completed = false;
-        }
-        if( monthSpinner.getText().toString().length() < 5 ){
-            completed = false;
-        }
+        completed = cardNumber.getText().toString().length() >= 14 && cvc.getText().toString().length() >= 3 && monthSpinner.getText().toString().length() >= 5;
 
         Log.i(TAG, "COMPLETED: " + completed);
         if( completed ){
@@ -515,22 +514,6 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
         if (isPreparedForSending) {
             ((EnterCreditCardActivity) getActivity()).saveCreditCard(this);
             isPreparedForSending = false;
-        }
-    }
-
-    private Integer getInteger(EditText editText) {
-        try {
-            return Integer.parseInt(editText.getText().toString());
-        } catch (NumberFormatException e) {
-            return 0;
-        }
-    }
-
-    private Integer getInteger(Spinner spinner) {
-        try {
-            return Integer.parseInt(spinner.getSelectedItem().toString());
-        } catch (NumberFormatException e) {
-            return 0;
         }
     }
 }
