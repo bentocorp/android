@@ -1,5 +1,6 @@
 package com.bentonow.bentonow;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -22,10 +23,12 @@ import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
 import com.bentonow.bentonow.dialog.ConfirmDialog;
+import com.bentonow.bentonow.dialog.CustomDialog;
 import com.bentonow.bentonow.model.Dish;
 import com.bentonow.bentonow.model.Ioscopy;
 import com.bentonow.bentonow.model.Item;
 import com.bentonow.bentonow.model.Orders;
+import com.bentonow.bentonow.model.Shop;
 import com.bentonow.bentonow.model.User;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -57,7 +60,6 @@ public class CompleteOrderActivity extends BaseActivity {
     private AQuery aq;
     private TextView btn_add_credit_card, btn_cancel;
     private RelativeLayout overlay;
-    //private User user;
     private TextView btn_edit_credit_card;
     private Boolean editMode = false;
     private TextView btn_edit_items;
@@ -69,14 +71,13 @@ public class CompleteOrderActivity extends BaseActivity {
     private TextView discount_cents;
     private boolean processing = false;
 
-    private TextView closed_text;
     private RelativeLayout oberlay_closed;
 
-    private TextView outofstock_text;
     private RelativeLayout oberlay_out_of_stock;
 
     private RelativeLayout overlay_bad_address;
 
+    Dialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -169,11 +170,8 @@ public class CompleteOrderActivity extends BaseActivity {
         discount_cents = (TextView)findViewById(R.id.discount_cents);
 
         oberlay_out_of_stock = (RelativeLayout)findViewById(R.id.overlay_souldout);
-        outofstock_text = (TextView)findViewById(R.id.result_message_souldout);
-        //btn_ok_souldout = (TextView) findViewById(R.id.btn_ok_souldout);
 
         oberlay_closed = (RelativeLayout)findViewById(R.id.overlay_closed);
-        closed_text = (TextView)findViewById(R.id.text_closed);
 
         overlay_bad_address = (RelativeLayout)findViewById(R.id.overlay_bad_address);
     }
@@ -222,7 +220,6 @@ public class CompleteOrderActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 initAll();
-                //coupon_result_message.setText("");
                 overlay_coupon_result.setVisibility(View.GONE);
             }
         });
@@ -409,7 +406,7 @@ public class CompleteOrderActivity extends BaseActivity {
                             item.put("item_type", "CustomerBentoBox");
                             OrderItems.put(item);
                         } catch (JSONException e) {
-                            //e.printStackTrace();
+                            e.printStackTrace();
                         }
                     }
                     try {
@@ -463,7 +460,6 @@ public class CompleteOrderActivity extends BaseActivity {
                         }
                     }
 
-                    //Orders order = Orders.findById(Orders.class,Bentonow.pending_order_id);
                     if (current_order.amountoff != null && !current_order.amountoff.isEmpty() ) {
                         try {
                             data.put("CouponCode", current_order.couponcode);
@@ -515,7 +511,6 @@ public class CompleteOrderActivity extends BaseActivity {
     }
 
     private void postPromoCode(final String promo_code) {
-        //User user = User.findById(User.class, (long) 1);
         String uri = getResources().getString(R.string.server_api_url)+Config.API.COUPON.APPLY+promo_code+"?api_token="+current_user.apitoken;
         Log.i(TAG, "uri: " + uri);
         aq.ajax(uri, JSONObject.class, new AjaxCallback<JSONObject>() {
@@ -529,23 +524,18 @@ public class CompleteOrderActivity extends BaseActivity {
                     if (json != null) {
                         try {
                             Log.i(TAG,"json: "+json.toString());
-                            String amountOff = json.getString("amountOff");
-                            //Orders order = Orders.findById(Orders.class,Bentonow.pending_order_id);
-                            current_order.amountoff = amountOff;
+                            current_order.amountoff = json.getString("amountOff");
                             current_order.couponcode = promo_code;
                             current_order.save();
-                            //coupon_result_message.setText(amountOff);
                             overlay_coupon_result.setVisibility(View.INVISIBLE);
                             initAll();
                         } catch (JSONException e) {
-                            //Log.e(TAG, status.getError());
                             e.printStackTrace();
                         }
                     } else {
                         Log.e(TAG, status.getError());
                     }
-                }else if( status.getCode() == Config.API.COUPON.RESPONSE.INVALID_COUPON_400 ) {
-                    //{"error": "Invalid couponcode for you."}
+                } else if( status.getCode() == Config.API.COUPON.RESPONSE.INVALID_COUPON_400 ) {
                     if(json!=null){
                         try {
                             String error = json.getString("error");
@@ -555,8 +545,6 @@ public class CompleteOrderActivity extends BaseActivity {
                             e.printStackTrace();
                         }
                     }
-                }else{
-
                 }
             }
         });
@@ -580,7 +568,7 @@ public class CompleteOrderActivity extends BaseActivity {
     }
 
     public void postOrderData(final String data){
-        final ProgressDialog dialog = ProgressDialog.show(this, null, "Processing...", true);
+        dialog = ProgressDialog.show(this, null, "Processing...", true);
 
         if (!processing) {
             processing = true;
@@ -589,85 +577,140 @@ public class CompleteOrderActivity extends BaseActivity {
                 String uri = getResources().getString(R.string.server_api_url) + Config.API.ORDER;
                 Log.i(TAG, "uri: " + uri);
                 Log.i(TAG, "api_token: " + current_user.apitoken);
-                Map<String, Object> params = new HashMap<String, Object>();
+                Map<String, Object> params = new HashMap<>();
                 params.put("data", data);
                 params.put("api_token", current_user.apitoken);
                 aq.ajax(uri, params, String.class, new AjaxCallback<String>() {
                     @Override
-                    public void callback(String url, String json, AjaxStatus status) {
+                    public void callback(String url, String json, final AjaxStatus status) {
                         dialog.dismiss();
-                        
+
+                        processing = false;
+
                         Log.i(TAG, "status.getCode(): " + status.getCode());
                         Log.i(TAG, "status.getError(): " + status.getError());
                         Log.i(TAG, "status.getMessage(): " + status.getMessage());
-                        Log.i(TAG, "status.getCode(): " + status.getCode());
-                        // CASE 200 IF OK
-                        if (status.getCode() == 200) {
-                            Orders current_order = Orders.findById(Orders.class, Bentonow.pending_order_id);
-                            current_order.completed = Config.ORDER.STATUS.COMPLETED;
-                            current_order.save();
-                            current_user.stripetoken = null;
-                            current_user.save();
-                            Bentonow.pending_order_id = null;
-                            Bentonow.pending_bento_id = null;
-                            Intent intent = new Intent(getApplicationContext(), OrderConfirmedActivity.class);
-                            startActivity(intent);
-                            finish();
-                            overridePendingTransitionGoRight();
-                        }else if (status.getCode() == 406) { // Payment failed. //{"error":"You cannot use a Stripe token more than once:tok_16DJ8QEmZcPNENoGBop6zv3A."}
-                            //Toast.makeText(getApplicationContext(),status.getMessage(),Toast.LENGTH_LONG).show();
-                            current_user.stripetoken = null;
-                            current_user.save();
-                            postOrderData(data);
-                        }else if (status.getCode() == 402) { // Not payment especified
-                            Toast.makeText(getApplicationContext(),Config.API.SERVER_STATUS.ORDER.MESSAGE._402,Toast.LENGTH_LONG).show();
-                            Toast.makeText(getApplicationContext(),status.getMessage(),Toast.LENGTH_LONG).show();
-                            startActivity(new Intent(getApplicationContext(), EnterCreditCardActivity.class));
-                            overridePendingTransitionGoRight();
-                            processing = false;
-                        }else if ( status.getCode() == 410 ){ //if the inventory is not available.
-                            try {
-                                JSONObject error_message = new JSONObject(status.getError());
-                                outofstock_text.setText(error_message.getString("Error"));
-                                JSONArray MenuStatus = error_message.getJSONArray("MenuStatus");
-                                BentoService.processMenuStock(MenuStatus);
-                                oberlay_out_of_stock.setVisibility(View.VISIBLE);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }else if( status.getCode() == 401 ){ // Unautorized
-                            Toast.makeText(getApplicationContext(),status.getMessage(),Toast.LENGTH_LONG).show();
-                            startActivity(new Intent(getApplicationContext(), SignInActivity.class));
-                            User user = User.currentUser();
-                            user.reset();
-                            finish();
-                            overridePendingTransitionGoLeft();
-                        } else if( status.getCode() == 423 ) { // if the restaurant is not open.
-                            try {
-                                JSONObject error_message = new JSONObject(status.getError());
-                                outofstock_text.setText(error_message.getString("error"));
-                                oberlay_out_of_stock.setVisibility(View.VISIBLE);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }else {
-                            Toast.makeText(getApplicationContext(),status.getMessage(),Toast.LENGTH_LONG).show();
-                            processing = false;
+                        switch (status.getCode()) {
+                            case 200:
+                                Orders current_order = Orders.findById(Orders.class, Bentonow.pending_order_id);
+                                current_order.completed = Config.ORDER.STATUS.COMPLETED;
+                                current_order.save();
+                                current_user.stripetoken = null;
+                                current_user.save();
+                                Bentonow.pending_order_id = null;
+                                Bentonow.pending_bento_id = null;
+                                Intent intent = new Intent(getApplicationContext(), OrderConfirmedActivity.class);
+                                startActivity(intent);
+                                finish();
+                                overridePendingTransitionGoRight();
+                                break;
+                            // Payment failed. //{"error":"You cannot use a Stripe token more than once:tok_16DJ8QEmZcPNENoGBop6zv3A."}
+                            case 406:
+                                if (status.getError().contains("You cannot use a Stripe token more than once")) {
+                                    Log.i(TAG, "postOrderData retry: You cannot use a Stripe token more than once");
+                                    current_user.stripetoken = null;
+                                    current_user.save();
+                                    postOrderData(data);
+                                    break;
+                                }
+                                // if the restaurant is not open.
+                            case 423:
+                                showDialogError(status.getError(), new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        dialog.dismiss();
+                                        Shop.status = "closed";
+                                        Intent intent = new Intent(getApplicationContext(), ErrorClosedActivity.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        startActivity(intent);
+                                    }
+                                });
+                                break;
+                            // Not payment specified
+                            case 402:
+                                dialog = showDialogError(status.getMessage(), new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        dialog.dismiss();
+                                        startActivity(new Intent(getApplicationContext(), EnterCreditCardActivity.class));
+                                        overridePendingTransitionGoRight();
+                                    }
+                                });
+                                break;
+                            //if the inventory is not available.
+                            case 410:
+                                dialog = showDialogError(status.getError(), new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        dialog.dismiss();
+                                        try {
+                                            JSONObject error_message = new JSONObject(status.getError());
+                                            JSONArray MenuStatus = error_message.getJSONArray("MenuStatus");
+                                            BentoService.processMenuStock(MenuStatus);
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                });
+                                break;
+                            // Unautorized
+                            case 401:
+                                dialog = showDialog("Your session has expired, please sign in", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        dialog.dismiss();
+                                        startActivity(new Intent(getApplicationContext(), SignInActivity.class));
+                                        User user = User.currentUser();
+                                        user.reset();
+                                        finish();
+                                        overridePendingTransitionGoLeft();
+                                    }
+                                });
+                                break;
+                            default:
+                                showDialog(status.getMessage(), null);
+                                break;
                         }
-
                     }
                 });
             }
         }
     }
 
+    CustomDialog showDialog (String message, View.OnClickListener listener) {
+        CustomDialog _dialog = new CustomDialog(this, message, "Ok", null);
+        _dialog.show();
+        if (listener != null) {
+            _dialog.setOnOkPressed(listener);
+        }
+        return _dialog;
+    }
+
+    CustomDialog showDialogError (String json, View.OnClickListener listener) {
+        String message = "";
+
+        try {
+            message = new JSONObject(json).getString("Error");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            message = new JSONObject(json).getString("error");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return showDialog(message, listener);
+    }
+
     public void loadOrderItems(){
         Log.i(TAG,"loadOrderItems()");
-        final ArrayList<HashMap<String, String>> orderItemsList = new ArrayList<HashMap<String, String>>();
+        final ArrayList<HashMap<String, String>> orderItemsList = new ArrayList<>();
         List<Item> items = Item.find(Item.class,"orderid = ?", String.valueOf(Bentonow.pending_order_id));
         Config.CurrentOrder.total_items = 0;
         for( Item item : items ){
-            HashMap<String, String> map = new HashMap<String, String>();
+            HashMap<String, String> map = new HashMap<>();
             Log.i(TAG, "item: (Bento) " + item.toString());
             if(item.main!=null) {
                 long dish_id = Dish.getIdBy_id(item.main);
@@ -688,7 +731,6 @@ public class CompleteOrderActivity extends BaseActivity {
         itemsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //Toast.makeText(getApplicationContext(),orderItemsList.get(position).toString(),Toast.LENGTH_LONG).show();
                 HashMap<String, String> row = orderItemsList.get(position);
                 Bentonow.pending_bento_id = Long.valueOf(row.get(Config.DISH.ITEM_ID));
                 Intent intent = new Intent(getApplicationContext(),BuildBentoActivity.class);
@@ -706,7 +748,6 @@ public class CompleteOrderActivity extends BaseActivity {
         Config.CurrentOrder.total_order_cost = 0.0;
 
         double amountoff = 0;
-        //Orders order = Orders.findById(Orders.class,Bentonow.pending_order_id);
         if( current_order.couponcode != null && current_order.amountoff != null ) amountoff = Double.valueOf(current_order.amountoff);
 
 
@@ -734,8 +775,6 @@ public class CompleteOrderActivity extends BaseActivity {
         }
 
         //TIP
-//        Double double_tip_percent = round(Config.CurrentOrder.tip_percent,2);
-//        String tip_percent = String.format("%.2f", double_tip_percent );
         tip_percentTextView.setText(Config.CurrentOrder.tip_percent+"%");
         // SHOW TAX
         String total_tax = String.valueOf(String.format(Locale.US,"%.2f", Config.CurrentOrder.total_tax_cost));
