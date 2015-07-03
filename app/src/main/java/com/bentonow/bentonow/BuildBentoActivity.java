@@ -8,17 +8,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.androidquery.AQuery;
 import com.bentonow.bentonow.model.Dish;
 import com.bentonow.bentonow.model.Item;
 import com.bentonow.bentonow.model.Orders;
 import com.bentonow.bentonow.model.User;
-import com.google.android.gms.maps.model.LatLng;
 import com.squareup.picasso.Picasso;
-
-import org.w3c.dom.Text;
 
 import java.util.Arrays;
 import java.util.List;
