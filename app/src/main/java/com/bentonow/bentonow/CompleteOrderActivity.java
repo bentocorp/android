@@ -572,7 +572,6 @@ public class CompleteOrderActivity extends BaseActivity {
 
         if (!processing) {
             processing = true;
-            Log.i(TAG, "postOrderData(data)");
             if (current_user != null && current_user.apitoken != null && !current_user.apitoken.isEmpty()) {
                 String uri = getResources().getString(R.string.server_api_url) + Config.API.ORDER;
                 Log.i(TAG, "uri: " + uri);
@@ -580,6 +579,7 @@ public class CompleteOrderActivity extends BaseActivity {
                 Map<String, Object> params = new HashMap<>();
                 params.put("data", data);
                 params.put("api_token", current_user.apitoken);
+                Log.i(TAG, "postOrderData(data) " + data);
                 aq.ajax(uri, params, String.class, new AjaxCallback<String>() {
                     @Override
                     public void callback(String url, String json, final AjaxStatus status) {
@@ -611,11 +611,13 @@ public class CompleteOrderActivity extends BaseActivity {
                                     current_user.stripetoken = null;
                                     current_user.save();
                                     postOrderData(data);
-                                    break;
+                                } else {
+                                    dialog = showDialogError(status.getError(), null);
                                 }
+                                break;
                                 // if the restaurant is not open.
                             case 423:
-                                showDialogError(status.getError(), new View.OnClickListener() {
+                                dialog = showDialogError(status.getError(), new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
                                         dialog.dismiss();
