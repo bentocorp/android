@@ -364,6 +364,7 @@ public class MainActivity extends BaseActivity {
             Log.i(TAG, "goto: ClosedActivity");
             if( goingTo == null || !goingTo.equals("closed")) {
                 goingTo = "closed";
+                BentoService.lastStatus = "closed";
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     public void run() {
@@ -379,6 +380,7 @@ public class MainActivity extends BaseActivity {
             Log.i(TAG, "goto: SoldedActivity");
             if( goingTo == null || !goingTo.equals("solded")) {
                 goingTo = "solded";
+                BentoService.lastStatus = "sold out";
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     public void run() {
@@ -392,6 +394,7 @@ public class MainActivity extends BaseActivity {
         }
 
         void ErrorVersion() {
+            BentoService.lastStatus = "";
             Log.i(TAG, "goto: ErrorActivity");
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
@@ -405,6 +408,7 @@ public class MainActivity extends BaseActivity {
         }
 
         void HomeAbout() {
+            BentoService.lastStatus = "open";
             Log.i(TAG, "goto: HomeActivity");
             Log.i(TAG,"HomeAbout()");
             Handler handler = new Handler();
@@ -416,6 +420,7 @@ public class MainActivity extends BaseActivity {
         }
 
         void HomeAboutActivity(){
+            BentoService.lastStatus = "open";
             Log.i(TAG, "goto: HomeAboutActivity");
             Log.i(TAG,"HomeAboutActivity()");
             Intent intent = new Intent(getApplicationContext(), HomeAboutActivity.class);

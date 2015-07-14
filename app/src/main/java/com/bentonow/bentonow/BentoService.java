@@ -28,6 +28,8 @@ public class BentoService extends Service {
     private static BentoService instance;
     private AQuery aq;
 
+    public static String lastStatus = "";
+
     public static boolean isRunning() {
         return instance != null;
     }
@@ -109,18 +111,16 @@ public class BentoService extends Service {
                         try {
                             JSONObject overall = json.getJSONObject("overall");
 
-                            String lastStatus = Shop.status;
                             Shop.status = overall.getString(Config.API.STATUS_OVERALL_LABEL_VALUE);
 
                             // Checks if the store is open from app logic
                             if (!Shop.isOpen() && Shop.status.equals("open")) {
-                                lastStatus = Shop.status;
                                 Shop.status = "closed";
                             }
 
-                            Log.i(TAG, "appStatus: " + Shop.status + " serverStatus: " + lastStatus);
+                            Log.i(TAG, "appStatus: " + Shop.status + " serverStatus: " + lastStatus + " isOpen: " + Shop.isOpen());
                             if (!lastStatus.equals(Shop.status)) {
-
+                                lastStatus = Shop.status;
                                 if (Shop.isOpen()) {
                                     // STATUS / MENU
                                     JSONArray menu = json.getJSONArray("menu");
