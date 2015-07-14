@@ -114,7 +114,6 @@ public class MainActivity extends BaseActivity {
     }
 
     private void checkLocation(LatLng latlng) {
-
         if (latlng != null) {
             List<LatLng> sfpolygon = new ArrayList<>();
             String[] serviceArea_dinner = Config.serviceArea_dinner.split(" ");
@@ -224,7 +223,7 @@ public class MainActivity extends BaseActivity {
 
                     // STATUS/OVERALL
                     try {
-                        Shop.status = json.getJSONObject("/status/all").getJSONObject("overall").getString("value");
+                        BentoService.lastStatus = Shop.status = json.getJSONObject("/status/all").getJSONObject("overall").getString("value");
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -364,7 +363,6 @@ public class MainActivity extends BaseActivity {
             Log.i(TAG, "goto: ClosedActivity");
             if( goingTo == null || !goingTo.equals("closed")) {
                 goingTo = "closed";
-                BentoService.lastStatus = "closed";
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     public void run() {
@@ -380,7 +378,6 @@ public class MainActivity extends BaseActivity {
             Log.i(TAG, "goto: SoldedActivity");
             if( goingTo == null || !goingTo.equals("solded")) {
                 goingTo = "solded";
-                BentoService.lastStatus = "sold out";
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     public void run() {
@@ -394,7 +391,6 @@ public class MainActivity extends BaseActivity {
         }
 
         void ErrorVersion() {
-            BentoService.lastStatus = "";
             Log.i(TAG, "goto: ErrorActivity");
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
@@ -408,7 +404,6 @@ public class MainActivity extends BaseActivity {
         }
 
         void HomeAbout() {
-            BentoService.lastStatus = "open";
             Log.i(TAG, "goto: HomeActivity");
             Log.i(TAG,"HomeAbout()");
             Handler handler = new Handler();
@@ -420,7 +415,6 @@ public class MainActivity extends BaseActivity {
         }
 
         void HomeAboutActivity(){
-            BentoService.lastStatus = "open";
             Log.i(TAG, "goto: HomeAboutActivity");
             Log.i(TAG,"HomeAboutActivity()");
             Intent intent = new Intent(getApplicationContext(), HomeAboutActivity.class);
