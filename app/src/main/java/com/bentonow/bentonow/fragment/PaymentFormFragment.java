@@ -22,6 +22,7 @@ import com.bentonow.bentonow.InputFilterMinMax;
 import com.bentonow.bentonow.PaymentForm;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.EnterCreditCardActivity;
+import com.bentonow.bentonow.Utils.CreditCard;
 import com.bentonow.bentonow.model.User;
 
 import java.text.SimpleDateFormat;
@@ -303,15 +304,13 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
             @Override
             public void afterTextChanged(Editable editable) {
                 String charSequence = cardNumber.getText().toString().replaceAll("[^0-9]", "");
-                StringBuilder sb = null;
 
                 if (oldLength != charSequence.length()) {
                     oldLength = charSequence.length();
 
                     if (charSequence.length() > 1) {
-                        String cardCode = charSequence.substring(0, 2);
                         cardNumber.setTextColor(getResources().getColor(R.color.gray));
-                        if (cardCode.equals("34") || cardCode.equals("37")) {
+                        if (CreditCard.isAmex(charSequence)) {
                             //cardType.setText("American Express");
                             ic_card.setImageResource(R.drawable.card_amex);
 
@@ -322,7 +321,7 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
                             if (charSequence.length() == 15) {
                                 hideFullNumber();
                             }
-                        } else if (cardCode.equals("36") || cardCode.equals("51") || cardCode.equals("52") || cardCode.equals("53") || cardCode.equals("54") || cardCode.equals("55")) {
+                        } else if (CreditCard.isMastercard(charSequence)) {
                             //cardType.setText("Mastercard");
                             ic_card.setImageResource(R.drawable.card_mastercard);
 
@@ -333,7 +332,7 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
                             if (charSequence.length() == 16) {
                                 hideFullNumber();
                             }
-                        } else if (cardCode.startsWith("4")) {
+                        } else if (CreditCard.isVisa(charSequence)) {
                             //cardType.setText("Visa");
                             ic_card.setImageResource(R.drawable.card_visa);
 
@@ -344,7 +343,7 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
                             if (charSequence.length() == 16) {
                                 hideFullNumber();
                             }
-                        } else if (cardCode.equals("60") || cardCode.equals("65")) {
+                        } else if (CreditCard.isDiscover(charSequence)) {
                             //cardType.setText("Discover Card");
 
                             ic_card.setImageResource(R.drawable.card_discover);
@@ -356,7 +355,7 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
                             if (charSequence.length() == 16) {
                                 hideFullNumber();
                             }
-                        } else if (cardCode.equals("30") || cardCode.equals("38")) {
+                        } else if (CreditCard.isDinersClub(charSequence)) {
                             //cardType.setText("Diners Club");
 
                             ic_card.setImageResource(R.drawable.card_diners);
@@ -368,7 +367,7 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
                             if (charSequence.length() == 14) {
                                 hideFullNumber();
                             }
-                        } else if (cardCode.equals("35")) {
+                        } else if (CreditCard.isJCB(charSequence)) {
                             //cardType.setText("JCB");
                             ic_card.setImageResource(R.drawable.card_jcb);
 
@@ -392,24 +391,9 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
                             }
                         }
 
-                        if (charSequence.length() >= 13) {
-                            sb = new StringBuilder(charSequence)
-                                    .insert(4, " ")
-                                    .insert(9, " ")
-                                    .insert(14, " ");
-                        } else if (charSequence.length() >= 8) {
-                            sb = new StringBuilder(charSequence)
-                                    .insert(4, " ")
-                                    .insert(9, " ");
-                        } else if (charSequence.length() >= 4) {
-                            sb = new StringBuilder(charSequence)
-                                    .insert(4, " ");
-                        }
 
-                        if (sb != null) {
-                            cardNumber.setText(sb.toString());
-                            cardNumber.setSelection(sb.length());
-                        }
+                        cardNumber.setText(CreditCard.format(charSequence));
+                        cardNumber.setSelection(cardNumber.getText().length());
                     } else {
                         ic_card.setImageResource(R.drawable.card_empty);
                     }
