@@ -7,9 +7,11 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +50,8 @@ public class MainActivity extends BaseActivity {
 
     private String goingTo;
 
+    private int skipWaitTime = 10;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +82,27 @@ public class MainActivity extends BaseActivity {
     }
 
     private void tryToGetLocationFromGPS() {
+        final TextView message = (TextView)findViewById(R.id.splash_message);
+        message.setVisibility(View.VISIBLE);
+        message.setText("Checking location...");
+        new CountDownTimer(skipWaitTime * 1000, 1000) {
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+            }
+
+            @Override
+            public void onFinish() {
+                message.append("\nTap the screen to skip");
+                findViewById(R.id.content).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        checkLocation(null);
+                    }
+                });
+            }
+        }.start();
+
         Log.i(TAG, "tryToGetLocationFromGPS");
         LocationManager mLocationManager;
         final LocationListener mLocationListener = new LocationListener() {
