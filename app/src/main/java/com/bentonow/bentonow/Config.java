@@ -8,7 +8,8 @@ public class Config {
 
     public static final float DEFAULT_ZOOM = 17.0f;
     public static final float MIN_ZOOM = 11.0f;
-    public static LatLng INIT_LAT_LONG = new LatLng(37.772492, -122.420262);
+    public static LatLng INIT_LAT_LONG = null;
+    public static LatLng DEFAULT_LAT_LONG = new LatLng(37.772492, -122.420262);
     public static int android_min_version;
     public static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place";
     public static final String TYPE_AUTOCOMPLETE = "/autocomplete";
