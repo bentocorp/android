@@ -64,9 +64,6 @@ public class EnterCreditCardActivity extends BaseFragmentActivity {
             @Override
             public void onClick(View view) {
                 ok_overlay.setVisibility(View.GONE);
-                startActivity(new Intent(getApplicationContext(),CompleteOrderActivity.class));
-                finish();
-                overridePendingTransitionGoRight();
             }
         });
     }
@@ -104,18 +101,22 @@ public class EnterCreditCardActivity extends BaseFragmentActivity {
                         }
                     });
         } else if (!card.validateNumber()) {
+            dialog.dismiss();
             String msg = "The card number that you entered is invalid";
             ok_message.setText(msg);
             ok_overlay.setVisibility(View.VISIBLE);
         } else if (!card.validateExpiryDate()) {
+            dialog.dismiss();
             String msg = "The expiration date that you entered is invalid";
             ok_message.setText(msg);
             ok_overlay.setVisibility(View.VISIBLE);
         } else if (!card.validateCVC()) {
+            dialog.dismiss();
             String msg = "The CVC code that you entered is invalid";
             ok_message.setText(msg);
             ok_overlay.setVisibility(View.VISIBLE);
         } else {
+            dialog.dismiss();
             String msg = "The card details that you entered are invalid";
             ok_message.setText(msg);
             ok_overlay.setVisibility(View.VISIBLE);

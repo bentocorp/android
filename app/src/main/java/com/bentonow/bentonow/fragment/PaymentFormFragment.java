@@ -497,7 +497,7 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
     public void saveForm() {
         if (isPreparedForSending) {
             ((EnterCreditCardActivity) getActivity()).saveCreditCard(this);
-            isPreparedForSending = false;
+//            isPreparedForSending = false;
         }
     }
 }
