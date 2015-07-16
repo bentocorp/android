@@ -758,6 +758,10 @@ public class CompleteOrderActivity extends BaseActivity {
         Config.CurrentOrder.total_tip_cost = round(Config.CurrentOrder.total_items_cost * Config.CurrentOrder.tip_percent / 100,2);
         Config.CurrentOrder.total_tax_cost = round((Config.CurrentOrder.total_items_cost - amountoff)*(Config.CurrentOrder.tax / 100),2);
         Config.CurrentOrder.total_order_cost = round( ( Config.CurrentOrder.total_tax_cost+Config.CurrentOrder.total_items_cost + Config.CurrentOrder.total_tip_cost ) - amountoff , 2 );
+
+        if (Config.CurrentOrder.total_order_cost < 0.5) {
+            Config.CurrentOrder.total_order_cost = 0.5;
+        }
     }
 
     private void showOrderDetails() {
