@@ -35,6 +35,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,6 +83,8 @@ public class MainActivity extends BaseActivity {
     }
 
     private void tryToGetLocationFromGPS() {
+        Log.i(TAG, "tryToGetLocationFromGPS");
+
         final TextView message = (TextView)findViewById(R.id.splash_message);
         message.setVisibility(View.VISIBLE);
         message.setText("Searching for your location...");
@@ -102,40 +105,47 @@ public class MainActivity extends BaseActivity {
                 });
             }
         }.start();
+        
+        LocationManager mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        Config.current_location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-        Log.i(TAG, "tryToGetLocationFromGPS");
-        LocationManager mLocationManager;
-        final LocationListener mLocationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(final Location location) {
-                Log.i(TAG,"onLocationChanged() location: "+location.toString());
-                if(Config.current_location==null) {
+        if (Config.current_location == null) {
+            Config.current_location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        }
+
+        if (Config.current_location != null) {
+            Log.i(TAG, "provider location: " + Config.current_location.toString());
+            Config.INIT_LAT_LONG = new LatLng(Config.current_location.getLatitude(), Config.current_location.getLongitude());
+            checkLocation(Config.INIT_LAT_LONG);
+        } else {
+            final LocationListener mLocationListener = new LocationListener() {
+                @Override
+                public void onLocationChanged(final Location location) {
+                    Log.i(TAG, "onLocationChanged() location: " + location.toString());
                     Config.current_location = location;
                     Config.INIT_LAT_LONG = new LatLng(Config.current_location.getLatitude(), Config.current_location.getLongitude());
 
-                    LatLng latlng = Config.INIT_LAT_LONG;
-                    checkLocation(latlng);
+                    checkLocation(Config.INIT_LAT_LONG);
                 }
-            }
 
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
 
-            }
+                }
 
-            @Override
-            public void onProviderEnabled(String provider) {
+                @Override
+                public void onProviderEnabled(String provider) {
 
-            }
+                }
 
-            @Override
-            public void onProviderDisabled(String provider) {
-                checkLocation(null);
-            }
-        };
+                @Override
+                public void onProviderDisabled(String provider) {
+                    checkLocation(null);
+                }
+            };
 
-        mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, LOCATION_REFRESH_TIME, LOCATION_REFRESH_DISTANCE, mLocationListener);
+            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, LOCATION_REFRESH_TIME, LOCATION_REFRESH_DISTANCE, mLocationListener);
+        }
     }
 
     private void checkLocation(LatLng latlng) {
