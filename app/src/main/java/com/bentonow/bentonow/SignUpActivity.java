@@ -498,7 +498,7 @@ public class SignUpActivity extends BaseActivity {
     }
 
     public void postUserData(boolean login){
-        final ProgressDialog dialog = ProgressDialog.show(this, null, "Registering...", true);
+        final ProgressDialog dialog = ProgressDialog.show(SignUpActivity.this, null, "Registering...", true);
 
         String uri = login ? getResources().getString(R.string.server_api_url) + Config.API.USER.FBLOGIN : getResources().getString(R.string.server_api_url) + Config.API.USER.FBSIGNUP ;
         Log.i(TAG,"uri: "+uri);
