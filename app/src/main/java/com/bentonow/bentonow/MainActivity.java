@@ -50,7 +50,7 @@ public class MainActivity extends BaseActivity {
 
     private String goingTo;
 
-    private int skipWaitTime = 10;
+    private int skipWaitTime = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +84,7 @@ public class MainActivity extends BaseActivity {
     private void tryToGetLocationFromGPS() {
         final TextView message = (TextView)findViewById(R.id.splash_message);
         message.setVisibility(View.VISIBLE);
-        message.setText("Checking location...");
+        message.setText("Searching for your location...");
         new CountDownTimer(skipWaitTime * 1000, 1000) {
 
             @Override
