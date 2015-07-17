@@ -446,8 +446,8 @@ public class CompleteOrderActivity extends BaseActivity {
                 /*
                  *  STRIPE
                  */
-                    if (current_user.stripetoken != null && !current_user.stripetoken.isEmpty() ) {
-                        JSONObject Stripe = new JSONObject();
+                    JSONObject Stripe = new JSONObject();
+                    if (current_user.stripetoken != null && !current_user.stripetoken.isEmpty() && Config.CurrentOrder.total_order_cost > 0) {
                         try {
                             Stripe.put("stripeToken", current_user.stripetoken);
                         } catch (JSONException e) {
@@ -455,6 +455,14 @@ public class CompleteOrderActivity extends BaseActivity {
                         }
                         try {
                             data.put("Stripe", Stripe);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        try {
+                            Stripe.put("stripeToken", "NULL");
+                            data.put("Stripe", Stripe);
+                            Log.i(TAG, "Stripe: " + Stripe.toString());
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -759,8 +767,11 @@ public class CompleteOrderActivity extends BaseActivity {
         Config.CurrentOrder.total_tax_cost = round((Config.CurrentOrder.total_items_cost - amountoff)*(Config.CurrentOrder.tax / 100),2);
         Config.CurrentOrder.total_order_cost = round( ( Config.CurrentOrder.total_tax_cost+Config.CurrentOrder.total_items_cost + Config.CurrentOrder.total_tip_cost ) - amountoff , 2 );
 
-        if (Config.CurrentOrder.total_order_cost < 0.5) {
+        if (Config.CurrentOrder.total_order_cost < 0.5 && Config.CurrentOrder.total_order_cost >= 0.1) {
             Config.CurrentOrder.total_order_cost = 0.5;
+        } else if (Config.CurrentOrder.total_order_cost < 0) {
+            Config.CurrentOrder.total_order_cost = 0;
+            Config.CurrentOrder.total_tax_cost = 0;
         }
     }
 
