@@ -760,22 +760,21 @@ public class CompleteOrderActivity extends BaseActivity {
         double amountoff = 0;
         if( current_order.couponcode != null && current_order.amountoff != null ) amountoff = Double.valueOf(current_order.amountoff);
 
-
         Config.CurrentOrder.total_items_cost = (Config.CurrentOrder.total_items*Config.CurrentOrder.item_price);
 
-        Config.CurrentOrder.total_tip_cost = round(Config.CurrentOrder.total_items_cost * Config.CurrentOrder.tip_percent / 100,2);
-        Config.CurrentOrder.total_tax_cost = round((Config.CurrentOrder.total_items_cost - amountoff)*(Config.CurrentOrder.tax / 100),2);
-        Config.CurrentOrder.total_order_cost = round( ( Config.CurrentOrder.total_tax_cost+Config.CurrentOrder.total_items_cost ) - amountoff , 2 );
-
-        if ((Config.CurrentOrder.total_tax_cost + Config.CurrentOrder.total_items_cost ) - amountoff < 0) {
-            Config.CurrentOrder.total_order_cost = 0;
+        if (amountoff <= Config.CurrentOrder.total_items_cost) {
+            Config.CurrentOrder.total_tax_cost = round((Config.CurrentOrder.total_items_cost - amountoff) * (Config.CurrentOrder.tax / 100), 2);
+        } else {
             Config.CurrentOrder.total_tax_cost = 0;
         }
 
-        Config.CurrentOrder.total_order_cost += Config.CurrentOrder.total_tip_cost;
+        Config.CurrentOrder.total_tip_cost = round(Config.CurrentOrder.total_items_cost * Config.CurrentOrder.tip_percent / 100, 2);
+        Config.CurrentOrder.total_order_cost = round( ( Config.CurrentOrder.total_tax_cost + Config.CurrentOrder.total_items_cost + Config.CurrentOrder.total_tip_cost ) - amountoff, 2 );
 
         if (Config.CurrentOrder.total_order_cost < 0.5 && Config.CurrentOrder.total_order_cost >= 0.1) {
             Config.CurrentOrder.total_order_cost = 0.5;
+        } else if (Config.CurrentOrder.total_order_cost < 0) {
+            Config.CurrentOrder.total_order_cost = 0;
         }
     }
 
