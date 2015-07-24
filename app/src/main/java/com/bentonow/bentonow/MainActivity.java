@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -35,7 +36,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,8 +50,6 @@ public class MainActivity extends BaseActivity {
     private Activity activity;
 
     private String goingTo;
-
-    private int skipWaitTime = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +86,7 @@ public class MainActivity extends BaseActivity {
         final TextView message = (TextView)findViewById(R.id.splash_message);
         message.setVisibility(View.VISIBLE);
         message.setText("Searching for your location...");
+        int skipWaitTime = 3;
         new CountDownTimer(skipWaitTime * 1000, 1000) {
 
             @Override
@@ -266,24 +265,8 @@ public class MainActivity extends BaseActivity {
                     if (Shop.isOpen()) {
                         // /menu/{date}
                         try {
-                            JSONObject menu_date = json.getJSONObject("/menu/{date}");
-                            JSONObject menu = menu_date.getJSONObject("menus");
-                            JSONArray MenuItems;
-                            int hora = getCurrentHourInt();
-                            if (hora < Config.DinnerStartTime) {
-                                JSONObject lunch = menu.getJSONObject("lunch");
-                                JSONObject Menu = lunch.getJSONObject("Menu");
-                                String menu_type = Menu.getString("menu_type");
-                                if( !menu_type.equals("custom") ){
-                                    Bentonow.isOpen = false;
-                                }
-                                MenuItems = (JSONArray) lunch.get(Config.API_MENUITEMS_TAG);
-                            } else {
-                                JSONObject dinner = menu.getJSONObject("dinner");
-                                MenuItems = (JSONArray) dinner.get(Config.API_MENUITEMS_TAG);
-                            }
-                            JsonProcess.MenuItems(MenuItems);
-                        } catch (JSONException e) {
+                            JsonProcess.MenuItems(Shop.getCurrentMenuItems());
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
 
@@ -351,43 +334,48 @@ public class MainActivity extends BaseActivity {
             }
         }
 
-        public void MenuItems(JSONArray MenuItems){
-            for (int i = 0; i < MenuItems.length(); i++) {
-                JSONObject gDish;
-                try {
-                    gDish = (JSONObject) MenuItems.get(i);
+        public void MenuItems(JSONArray MenuItems) {
+            Log.i(TAG, "MenuItems: " + (MenuItems != null ? MenuItems.toString() : "null"));
+            if (MenuItems != null) {
+                for (int i = 0; i < MenuItems.length(); i++) {
+                    JSONObject gDish;
+                    try {
+                        gDish = (JSONObject) MenuItems.get(i);
 
-                    String image = gDish.getString(Config.DISH.IMAGE1);
-                    if (!TextUtils.isEmpty(image)) {
-                        Picasso.with(getApplicationContext())
-                                .load(image)
-                                //.resizeDimen(R.dimen.article_image_preview_width, R.dimen.article_image_preview_height)
-                                //.centerCrop()
-                                .fetch();
-                    }
+                        Log.i(TAG, "gDish: " + gDish.toString());
 
-                    long menuHoy = Dish.count(Dish.class, "_id=?", new String[]{gDish.getString(Config.DISH.itemId)});
-                    if (menuHoy == 0) {
-                        Dish dish = new Dish(gDish.getString(Config.DISH.itemId), gDish.getString(Config.DISH.NAME), gDish.getString(Config.DISH.DESCRIPTION), gDish.getString(Config.DISH.TYPE), gDish.getString(Config.DISH.IMAGE1), gDish.getString(Config.DISH.MAX_PER_ORDER), todayDate, Config.aux_initial_stock);
-                        dish.save();
-                    } else {
-                        long dish_id = Dish.getIdBy_id(gDish.getString(Config.DISH.itemId));
-                        if (dish_id != 0) {
-                            Dish dish = Dish.findById(Dish.class, dish_id);
-                            if (dish != null) {
-                                dish.name = gDish.getString(Config.DISH.NAME);
-                                dish.description = gDish.getString(Config.DISH.DESCRIPTION);
-                                dish.type = gDish.getString(Config.DISH.TYPE);
-                                dish.image1 = gDish.getString(Config.DISH.IMAGE1);
-                                dish.max_per_order = gDish.getString(Config.DISH.MAX_PER_ORDER);
-                                dish.qty = Config.aux_initial_stock;
-                                dish.today = todayDate;
-                                dish.save();
-                            }
+                        String image = gDish.getString(Config.DISH.IMAGE1);
+                        if (!TextUtils.isEmpty(image)) {
+                            Picasso.with(getApplicationContext())
+                                    .load(image)
+                                    .fetch();
                         }
+
+                        long menuHoy = Dish.count(Dish.class, "_id=?", new String[]{gDish.getString(Config.DISH.itemId)});
+
+                        if (menuHoy == 0) {
+                            Dish dish = new Dish();
+                            dish._id = gDish.getString(Config.DISH.itemId);
+                            dish.save();
+                        }
+
+                        Dish dish = Dish.findDish(gDish.getString(Config.DISH.itemId));
+
+                        if (dish != null) {
+                            dish.name = gDish.getString(Config.DISH.NAME);
+                            dish.description = gDish.getString(Config.DISH.DESCRIPTION);
+                            dish.type = gDish.getString(Config.DISH.TYPE);
+                            dish.image1 = gDish.getString(Config.DISH.IMAGE1);
+                            dish.max_per_order = gDish.getString(Config.DISH.MAX_PER_ORDER);
+                            dish.qty = Config.aux_initial_stock;
+                            dish.today = todayDate;
+                            dish.save();
+
+                            Log.i(TAG, "dish: " + dish.toString());
+                        }
+                    } catch (JSONException e) {
+                        Log.e(TAG, e.toString());
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
             }
         }
