@@ -1,7 +1,5 @@
 package com.bentonow.bentonow;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,15 +7,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.androidquery.AQuery;
-import com.androidquery.callback.AjaxCallback;
-import com.androidquery.callback.AjaxStatus;
 import com.bentonow.bentonow.model.Dish;
-import com.bentonow.bentonow.model.Item;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,16 +17,11 @@ import java.util.List;
 public class SelectMainActivity extends BaseActivity {
 
     private static final String TAG = "BentoSelectMainActivity";
-    private static Activity _this;
-    private ImageView actionbar_ic_back;
-    private static AQuery aq;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bento_select_main);
-        _this = this;
-        aq = new AQuery(this);
 
         initActionbar();
         getMainListDb();
@@ -54,10 +39,6 @@ public class SelectMainActivity extends BaseActivity {
             public void onClick(View v) {
                 finish();
                 overridePendingTransitionGoLeft();
-                /*Intent intent = new Intent(getApplicationContext(),BuildBentoActivity.class);
-                startActivity(intent);
-                finish();
-                overridePendingTransition(R.anim.left_slide_in, R.anim.right_slide_out);*/
             }
         });
 
@@ -65,12 +46,13 @@ public class SelectMainActivity extends BaseActivity {
 
     public void getMainListDb(){
         Log.i(TAG,"getMainListDb()");
-        ArrayList<HashMap<String, String>> mainMenuList = new ArrayList<HashMap<String, String>>();
+        ArrayList<HashMap<String, String>> mainMenuList = new ArrayList<>();
         List<Dish> main_dishes = Dish.find(Dish.class,"today = ?",todayDate);
+        Log.i(TAG,"count: " + main_dishes.size());
         for( Dish dish : main_dishes ){
             if( dish.type.equals("main") ) {
                 Log.i(TAG,"dish: "+dish.toString());
-                HashMap<String, String> map = new HashMap<String, String>();
+                HashMap<String, String> map = new HashMap<>();
                 map.put(Config.DISH._ID, dish._id);
                 map.put(Config.DISH.NAME, dish.name);
                 map.put(Config.DISH.DESCRIPTION, dish.description);
@@ -84,16 +66,9 @@ public class SelectMainActivity extends BaseActivity {
             }
         }
         ListView DishListView = (ListView) findViewById(R.id.main_menu_list_items);
-        DishListAdapter adapter = new DishListAdapter(_this, mainMenuList);
+        DishListAdapter adapter = new DishListAdapter(this, mainMenuList);
         DishListView.setAdapter(adapter);
     }
-
-    /*public static void goToMain(){
-        Intent intent = new Intent(aq.getContext(),BuildBentoActivity.class);
-        _this.startActivity(intent);
-        _this.overridePendingTransition(R.anim.left_slide_in, R.anim.right_slide_out);
-        _this.finish();
-    }*/
 
     @Override
     public void onBackPressed() {
