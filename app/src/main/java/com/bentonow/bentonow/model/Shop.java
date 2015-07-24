@@ -5,6 +5,7 @@ import android.util.Log;
 import com.bentonow.bentonow.BuildConfig;
 import com.bentonow.bentonow.Config;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -67,6 +68,30 @@ public class Shop {
     // Menu
     public static JSONObject currentMenu;
     public static JSONObject nextMenu;
+
+    public static JSONObject getCurrentMenu () {
+        Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE);
+
+        if (hour < Config.DinnerStartTime) {
+            Log.i(TAG, "LUNCH");
+            return getMenu(currentMenu, "lunch");
+        } else {
+            Log.i(TAG, "DINNER");
+            return getMenu(currentMenu, "dinner");
+        }
+    }
+
+    public static JSONArray getCurrentMenuItems () {
+        try {
+            JSONObject menu = getCurrentMenu();
+            return (JSONArray) menu.get(Config.API_MENUITEMS_TAG);
+        } catch (JSONException e) {
+            Log.e(TAG, e.getStackTrace().toString());
+        }
+
+        return null;
+    }
 
     public static JSONObject getNextMenu () {
         JSONObject menu = null;
