@@ -553,14 +553,17 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
     private void setUpMap() {
         //mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
         Log.i(TAG, "Bentonow.pending_order_id: " + Bentonow.pending_order_id);
-        if (order != null) {
-            point = order.coords_lat == null ? Config.INIT_LAT_LONG : new LatLng(Double.valueOf(order.coords_lat), Double.valueOf(order.coords_long));
+
+        try {
+            point = new LatLng(Double.valueOf(order.coords_lat), Double.valueOf(order.coords_long));
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, Config.DEFAULT_ZOOM));
-        } else if (Config.INIT_LAT_LONG != null) {
-            point = Config.INIT_LAT_LONG;
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, Config.DEFAULT_ZOOM));
-        } else {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Config.DEFAULT_LAT_LONG, 12));
+        } catch (Exception e) {
+            if (Config.INIT_LAT_LONG != null) {
+                point = Config.INIT_LAT_LONG;
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, Config.DEFAULT_ZOOM));
+            } else {
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Config.DEFAULT_LAT_LONG, 12));
+            }
         }
 
         mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
