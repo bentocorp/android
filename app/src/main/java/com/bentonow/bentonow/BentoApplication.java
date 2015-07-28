@@ -32,7 +32,7 @@ public class BentoApplication extends SugarApp {
         stopService = new TimerTask() {
             @Override
             public void run() {
-                Log.i(TAG, "stoping service");
+                Log.i(TAG, "stopping service");
                 try {
                     instance.stopService(new Intent(instance, BentoService.class));
                 } catch (Exception e) {
