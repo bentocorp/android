@@ -55,28 +55,7 @@ public class ErrorClosedActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
 
-//        setClosedText();
         showNextMenu();
-    }
-
-    private void setClosedText () {
-        TextView textView = (TextView) findViewById(R.id.textView2);
-
-        String weekend = "Have a great weekend! We're back on Monday with more deliciousness. Lunch: 11am-2pm, Dinner: 5pm-10pm";
-        String weekdays = "That's it for tonight! We're back tomorrow...oh yeah! Lunch: 11am-2pm, Dinner: 5pm-10pm";
-        String _else = "We're cookin' up something really delicious today. Get excited! Lunch: 11am-2pm, Dinner: 5pm-10pm";
-
-        Calendar calendar = Calendar.getInstance();
-        int day = calendar.get(Calendar.DAY_OF_WEEK);
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-
-        if ((day == Calendar.FRIDAY && hour >= 20) || day == Calendar.SATURDAY || day == Calendar.SUNDAY) {
-            textView.setText(weekend);
-        } else if ((Calendar.MONDAY == day || Calendar.TUESDAY == day || Calendar.WEDNESDAY == day || Calendar.THURSDAY == day) && hour >= 20) {
-            textView.setText(weekdays);
-        } else {
-            textView.setText(_else);
-        }
     }
 
     private void postData() {
