@@ -70,6 +70,7 @@ public class BaseActivity extends Activity {
         super.onResume();
         Log.i(BASE_TAG, "onResume()");
         Bentonow.app.isFocused = true;
+        BentoApplication.onResume();
     }
 
 
@@ -84,6 +85,7 @@ public class BaseActivity extends Activity {
         super.onPause();
         Log.i(BASE_TAG, "onPause()");
         Bentonow.app.isFocused = false;
+        BentoApplication.onPause();
     }
 
 
