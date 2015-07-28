@@ -99,6 +99,15 @@ public class BentoService extends Service {
         }
     }
 
+    public static boolean forceCheckAll() {
+        try {
+            instance.checkAll();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public void checkAll(){
         Log.i(TAG, "checkOverAll()" );
         if( Bentonow.app.isFocused && !Bentonow.app.is_first_access ) {
