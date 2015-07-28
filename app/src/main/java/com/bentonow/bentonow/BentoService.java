@@ -120,6 +120,7 @@ public class BentoService extends Service {
                         try {
                             JSONObject overall = json.getJSONObject("overall");
 
+                            lastStatus = Shop.isOpen() ? "open" : "closed";
                             Shop.status = overall.getString(Config.API.STATUS_OVERALL_LABEL_VALUE);
 
                             // Checks if the store is open from app logic
