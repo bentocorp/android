@@ -55,7 +55,7 @@ public class ErrorClosedActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
 
-        setClosedText();
+//        setClosedText();
         showNextMenu();
     }
 
