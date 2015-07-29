@@ -27,6 +27,8 @@ public class BentoService extends Service {
     private static final String TAG = "BentoService";
     private static BentoService instance;
     private AQuery aq;
+    private Handler handler;
+    private Runnable task;
 
     public static String lastStatus = "";
 
@@ -45,12 +47,14 @@ public class BentoService extends Service {
         instance=this;
         aq = new AQuery(this);
         initTimerChecker();
+        checkAll();
     }
 
     @Override
     public void onDestroy() {
         instance = null;
         Log.i(TAG, "onDestroy()");
+        handler.removeCallbacks(task);
         super.onDestroy();
     }
 
@@ -62,12 +66,13 @@ public class BentoService extends Service {
     }
 
     private void initTimerChecker() {
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        task = new Runnable() {
             public void run() {
                 checkAll();
             }
-        }, Config.TIME_TO_CHECK_IF_BENTO_OPEN);
+        };
+        handler = new Handler();
+        handler.postDelayed(task, Config.TIME_TO_CHECK_IF_BENTO_OPEN);
     }
 
     public static void processMenuStock(JSONArray menu){
@@ -96,15 +101,6 @@ public class BentoService extends Service {
             }
         } catch (JSONException e) {
             e.printStackTrace();
-        }
-    }
-
-    public static boolean forceCheckAll() {
-        try {
-            instance.checkAll();
-            return true;
-        } catch (Exception e) {
-            return false;
         }
     }
 

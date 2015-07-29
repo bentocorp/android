@@ -60,7 +60,6 @@ public class BentoApplication extends SugarApp {
             Log.i(TAG, "starting service");
             try {
                 instance.startService(new Intent(instance, BentoService.class));
-                BentoService.forceCheckAll();
             } catch (Exception e) {
                 e.printStackTrace();
             }
