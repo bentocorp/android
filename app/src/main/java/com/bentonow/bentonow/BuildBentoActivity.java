@@ -10,11 +10,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.androidquery.AQuery;
+import com.bentonow.bentonow.Utils.Mixpanel;
 import com.bentonow.bentonow.model.Dish;
 import com.bentonow.bentonow.model.Item;
 import com.bentonow.bentonow.model.Orders;
 import com.bentonow.bentonow.model.User;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.List;
@@ -65,6 +69,8 @@ public class BuildBentoActivity extends BaseActivity {
         initActionbar();
         chargeViewsElemnts();
         initListeners();
+
+        Mixpanel.track(this, "Began building a Bento");
     }
 
     private void chargeViewsElemnts() {
@@ -174,7 +180,7 @@ public class BuildBentoActivity extends BaseActivity {
         Log.i(TAG, "createNewOrder()");
         if (Bentonow.pending_order_id == null) {
 
-            List<Orders> pending_orders = Orders.find(Orders.class, null, null);
+            List<Orders> pending_orders = Orders.find(Orders.class, null);
 
             Orders order = new Orders();
             order.today = todayDate;
@@ -576,6 +582,7 @@ public class BuildBentoActivity extends BaseActivity {
                 Log.i(TAG, "current_betno.isFull(): " + current_betno.isFull());
                 disableBtnAddAnotherBento();
                 if (current_betno.isFull()) {
+                    track();
                     current_betno.completed = "yes";
                     current_betno.save();
                     createNewBentoBox();
@@ -835,6 +842,7 @@ public class BuildBentoActivity extends BaseActivity {
     }
 
     private void finalizeOrder() {
+        track();
         User user = User.findById(User.class, (long) 1);
         if( user != null && user.apitoken != null && !user.apitoken.isEmpty() ){
             goToCompleteOrder();
@@ -845,4 +853,20 @@ public class BuildBentoActivity extends BaseActivity {
         }
     }
 
+    private void track () {
+        try {
+            Item current_bento = Item.findById(Item.class, Bentonow.pending_bento_id);
+
+            JSONObject params = new JSONObject();
+            params.put("main", current_bento.main);
+            params.put("side1", current_bento.side1);
+            params.put("side2", current_bento.side2);
+            params.put("side3", current_bento.side3);
+            params.put("side4", current_bento.side4);
+
+            Mixpanel.track(this, "Bento requested", params);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 }

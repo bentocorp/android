@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
+import com.bentonow.bentonow.Utils.Mixpanel;
 import com.bentonow.bentonow.model.Orders;
 import com.bentonow.bentonow.model.User;
 
@@ -296,6 +297,8 @@ public class EnterPhoneNumberActivity extends BaseActivity {
                     user.cardbrand = card_brand;
                     user.cardlast4 = card_last4;
                     user.save();
+
+                    Mixpanel.track(EnterPhoneNumberActivity.this, "Completed Registration");
 
                     if ( Config.AppNavigateMap.from != null && Config.AppNavigateMap.from.equals(Config.from.SettingActivity) ) {
                         Config.AppNavigateMap.from = null;

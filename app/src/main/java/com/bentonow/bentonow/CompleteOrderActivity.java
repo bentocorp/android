@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
+import com.bentonow.bentonow.Utils.Mixpanel;
 import com.bentonow.bentonow.dialog.ConfirmDialog;
 import com.bentonow.bentonow.dialog.CustomDialog;
 import com.bentonow.bentonow.model.Dish;
@@ -338,7 +339,7 @@ public class CompleteOrderActivity extends BaseActivity {
         btn_tip_negative.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if( Config.CurrentOrder.tip_percent > 0 ) Config.CurrentOrder.tip_percent-=5;
+                if (Config.CurrentOrder.tip_percent > 0) Config.CurrentOrder.tip_percent -= 5;
                 calculateValues();
                 showOrderDetails();
             }
@@ -359,7 +360,7 @@ public class CompleteOrderActivity extends BaseActivity {
             public void onClick(View v) {
                 Log.i(TAG, "user: " + current_user.toString());
 
-                if(!Orders.addressVerification(new LatLng(Double.valueOf(current_order.coords_lat),Double.valueOf(current_order.coords_long)))){
+                if (!Orders.addressVerification(new LatLng(Double.valueOf(current_order.coords_lat), Double.valueOf(current_order.coords_long)))) {
                     overlay_bad_address.setVisibility(View.VISIBLE);
                 }
 
@@ -468,7 +469,7 @@ public class CompleteOrderActivity extends BaseActivity {
                         }
                     }
 
-                    if (current_order.amountoff != null && !current_order.amountoff.isEmpty() ) {
+                    if (current_order.amountoff != null && !current_order.amountoff.isEmpty()) {
                         try {
                             data.put("CouponCode", current_order.couponcode);
                         } catch (JSONException e) {
@@ -598,6 +599,20 @@ public class CompleteOrderActivity extends BaseActivity {
                         Log.i(TAG, "status.getCode(): " + status.getCode());
                         Log.i(TAG, "status.getError(): " + status.getError());
                         Log.i(TAG, "status.getMessage(): " + status.getMessage());
+
+                        try {
+                            JSONObject params = new JSONObject();
+                            params.put("quantity", Item.find(Item.class, "orderid=?", String.valueOf(Bentonow.pending_order_id)));
+                            params.put("payment method", current_user.cardbrand);
+                            params.put("total price", Config.CurrentOrder.total_items_cost);
+                            params.put("status", status.getCode() == 200 ? "success" : "failure");
+                            params.put("status_error", status.getCode());
+
+                            Mixpanel.track(CompleteOrderActivity.this, "Placed an order", params);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
                         switch (status.getCode()) {
                             case 200:
                                 Orders current_order = Orders.findById(Orders.class, Bentonow.pending_order_id);

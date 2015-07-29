@@ -30,6 +30,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bentonow.bentonow.Utils.Mixpanel;
 import com.bentonow.bentonow.model.Orders;
 import com.bentonow.bentonow.model.User;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -424,6 +425,14 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                         }
                     }
                 } else {
+                    try {
+                        JSONObject params = new JSONObject();
+                        params.put("address", bestMatch.toString());
+                        Mixpanel.track(DeliveryLocationActivity.this, "Selected address outside of service area", params);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
                     Intent intent = new Intent(getApplicationContext(), ErrorInvalidAddressActivity.class);
                     intent.putExtra(Config.invalid_address_extra_label, newAddress);
                     startActivity(intent);

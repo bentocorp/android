@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
+import com.bentonow.bentonow.Utils.Mixpanel;
 import com.bentonow.bentonow.model.Orders;
 import com.bentonow.bentonow.model.User;
 import com.facebook.AccessToken;
@@ -55,6 +56,7 @@ public class SignUpActivity extends BaseActivity {
     private CallbackManager callbackManager;
     private TextView btn_privacy_policy;
     private TextView btn_terms_conditions;
+    private boolean beganRegistration = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,7 +130,10 @@ public class SignUpActivity extends BaseActivity {
         TextWatcher watcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                if (!beganRegistration) {
+                    Mixpanel.track(SignUpActivity.this, "Began Registration");
+                    beganRegistration = true;
+                }
             }
 
             @Override
@@ -486,7 +491,7 @@ public class SignUpActivity extends BaseActivity {
 
     @Override
     protected void onPause() {
-        super.onResume();
+        super.onPause();
         AppEventsLogger.deactivateApp(this);
     }
 
@@ -572,6 +577,8 @@ public class SignUpActivity extends BaseActivity {
                     user.cardbrand = card_brand;
                     user.cardlast4 = card_last4;
                     user.save();
+
+                    Mixpanel.track(SignUpActivity.this, "Completed Registration");
 
                     if (Config.AppNavigateMap.from != null && Config.AppNavigateMap.from.equals(Config.from.SettingActivity)) {
                         Config.AppNavigateMap.from = null;

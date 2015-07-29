@@ -1,9 +1,9 @@
 package com.bentonow.bentonow;
 
-import android.app.Application;
 import android.content.Intent;
 import android.util.Log;
 
+import com.bentonow.bentonow.Utils.Mixpanel;
 import com.orm.SugarApp;
 
 import java.util.Timer;
@@ -22,6 +22,8 @@ public class BentoApplication extends SugarApp {
         super.onCreate();
 
         instance = this;
+
+        Mixpanel.getInstance(this);
     }
 
     static public void onPause () {

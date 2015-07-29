@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
+import com.bentonow.bentonow.Utils.Mixpanel;
 import com.bentonow.bentonow.model.Dish;
 import com.bentonow.bentonow.model.Ioscopy;
 import com.bentonow.bentonow.model.Orders;
@@ -165,6 +166,8 @@ public class MainActivity extends BaseActivity {
                 return;
             }
         }
+
+        Mixpanel.track(this, "Opening app outside of service area");
 
         startActivity(new Intent(getApplicationContext(), DeliveryLocationActivity.class));
         overridePendingTransitionGoRight();

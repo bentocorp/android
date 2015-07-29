@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bentonow.bentonow.Utils.Mixpanel;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -55,6 +56,9 @@ public class NextDayMenuActivity extends BaseActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        Mixpanel.track(this, "Previewed Today's Menu");
+
         initActionbar();
     }
 
