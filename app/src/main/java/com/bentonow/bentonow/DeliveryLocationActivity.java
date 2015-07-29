@@ -530,7 +530,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
-        //mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
         Log.i(TAG, "Bentonow.pending_order_id: " + Bentonow.pending_order_id);
 
         try {
@@ -555,15 +554,16 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                 mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                     @Override
                     public void onMapClick(final LatLng latLng) {
+                        if (latLng != null) {
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, Config.DEFAULT_ZOOM));
+                            autoCompView.setText("", false);
+                            bestMatch = null;
 
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, Config.DEFAULT_ZOOM));
-                        autoCompView.setText("", false);
-                        bestMatch = null;
+                            btn_confirm_address.setVisibility(View.GONE);
+                            btn_continue.setVisibility(View.VISIBLE);
 
-                        btn_confirm_address.setVisibility(View.GONE);
-                        btn_continue.setVisibility(View.VISIBLE);
-
-                        markerLocation(latLng);
+                            markerLocation(latLng);
+                        }
                     }
                 });
             }
