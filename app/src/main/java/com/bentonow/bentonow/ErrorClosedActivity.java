@@ -12,6 +12,7 @@ import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
 import com.bentonow.bentonow.Utils.Email;
+import com.bentonow.bentonow.model.Ioscopy;
 import com.bentonow.bentonow.model.Shop;
 import com.squareup.picasso.Picasso;
 
@@ -20,7 +21,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -54,6 +54,13 @@ public class ErrorClosedActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE);
+
+        if (hour >= 2000) {
+            ((TextView)findViewById(R.id.textView2)).setText(Ioscopy.getKeyValue("closed-text-latenight"));
+        }
 
         showNextMenu();
     }
@@ -163,10 +170,6 @@ public class ErrorClosedActivity extends BaseActivity {
             jsonToSend = meals.toString();
             JSONArray MenuItems = meals.getJSONArray("MenuItems");
             preloadImages(MenuItems);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
