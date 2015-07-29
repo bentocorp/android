@@ -1,22 +1,17 @@
 package com.bentonow.bentonow.model;
 
-import android.content.Intent;
 import android.util.Log;
 
 import com.bentonow.bentonow.Bentonow;
 import com.bentonow.bentonow.Config;
-import com.bentonow.bentonow.ErrorInvalidAddressActivity;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
 import com.orm.SugarRecord;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-/**
- * Created by gonzalo on 29/04/2015.
- */
+
 public class Orders extends SugarRecord<Orders> {
     public String today;
     public String address_number;
@@ -54,7 +49,6 @@ public class Orders extends SugarRecord<Orders> {
 
     @Override
     public String toString() {
-        super.toString();
         return "id: "+getId()+", today: "+today+", address_number: "+address_number+", address_street: "+address_street+", address_city: "+address_city+", address_state: "+address_state+", address_zip: "+address_zip+", coords_lat: "+coords_lat+", coords_long: "+coords_long+", tax_cents: "+tax_cents+", tip_cents: "+tip_cents+", total_cents: "+total_cents+", completed: "+completed;
     }
 
@@ -71,7 +65,7 @@ public class Orders extends SugarRecord<Orders> {
     }
 
     public String getOrderAddress(){
-        String address = "";
+        String address;
         String address_number_aux = "";
         String address_street_aux = "";
         String address_city_aux = "";
@@ -87,7 +81,7 @@ public class Orders extends SugarRecord<Orders> {
     }
 
     public String getOrderAddressStreet(){
-        String address = "";
+        String address;
         String address_number_aux = "";
         String address_street_aux = "";
         if ( this.address_number != null ) address_number_aux = this.address_number;
@@ -98,7 +92,7 @@ public class Orders extends SugarRecord<Orders> {
 
     public static Long getLastOrderId() {
         Long last_order_address = null;
-        List<Orders> orders = Orders.find(Orders.class, null, null);
+        List<Orders> orders = Orders.find(Orders.class, null);
         for( Orders lastOrder : orders ){
             last_order_address = lastOrder.getId();
         }
@@ -106,7 +100,7 @@ public class Orders extends SugarRecord<Orders> {
     }
 
     public static boolean addressVerification(LatLng location) {
-        List<LatLng> sfpolygon = new ArrayList<LatLng>();
+        List<LatLng> sfpolygon = new ArrayList<>();
         String[] serviceArea_dinner = Config.serviceArea_dinner.split(" ");
         for (String aServiceArea_dinner : serviceArea_dinner) {
             String[] loc = aServiceArea_dinner.split(",");
@@ -115,11 +109,7 @@ public class Orders extends SugarRecord<Orders> {
             sfpolygon.add(new LatLng(lat, lng));
         }
 
-        if ( PolyUtil.containsLocation(new LatLng(location.latitude, location.longitude), sfpolygon, false) ) {
-            return true;
-        }else{
-            return false;
-        }
+        return PolyUtil.containsLocation(new LatLng(location.latitude, location.longitude), sfpolygon, false);
     }
 
     public static Long itemWithDishOutOfStock() {
@@ -161,7 +151,7 @@ public class Orders extends SugarRecord<Orders> {
 
     public static Long getLastItemId() {
         Long last_item_id = null;
-        List<Orders> orders = Orders.find(Orders.class, null, null);
+        List<Orders> orders = Orders.find(Orders.class, null);
         for( Orders lastOrder : orders ){
             last_item_id = lastOrder.getId();
         }
