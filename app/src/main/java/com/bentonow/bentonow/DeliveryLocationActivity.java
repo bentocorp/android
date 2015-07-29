@@ -9,7 +9,6 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Handler;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -37,7 +36,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -62,36 +60,23 @@ import java.util.Locale;
 public class DeliveryLocationActivity extends BaseFragmentActivity {
 
     private static final String TAG = "DeliveryLocationActivit";
-    private static boolean FLAG_LOCALIZED = false;
 
-    int c = 0;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-    private boolean i_agree = false;
-    private ImageView btn_help;
     private RelativeLayout overlay_help;
-    private TextView btn_cancel;
-    private TextView btn_iagree;
-    private Location current_location;
-    private ImageView btn_go_to_current_location;
     private AutoCompleteTextView autoCompView;
     private CheckBox chckIagree;
     private TextView alert_iagree;
     private TextView btn_continue;
     private TextView btn_confirm_address;
     private String newAddress = "";
-    private ImageView actionbar_right_btn;
-    private LatLng auxTarget;
     private Orders order;
-    private FragmentActivity activity;
     private ImageView btn_clear;
     private ProgressBar progressBar;
     Address bestMatch;
     private Marker marker;
     private String newAddressToCompare;
     private LatLng current_latlng;
-    private LatLng onCameraChangePosition;
     private Location lastScanedLocation;
-    private String lastUrl;
     private LatLng point;
 
     @Override
@@ -99,8 +84,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_delivery_location);
 
-        //setUpMapIfNeeded();
-        activity = this;
         Bentonow.app.current_activity = this;
 
         Log.i(TAG, "onCreate()");
@@ -114,7 +97,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         if( order != null ) address = order.getOrderAddress();
         //////////// INI GOOGLE PLACE AUTOCOMPLETE //////////////
         autoCompView = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView);
-        autoCompView.setAdapter(new GooglePlacesAutocompleteAdapter(getApplicationContext(), R.layout.listitem_locationaddress));
+        autoCompView.setAdapter(new GooglePlacesAutocompleteAdapter(this, R.layout.listitem_locationaddress));
         autoCompView.setText(address, false);
         //Log.i(TAG, "autoCompView: " + autoCompView.toString());
         autoCompView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -180,11 +163,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
             Geocoder geoCoderClick = new Geocoder(getApplicationContext(), Locale.getDefault());
             try {
                 List<Address> addresses = geoCoderClick.getFromLocationName(str, 5);
-                String add = "";
                 if (addresses.size() > 0) {
-                    //String coords = "geo:" + String.valueOf(addresses.get(0).getLatitude()) + "," + String.valueOf(addresses.get(0).getLongitude());
                     Location searched_location = new Location("searchedLocation");
-                    //LatLng point = mMap.getCameraPosition().target;
                     searched_location.setLatitude(addresses.get(0).getLatitude());
                     searched_location.setLongitude(addresses.get(0).getLongitude());
                     searched_location.setTime(new Date().getTime());
@@ -229,7 +209,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         final Activity _this = this;
 
         //
-        actionbar_right_btn = (ImageView)findViewById(R.id.actionbar_right_btn);
+        ImageView actionbar_right_btn = (ImageView) findViewById(R.id.actionbar_right_btn);
         actionbar_right_btn.setImageResource(R.drawable.ic_ab_help);
         actionbar_right_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -266,7 +246,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         });
 
         overlay_help = (RelativeLayout) findViewById(R.id.overlay_help);
-        btn_help = (ImageView) findViewById(R.id.btn_help);
+        ImageView btn_help = (ImageView) findViewById(R.id.btn_help);
         btn_help.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -274,7 +254,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
             }
         });
 
-        btn_cancel = (TextView) findViewById(R.id.btn_cancel);
+        TextView btn_cancel = (TextView) findViewById(R.id.btn_cancel);
         btn_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -282,7 +262,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
             }
         });
 
-        btn_iagree = (TextView) findViewById(R.id.btn_iagree);
+        TextView btn_iagree = (TextView) findViewById(R.id.btn_iagree);
         btn_iagree.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -293,7 +273,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         });
 
         if( Config.current_location != null ) {
-            btn_go_to_current_location = (ImageView) findViewById(R.id.btn_go_to_current_location);
+            ImageView btn_go_to_current_location = (ImageView) findViewById(R.id.btn_go_to_current_location);
             btn_go_to_current_location.setVisibility(View.VISIBLE);
             btn_go_to_current_location.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -367,7 +347,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                 String address_state = bestMatch.getAdminArea();
                 String address_zip = bestMatch.getPostalCode();
 
-                List<LatLng> sfpolygon = new ArrayList<LatLng>();
+                List<LatLng> sfpolygon = new ArrayList<>();
                 String[] serviceArea_dinner = Config.serviceArea_dinner.split(" ");
                 for (String aServiceArea_dinner : serviceArea_dinner) {
                     String[] loc = aServiceArea_dinner.split(",");
@@ -379,12 +359,12 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
 
                 //Log.i(TAG, "sfpolygon: " + sfpolygon.toString());
                 if (PolyUtil.containsLocation(mMap.getCameraPosition().target, sfpolygon, false)) {
-                    Orders order = null;
+                    Orders order;
                     if (Bentonow.pending_order_id == null) {
                         order = new Orders();
                         order.today = todayDate;
-                        order.coords_lat = String.valueOf(((LatLng) mMap.getCameraPosition().target).latitude);
-                        order.coords_long = String.valueOf(((LatLng) mMap.getCameraPosition().target).longitude);
+                        order.coords_lat = String.valueOf(mMap.getCameraPosition().target.latitude);
+                        order.coords_long = String.valueOf(mMap.getCameraPosition().target.longitude);
                         order.address_number = address_number;
                         order.address_street = address_street;
                         order.address_city = address_city;
@@ -400,8 +380,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                         if (user != null && (user.cardlast4 == null || user.cardlast4.isEmpty())) {
                             Log.i(TAG, "user");
                             order = Orders.findById(Orders.class, Bentonow.pending_order_id);
-                            order.coords_lat = String.valueOf(((LatLng) mMap.getCameraPosition().target).latitude);
-                            order.coords_long = String.valueOf(((LatLng) mMap.getCameraPosition().target).longitude);
+                            order.coords_lat = String.valueOf(mMap.getCameraPosition().target.latitude);
+                            order.coords_long = String.valueOf(mMap.getCameraPosition().target.longitude);
                             order.address_number = address_number;
                             order.address_street = address_street;
                             order.address_city = address_city;
@@ -412,8 +392,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                             overridePendingTransitionGoRight();
                         } else {
                             order = Orders.findById(Orders.class, Bentonow.pending_order_id);
-                            order.coords_lat = String.valueOf(((LatLng) mMap.getCameraPosition().target).latitude);
-                            order.coords_long = String.valueOf(((LatLng) mMap.getCameraPosition().target).longitude);
+                            order.coords_lat = String.valueOf(mMap.getCameraPosition().target.latitude);
+                            order.coords_long = String.valueOf(mMap.getCameraPosition().target.longitude);
                             order.address_number = address_number;
                             order.address_street = address_street;
                             order.address_city = address_city;
@@ -448,16 +428,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         startActivity(intent);
         overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
         finish();
-    }
-
-
-    private static List<LatLng> makeList(double... coords) {
-        int size = coords.length / 2;
-        ArrayList<LatLng> list = new ArrayList<LatLng>(size);
-        for (int i = 0; i < size; ++i) {
-            list.add(new LatLng(coords[i + i], coords[i + i + 1]));
-        }
-        return list;
     }
 
     @Override
@@ -596,21 +566,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                         markerLocation(latLng);
                     }
                 });
-
-                /*mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
-                    @Override
-                    public void onCameraChange(CameraPosition cameraPosition) {
-                        onCameraChangePosition = mMap.getCameraPosition().target;
-                        Log.i(TAG, "onCameraChange() onCameraChangePosition: " + onCameraChangePosition);
-                        autoCompView.setText("",false);
-                        bestMatch = null;
-
-                        btn_confirm_address.setVisibility(View.GONE);
-                        btn_continue.setVisibility(View.VISIBLE);
-
-                        markerLocation(mMap.getCameraPosition().target);
-                    }
-                });*/
             }
         });
     }
@@ -624,7 +579,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         LatLng latLng = new LatLng(latitude, longitude);
         markerLocation(latLng);
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, Config.DEFAULT_ZOOM));
-        final Location location = new Location("newLocation");
         scanCurrentLocation(find_location);
     }
 
@@ -632,7 +586,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         if( current_latlng == null || !current_latlng.equals(latLng) ) {
             current_latlng = latLng;
             Log.i(TAG, "markerLocation()");
-            float zoom = mMap.getCameraPosition().zoom;
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, mMap.getCameraPosition().zoom > Config.MIN_ZOOM ? mMap.getCameraPosition().zoom : Config.DEFAULT_ZOOM ));
             if (marker == null) {
                 marker = mMap.addMarker(new MarkerOptions()
@@ -688,14 +641,10 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
         HttpURLConnection conn = null;
         StringBuilder jsonResults = new StringBuilder();
         try {
-            StringBuilder sb = new StringBuilder(Config.PLACES_API_BASE + Config.TYPE_AUTOCOMPLETE + Config.OUT_JSON);
-            sb.append("?key=" + getResources().getString(R.string.google_server_key));
-            sb.append("&input=" + URLEncoder.encode(input, "utf8"));
 
-            URL url = new URL(sb.toString());
+            URL url = new URL(Config.PLACES_API_BASE + Config.TYPE_AUTOCOMPLETE + Config.OUT_JSON + "?key=" + getResources().getString(R.string.google_server_key) + "&input=" + URLEncoder.encode(input, "utf8"));
 
             Log.i(TAG,"URL: " + url);
-            lastUrl = url.toString();
             conn = (HttpURLConnection) url.openConnection();
             InputStreamReader in = new InputStreamReader(conn.getInputStream());
 
@@ -707,10 +656,10 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
             }
         } catch (MalformedURLException e) {
             Log.e(TAG, "Error processing Places API URL", e);
-            return resultList;
+            return null;
         } catch (IOException e) {
             Log.e(TAG, "Error connecting to Places API", e);
-            return resultList;
+            return null;
         } finally {
             if (conn != null) {
                 conn.disconnect();
@@ -724,7 +673,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
             JSONArray predsJsonArray = jsonObj.getJSONArray("predictions");
 
             // Extract the Place descriptions from the results
-            resultList = new ArrayList<String>(predsJsonArray.length());
+            resultList = new ArrayList<>(predsJsonArray.length());
             for (int i = 0; i < predsJsonArray.length(); i++) {
                 //Log.i(TAG,predsJsonArray.getJSONObject(i).getString("description"));
                 //Log.i(TAG,"============================================================");
@@ -746,7 +695,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
 
         @Override
         public int getCount() {
-            return resultList.size();
+            return (resultList != null) ? resultList.size() : 0;
         }
 
         @Override
@@ -760,7 +709,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
 
         @Override
         public Filter getFilter() {
-            Filter filter = new Filter() {
+            return new Filter() {
                 @Override
                 protected FilterResults performFiltering(CharSequence constraint) {
                     FilterResults filterResults = new FilterResults();
@@ -785,7 +734,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity {
                     }
                 }
             };
-            return filter;
         }
     }
     ////////////// END AUTOCOMPLETE GOOGLE PLACE /////////////////
