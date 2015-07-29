@@ -39,6 +39,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.main_title'), 'proguard-rules.pro'
             debuggable false
             signingConfig signingConfigs.Bento
+            ext.betaDistributionReleaseNotes="Closed text now comes from backend, when app goes more than 10 seconds on background the service stops and when comes on foreground it starts again, and inmediately check if is open/close, added mixpanel integration."
+            ext.betaDistributionEmails="normanpaniagua@gmail.com"
         }
         debug {
             applicationIdSuffix ".debug"
@@ -68,4 +70,5 @@ dependencies {
     compile 'me.grantland:autofittextview:0.2.+'
     compile 'com.squareup.okhttp:okhttp:2.+'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.+'
+    compile 'com.mixpanel.android:mixpanel-android:4.6.2'
 }
