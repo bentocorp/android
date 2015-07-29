@@ -60,6 +60,8 @@ public class ErrorClosedActivity extends BaseActivity {
 
         if (hour >= 2000) {
             ((TextView)findViewById(R.id.textView2)).setText(Ioscopy.getKeyValue("closed-text-latenight"));
+        } else {
+            ((TextView)findViewById(R.id.textView2)).setText(Ioscopy.getKeyValue("closed-text"));
         }
 
         showNextMenu();
