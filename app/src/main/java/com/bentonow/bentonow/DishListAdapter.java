@@ -1,14 +1,8 @@
 package com.bentonow.bentonow;
 
-/**
- * Created by gonzalo on 30/05/2015.
- */
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.Debug;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,17 +26,14 @@ public class DishListAdapter extends BaseAdapter {
     private static final String TAG = "MenuItemAdapter";
     private final ArrayList<HashMap<String, String>> data;
     private final Activity activity;
-    //private final AQuery listAq;
     private final LayoutInflater inflater;
     private Holder current_holder;
-    //private HashMap<String, String> row;
 
 
     public DishListAdapter(Activity a, ArrayList<HashMap<String, String>> datos) {
         data = datos;
         activity = a;
         inflater = (LayoutInflater) a.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        //listAq = new AQuery(activity);
     }
 
     public int getCount() {
@@ -93,27 +84,27 @@ public class DishListAdapter extends BaseAdapter {
 
             switch (Bentonow.current_side){
                 case Config.SIDE.MAIN:
-                    if( bento.main != null && finalHolder.iid.equals(bento.main) ){
+                    if( bento.main != null && finalHolder.iid != null && finalHolder.iid.equals(bento.main) ){
                         selectedDish(finalHolder);
                     }
                     break;
                 case Config.SIDE.SIDE_1:
-                    if( bento.side1 != null && finalHolder.iid.equals(bento.side1) ){
+                    if( bento.side1 != null && finalHolder.iid != null && finalHolder.iid.equals(bento.side1) ){
                         selectedDish(finalHolder);
                     }
                     break;
                 case Config.SIDE.SIDE_2:
-                    if( bento.side2 != null && finalHolder.iid.equals(bento.side2) ){
+                    if( bento.side2 != null && finalHolder.iid != null && finalHolder.iid.equals(bento.side2) ){
                         selectedDish(finalHolder);
                     }
                     break;
                 case Config.SIDE.SIDE_3:
-                    if( bento.side3 != null && finalHolder.iid.equals(bento.side3) ){
+                    if( bento.side3 != null && finalHolder.iid != null && finalHolder.iid.equals(bento.side3) ){
                         selectedDish(finalHolder);
                     }
                     break;
                 case Config.SIDE.SIDE_4:
-                    if( bento.side4 != null && finalHolder.iid.equals(bento.side4) ){
+                    if( bento.side4 != null && finalHolder.iid != null && finalHolder.iid.equals(bento.side4) ){
                         selectedDish(finalHolder);
                     }
                     break;
@@ -136,11 +127,9 @@ public class DishListAdapter extends BaseAdapter {
             holder.overlay_menu_detail.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //Log.i(TAG, "finalHolder.pressed: " + finalHolder.pressed.toString());
                     if (!finalHolder.selected && !finalHolder.iid.equals(Bentonow.current_dish_selected)) {
                         hideItemDetails(finalHolder);
                     }
-                    //if(finalHolder.pressed) {}
                 }
             });
 
@@ -174,7 +163,6 @@ public class DishListAdapter extends BaseAdapter {
                             break;
                     }
                     bento.save();
-                    //SelectSideActivity.goToMain();
                     Intent intent = new Intent(activity, BuildBentoActivity.class);
                     activity.startActivity(intent);
                     activity.finish();
@@ -233,7 +221,6 @@ public class DishListAdapter extends BaseAdapter {
             holder.main_menu_item_description.setText(description);
 
             if(!holder.row.get("image1").isEmpty()) {
-                //stripImageView(holder.img);
                 Picasso.with(activity)
                         .load(holder.row.get("image1"))
                         .placeholder(R.drawable.tmp_trans)
@@ -244,19 +231,11 @@ public class DishListAdapter extends BaseAdapter {
             Log.i(TAG,"empty");
             holder.main_title.setText("");
             holder.img.setImageResource(R.drawable.tmp_trans);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return view;
-    }
-
-    public static void stripImageView(ImageView view) {
-        if ( view.getDrawable() instanceof BitmapDrawable) {
-            ((BitmapDrawable)view.getDrawable()).getBitmap().recycle();
-        }
-        view.getDrawable().setCallback(null);
-        view.setImageDrawable(null);
-        view.getResources().flushLayoutCache();
-        view.destroyDrawingCache();
     }
 
     private void selectedDish(Holder aHolder) {
