@@ -23,7 +23,9 @@ public class BentoApplication extends SugarApp {
 
         instance = this;
 
-        Mixpanel.getInstance(this);
+        if (!BuildConfig.DEBUG) {
+            Mixpanel.getInstance(this);
+        }
     }
 
     static public void onPause () {

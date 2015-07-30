@@ -2,6 +2,7 @@ package com.bentonow.bentonow.Utils;
 
 import android.content.Context;
 
+import com.bentonow.bentonow.BuildConfig;
 import com.bentonow.bentonow.R;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
@@ -13,10 +14,14 @@ public class Mixpanel {
     }
 
     public static void track (Context context, String event) {
-        getInstance(context).track(event);
+        if (!BuildConfig.DEBUG) {
+            getInstance(context).track(event);
+        }
     }
 
     public static void track (Context context, String event, JSONObject params) {
-        getInstance(context).track(event, params);
+        if (!BuildConfig.DEBUG) {
+            getInstance(context).track(event, params);
+        }
     }
 }
