@@ -338,14 +338,11 @@ public class MainActivity extends BaseActivity {
         }
 
         public void MenuItems(JSONArray MenuItems) {
-            Log.i(TAG, "MenuItems: " + (MenuItems != null ? MenuItems.toString() : "null"));
             if (MenuItems != null) {
                 for (int i = 0; i < MenuItems.length(); i++) {
                     JSONObject gDish;
                     try {
                         gDish = (JSONObject) MenuItems.get(i);
-
-                        Log.i(TAG, "gDish: " + gDish.toString());
 
                         String image = gDish.getString(Config.DISH.IMAGE1);
                         if (!TextUtils.isEmpty(image)) {
@@ -373,11 +370,9 @@ public class MainActivity extends BaseActivity {
                             dish.qty = Config.aux_initial_stock;
                             dish.today = todayDate;
                             dish.save();
-
-                            Log.i(TAG, "dish: " + dish.toString());
                         }
                     } catch (JSONException e) {
-                        Log.e(TAG, e.toString());
+                        e.printStackTrace();
                     }
                 }
             }
