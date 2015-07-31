@@ -4,7 +4,9 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -49,6 +51,7 @@ public class CompleteOrderActivity extends BaseActivity {
     private static final String TAG = "CompleteOrderActivity";
     private TextView address_textview;
     private TextView btn_edit_address;
+    private ImageView credit_card_icon;
     private TextView credit_card_textview;
     private Orders current_order;
     private User current_user;
@@ -117,17 +120,40 @@ public class CompleteOrderActivity extends BaseActivity {
             overridePendingTransitionGoLeft();
         }
 
-
-
         // INITIATE USER
         current_user = User.findById(User.class, (long) 1);
 
         // PAYMENT METHOD
-        String cardbrand = "";
         String cardlast4 = "";
-        if( current_user != null && current_user.cardbrand!=null ) cardbrand = current_user.cardbrand;
-        if( current_user != null && current_user.cardlast4!=null ) cardlast4 = current_user.cardlast4;
-        credit_card_data = cardbrand+" "+cardlast4;
+        int card = R.drawable.card_empty;
+
+        if( current_user != null && current_user.cardlast4!=null ) {
+            cardlast4 = current_user.cardlast4;
+
+            switch (current_user.cardbrand) {
+                case "American Express":
+                    card = R.drawable.card_amex;
+                    break;
+                case "Mastercard":
+                    card = R.drawable.card_mastercard;
+                    break;
+                case "Visa":
+                    card = R.drawable.card_visa;
+                    break;
+                case "Diners Club":
+                    card = R.drawable.card_diners;
+                    break;
+                case "Discover Card":
+                    card = R.drawable.card_discover;
+                    break;
+                case "JCB":
+                    card = R.drawable.card_jcb;
+                    break;
+            }
+        }
+
+        credit_card_icon.setImageResource(card);
+        credit_card_data = cardlast4;
 
         // Config
         Config.CurrentOrder.item_price = Double.parseDouble(Ioscopy.getKeyValue(Config.IOSCOPY.PRICE));
@@ -140,6 +166,7 @@ public class CompleteOrderActivity extends BaseActivity {
         Log.i(TAG, "initElemnts()");
         address_textview = (TextView)findViewById(R.id.address_textview);
         btn_edit_address = (TextView)findViewById(R.id.btn_edit_address);
+        credit_card_icon = (ImageView)findViewById(R.id.ic_card);
         credit_card_textview = (TextView)findViewById(R.id.credit_card_textview);
         btn_add_another_bento = (TextView)findViewById(R.id.btn_add_another_bento);
         tax_detail = (TextView)findViewById(R.id.tax_detail);
