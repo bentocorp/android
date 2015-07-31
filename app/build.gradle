@@ -30,8 +30,8 @@ android {
         applicationId "com.bentonow.bentonow"
         minSdkVersion 17
         targetSdkVersion 22
-        versionCode 3
-        versionName '1.2'
+        versionCode 13
+        versionName '1.3'
     }
     buildTypes {
         release {
@@ -39,8 +39,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.main_title'), 'proguard-rules.pro'
             debuggable false
             signingConfig signingConfigs.Bento
-            ext.betaDistributionReleaseNotes="Closed text now comes from backend, when app goes more than 10 seconds on background the service stops and when comes on foreground it starts again, and inmediately check if is open/close, added mixpanel integration."
-            ext.betaDistributionEmails="normanpaniagua@gmail.com"
         }
         debug {
             applicationIdSuffix ".debug"
