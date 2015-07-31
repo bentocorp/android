@@ -79,13 +79,23 @@
             android:orientation="horizontal"
             android:layout_below="@+id/divisor_1"
             >
+            <ImageView
+                android:id="@+id/ic_card"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:src="@drawable/card_empty"
+                android:padding="@dimen/btn_padding"
+                />
             <TextView
                 android:id="@+id/credit_card_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Pay"
                 android:textColor="@color/black"
-                android:padding="@dimen/btn_padding"
+                android:paddingTop="@dimen/btn_padding"
+                android:paddingBottom="@dimen/btn_padding"
+                android:paddingRight="@dimen/btn_padding"
                 android:layout_weight="1" />
             <TextView
                 android:id="@+id/btn_edit_credit_card"
