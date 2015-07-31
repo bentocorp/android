@@ -9,7 +9,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.androidquery.AQuery;
 import com.bentonow.bentonow.Utils.Mixpanel;
 import com.bentonow.bentonow.model.Dish;
 import com.bentonow.bentonow.model.Item;
@@ -17,7 +16,6 @@ import com.bentonow.bentonow.model.Orders;
 import com.bentonow.bentonow.model.User;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
@@ -27,10 +25,6 @@ import java.util.List;
 public class BuildBentoActivity extends BaseActivity {
 
     private static final String TAG = "BuildBentoActivity";
-    private AQuery aq;
-    private LinearLayout build_main;
-
-    private ImageView main_img;
 
     private TextView build_main_label_textview;
     private ImageView build_main_imageview;
@@ -49,7 +43,6 @@ public class BuildBentoActivity extends BaseActivity {
     private TextView btn_add_another_bento;
     private TextView btn_add_another_bento_disabled;
     private TextView bento_box_counter_textview;
-    private int bento_count = 0;
     private TextView btn_continue, btn_finalize_order;
     private RelativeLayout overlay_autocomplete_bento;
     private TextView btn_no_complete_for_me,btn_yes_complete_for_me;
@@ -65,7 +58,6 @@ public class BuildBentoActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_build_bento);
         Log.i(TAG, "onCreate");
-        aq = new AQuery(this);
         initActionbar();
         chargeViewsElemnts();
         initListeners();
@@ -157,7 +149,6 @@ public class BuildBentoActivity extends BaseActivity {
                 } else {
                     for (Item item : pending_bento) {
                         Log.i(TAG, "Each pending item: " + pending_bento.toString());
-                        bento_count++;
                         Bentonow.pending_bento_id = item.getId();
                         if (Bentonow.pending_bento_id != null) {
                             Item current_betno = Item.findById(Item.class, Bentonow.pending_bento_id);
@@ -513,7 +504,7 @@ public class BuildBentoActivity extends BaseActivity {
 
     private void initListeners() {
         //go to BentoSelectMainActivity
-        build_main = (LinearLayout)findViewById(R.id.build_main);
+        LinearLayout build_main = (LinearLayout) findViewById(R.id.build_main);
         build_main.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -623,8 +614,6 @@ public class BuildBentoActivity extends BaseActivity {
                         Bentonow.current_side = Config.SIDE.SIDE_4;
                         startActivity(new Intent(getApplicationContext(), SelectSideActivity.class));
                         overridePendingTransitionGoRight();
-                    } else {
-
                     }
                     //showDialogForAutocompleteBento();
                 } else {
@@ -815,19 +804,6 @@ public class BuildBentoActivity extends BaseActivity {
             Bentonow.pending_bento_id = null; // reset
             finalizeOrder();
         }
-    }
-
-    class processHolder {
-        public Dish mDish;
-        public Integer mQty;
-        public Dish s1Dish;
-        public Integer s1Qty;
-        public Dish s2Dish;
-        public Integer s2Qty;
-        public Dish s3Dish;
-        public Integer s3Qty;
-        public Dish s4Dish;
-        public Integer s4Qty;
     }
 
     private void goToCompleteOrder() {
