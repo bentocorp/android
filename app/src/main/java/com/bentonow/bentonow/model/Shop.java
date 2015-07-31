@@ -22,8 +22,10 @@ public class Shop {
         Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE);
 
+        Log.i(TAG, status);
+
         try {
-            JSONObject menu = null;
+            JSONObject menu;
 
             // Check if there is a menu
             if (hour < Config.DinnerStartTime) {
@@ -34,6 +36,10 @@ public class Shop {
                     return false;
             } else {
                 menu = getMenu(currentMenu, "dinner");
+
+                // We only support custom lunch
+                if (menu != null && !menu.getJSONObject("Menu").getString("menu_type").equals("custom"))
+                    return false;
             }
 
             // This is only for debug the application
@@ -45,7 +51,7 @@ public class Shop {
                 }
             }
 
-            if (menu != null) return status.equals("open");
+            return status.equals("open");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -74,10 +80,8 @@ public class Shop {
         int hour = calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE);
 
         if (hour < Config.DinnerStartTime) {
-            Log.i(TAG, "LUNCH");
             return getMenu(currentMenu, "lunch");
         } else {
-            Log.i(TAG, "DINNER");
             return getMenu(currentMenu, "dinner");
         }
     }
@@ -87,7 +91,7 @@ public class Shop {
             JSONObject menu = getCurrentMenu();
             return (JSONArray) menu.get(Config.API_MENUITEMS_TAG);
         } catch (JSONException e) {
-            Log.e(TAG, e.getStackTrace().toString());
+            e.printStackTrace();
         }
 
         return null;
@@ -101,13 +105,9 @@ public class Shop {
         int timeBuffer = 100;
 
         // Adds a buffer if the store don't open on time
-        Log.i(TAG, "TODAY LUNCH");
         if (hour < Config.LunchStartTime + timeBuffer) menu = getMenu(currentMenu, "lunch");
-        Log.i(TAG, "TODAY DINNER");
         if (hour < Config.DinnerStartTime + timeBuffer && menu == null) menu = getMenu(currentMenu, "dinner");
-        Log.i(TAG, "NEXT LUNCH");
         if (menu == null) menu = getMenu(nextMenu, "lunch");
-        Log.i(TAG, "NEXT DINNER");
         if (menu == null) menu = getMenu(nextMenu, "dinner");
 
         return menu;
@@ -130,11 +130,8 @@ public class Shop {
     }
 
     static JSONObject getMenu (JSONObject menu, String key) {
-        Log.i(TAG, "getMenu " + key + " (" + menu + ")");
         try {
             return menu.getJSONObject(key);
-        } catch (JSONException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
