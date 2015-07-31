@@ -865,7 +865,7 @@ public class BuildBentoActivity extends BaseActivity {
             params.put("side4", current_bento.side4);
 
             Mixpanel.track(this, "Bento requested", params);
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
