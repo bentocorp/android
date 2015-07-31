@@ -63,7 +63,7 @@
     <string name="title_activity_privacy_policy">PrivacyPolicyActivity</string>
     <string name="title_activity_term_and_conditions">TermAndConditionsActivity</string>
     <string name="thanks">Thanks!</string>
-    <string name="email_hint">Enter email your email</string>
+    <string name="email_hint">Enter your email</string>
     <string name="message_open">Thanks! We\'ll let you know when we\'re open.</string>
     <string name="title_activity_next_day_menu">NextDayMenuActivity</string>
     <string name="title_activity_credit_card">CreditCardActivity</string>
