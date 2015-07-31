@@ -92,10 +92,6 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
             }
         });
 
-        ////////////////////
-        this.cvc.setFilters(new InputFilter[]{new InputFilterMinMax("1", "9999")});
-        ////////////////////
-
         this.cvc.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
             @Override
@@ -435,6 +431,11 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
                 user.save();
             }
         }
+
+        int maxLength = CreditCard.isAmex(cardNumber.getText().toString()) ? 4 : 3;
+        InputFilter[] fArray = new InputFilter[1];
+        fArray[0] = new InputFilter.LengthFilter(maxLength);
+        cvc.setFilters(fArray);
 
         cardNumber.setVisibility(View.GONE);
         monthSpinner.setVisibility(View.VISIBLE);
