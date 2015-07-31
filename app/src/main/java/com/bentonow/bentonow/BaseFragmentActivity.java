@@ -54,6 +54,7 @@ public class BaseFragmentActivity extends FragmentActivity {
         super.onResume();
         Log.i(BASE_TAG, "onResume()");
         Bentonow.app.isFocused = true;
+        BentoApplication.onResume();
     }
 
     public void finishThisActivity() {
@@ -72,6 +73,7 @@ public class BaseFragmentActivity extends FragmentActivity {
         super.onPause();
         Log.i(BASE_TAG, "onPause()");
         Bentonow.app.isFocused = false;
+        BentoApplication.onPause();
     }
 
     public void goToFAQ(){
