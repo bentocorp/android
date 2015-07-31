@@ -18,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bentonow.bentonow.InputFilterMinMax;
 import com.bentonow.bentonow.PaymentForm;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.EnterCreditCardActivity;
@@ -40,7 +39,6 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
     EditText monthSpinner;
     private LinearLayout second_step;
     private boolean completed;
-    private boolean isPreparedForSending = true;
 
     public static void hideSoftKeyboard(Activity activity) {
         InputMethodManager inputMethodManager = (InputMethodManager)  activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -53,8 +51,6 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.payment_form_fragment, container, false);
-
-        //final AQuery aq = new AQuery(getActivity(), view);
 
         this.saveButton = (TextView) view.findViewById(R.id.save);
         saveButton.setOnClickListener(new View.OnClickListener() {
@@ -96,16 +92,14 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
 
             @Override
             public void onFocusChange(View view, boolean b) {
-                User user = User.findById(User.class, (long) 1);
-
                 if (b) {
-                    if (user.cardbrand.equals("American Express")) {
+                    if (CreditCard.isAmex(cardNumber.getText().toString())) {
                         ic_card.setImageResource(R.drawable.card_cvv_amex);
                     } else {
                         ic_card.setImageResource(R.drawable.card_cvv);
                     }
                 } else {
-                    switch (user.cardbrand) {
+                    switch (CreditCard.getHolder(cardNumber.getText().toString())) {
                         case "American Express":
                             ic_card.setImageResource(R.drawable.card_amex);
                             break;
@@ -263,22 +257,18 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
                     // if shift key is down, then we want to insert the '\n' char in the TextView;
                     // otherwise, the default action is to send the message.
                     if (!event.isShiftPressed()) {
-                        if (isPreparedForSending) {
-                            if (completed) {
-                                hideSoftKeyboard(getActivity());
-                                saveForm();
-                            }
+                        if (completed) {
+                            hideSoftKeyboard(getActivity());
+                            saveForm();
                         }
                         return true;
                     }
                     return false;
                 }
 
-                if (isPreparedForSending) {
-                    if (completed) {
-                        hideSoftKeyboard(getActivity());
-                        saveForm();
-                    }
+                if (completed) {
+                    hideSoftKeyboard(getActivity());
+                    saveForm();
                 }
                 return true;
             }
@@ -307,86 +297,24 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
                     if (charSequence.length() > 1) {
                         cardNumber.setTextColor(getResources().getColor(R.color.gray));
                         if (CreditCard.isAmex(charSequence)) {
-                            //cardType.setText("American Express");
                             ic_card.setImageResource(R.drawable.card_amex);
-
-                            User user = User.findById(User.class, (long) 1);
-                            user.cardbrand = "American Express";
-                            user.save();
-
-                            if (charSequence.length() == 15) {
-                                hideFullNumber();
-                            }
                         } else if (CreditCard.isMastercard(charSequence)) {
-                            //cardType.setText("Mastercard");
                             ic_card.setImageResource(R.drawable.card_mastercard);
-
-                            User user = User.findById(User.class, (long) 1);
-                            user.cardbrand = "Mastercard";
-                            user.save();
-
-                            if (charSequence.length() == 16) {
-                                hideFullNumber();
-                            }
                         } else if (CreditCard.isVisa(charSequence)) {
-                            //cardType.setText("Visa");
                             ic_card.setImageResource(R.drawable.card_visa);
-
-                            User user = User.findById(User.class, (long) 1);
-                            user.cardbrand = "Visa";
-                            user.save();
-
-                            if (charSequence.length() == 16) {
-                                hideFullNumber();
-                            }
                         } else if (CreditCard.isDiscover(charSequence)) {
-                            //cardType.setText("Discover Card");
-
                             ic_card.setImageResource(R.drawable.card_discover);
-
-                            User user = User.findById(User.class, (long) 1);
-                            user.cardbrand = "Discover Card";
-                            user.save();
-
-                            if (charSequence.length() == 16) {
-                                hideFullNumber();
-                            }
                         } else if (CreditCard.isDinersClub(charSequence)) {
-                            //cardType.setText("Diners Club");
-
                             ic_card.setImageResource(R.drawable.card_diners);
-
-                            User user = User.findById(User.class, (long) 1);
-                            user.cardbrand = "Diners Club";
-                            user.save();
-
-                            if (charSequence.length() == 14) {
-                                hideFullNumber();
-                            }
                         } else if (CreditCard.isJCB(charSequence)) {
-                            //cardType.setText("JCB");
                             ic_card.setImageResource(R.drawable.card_jcb);
-
-                            User user = User.findById(User.class, (long) 1);
-                            user.cardbrand = "JCB";
-                            user.save();
-
-                            if (charSequence.length() == 16) {
-                                hideFullNumber();
-                            }
                         } else {
-                            //cardType.setText("Card Type");
                             ic_card.setImageResource(R.drawable.card_empty);
-
-                            User user = User.findById(User.class, (long) 1);
-                            user.cardbrand = "";
-                            user.save();
-
-                            if (charSequence.length() == 16) {
-                                hideFullNumber();
-                            }
                         }
 
+                        if (charSequence.length() == CreditCard.getNumberMaxLength(charSequence)) {
+                            hideFullNumber();
+                        }
 
                         cardNumber.setText(CreditCard.format(charSequence));
                         cardNumber.setSelection(cardNumber.getText().length());
@@ -414,7 +342,7 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
     }
 
     void hideFullNumber () {
-        if (!isValidLuhn(cardNumber.getText().toString())) {
+        if (!CreditCard.isValidLuhn(cardNumber.getText().toString())) {
             cardNumber.setTextColor(getResources().getColor(R.color.orange));
             return;
         }
@@ -424,12 +352,6 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
         if (cardNumber.getText().length() >= 4){
             String last4 = cardNumber.getText().toString().substring(cardNumber.getText().length()-4);
             cardDigits.setText(last4);
-            User user = User.findById(User.class,(long)1);
-
-            if (user != null) {
-                user.cardlast4 = last4;
-                user.save();
-            }
         }
 
         int maxLength = CreditCard.isAmex(cardNumber.getText().toString()) ? 4 : 3;
@@ -443,27 +365,6 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
         cvc.setVisibility(View.VISIBLE);
         cardDigits.setVisibility(View.VISIBLE);
         second_step.setVisibility(View.VISIBLE);
-    }
-
-    private boolean isValidLuhn(String _number) {
-        _number = _number.replaceAll("[^0-9]", "");
-
-        boolean odd = true;
-        int sum = 0;
-        String[] digits = new String[_number.length()];
-
-        for (int i=0; i<_number.length(); ++i) {
-            digits[i] = _number.charAt(i) + "";
-        }
-
-        for (int i=_number.length(); i>0; --i) {
-            int digit = Integer.parseInt(digits[i-1]);
-            if ((odd = !odd)) digit *=2;
-            if (digit > 9) digit -= 9;
-            sum += digit;
-        }
-
-        return sum % 10 == 0;
     }
 
     @Override
@@ -496,9 +397,17 @@ public class PaymentFormFragment extends Fragment implements PaymentForm {
     }
 
     public void saveForm() {
-        if (isPreparedForSending) {
-            ((EnterCreditCardActivity) getActivity()).saveCreditCard(this);
-//            isPreparedForSending = false;
-        }
+        ((EnterCreditCardActivity) getActivity()).saveCreditCard(this);
+    }
+
+    @Override
+    public void saved () {
+        String credit_card_number = cardNumber.getText().toString().replaceAll("[^0-9]", "");
+        String last4 = credit_card_number.substring(credit_card_number.length() - 4);
+
+        User user = User.findById(User.class, (long) 1);
+        user.cardbrand = CreditCard.getHolder(credit_card_number);
+        user.cardlast4 = last4;
+        user.save();
     }
 }

@@ -58,11 +58,11 @@ public class CreditCard {
     }
 
     public static boolean isDinersClub (String credit_card_number) {
-        return is (CODE.DINERS_CLUB, credit_card_number);
+        return is(CODE.DINERS_CLUB, credit_card_number);
     }
 
     public static boolean isJCB (String credit_card_number) {
-        return is (CODE.JCB, credit_card_number);
+        return is(CODE.JCB, credit_card_number);
     }
 
     static boolean is (String[] codes, String credit_card_number) {
@@ -71,6 +71,10 @@ public class CreditCard {
 
         credit_card_number = credit_card_number.replaceAll("[^0-9]", "");
         String card_code = credit_card_number.substring(0, 2);
+
+        if (credit_card_number.substring(0, 1).equals("4")) {
+            card_code = credit_card_number.substring(0, 1);
+        }
 
         return Arrays.asList(codes).contains(card_code);
     }
@@ -133,5 +137,54 @@ public class CreditCard {
         }
 
         return credit_card_number;
+    }
+
+    public static String getHolder (String credit_card_number) {
+        if (CreditCard.isAmex(credit_card_number)) {
+            return "American Express";
+        } else if (CreditCard.isMastercard(credit_card_number)) {
+            return "Mastercard";
+        } else if (CreditCard.isVisa(credit_card_number)) {
+            return "Visa";
+        } else if (CreditCard.isDiscover(credit_card_number)) {
+            return "Discover Card";
+        } else if (CreditCard.isDinersClub(credit_card_number)) {
+            return "Diners Club";
+        } else if (CreditCard.isJCB(credit_card_number)) {
+            return "JCB";
+        } else {
+            return "";
+        }
+    }
+
+    public static int getNumberMaxLength (String credit_card_number) {
+        if (CreditCard.isAmex(credit_card_number)) {
+            return 15;
+        } else if (CreditCard.isDinersClub(credit_card_number)) {
+            return 14;
+        } else {
+            return 16;
+        }
+    }
+
+    public static boolean isValidLuhn(String _number) {
+        _number = _number.replaceAll("[^0-9]", "");
+
+        boolean odd = true;
+        int sum = 0;
+        String[] digits = new String[_number.length()];
+
+        for (int i=0; i<_number.length(); ++i) {
+            digits[i] = _number.charAt(i) + "";
+        }
+
+        for (int i=_number.length(); i>0; --i) {
+            int digit = Integer.parseInt(digits[i-1]);
+            if ((odd = !odd)) digit *=2;
+            if (digit > 9) digit -= 9;
+            sum += digit;
+        }
+
+        return sum % 10 == 0;
     }
 }

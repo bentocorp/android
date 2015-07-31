@@ -1,34 +1,21 @@
 package com.bentonow.bentonow;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.androidquery.AQuery;
-import com.androidquery.callback.AjaxCallback;
-import com.androidquery.callback.AjaxStatus;
-import com.bentonow.bentonow.dialog.ErrorDialogFragment;
-import com.bentonow.bentonow.dialog.ProgressDialogFragment;
 import com.bentonow.bentonow.model.User;
 import com.stripe.android.Stripe;
 import com.stripe.android.TokenCallback;
 import com.stripe.android.model.Card;
 import com.stripe.android.model.Token;
-
-import java.util.HashMap;
-import java.util.Map;
-
 
 public class EnterCreditCardActivity extends BaseFragmentActivity {
 
@@ -68,7 +55,7 @@ public class EnterCreditCardActivity extends BaseFragmentActivity {
         });
     }
 
-    public void saveCreditCard(PaymentForm form) {
+    public void saveCreditCard(final PaymentForm form) {
         final ProgressDialog dialog = ProgressDialog.show(this, null, "Processing...", true);
 
         Card card = new Card(
@@ -85,6 +72,8 @@ public class EnterCreditCardActivity extends BaseFragmentActivity {
                     new TokenCallback() {
                         public void onSuccess(Token token) {
                             Log.i(TAG, "TOKEN: " + token.toString());
+
+                            form.saved();
 
                             User user = User.findById(User.class,(long)1);
                             user.stripetoken = token.getId();
