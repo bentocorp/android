@@ -30,7 +30,7 @@ public class BentoService extends Service {
     private Handler handler;
     private Runnable task;
 
-    public static String lastStatus = "";
+    public static String date = "";
 
     public static boolean isRunning() {
         return instance != null;
@@ -45,16 +45,27 @@ public class BentoService extends Service {
     public void onCreate() {
         Log.i(TAG,"onCreate()");
         instance=this;
-        aq = new AQuery(this);
-        initTimerChecker();
-        checkAll();
+
+        String currDate = new SimpleDateFormat("yyyyMMdd", Locale.US).format(new Date());
+
+        Log.i(TAG, "date: " + date + " current date: " + currDate);
+
+        if (!date.equals(currDate)) {
+            goTo(Target.MainActivity);
+        } else {
+            aq = new AQuery(this);
+            initTimerChecker();
+            checkAll();
+        }
     }
 
     @Override
     public void onDestroy() {
         instance = null;
         Log.i(TAG, "onDestroy()");
-        handler.removeCallbacks(task);
+        if (handler != null && task != null) {
+            handler.removeCallbacks(task);
+        }
         super.onDestroy();
     }
 
@@ -63,6 +74,10 @@ public class BentoService extends Service {
         super.onStartCommand(intent, flags, startId);
         Log.i(TAG, "Service.onStartCommand()");
         return(START_NOT_STICKY);
+    }
+
+    public static void init () {
+        date = new SimpleDateFormat("yyyyMMdd", Locale.US).format(new Date());
     }
 
     private void initTimerChecker() {
@@ -116,7 +131,6 @@ public class BentoService extends Service {
                         try {
                             JSONObject overall = json.getJSONObject("overall");
 
-                            lastStatus = Shop.status;
                             Shop.status = overall.getString(Config.API.STATUS_OVERALL_LABEL_VALUE);
 
                             // Checks if the store is open from app logic
@@ -124,9 +138,8 @@ public class BentoService extends Service {
                                 Shop.status = "closed";
                             }
 
-                            Log.i(TAG, "appStatus: " + Shop.status + " serverStatus: " + lastStatus + " isOpen: " + Shop.isOpen());
-                            if (!lastStatus.equals(Shop.status)) {
-                                lastStatus = Shop.status;
+                            Log.i(TAG, "appStatus: " + Shop.status + " serverStatus: " + BentoApplication.status + " isOpen: " + Shop.isOpen());
+                            if (!BentoApplication.status.equals(Shop.status)) {
                                 if (Shop.isOpen()) {
                                     // STATUS / MENU
                                     JSONArray menu = json.getJSONArray("menu");
@@ -187,5 +200,3 @@ public class BentoService extends Service {
         MainActivity, ErrorClosed, ErrorSold
     }
 }
-
-

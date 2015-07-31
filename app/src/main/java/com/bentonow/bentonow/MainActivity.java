@@ -61,7 +61,9 @@ public class MainActivity extends BaseActivity {
         Bentonow.app.current_activity = this;
         initElements();
 
-        BentoApplication.started = false;
+        BentoService.init();
+
+        BentoApplication.onPause();
     }
 
     private void initElements() {
@@ -85,7 +87,6 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        BentoApplication.started = true;
     }
 
     private void tryToGetLocationFromGPS() {
@@ -267,7 +268,7 @@ public class MainActivity extends BaseActivity {
 
                     // STATUS/OVERALL
                     try {
-                        BentoService.lastStatus = Shop.status = json.getJSONObject("/status/all").getJSONObject("overall").getString("value");
+                        Shop.status = json.getJSONObject("/status/all").getJSONObject("overall").getString("value");
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
