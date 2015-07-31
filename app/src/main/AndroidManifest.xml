@@ -184,7 +184,7 @@
         <!-- INI SERVICE -->
         <service
             android:name=".BentoService"
-            android:enabled="true"
+            android:enabled="false"
             android:icon="@drawable/ic_launcher" />
 
         <receiver android:name=".Receiver" >
