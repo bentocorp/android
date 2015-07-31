@@ -35,6 +35,7 @@ public class BaseActivity extends Activity {
         );
 
         setTodayDate();
+        BentoApplication.status = "open";
     }
 
     public boolean isFirstInit() {
@@ -76,8 +77,6 @@ public class BaseActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        //super.onBackPressed();
-        //finishThisActivity();
     }
 
     @Override

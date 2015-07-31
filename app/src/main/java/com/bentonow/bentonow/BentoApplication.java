@@ -16,7 +16,7 @@ public class BentoApplication extends SugarApp {
     static Timer timer;
     static TimerTask stopService;
     static BentoApplication instance = null;
-    static public boolean started = false;
+    static String status;
 
     @Override
     public void onCreate() {
@@ -59,7 +59,7 @@ public class BentoApplication extends SugarApp {
             timer = null;
         }
 
-        if (!BentoService.isRunning() && instance != null && started) {
+        if (!BentoService.isRunning() && instance != null) {
             Log.i(TAG, "starting service");
             try {
                 instance.startService(new Intent(instance, BentoService.class));

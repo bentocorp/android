@@ -48,6 +48,8 @@ public class ErrorOutOfStockActivity extends BaseActivity {
         initElements();
         addListeners();
         initLegalFooter();
+
+        BentoApplication.status = "sold out";
     }
 
     @Override

@@ -11,9 +11,6 @@ import java.util.Calendar;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-/**
- * Created by gonzalo on 21/04/2015.
- */
 public class BaseFragmentActivity extends FragmentActivity {
 
     private static final String BASE_TAG = "BaseFragmentActivity";
@@ -31,6 +28,7 @@ public class BaseFragmentActivity extends FragmentActivity {
                         .build()
         );
         setTodayDate();
+        BentoApplication.status = "open";
     }
 
     private void setTodayDate() {

@@ -49,6 +49,8 @@ public class ErrorClosedActivity extends BaseActivity {
         initElements();
         addListeners();
         initLegalFooter();
+
+        BentoApplication.status = "closed";
     }
 
     @Override
