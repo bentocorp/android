@@ -80,7 +80,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_email"/>
-            <EditText
+            <com.bentonow.bentonow.ui.BackendEditText
                 android:layout_width="fill_parent"
                 android:layout_height="match_parent"
                 android:hint="@string/error_closed_input_mail_hint"
@@ -89,7 +89,8 @@
                 android:id="@+id/email_address"
                 android:inputType="textEmailAddress"
                 android:textCursorDrawable="@null"
-                android:singleLine="true" />
+                android:singleLine="true"
+                app:key="closed-input-text"/>
         </LinearLayout>
 
         <LinearLayout
