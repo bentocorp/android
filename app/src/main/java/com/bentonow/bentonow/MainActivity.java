@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -61,6 +60,8 @@ public class MainActivity extends BaseActivity {
         activity = this;
         Bentonow.app.current_activity = this;
         initElements();
+
+        BentoApplication.started = false;
     }
 
     private void initElements() {
@@ -79,6 +80,12 @@ public class MainActivity extends BaseActivity {
             Dialog dialog = GooglePlayServicesUtil.getErrorDialog(resultCode, activity, 1);
             dialog.show();
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        BentoApplication.started = true;
     }
 
     private void tryToGetLocationFromGPS() {
