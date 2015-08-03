@@ -32,7 +32,7 @@ public class BackendEditText extends EditText {
 
         try {
             String key = a.getString(R.styleable.BackendTextView_key);
-            setText(Ioscopy.getKeyValue(key));
+            setHint(Ioscopy.getKeyValue(key));
         } finally {
             a.recycle();
         }
