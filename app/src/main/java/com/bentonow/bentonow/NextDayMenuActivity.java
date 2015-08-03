@@ -90,9 +90,9 @@ public class NextDayMenuActivity extends BaseActivity {
                     vi.findViewById(R.id.btn_add_to_bento).setVisibility(View.GONE);
                     vi.findViewById(R.id.btn_add_to_bento_solded).setVisibility(View.GONE);
 
-                    holder.main_title.setText(row.getString(Config.DISH.NAME).toUpperCase());
-                    holder.desc_title.setText(row.getString(Config.DISH.NAME).toUpperCase());
-                    holder.main_menu_item_description.setText(row.getString(Config.DISH.DESCRIPTION).toUpperCase());
+                    holder.main_title.setText(row.getString(Config.DISH.NAME));
+                    holder.desc_title.setText(row.getString(Config.DISH.NAME));
+                    holder.main_menu_item_description.setText(row.getString(Config.DISH.DESCRIPTION));
                     if ( row.getString(Config.DISH.IMAGE1)!=null && !row.getString(Config.DISH.IMAGE1).isEmpty() ) {
                         Picasso.with(getApplicationContext())
                                 .load(row.getString(Config.DISH.IMAGE1))
