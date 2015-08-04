@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:weightSum="5"
+              android:layout_centerVertical="true"
+              android:gravity="center"
+              android:padding="@dimen/general_padding"
+              android:background="@null">
+
+    <com.bentonow.bentonow.ui.BackendEditText
+        android:id="@+id/txt_input"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_white_bordered"
+        android:padding="@dimen/btn_padding"
+        android:hint="Your promo code"
+        android:textCursorDrawable="@null"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_small"
+        android:singleLine="true"
+        app:key="complete-promo-input-text"
+        />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="10dp" />
+
+    <com.bentonow.bentonow.ui.BackendTextView
+        android:id="@+id/btn_ok"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_green_cornered"
+        android:text="ADD PROMO CODE"
+        android:padding="@dimen/btn_padding"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textColor="@color/white"
+        app:key="complete-promo-button"
+        />
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="10dp" />
+
+    <com.bentonow.bentonow.ui.BackendTextView
+        android:id="@+id/btn_cancel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="CANCEL"
+        android:textStyle="bold"
+        android:padding="@dimen/btn_padding"
+        android:gravity="center"
+        android:textColor="@color/white"
+        app:key="complete-promo-cancel"
+        />
+
+</LinearLayout>

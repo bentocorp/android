@@ -6,17 +6,35 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.Window;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 
 public class CustomDialog extends Dialog implements View.OnClickListener {
 
+    public CustomDialog (Context context) {
+        super(context);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.dialog_custom);
+        setCancelable(true);
+
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        View btn;
+
+        btn = findViewById(R.id.btn_ok);
+        if (btn != null) btn.setOnClickListener(this);
+
+        btn = findViewById(R.id.btn_cancel);
+        if (btn != null) btn.setOnClickListener(this);
+    }
+
     public CustomDialog (Context context, String message, String acceptButton, String cancelButton) {
         super(context);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.dialog_custom);
-        setText(message);
+        setMessage(message);
         setCancelable(false);
 
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -36,8 +54,32 @@ public class CustomDialog extends Dialog implements View.OnClickListener {
         else if (acceptButton == null) btn.setBackgroundResource(R.drawable.bg_green_corner_bottom);
     }
 
-    public void setText (String message) {
-        ((TextView)findViewById(R.id.text)).setText(message);
+    public void setMessage (String message) {
+        try {
+            ((TextView) findViewById(R.id.txt_message)).setText(message);
+        } catch (Exception ignored) {}
+    }
+
+    public void setText (String text) {
+        try {
+            ((EditText)findViewById(R.id.txt_input)).setText(text);
+        } catch (Exception ignored) {}
+    }
+
+    public String getText () {
+        try {
+            return ((EditText)findViewById(R.id.txt_input)).getText().toString();
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    public EditText getEditText () {
+        try {
+            return (EditText)findViewById(R.id.txt_input);
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 
     public void setOnCancelPressed (View.OnClickListener listener) {
