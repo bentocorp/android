@@ -1,54 +1,60 @@
 package com.bentonow.bentonow.model;
 
-import com.orm.SugarRecord;
+import android.util.Log;
 
-/**
- * Created by gonzalo on 29/04/2015.
- */
-public class Item extends SugarRecord<Item>{
-    public String item_type;
-    public String main;
-    public String side1;
-    public String side2;
-    public String side3;
-    public String side4;
-    public String orderid;
-    public String completed = "no";
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
-    public Item(){
+import java.util.Arrays;
 
+public class Item {
+
+    static final String TAG = "model.Item";
+
+    public int itemId;
+    public String name;
+    public String description;
+    public String type;
+    public String image1;
+    public int max_per_order;
+
+    public boolean isSoldOut (boolean countCurrent) {
+        boolean value = Stock.isSold(itemId, countCurrent);
+        Log.i(TAG, "isSoldOut " + name + " " + (value ? "YES" : "NO"));
+        return value;
     }
 
-    public Item(String item_type, String main, String side1, String side2, String side3, String side4, String orderid, String completed) {
-        this.item_type = item_type;
-        this.main = main;
-        this.side1 = side1;
-        this.side2 = side2;
-        this.side3 = side3;
-        this.side4 = side4;
-        this.orderid = orderid;
-        this.completed = completed;
+    public boolean canBeAdded () {
+        boolean value = max_per_order > Order.countItemsById(itemId);
+        Log.i(TAG, "canBeAdded " + name + " " + (value ? "YES" : "NO"));
+        return value;
     }
 
-    @Override
-    public String toString() {
-        super.toString();
-        return "Main: "+main+", Side1: "+side1+", Side2: "+side2+", Side3: "+side3+", Side4: "+side4+", Order_id: "+orderid+", Completed: "+completed;
+    public static Item getFirstAvailable (String type, int[] tryExcludeIds) {
+        Menu menu = Menu.get();
+
+        if (menu != null) {
+            if (tryExcludeIds != null) {
+                String ids = Arrays.toString(tryExcludeIds);
+                for (Item item : menu.items) {
+                    if (!item.type.equals(type) || item.isSoldOut(true) || !item.canBeAdded() || ids.contains(""+item.itemId))
+                        continue;
+                    return item;
+                }
+            }
+
+            for (Item item : menu.items) {
+                if (!item.type.equals(type) || item.isSoldOut(true) || !item.canBeAdded())
+                    continue;
+                return item;
+            }
+        }
+
+        return null;
     }
 
-    public boolean isFull() {
-        boolean isFull = true;
-        if ( this.main == null ) isFull = false;
-        if ( this.side1 == null ) isFull = false;
-        if ( this.side2 == null ) isFull = false;
-        if ( this.side3 == null ) isFull = false;
-        if ( this.side4 == null ) isFull = false;
-        return isFull;
+    public Item clone () {
+        Gson gson = new GsonBuilder().serializeNulls().create();
+        return gson.fromJson(gson.toJson(this), Item.class);
     }
-
-    public String[] sideItems(){
-        String[] toReturn = new String[]{main,side1,side2,side3,side4};
-        return toReturn;
-    }
-
 }

@@ -1,12 +1,14 @@
 package com.bentonow.bentonow.ui;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.EditText;
 
 import com.bentonow.bentonow.R;
-import com.bentonow.bentonow.model.Ioscopy;
+import com.bentonow.bentonow.model.BackendText;
 
 public class BackendEditText extends EditText {
 
@@ -24,6 +26,12 @@ public class BackendEditText extends EditText {
         init(context, attrs);
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public BackendEditText(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+        init(context, attrs);
+    }
+
     void init (Context context, AttributeSet attrs) {
         TypedArray a = context.getTheme().obtainStyledAttributes(
                 attrs,
@@ -32,7 +40,7 @@ public class BackendEditText extends EditText {
 
         try {
             String key = a.getString(R.styleable.BackendTextView_key);
-            setHint(Ioscopy.getKeyValue(key));
+            setHint(BackendText.get(key));
         } finally {
             a.recycle();
         }

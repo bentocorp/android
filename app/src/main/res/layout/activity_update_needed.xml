@@ -1,7 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.bentonow.bentonow.HomeAboutActivity">
+    tools:context="com.bentonow.bentonow.controllers.init.GettingStartedActivity">
 
     <ImageView
         android:layout_width="fill_parent"
@@ -42,7 +42,7 @@
                 android:layout_weight="1"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Please upgrade!"
+                android:text="@string/please_update"
                 android:gravity="center"
                 android:textColor="@color/white"
                 android:textSize="21sp"
@@ -53,7 +53,7 @@
                 android:layout_weight="1"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="An update is available on Google Play."
+                android:text="@string/an_update_is_available"
                 android:gravity="center"
                 android:textColor="@color/white"
                 android:paddingLeft="40dp"
@@ -70,16 +70,16 @@
             android:layout_weight="1"
             android:gravity="center_vertical"
             >
-            <TextView
-                android:id="@+id/btn_update"
+            <Button
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:padding="15dp"
                 android:background="@drawable/btn_gray"
-                android:text="UPDATE FOR DELICIOUSNESS"
+                android:text="@string/update_for_deliciousness"
                 android:gravity="center"
                 android:textSize="16sp"
                 android:textColor="@color/dark_green"
+                android:onClick="onUpdatePressed"
                 />
         </LinearLayout>
     </LinearLayout>
