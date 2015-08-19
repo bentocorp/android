@@ -1,0 +1,31 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.bentonow.bentonow.controllers.errors.ErrorActivity"
+    android:id="@+id/base_relative_layout"
+    android:background="@color/btn_green">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:id="@+id/ActionBarContainer"
+        >
+        <include layout="@layout/actionbar_green_border" />
+    </RelativeLayout>
+
+    <GridView
+        android:id="@+id/list"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ActionBarContainer"
+        android:numColumns="2"
+        tools:listitem="@layout/inc_menu_item_side">
+
+    </GridView>
+
+    <!-- content -->
+
+
+</RelativeLayout>

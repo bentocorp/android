@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:autofit="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#ffffff"
+                android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/main_menu_item_height">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"/>
+
+        <ImageView
+            android:id="@+id/img"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:adjustViewBounds="true"
+            android:contentDescription="@null"
+            android:scaleType="centerCrop"
+            android:src="@drawable/tmp_trans"/>
+
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:contentDescription="@null"
+            android:scaleType="centerCrop"
+            android:src="@drawable/menu_gradient"/>
+
+        <ImageView
+            android:id="@+id/img_gradient"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:contentDescription="@null"
+            android:src="@drawable/menu_gradient"/>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:orientation="vertical"
+            android:paddingLeft="20sp"
+            android:paddingRight="20sp">
+
+            <me.grantland.widget.AutofitTextView
+                android:id="@+id/txt_title"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:gravity="center"
+                android:padding="10dp"
+                android:singleLine="true"
+                android:text="@string/app_name"
+                android:textAppearance="@style/BentoBuilderBoxMainName"
+                autofit:minTextSize="8sp"
+                />
+
+            <me.grantland.widget.AutofitTextView
+                android:id="@+id/txt_description"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:maxLines="4"
+                android:padding="5dp"
+                android:text="@string/app_name"
+                android:textAppearance="@style/BentoBuilderBoxDesc"
+                autofit:minTextSize="8sp"
+                />
+
+            <Button
+                android:id="@+id/btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/btn_border_lineal_white"
+                android:gravity="center"
+                android:padding="@dimen/btn_padding"
+                android:text="@string/add_to_bento"
+                android:textAppearance="@style/BtnMenuItem"
+                android:textColor="@color/white"
+                />
+
+            <com.bentonow.bentonow.ui.BackendButton
+                android:id="@+id/btn_added"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/btn_gray"
+                android:gravity="center"
+                android:padding="@dimen/btn_padding"
+                android:singleLine="true"
+                android:text="@string/added_to_bento"
+                android:textAppearance="@style/BtnMenuItem"
+                android:textColor="@color/btn_green"
+                app:key="build-main-add-button-2"
+                />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/img_sold_out"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:contentDescription="@null"
+            android:src="@drawable/banner_sold_out"/>
+    </RelativeLayout>
+</RelativeLayout>

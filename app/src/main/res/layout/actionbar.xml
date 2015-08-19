@@ -32,7 +32,7 @@
             android:layout_width="@dimen/red_rounded_width_height"
             android:layout_height="@dimen/red_rounded_width_height"
             android:text="1"
-            android:id="@+id/bento_box_counter_textview"
+            android:id="@+id/actionbar_right_badge"
             android:autoText="false"
             android:background="@drawable/redondo_rojo"
             android:layout_alignParentTop="true"

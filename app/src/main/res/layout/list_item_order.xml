@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/complete_row"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@color/bgcolor"
+    >
+    <ImageButton
+        android:id="@+id/btn_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/completeorder_cell_btn_minute"
+        android:contentDescription="@null"
+        android:background="@null"/>
+    <TextView
+        android:id="@+id/txt_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@null"
+        android:padding="@dimen/btn_padding"
+        android:textAppearance="@style/SmallText"
+        android:textColor="@color/btn_green"
+        android:layout_weight="1"
+        />
+    <TextView
+        android:id="@+id/txt_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@null"
+        android:textAppearance="@style/SmallText"
+        android:padding="@dimen/btn_padding"
+        />
+    <ImageButton
+        android:id="@+id/btn_remove"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:src="@drawable/completeorder_cell_btn_remove"
+        android:adjustViewBounds="true"
+        android:contentDescription="@null"
+        android:background="@null"/>
+</LinearLayout>

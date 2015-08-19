@@ -1,18 +1,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.bentonow.bentonow.CompleteOrderActivity"
-    android:id="@+id/base_relative_layout"
-    android:background="@color/bgcolor">
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                tools:context="com.bentonow.bentonow.controllers.order.CompleteOrderActivity"
+                android:id="@+id/base_relative_layout"
+                android:background="@color/bgcolor">
 
     <!-- background -->
-    <!--<ImageView
-        android:id="@+id/bg"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:src="@drawable/bg_error_closed"
-        android:scaleType="centerCrop"/>-->
 
     <!-- actionbar -->
     <LinearLayout
@@ -41,25 +36,25 @@
             android:background="@color/white"
             android:orientation="horizontal"
             android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true">
             <TextView
-                android:id="@+id/address_textview"
-                android:layout_width="wrap_content"
+                android:id="@+id/txt_address"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="...address here"
                 android:textColor="@color/black"
                 android:padding="@dimen/btn_padding"
                 android:layout_weight="1" />
-            <TextView
-                android:id="@+id/btn_edit_address"
+            <Button
+                style="?android:attr/buttonBarButtonStyle"
+                android:background="@null"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CHANGE"
+                android:text="@string/change"
                 android:textSize="@dimen/text_very_very_small"
                 android:textColor="@color/btn_green"
                 android:padding="@dimen/btn_padding"
                 android:textStyle="bold"
+                android:onClick="onChangeAddressPressed"
                 />
         </LinearLayout>
         <View
@@ -80,39 +75,40 @@
             android:layout_below="@+id/divisor_1"
             >
             <ImageView
-                android:id="@+id/ic_card"
+                android:id="@+id/img_credit_card"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
                 android:src="@drawable/card_empty"
                 android:padding="@dimen/btn_padding"
-                />
+                android:contentDescription="@null"/>
             <TextView
-                android:id="@+id/credit_card_textview"
-                android:layout_width="wrap_content"
+                android:id="@+id/txt_credit_card"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Pay"
                 android:textColor="@color/black"
                 android:paddingTop="@dimen/btn_padding"
                 android:paddingBottom="@dimen/btn_padding"
-                android:paddingRight="@dimen/btn_padding"
+                android:paddingEnd="@dimen/btn_padding"
                 android:layout_weight="1" />
-            <TextView
-                android:id="@+id/btn_edit_credit_card"
+            <Button
+                style="?android:attr/buttonBarButtonStyle"
+                android:background="@null"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CHANGE"
+                android:text="@string/change"
                 android:textColor="@color/btn_green"
                 android:textSize="@dimen/text_very_very_small"
                 android:padding="@dimen/btn_padding"
                 android:textStyle="bold"
+                android:onClick="onChangeCreditCardPressed"
                 />
         </LinearLayout>
         <View
             android:id="@+id/divisor_2"
             android:layout_below="@+id/row_payment"
             android:layout_width="fill_parent"
-            android:layout_height="3px"
+            android:layout_height="2dp"
             android:background="@color/divisor"
             />
 
@@ -124,26 +120,32 @@
             android:orientation="horizontal"
             android:layout_below="@+id/divisor_2"
             >
-            <TextView
-                android:id="@+id/btn_add_another_bento"
+            <com.bentonow.bentonow.ui.BackendButton
+                style="?android:attr/buttonBarButtonStyle"
+                android:background="@null"
+                android:gravity="start"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="ADD ANOTHER BENTO"
                 android:textColor="@color/btn_green"
                 android:padding="@dimen/btn_padding"
                 android:textSize="@dimen/text_very_very_small"
                 android:layout_weight="1"
                 android:textStyle="bold"
+                android:onClick="onAddAnotherBentoPressed"
+                app:key="complete-add-another"
                 />
-            <TextView
-                android:id="@+id/btn_edit_items"
+            <com.bentonow.bentonow.ui.BackendButton
+                android:id="@+id/btn_delete"
+                style="?android:attr/buttonBarButtonStyle"
+                android:background="@null"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="DELETE"
                 android:textColor="@color/btn_green"
                 android:padding="@dimen/btn_padding"
                 android:textSize="@dimen/text_very_very_small"
                 android:textStyle="bold"
+                android:onClick="onDeleteBentoPressed"
+                app:key="complete-edit"
                 />
         </LinearLayout>
 
@@ -156,10 +158,10 @@
             />
 
         <ListView
-            android:id="@+id/orderitems"
+            android:id="@+id/list"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            tools:listitem="@layout/listitem_items"
+            tools:listitem="@layout/list_item_order"
             android:layout_below="@+id/divisor_6"
             android:layout_above="@+id/divisor_5"
             android:layout_alignParentStart="true"
@@ -172,7 +174,7 @@
             android:id="@+id/divisor_5"
             android:layout_above="@+id/cents_details_container"
             android:layout_width="fill_parent"
-            android:layout_height="3px"
+            android:layout_height="2dp"
             android:background="@color/divisor"
             />
 
@@ -186,25 +188,25 @@
             android:layout_alignParentBottom="true"
             >
             <LinearLayout
-                android:id="@+id/row_discount"
+                android:id="@+id/container_discount"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:background="@color/white"
-                android:visibility="gone"
+                android:visibility="visible"
                 >
-                <TextView
+                <com.bentonow.bentonow.ui.BackendTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Promo Discount"
                     android:textColor="@color/dark_gray"
                     android:padding="@dimen/btn_padding"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    app:key="complete-promo-discount"/>
                 <TextView
-                    android:id="@+id/discount_cents"
+                    android:id="@+id/txt_discount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="$0"
+                    android:text="@string/zero_dollar"
                     android:textColor="@color/dark_gray"
                     android:padding="@dimen/btn_padding"
                     />
@@ -224,18 +226,18 @@
                 android:orientation="horizontal"
                 android:background="@color/white"
                 >
-                <TextView
+                <com.bentonow.bentonow.ui.BackendTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Tax"
                     android:textColor="@color/dark_gray"
                     android:padding="@dimen/btn_padding"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    app:key="complete-tax" />
                 <TextView
-                    android:id="@+id/tax_detail"
+                    android:id="@+id/txt_tax"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="$0"
+                    android:text="@string/zero_dollar"
                     android:textColor="@color/dark_gray"
                     android:padding="@dimen/btn_padding"
                     />
@@ -256,13 +258,13 @@
                 android:orientation="horizontal"
                 android:background="@color/white"
                 >
-                <TextView
+                <com.bentonow.bentonow.ui.BackendTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Delivery Tip"
                     android:textColor="@color/dark_gray"
                     android:padding="@dimen/btn_padding"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    app:key="complete-tip" />
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
@@ -270,47 +272,49 @@
                     android:background="@drawable/btn_border_lineal_white"
                     android:layout_margin="5dp"
                     >
-                    <TextView
-                        android:id="@+id/btn_tip_negative"
-                        android:layout_width="wrap_content"
+                    <Button
+                        android:background="@null"
+                        android:layout_width="30sp"
                         android:layout_height="fill_parent"
                         android:gravity="center"
-                        android:text="-"
+                        android:text="@string/minus"
                         android:paddingLeft="10dp"
                         android:paddingRight="10dp"
                         android:textColor="@color/dark_gray"
                         android:layout_weight="1"
+                        android:onClick="onMinusTipPressed"
                         />
                     <View
-                        android:layout_width="2px"
+                        android:layout_width="2dp"
                         android:layout_height="fill_parent"
                         android:background="@color/divisor"
                         />
                     <TextView
-                        android:id="@+id/tip_percent"
+                        android:id="@+id/txt_tip_percent"
                         android:layout_width="wrap_content"
                         android:layout_height="fill_parent"
                         android:gravity="center"
-                        android:text="10%"
+                        android:text=""
                         android:textColor="@color/dark_gray"
                         android:layout_weight="1"
                         android:padding="5dp"
                         />
                     <View
-                        android:layout_width="2px"
+                        android:layout_width="2dp"
                         android:layout_height="fill_parent"
                         android:background="@color/divisor"
                         />
-                    <TextView
-                        android:id="@+id/btn_tip_positive"
+                    <Button
                         android:layout_weight="1"
-                        android:layout_width="wrap_content"
+                        android:layout_width="30sp"
                         android:layout_height="fill_parent"
                         android:gravity="center"
-                        android:text="+"
+                        android:text="@string/plus"
                         android:paddingLeft="10dp"
                         android:paddingRight="10dp"
                         android:textColor="@color/dark_gray"
+                        android:onClick="onPlusTipPressed"
+                        android:background="@null"
                         />
                 </LinearLayout>
             </LinearLayout>
@@ -330,33 +334,35 @@
                 android:background="@color/white"
                 android:baselineAligned="false"
                 >
-                <TextView
+                <com.bentonow.bentonow.ui.BackendTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Total"
                     android:textColor="@color/dark_gray"
                     android:padding="@dimen/btn_padding"
+                    app:key="complete-total"
                     />
-                <TextView
-                    android:id="@+id/btn_add_promo"
+                <com.bentonow.bentonow.ui.BackendButton
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:background="@null"
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
                     android:gravity="center_vertical"
                     android:textStyle="bold"
-                    android:text="ADD PROMO"
                     android:textColor="@color/btn_green"
                     android:padding="@dimen/btn_padding"
                     android:textSize="@dimen/text_very_very_small"
+                    android:onClick="onAddPromoCodePressed"
+                    app:key="complete-add-promo"
                     />
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"></LinearLayout>
                 <TextView
-                    android:id="@+id/order_total_textview"
+                    android:id="@+id/txt_total"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="$00.00"
+                    android:text="@string/zero_dollar"
                     android:textColor="@color/dark_gray"
                     android:padding="@dimen/btn_padding"
                     />
@@ -374,83 +380,19 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         >
-        <TextView
-            android:id="@+id/btn_confirm_pay_order"
+        <com.bentonow.bentonow.ui.BackendButton
             android:background="@color/btn_green"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textColor="@color/white"
             android:padding="@dimen/btn_padding"
-            android:text="LET'S EAT!"
+            android:onClick="onLetsEatPressed"
+            app:key="complete-button"
              />
     </LinearLayout>
-
-    <RelativeLayout
-        android:id="@+id/overlay"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#90000000"
-        android:visibility="gone">
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:weightSum="5"
-            android:orientation="horizontal"
-            android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:gravity="center"
-            android:baselineAligned="false">
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/overlay_message"
-                android:layout_weight="3"
-                >
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:text="You don't have a payment method. Do you want to add once now?"
-                    android:padding="@dimen/btn_padding"
-                    android:textAppearance="@style/SmallText"
-                    />
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <TextView
-                        android:id="@+id/btn_cancel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="@dimen/btn_padding"
-                        android:layout_weight="1"
-                        android:textColor="@color/white"
-                        android:background="@drawable/btn_green_corned_left_bottom"
-                        android:gravity="center"
-                        android:text="@string/btn_cancel_text"
-                        />
-                    <TextView
-                        android:id="@+id/btn_add_credit_card"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="@dimen/btn_padding"
-                        android:layout_weight="1"
-                        android:textColor="@color/white"
-                        android:background="@drawable/bg_green_corner_right_bottom"
-                        android:gravity="center"
-                        android:text="Add"
-                        />
-                </LinearLayout>
-            </LinearLayout>
-        </LinearLayout>
-
-    </RelativeLayout>
 
     <!--OVERLAY-->
     <RelativeLayout
@@ -537,7 +479,7 @@
             <LinearLayout
                 android:id="@+id/message_box"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:orientation="vertical"
                 android:background="@drawable/overlay_message"
                 android:layout_weight="3"
@@ -553,7 +495,7 @@
                 <TextView
                     android:id="@+id/btn_ok"
                     android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:padding="@dimen/btn_padding"
                     android:layout_weight="1"
                     android:textColor="@color/white"
@@ -566,9 +508,7 @@
             <ProgressBar
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/progressBar"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true" />
+                android:id="@+id/progressBar" />
         </LinearLayout>
 
     </RelativeLayout>
@@ -586,7 +526,6 @@
             android:weightSum="5"
             android:orientation="vertical"
             android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:gravity="center"
             android:baselineAligned="false"
@@ -594,7 +533,7 @@
 
             <LinearLayout
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:orientation="vertical"
                 android:background="@drawable/overlay_message"
                 android:layout_weight="3"
@@ -610,7 +549,7 @@
                 <TextView
                     android:id="@+id/btn_ok_souldout"
                     android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:padding="@dimen/btn_padding"
                     android:layout_weight="1"
                     android:textColor="@color/white"
@@ -635,7 +574,6 @@
             android:weightSum="5"
             android:orientation="vertical"
             android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:gravity="center"
             android:baselineAligned="false"
@@ -643,7 +581,7 @@
 
             <LinearLayout
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:orientation="vertical"
                 android:background="@drawable/overlay_message"
                 android:layout_weight="3"
@@ -661,7 +599,7 @@
                 <TextView
                     android:id="@+id/btn_ok_closed"
                     android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:padding="@dimen/btn_padding"
                     android:layout_weight="1"
                     android:textColor="@color/white"

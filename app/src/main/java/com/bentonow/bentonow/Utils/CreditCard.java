@@ -143,7 +143,7 @@ public class CreditCard {
         if (CreditCard.isAmex(credit_card_number)) {
             return "American Express";
         } else if (CreditCard.isMastercard(credit_card_number)) {
-            return "Mastercard";
+            return "MasterCard";
         } else if (CreditCard.isVisa(credit_card_number)) {
             return "Visa";
         } else if (CreditCard.isDiscover(credit_card_number)) {

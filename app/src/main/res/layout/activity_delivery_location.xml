@@ -1,90 +1,93 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    android:id="@+id/base_relative_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.bentonow.bentonow.ErrorClosedActivity"
-    android:id="@+id/base_relative_layout"
-    android:background="@color/bgcolor">
+    android:background="@color/bgcolor"
+    tools:context="DeliveryLocationActivity">
 
     <LinearLayout
-        android:orientation="vertical"
+        android:id="@+id/ActionBarContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:id="@+id/ActionBarContainer">
-        <include layout="@layout/actionbar" />
+        android:orientation="vertical">
+
+        <include layout="@layout/actionbar"/>
     </LinearLayout>
 
     <!-- content -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
+        android:layout_above="@+id/linearLayout2"
         android:layout_below="@+id/ActionBarContainer"
-        android:layout_above="@+id/linearLayout2">
+        android:orientation="vertical">
 
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
             android:background="@drawable/bg_actionbar"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
             >
+
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_search" />
-            <AutoCompleteTextView
-                android:id="@+id/autoCompleteTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="30dp"
-                android:ems="10"
-                android:hint="Enter your delivery address"
-                android:gravity="center_vertical"
-                android:background="@color/transparent"
-                android:textCursorDrawable="@null"
-                android:textSize="14sp"
-                android:layout_weight="1"
-                android:completionThreshold="1"
-                android:singleLine="true">
+                android:contentDescription="@null"
+                android:src="@drawable/ic_search"/>
 
-                <requestFocus />
+            <AutoCompleteTextView
+                android:id="@+id/txt_address"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/transparent"
+                android:completionThreshold="1"
+                android:ems="10"
+                android:gravity="center_vertical"
+                android:hint="@string/delivery_enter_address"
+                android:minHeight="30dp"
+                android:singleLine="true"
+                android:textCursorDrawable="@null"
+                android:textSize="14sp">
+
+                <requestFocus/>
             </AutoCompleteTextView>
 
-            <RelativeLayout
+            <ImageButton
+                android:id="@+id/btn_clear"
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:padding="5dp"
-                >
-                <ImageView
-                    android:id="@+id/btn_clear"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/creditcard_btn_clear"
-                    android:layout_centerInParent="true"
-                    android:adjustViewBounds="true"
-                    android:visibility="invisible"
-                    />
-               <ProgressBar
-                   android:id="@+id/progressBar"
-                   android:layout_centerInParent="true"
-                   android:layout_width="30dp"
-                   android:layout_height="30dp"
+                android:layout_height="wrap_content"
+                android:padding="7sp"
+                android:adjustViewBounds="true"
+                android:background="@null"
+                android:contentDescription="@null"
+                android:onClick="onClearPressed"
+                android:src="@drawable/creditcard_btn_clear"/>
 
-                   />
-            </RelativeLayout>
-
-            <ImageView
-                android:id="@+id/btn_go_to_current_location"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:src="@drawable/ic_curr_loc"
-                android:visibility="gone"
-                android:paddingStart="1dp"
-                android:paddingEnd="9dp"
+            <ProgressBar
+                android:padding="7sp"
+                android:id="@+id/progressBar"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 />
+
+            <ImageButton
+                android:padding="7sp"
+                android:id="@+id/btn_current_location"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:background="@null"
+                android:contentDescription="@null"
+                android:onClick="onCurrentLocationPressed"
+                android:paddingEnd="9dp"
+                android:paddingStart="1dp"
+                android:src="@drawable/ic_curr_loc"/>
 
         </LinearLayout>
 
@@ -93,167 +96,97 @@
             android:layout_height="match_parent">
 
             <fragment
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" android:id="@+id/map"
-                tools:context="com.bentonow.bentonow.DeliveryLocationActivity"
+                android:id="@+id/map"
                 android:name="com.google.android.gms.maps.SupportMapFragment"
-                 />
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context="com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity"
+                />
+
             <ImageView
+                android:id="@+id/imageView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/imageView4"
-                android:src="@drawable/center_map"
-                android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"
-                android:visibility="invisible" />
-            <TextView
+                android:layout_centerVertical="true"
+                android:contentDescription="@null"
+                android:src="@drawable/center_map"
+                android:visibility="invisible"/>
+
+            <com.bentonow.bentonow.ui.BackendTextView
+                android:id="@+id/alert_i_agree"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:background="@drawable/alert_orange"
                 android:gravity="center"
                 android:text="@string/alert_tab_checkbox"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_very_small"
-                android:background="@drawable/alert_orange"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
                 android:visibility="invisible"
-                android:id="@+id/alert_iagree" />
+                app:key="delivery-agree-error"/>
         </RelativeLayout>
 
     </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_above="@+id/footer_action"
-            android:id="@+id/linearLayout2"
-            android:gravity="center_vertical"
-            android:padding="5dp"
-            android:background="@color/white">
-            <TextView
-               android:layout_width="wrap_content"
-                android:paddingLeft="10dp"
-                android:layout_height="match_parent"
-                android:text="@string/iagree_label"
-                android:id="@+id/textView3"
-                android:gravity="center_vertical"
-                />
-            <ImageView
-                android:id="@+id/btn_help"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_help"
-                android:padding="10dp"
-                />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="right">
-                <CheckBox
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/chckIagree"
-                    />
-            </LinearLayout>
-        </LinearLayout>
-
-
-
-    <RelativeLayout
-        android:id="@+id/footer_action"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        >
-        <TextView
-            android:id="@+id/btn_continue"
-            android:background="@color/gray"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:padding="@dimen/btn_padding"
-            android:text="@string/btn_continue_text"
-            />
-        <TextView
-            android:id="@+id/btn_confirm_address"
-            android:background="@color/btn_green"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:padding="@dimen/btn_padding"
-            android:text="@string/btn_fonfirm_address_text"
-            android:visibility="invisible"
-            />
-    </RelativeLayout>
-
-    <RelativeLayout
-    android:id="@+id/overlay_help"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="#90000000"
-    android:visibility="gone">
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:weightSum="5"
+        android:layout_above="@+id/btn_continue"
+        android:background="@color/white"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:gravity="center"
-        android:baselineAligned="false">
+        android:padding="5dp">
+
+        <com.bentonow.bentonow.ui.BackendTextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:paddingEnd="10dp"
+            android:paddingStart="10dp"
+            android:text="@string/iagree_label"
+            app:key="delivery-agree"
+            />
+
+        <ImageButton
+            android:id="@+id/btn_help"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:contentDescription="@null"
+            android:onClick="onHelpPressed"
+            android:padding="10dp"
+            android:src="@drawable/ic_help"/>
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/overlay_message"
-            android:layout_weight="3"
-            >
-            <TextView
-                android:layout_width="fill_parent"
+            android:layout_weight="1"
+            android:gravity="end">
+
+            <CheckBox
+                android:id="@+id/chck_iagree"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/delivery_help"
-                android:padding="@dimen/btn_padding"
+                android:onClick="onAgreePressed"
                 />
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <TextView
-                    android:id="@+id/btn_cancel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="@dimen/btn_padding"
-                    android:layout_weight="1"
-                    android:textColor="@color/white"
-                    android:background="@drawable/btn_green_corned_left_bottom"
-                    android:gravity="center"
-                    android:text="@string/btn_cancel_text"
-                    />
-                <TextView
-                    android:id="@+id/btn_iagree"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="@dimen/btn_padding"
-                    android:layout_weight="1"
-                    android:textColor="@color/white"
-                    android:background="@drawable/bg_green_corner_right_bottom"
-                    android:gravity="center"
-                    android:text="@string/btn_iagree"
-                    />
-            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
-</RelativeLayout>
-
+    <com.bentonow.bentonow.ui.BackendButton
+        android:id="@+id/btn_continue"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/gray"
+        android:gravity="center"
+        android:onClick="onContinuePressed"
+        android:padding="@dimen/btn_padding"
+        android:text="@string/btn_continue_text"
+        android:textColor="@color/white"
+        app:key="delivery-button"
+        />
 
 </RelativeLayout>

@@ -1,152 +1,143 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    android:id="@+id/base_relative_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="fill_parent"
-    tools:context="com.bentonow.bentonow.EnterCreditCardActivity"
-    android:id="@+id/base_relative_layout"
-    android:background="@color/bgcolor"
+    android:layout_height="match_parent"
     android:layout_alignParentBottom="true"
+    android:background="@color/bgcolor"
+    android:orientation="vertical"
+    tools:context="com.bentonow.bentonow.controllers.payment.EnterCreditCardActivity"
     >
 
-    <!-- background -->
-    <!--<ImageView
-        android:id="@+id/bg"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:src="@drawable/bg_error_closed"
-        android:scaleType="centerCrop"/>-->
-
     <!-- actionbar -->
-    <LinearLayout
-        android:id="@+id/ActionBarContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        >
-        <include layout="@layout/actionbar"/>
-    </LinearLayout>
+    <include layout="@layout/actionbar"/>
 
-    <!-- INI CONTAINER -->
-    <RelativeLayout
-        android:layout_below="@+id/ActionBarContainer"
+    <com.bentonow.bentonow.ui.BackendTextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/main_relative"
-        >
-        <!-- INI content -->
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@color/light_gray"
-                android:padding="@dimen/general_padding"
-                >
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:text="A single Bento is only ..."
-                    android:gravity="center"
-                    />
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:text="$12"
-                    android:gravity="center"
-                    android:textAppearance="@style/H1Gray"
-                    />
-            </LinearLayout>
-        </LinearLayout>
-
-
-        <!-- END content -->
-    </RelativeLayout>
-
-    <!-- INI FOOTER -->
-    <!--<LinearLayout
-        android:id="@+id/footer_container"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        >
-        <TextView
-            android:id="@+id/btn_continue_to_payment"
-            android:background="@color/btn_green"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:padding="@dimen/btn_padding"
-            android:text="CONTINUE TO PAYMENT"
-            />
-    </LinearLayout>-->
-    <fragment android:id="@+id/payment_form"
-        android:layout_below="@+id/main_relative"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        class="com.bentonow.bentonow.fragment.PaymentFormFragment"
-        tools:layout="@layout/payment_form_fragment"
-        android:layout_marginBottom="@dimen/general_padding"
-        android:layout_alignParentBottom="true"
+        android:layout_marginTop="25sp"
+        android:gravity="center"
+        app:key="credit-card-text"
         />
 
-    <RelativeLayout
-        android:id="@+id/ok_overlay"
+    <com.bentonow.bentonow.ui.BackendTextView
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#90000000"
-        android:visibility="gone" >
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25sp"
+        android:gravity="center"
+        android:textAppearance="@style/H1Gray"
+        app:key="price"
+        />
 
-        <LinearLayout
-            android:layout_width="fill_parent"
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="50sp"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        >
+
+        <ImageView
+            android:id="@+id/img_credit_card"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:weightSum="5"
-            android:orientation="vertical"
-            android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
+            android:adjustViewBounds="true"
+            android:contentDescription="@null"
+            android:paddingEnd="15dp"
+            android:paddingStart="15dp"
+            android:src="@drawable/card_empty"/>
+
+        <EditText
+            android:id="@+id/txt_number"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@color/transparent"
+            android:hint="@string/cardNumber"
+            android:inputType="number"
+            android:maxLength="@integer/max_length_card"
+            android:singleLine="true"
+            android:textColor="@color/gray"
+            android:textCursorDrawable="@null"
+            android:textSize="@dimen/text_small"/>
+
+        <Button
+            android:id="@+id/txt_last4"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@color/transparent"
             android:gravity="center"
-            android:baselineAligned="false"
-            android:padding="@dimen/general_padding" >
+            android:hint="@string/hash"
+            android:maxLength="4"
+            android:padding="7dp"
+            android:singleLine="true"
+            android:textColor="@color/gray"
+            android:textCursorDrawable="@null"
+            android:textSize="@dimen/text_small"
+            android:onClick="onLast4Pressed"
+            />
 
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/overlay_message"
-                android:layout_weight="3"
-                android:visibility="visible" >
+        <EditText
+            android:id="@+id/txt_date"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@color/transparent"
+            android:gravity="center"
+            android:hint="@string/mmyy"
+            android:inputType="number"
+            android:maxLength="5"
+            android:nextFocusDown="@+id/cvc"
+            android:nextFocusForward="@+id/cvc"
+            android:nextFocusRight="@+id/cvc"
+            android:padding="7dp"
+            android:singleLine="true"
+            android:text=""
+            android:textColor="@color/gray"
+            android:textCursorDrawable="@null"
+            android:textSize="@dimen/text_small"
+            />
 
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="@dimen/btn_padding"
-                    android:id="@+id/ok_message"
-                    android:textColor="@color/black"
-                    android:text="" />
+        <EditText
+            android:id="@+id/txt_cvc"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@color/transparent"
+            android:gravity="center"
+            android:hint="@string/cvc"
+            android:inputType="number"
+            android:maxLength="4"
+            android:nextFocusForward="@+id/save"
+            android:padding="7dp"
+            android:singleLine="true"
+            android:textColor="@color/gray"
+            android:textCursorDrawable="@null"
+            android:textSize="@dimen/text_small"
+            />
 
-                <TextView
-                    android:id="@+id/ok_btn"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="@dimen/btn_padding"
-                    android:layout_weight="1"
-                    android:textColor="@color/white"
-                    android:background="@drawable/bg_green_corner_left_right_bottom"
-                    android:gravity="center"
-                    android:text="@string/ok" />
-            </LinearLayout>
-        </LinearLayout>
-    </RelativeLayout>
+        <ImageButton
+            android:background="@null"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="7sp"
+            android:contentDescription="@null"
+            android:src="@drawable/x_reset_input"
+            android:onClick="onClearPressed" />
 
-
-</RelativeLayout>
+    </LinearLayout>
+    <!--<Button android:id="@+id/save" style="@style/Save"/>-->
+    <com.bentonow.bentonow.ui.BackendButton
+        android:id="@+id/btn_save"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/general_padding"
+        android:background="@drawable/btn_dark_gray"
+        android:gravity="center"
+        android:onClick="onSavePressed"
+        android:textColor="@color/white"
+        app:key="credit-card-button"/>
+</LinearLayout>

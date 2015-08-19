@@ -2,9 +2,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.bentonow.bentonow.ErrorClosedActivity"
+    tools:context="com.bentonow.bentonow.controllers.errors.ErrorActivity"
     android:id="@+id/base_relative_layout"
-    android:background="@color/bgcolor">
+    android:background="@color/btn_green">
 
     <!-- actionbar -->
     <LinearLayout
@@ -31,50 +31,40 @@
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Main Dishes"
+                android:text="@string/main_dishes"
                 android:padding="@dimen/btn_padding"
                 android:background="@color/gray"
                 android:textColor="@color/white"
                 android:gravity="center"
                 />
-            <!--<ListView
-                android:id="@+id/main_menu_list_items"
+            <com.bentonow.bentonow.ui.BentoGridView
+                android:id="@+id/list_main"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                tools:listitem="@layout/inc_menu_item_row">
-            </ListView>-->
-            <LinearLayout
-                android:id="@+id/tomorrow_main_dishes_container"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                tools:listitem="@layout/list_item_add"
+                android:numColumns="1"
+                android:background="@color/btn_green"
+                android:fillViewport="true">
 
-            </LinearLayout>
+            </com.bentonow.bentonow.ui.BentoGridView>
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Side Dishes"
+                android:text="@string/side_dishes"
                 android:padding="@dimen/btn_padding"
                 android:background="@color/gray"
                 android:textColor="@color/white"
                 android:gravity="center"
                 />
-            <!--<ListView
-                android:id="@+id/side_menu_list_items"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                tools:listitem="@layout/inc_menu_item_row">
-            </ListView>-->
-            <com.bentonow.bentonow.BentoGridView
-                android:id="@+id/menu_item_side_listview"
+            <com.bentonow.bentonow.ui.BentoGridView
+                android:id="@+id/list_side"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                tools:listitem="@layout/inc_menu_item_side"
+                tools:listitem="@layout/list_item_add"
                 android:numColumns="2"
-                android:fillViewport="true"
-                >
-
-            </com.bentonow.bentonow.BentoGridView>
+                android:background="@color/btn_green"
+                android:fillViewport="true">
+            </com.bentonow.bentonow.ui.BentoGridView>
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

@@ -1,74 +1,87 @@
 package com.bentonow.bentonow.model;
 
-import com.bentonow.bentonow.Bentonow;
-import com.orm.SugarRecord;
+import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.location.Location;
+import android.util.Log;
 
-/**
- * Created by gonzalo on 10/05/2015.
- */
-public class User extends SugarRecord<User> {
-    public String firstname;
-    public String lastname;
-    public String email;
-    public String phone;
-    public String couponcode;
-    public String apitoken;
-    public String cardbrand;
-    public String cardlast4;
-    public String stripetoken;
-    //FB
-    public String fbid;
-    public String fbtoken;
-    public String fbprofilepic;
-    public String fbagerange;
-    public String fbgender;
-    //
+import com.bentonow.bentonow.Utils.BentoRestClient;
+import com.bentonow.bentonow.model.user.Card;
+import com.bentonow.bentonow.model.user.CouponRequest;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.Gson;
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
 
-    public User() {}
+public class User {
+    //region STATIC VARIABLES
+    static final String TAG = "model.User";
+    public static User current = null;
+    public static LatLng location;
+    //endregion
 
-    public User(String firstname, String lastname, String email, String phone, String couponcode, String apitoken, String cardbrand, String cardlast4) {
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.email = email;
-        this.phone = phone;
-        this.couponcode = couponcode;
-        this.apitoken = apitoken;
-        this.cardbrand = cardbrand;
-        this.cardlast4 = cardlast4;
+    //region VARIABLES
+    public String firstname = null;
+    public String lastname = null;
+    public String email = null;
+    public String phone = null;
+    public String coupon_code = null;
+    public String api_token = null;
+    public String stripe_token = null;
+
+    public String fb_token = null;
+    public String fb_id = null;
+    public String fb_profile_pic = null;
+    public String fb_age_range = null;
+    public String fb_gender = null;
+
+    public String password = null;
+
+    public Card card = new Card();
+    //endregion
+
+    public static void requestCoupon (String email, String reason, TextHttpResponseHandler response) {
+        CouponRequest couponRequest = new CouponRequest();
+        couponRequest.email = email;
+        couponRequest.reason = reason;
+        couponRequest.api_token = current != null ? current.api_token : null;
+
+        String data = new Gson().toJson(couponRequest);
+
+        RequestParams params = new RequestParams();
+        params.put("data", data);
+
+        Log.i(TAG, "requestCoupon data: " + data);
+
+        BentoRestClient.post("/coupon/request", params, response);
     }
 
-    @Override
-    public String toString() {
-        super.toString();
-        String stripetkn = (stripetoken != null) ? stripetoken : "";
-        return "id: "+getId()+", firstname: "+firstname+", lastname: "+lastname+", email: "+email+", phone: "+phone+", apitoken: "+apitoken+", cardbrand: "+cardbrand+", cardlast4: "+cardlast4+", StripeToken: "+stripetkn;
+    public void login (TextHttpResponseHandler responseHandler) {
+        card = null;
+
+        String endpoint = password != null ? "/user/login" : "/user/fblogin";
+        String data = new Gson().toJson(this);
+
+        RequestParams params = new RequestParams();
+        params.put("data", data);
+
+        Log.i(TAG, "login data: " + data);
+
+        BentoRestClient.post(endpoint, params, responseHandler);
     }
 
-    public void reset() {
-        User user = User.findById(User.class,(long)1);
-        user.firstname = "";
-        user.lastname = "";
-        user.email = "";
-        user.phone = "";
-        user.couponcode = "";
-        user.apitoken = "";
-        user.cardbrand = "";
-        user.cardlast4 = "";
-        user.stripetoken = "";
-        user.fbid = "";
-        user.fbtoken = "";
-        user.fbprofilepic = "";
-        user.fbagerange = "";
-        user.fbgender = "";
-        user.save();
+    public void register (TextHttpResponseHandler responseHandler) {
+        card = null;
 
-        Orders corder = Orders.findById(Orders.class, Bentonow.pending_order_id);
-        corder.couponcode = null;
-        corder.amountoff = null;
-        corder.save();
-    }
+        String endpoint = password != null ? "/user/signup" : "/user/fbsignup";
+        String data = new Gson().toJson(this).replace("\"firstname\":", "\"name\":");
 
-    public static User currentUser() {
-        return User.findById(User.class,(long)1);
+        RequestParams params = new RequestParams();
+        params.put("data", data);
+
+        Log.i(TAG, "register data: " + data);
+
+        BentoRestClient.post(endpoint, params, responseHandler);
     }
 }
