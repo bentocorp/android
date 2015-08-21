@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:com.bentonow.bentonow="http://schemas.android.com/tools"
-    package="com.bentonow.bentonow" >
+    package="com.bentonow.bentonow">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -21,9 +20,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_bento"
         android:label="@string/app_name"
-        android:theme="@style/Theme.BentoTheme"
-        com.bentonow.bentonow:replace="android:icon"
-        >
+        android:theme="@style/Theme.BentoTheme">
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
@@ -32,20 +29,20 @@
             android:value="bento.db" />
         <meta-data
             android:name="VERSION"
-            android:value="22" />
+            android:value="1" />
         <meta-data
             android:name="QUERY_LOG"
             android:value="false" />
         <meta-data
             android:name="DOMAIN_PACKAGE_NAME"
-            android:value="com.bentonow" />
+            android:value="@string/package_orm_name" />
 
         <activity
             android:name=".controllers.init.MainActivity"
             android:label="@string/app_name"
+            android:launchMode="singleInstance"
             android:screenOrientation="portrait"
-            android:theme="@style/fullscreen"
-            >
+            android:theme="@style/fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -54,86 +51,68 @@
         </activity>
         <activity
             android:name=".controllers.errors.ErrorActivity"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:launchMode="singleInstance"
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".controllers.init.GettingStartedActivity"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
-        </activity>
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
         <activity
             android:name=".controllers.help.HelpActivity"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".controllers.order.BuildBentoActivity"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".controllers.geolocation.DeliveryLocationActivity"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".controllers.errors.BummerActivity"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".controllers.order.SelectMainActivity"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".controllers.order.SelectSideActivity"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".controllers.session.SignUpActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" >
-        </activity>
+            android:windowSoftInputMode="stateHidden"></activity>
         <activity
             android:name=".controllers.session.SignInActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" >
-        </activity>
+            android:windowSoftInputMode="stateHidden"></activity>
         <activity
             android:name=".controllers.order.CompleteOrderActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" >
-        </activity>
+            android:windowSoftInputMode="stateHidden"></activity>
         <activity
             android:name=".controllers.order.OrderConfirmedActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden">
-        </activity>
+            android:windowSoftInputMode="stateHidden"></activity>
         <activity
             android:name=".controllers.payment.EnterCreditCardActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan"
-            >
-        </activity>
+            android:windowSoftInputMode="adjustPan"></activity>
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
             android:name=".controllers.session.EnterPhoneNumberActivity"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".controllers.session.SettingsActivity"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".controllers.errors.NextDayMenuActivity"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:screenOrientation="portrait"></activity>
 
         <activity
             android:name=".controllers.errors.ErrorVersionActivity"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            >
-        </activity>
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
 
 
         <!-- Google Api Key -->
@@ -149,7 +128,7 @@
             android:name=".service.BentoService"
             android:enabled="true" />
 
-        <receiver android:name=".service.Receiver" >
+        <receiver android:name=".service.Receiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
 
@@ -160,7 +139,7 @@
 
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="e416b51207b62057016bf1d61606566656652d9a" />
+            android:value="12a1f1ab3fdca770edc237f02e1bc9480b3bc003" />
 
     </application>
 

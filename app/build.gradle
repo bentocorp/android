@@ -1,3 +1,6 @@
+apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+
 buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }
@@ -7,8 +10,6 @@ buildscript {
         classpath 'io.fabric.tools:gradle:1.+'
     }
 }
-apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -16,38 +17,52 @@ repositories {
 
 
 android {
+    compileSdkVersion 22
+    buildToolsVersion '22.0.1'
+
     signingConfigs {
         Bento {
             keyAlias 'bento'
             keyPassword 'bentonow'
-            storeFile file('/Users/normanpaniagua/Projects/rocketship/bento/android/bento.keystore')
+            storeFile file('../bento.keystore')
             storePassword 'bentonow'
         }
     }
-    compileSdkVersion 22
-    buildToolsVersion '22.0.1'
-    defaultConfig {
-        applicationId "com.bentonow.bentonow"
-        minSdkVersion 17
-        targetSdkVersion 22
-        versionCode 14
-        versionName '1.4'
-    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.main_title'), 'proguard-rules.pro'
             debuggable false
+            multiDexEnabled = true
             signingConfig signingConfigs.Bento
         }
         debug {
-            applicationIdSuffix ".debug"
             debuggable true
             minifyEnabled false
-            signingConfig signingConfigs.Bento
+            multiDexEnabled = true
         }
     }
     productFlavors {
+        production {
+            applicationId "com.bentonow.bentonow"
+            minSdkVersion 17
+            targetSdkVersion 22
+            versionCode 14
+            versionName '1.4'
+        }
+        stage {
+            applicationId "com.bentonow.bentonow.stage"
+            minSdkVersion 17
+            targetSdkVersion 22
+            versionCode 14
+            versionName '1.4'
+        }
+    }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
     }
 }
 
@@ -60,7 +75,8 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.stripe:stripe-android:1.0.0'
     compile 'com.facebook.android:facebook-android-sdk:4.1.2'
-    compile('com.crashlytics.sdk.android:crashlytics:2.4.0@aar') {
+    compile 'com.github.satyan:sugar:1.4'
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.1@aar') {
         transitive = true;
     }
     compile 'me.grantland:autofittextview:0.2.+'
