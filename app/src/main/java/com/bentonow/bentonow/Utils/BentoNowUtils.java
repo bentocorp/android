@@ -3,6 +3,7 @@ package com.bentonow.bentonow.Utils;
 import android.content.Context;
 import android.content.Intent;
 
+import com.bentonow.bentonow.controllers.errors.ErrorActivity;
 import com.bentonow.bentonow.controllers.init.MainActivity;
 
 import java.text.SimpleDateFormat;
@@ -34,10 +35,17 @@ public class BentoNowUtils {
         return tomorrowDate;
     }
 
-
     public static void openMainActivity(Context mContext) {
         if (!MainActivity.bIsOpen) {
             Intent intent = new Intent(mContext, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            mContext.startActivity(intent);
+        }
+    }
+
+    public static void openErrorActivity(Context mContext) {
+        if (!ErrorActivity.bIsOpen) {
+            Intent intent = new Intent(mContext, ErrorActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             mContext.startActivity(intent);
         }

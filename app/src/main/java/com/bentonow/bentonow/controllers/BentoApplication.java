@@ -28,7 +28,7 @@ public class BentoApplication extends Application {
 
     static Timer timer;
     static TimerTask stopService;
-    static BentoApplication instance = null;
+    public static BentoApplication instance = null;
     public static String status;
 
     @Override
@@ -55,7 +55,7 @@ public class BentoApplication extends Application {
         }
     }
 
-    static public void onPause () {
+    static public void onPause() {
         timer = new Timer();
 
         Log.i(TAG, "onPause");
@@ -76,7 +76,7 @@ public class BentoApplication extends Application {
         timer.schedule(stopService, 5 * 1000);
     }
 
-    static public void onResume () {
+    static public void onResume() {
         Log.i(TAG, "onResume");
 
         if (timer != null) {

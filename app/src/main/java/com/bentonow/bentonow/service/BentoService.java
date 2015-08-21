@@ -10,12 +10,12 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.controllers.errors.ErrorActivity;
 import com.bentonow.bentonow.controllers.init.MainActivity;
 import com.bentonow.bentonow.model.Menu;
-import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.Stock;
 import com.bentonow.bentonow.model.User;
@@ -89,9 +89,7 @@ public class BentoService extends Service {
         Log.i(TAG, "date: " + date + " current date: " + currDate);
 
         if (!date.equals(currDate)) {
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
+            BentoNowUtils.openMainActivity(this);
         }
 
         //noinspection deprecation
@@ -128,7 +126,7 @@ public class BentoService extends Service {
             }
 
             if (intent != null) {
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
             }
         }

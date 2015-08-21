@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageButton;
@@ -17,13 +16,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.BuildConfig;
-import com.bentonow.bentonow.controllers.payment.EnterCreditCardActivity;
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.Mixpanel;
 import com.bentonow.bentonow.controllers.BaseActivity;
-import com.bentonow.bentonow.controllers.errors.ErrorActivity;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
+import com.bentonow.bentonow.controllers.payment.EnterCreditCardActivity;
 import com.bentonow.bentonow.controllers.session.SignInActivity;
 import com.bentonow.bentonow.controllers.session.SignUpActivity;
 import com.bentonow.bentonow.model.BackendText;
@@ -100,15 +99,15 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
     protected void onResume() {
         super.onResume();
 
-        if ( User.current == null ) {
+        if (User.current == null) {
             startActivity(new Intent(this, SignUpActivity.class));
             finish();
-        } else if ( Order.location == null || Order.address == null ) {
+        } else if (Order.location == null || Order.address == null) {
             Intent intent = new Intent(this, DeliveryLocationActivity.class);
             intent.putExtra("completeOrder", true);
             startActivity(intent);
             finish();
-        } else if ( User.current.card.last4 == null || User.current.card.last4.isEmpty() ) {
+        } else if (User.current.card.last4 == null || User.current.card.last4.isEmpty()) {
             startActivity(new Intent(this, EnterCreditCardActivity.class));
         } else {
             updateUI();
@@ -124,7 +123,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         actionbar_left_btn.setOnClickListener(this);
     }
 
-    void deleteBento () {
+    void deleteBento() {
         Order.current.OrderItems.remove(selected);
         selected = -1;
         adapter.notifyDataSetChanged();
@@ -136,7 +135,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         updateUI();
     }
 
-    void track (String error) {
+    void track(String error) {
         try {
             JSONObject params = new JSONObject();
             params.put("quantity", Order.current.OrderItems.size());
@@ -151,7 +150,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         }
     }
 
-    void requestPromoCode (final String code) {
+    void requestPromoCode(final String code) {
         Log.i(TAG, "requestPromoCode " + code);
         if (code == null || code.isEmpty()) {
             dialog = new CustomDialog(this, "Invalid coupon code", null, "OK");
@@ -250,9 +249,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                         onBackPressed();
                         break;
                     case "closed":
-                        Intent intent = new Intent(this, ErrorActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
+                        BentoNowUtils.openErrorActivity(this);
                         break;
                     case "credit_card":
                         startActivity(new Intent(this, EnterCreditCardActivity.class));
@@ -276,29 +273,29 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         onBackPressed();
     }
 
-    public void onChangeAddressPressed (View v) {
+    public void onChangeAddressPressed(View v) {
         Intent intent = new Intent(this, DeliveryLocationActivity.class);
         intent.putExtra("back", true);
         startActivity(intent);
     }
 
-    public void onChangeCreditCardPressed (View v) {
+    public void onChangeCreditCardPressed(View v) {
         startActivity(new Intent(this, EnterCreditCardActivity.class));
     }
 
-    public void onAddAnotherBentoPressed (View v) {
+    public void onAddAnotherBentoPressed(View v) {
         Order.current.OrderItems.add(new OrderItem());
-        Order.current.currentOrderItem = Order.current.OrderItems.size()-1;
+        Order.current.currentOrderItem = Order.current.OrderItems.size() - 1;
         onBackPressed();
     }
 
-    public void onDeleteBentoPressed (View v) {
+    public void onDeleteBentoPressed(View v) {
         edit = !edit;
         adapter.notifyDataSetChanged();
         updateUI();
     }
 
-    public void onAddPromoCodePressed (View v) {
+    public void onAddPromoCodePressed(View v) {
         dialog = new CustomDialog(this, true);
         dialog.show();
         dialog.setOnOkPressed(this);
@@ -309,7 +306,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         }
     }
 
-    public void onMinusTipPressed (View v) {
+    public void onMinusTipPressed(View v) {
         if (Order.current.OrderDetails.tip_percentage > 0) {
             Order.current.OrderDetails.tip_percentage -= 5;
         }
@@ -317,7 +314,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         updateUI();
     }
 
-    public void onPlusTipPressed (View v) {
+    public void onPlusTipPressed(View v) {
         if (Order.current.OrderDetails.tip_percentage < 30) {
             Order.current.OrderDetails.tip_percentage += 5;
         }
@@ -325,7 +322,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         updateUI();
     }
 
-    public void onLetsEatPressed (View v) {
+    public void onLetsEatPressed(View v) {
         dialog = new CustomDialog(this, "Processing...", true);
         dialog.show();
 
@@ -413,7 +410,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
     //region UI
 
-    void updateUI () {
+    void updateUI() {
         Order.calculate();
 
         container_discount.setVisibility(Order.current.OrderDetails.coupon_discount_cents <= 0 ? View.GONE : View.VISIBLE);
@@ -455,7 +452,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         img_credit_card.setImageResource(card);
         txt_credit_card.setText(User.current.card.last4 != null ? User.current.card.last4 : "");
 
-        if(edit){
+        if (edit) {
             btn_delete.setTextColor(getResources().getColor(R.color.btn_green));
             btn_delete.setText(BackendText.get("complete-done"));
         } else {
@@ -474,14 +471,14 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         public ImageButton btn_edit;
         public ImageButton btn_remove;
 
-        public ItemHolder (View view) {
+        public ItemHolder(View view) {
             txt_name = (TextView) view.findViewById(R.id.txt_name);
             txt_price = (TextView) view.findViewById(R.id.txt_price);
             btn_edit = (ImageButton) view.findViewById(R.id.btn_edit);
             btn_remove = (ImageButton) view.findViewById(R.id.btn_remove);
         }
 
-        public void set (OrderItem item, int position) {
+        public void set(OrderItem item, int position) {
             txt_name.setText(item.items.get(0).name);
             txt_price.setText("$ " + item.unit_price);
 

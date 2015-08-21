@@ -2,11 +2,10 @@ package com.bentonow.bentonow.controllers;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 
 import com.bentonow.bentonow.R;
-import com.bentonow.bentonow.controllers.init.MainActivity;
+import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.model.Menu;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
@@ -38,9 +37,7 @@ public class BaseActivity extends Activity {
         BentoApplication.onResume();
 
         if (Menu.get() == null) {
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
+            BentoNowUtils.openMainActivity(this);
         }
     }
 

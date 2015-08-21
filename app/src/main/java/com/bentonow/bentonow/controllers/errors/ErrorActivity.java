@@ -35,6 +35,8 @@ public class ErrorActivity extends BaseActivity implements View.OnClickListener 
     TextView txt_email;
     Button btn_next_day_menu;
 
+    public static boolean bIsOpen = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +52,7 @@ public class ErrorActivity extends BaseActivity implements View.OnClickListener 
 
     @Override
     protected void onResume() {
-        super.onResume();
+        bIsOpen = true;
 
         Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE);
@@ -73,9 +75,11 @@ public class ErrorActivity extends BaseActivity implements View.OnClickListener 
         BentoApplication.status = Settings.status;
 
         setupNextMenu();
+
+        super.onResume();
     }
 
-    void setupNextMenu () {
+    void setupNextMenu() {
         Menu menu = Menu.getNext();
 
         if (menu != null) {
@@ -126,7 +130,14 @@ public class ErrorActivity extends BaseActivity implements View.OnClickListener 
         }
     }
 
-    public void onSubmitPressed (View view) {
+    @Override
+    protected void onStop() {
+        bIsOpen = false;
+
+        super.onStop();
+    }
+
+    public void onSubmitPressed(View view) {
         if (!Email.isValid(txt_email.getText().toString())) {
             CustomDialog dialog = new CustomDialog(this, "Invalid email address.", null, "OK");
             dialog.show();
@@ -135,40 +146,40 @@ public class ErrorActivity extends BaseActivity implements View.OnClickListener 
                     txt_email.getText().toString(),
                     Settings.status,
                     new TextHttpResponseHandler() {
-                @SuppressWarnings("deprecation")
-                @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    Log.e(TAG, responseString);
-                    CustomDialog dialog = new CustomDialog(
-                            ErrorActivity.this,
-                            "We having issues connecting to the server, please try later.",
-                            null,
-                            "OK"
-                    );
-                    dialog.show();
-                }
+                        @SuppressWarnings("deprecation")
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                            Log.e(TAG, responseString);
+                            CustomDialog dialog = new CustomDialog(
+                                    ErrorActivity.this,
+                                    "We having issues connecting to the server, please try later.",
+                                    null,
+                                    "OK"
+                            );
+                            dialog.show();
+                        }
 
-                @SuppressWarnings("deprecation")
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    String message = Settings.status.equals("sold out") ?
-                            BackendText.get("sold-out-confirmation-text") :
-                            BackendText.get("closed-confirmation-text");
-                    Log.i(TAG, responseString);
-                    txt_email.setText("");
-                    CustomDialog dialog = new CustomDialog(
-                            ErrorActivity.this,
-                            message,
-                            null,
-                            "OK"
-                    );
-                    dialog.show();
-                }
-            });
+                        @SuppressWarnings("deprecation")
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                            String message = Settings.status.equals("sold out") ?
+                                    BackendText.get("sold-out-confirmation-text") :
+                                    BackendText.get("closed-confirmation-text");
+                            Log.i(TAG, responseString);
+                            txt_email.setText("");
+                            CustomDialog dialog = new CustomDialog(
+                                    ErrorActivity.this,
+                                    message,
+                                    null,
+                                    "OK"
+                            );
+                            dialog.show();
+                        }
+                    });
         }
     }
 
-    public void onNextDayMenuPressed (View view) {
+    public void onNextDayMenuPressed(View view) {
         if (Menu.get() == null) return;
 
         Intent intent = new Intent(this, NextDayMenuActivity.class);
@@ -176,13 +187,13 @@ public class ErrorActivity extends BaseActivity implements View.OnClickListener 
         startActivity(intent);
     }
 
-    public void onPrivacyPolicyPressed (View view) {
+    public void onPrivacyPolicyPressed(View view) {
         Intent intent = new Intent(this, HelpActivity.class);
         intent.putExtra("privacy", true);
         startActivity(intent);
     }
 
-    public void onTermAndConditionsPressed (View view) {
+    public void onTermAndConditionsPressed(View view) {
         Intent intent = new Intent(this, HelpActivity.class);
         intent.putExtra("tos", true);
         startActivity(intent);

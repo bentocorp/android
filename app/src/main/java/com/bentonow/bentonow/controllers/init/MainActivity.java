@@ -11,10 +11,11 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.BuildConfig;
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.Mixpanel;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BentoApplication;
-import com.bentonow.bentonow.controllers.errors.ErrorActivity;
 import com.bentonow.bentonow.controllers.errors.ErrorVersionActivity;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.order.BuildBentoActivity;
@@ -41,6 +42,8 @@ public class MainActivity extends Activity {
     int retry = 0;
     CountDownTimer timer;
 
+    public static boolean bIsOpen = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +61,7 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onResume() {
-        super.onResume();
+        bIsOpen = true;
 
         Order.cleanUp();
 
@@ -75,6 +78,7 @@ public class MainActivity extends Activity {
         }
 
         BentoApplication.onResume();
+        super.onResume();
     }
 
     @Override
@@ -84,7 +88,13 @@ public class MainActivity extends Activity {
         BentoApplication.onPause();
     }
 
-    void loadData () {
+    @Override
+    protected void onStop() {
+        bIsOpen = false;
+        super.onStop();
+    }
+
+    void loadData() {
         //noinspection deprecation
         BentoRestClient.get("/init/" + Menu.getTodayDate(), null, new TextHttpResponseHandler() {
             @Override
@@ -106,12 +116,11 @@ public class MainActivity extends Activity {
         });
     }
 
-    void set (String responseString) {
+    void set(String responseString) {
         BackendText.set(responseString);
         Menu.set(responseString);
         Stock.set(responseString);
         Settings.set(responseString);
-        Settings.prefs = getSharedPreferences(Settings.prefs_name, MODE_PRIVATE);
 
         Menu menu = Menu.get();
 
@@ -130,9 +139,10 @@ public class MainActivity extends Activity {
     }
 
     void checkFirstRun() {
-        Log.i(TAG, "firstRun " + (Settings.prefs.getBoolean("firstRun", true) ? "true" : "false"));
-        if (Settings.prefs.getBoolean("firstRun", true)) {
-            Settings.prefs.edit().putBoolean("firstRun", false).commit();
+        Log.i(TAG, "firstRun " + SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.APP_FIRST_RUN));
+        if (!SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.APP_FIRST_RUN)) {
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.APP_FIRST_RUN, true);
+
             startActivity(new Intent(this, GettingStartedActivity.class));
             finish();
         } else {
@@ -145,7 +155,7 @@ public class MainActivity extends Activity {
             startActivity(new Intent(this, ErrorVersionActivity.class));
             finish();
         } else if (!Settings.status.equals("open")) {
-            startActivity(new Intent(this, ErrorActivity.class));
+            BentoNowUtils.openErrorActivity(this);
             finish();
         } else if (Order.pendingOrders()) {
             startActivity(new Intent(this, BuildBentoActivity.class));
@@ -155,7 +165,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    void waitForUserLocation () {
+    void waitForUserLocation() {
         Log.i(TAG, "location " + User.location);
         if (User.location == null && Order.location == null) {
             final TextView message = (TextView) findViewById(R.id.txt_message);
@@ -189,7 +199,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    void goNext () {
+    void goNext() {
         if (Settings.isInServiceArea(User.location) || Settings.isInServiceArea(Order.location)) {
             startActivity(new Intent(this, BuildBentoActivity.class));
         } else {

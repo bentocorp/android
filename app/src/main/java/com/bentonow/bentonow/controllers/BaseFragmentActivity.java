@@ -1,12 +1,11 @@
 package com.bentonow.bentonow.controllers;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
 import com.bentonow.bentonow.R;
-import com.bentonow.bentonow.controllers.init.MainActivity;
+import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.model.Menu;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
@@ -37,9 +36,7 @@ public class BaseFragmentActivity extends FragmentActivity {
         BentoApplication.onResume();
 
         if (Menu.get() == null) {
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
+            BentoNowUtils.openMainActivity(this);
         }
     }
 
