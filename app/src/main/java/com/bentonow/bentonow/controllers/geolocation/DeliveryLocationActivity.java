@@ -79,6 +79,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_delivery_location);
@@ -98,8 +99,15 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
     @Override
     protected void onResume() {
+        Log.i(TAG, "onResume");
         super.onResume();
         setupMap();
+    }
+
+    @Override
+    protected void onPause() {
+        Log.i(TAG, "onPause");
+        super.onPause();
     }
 
     private void initActionbar() {

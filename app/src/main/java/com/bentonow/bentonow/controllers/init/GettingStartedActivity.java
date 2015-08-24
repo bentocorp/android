@@ -28,6 +28,11 @@ public class GettingStartedActivity extends BaseActivity {
         Log.i(TAG, "title: " + title);
 
         ((TextView) findViewById(R.id.txt_title)).setText(title);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
 
         BentoApplication.status = "main";
     }
