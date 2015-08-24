@@ -16,6 +16,7 @@ import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.Mixpanel;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BentoApplication;
+import com.bentonow.bentonow.controllers.errors.ErrorActivity;
 import com.bentonow.bentonow.controllers.errors.ErrorVersionActivity;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.order.BuildBentoActivity;
@@ -81,6 +82,8 @@ public class MainActivity extends Activity {
 
         BentoApplication.onResume();
         BentoApplication.status = "main";
+
+        super.onResume();
     }
 
     @Override
@@ -98,7 +101,6 @@ public class MainActivity extends Activity {
         super.onStop();
     }
 
-    void loadData() {
     void loadData () {
         Log.i(TAG, "loadData");
         //noinspection deprecation

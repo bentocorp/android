@@ -81,7 +81,6 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
         super.onResume();
     }
 
-    void setupNextMenu() {
     @Override
     protected void onPause() {
         super.onPause();

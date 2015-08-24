@@ -46,8 +46,8 @@ public class BentoService extends Service {
 
     @Override
     public void onCreate() {
-        Log.i(TAG,"onCreate()");
-        instance=this;
+        Log.i(TAG, "onCreate()");
+        instance = this;
 
         loadData();
     }
@@ -63,18 +63,18 @@ public class BentoService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent,int flags, int startId) {
+    public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
         Log.i(TAG, "onStartCommand()");
-        return(START_NOT_STICKY);
+        return (START_NOT_STICKY);
     }
 
-    public static void init () {
+    public static void init() {
         date = Menu.getTodayDate();
         Log.i(TAG, "init");
     }
 
-    void startTask () {
+    void startTask() {
         task = new Runnable() {
             public void run() {
                 loadData();
@@ -114,7 +114,7 @@ public class BentoService extends Service {
 
     }
 
-    void set (String responseString) {
+    void set(String responseString) {
         Log.i(TAG, "set");
 
         try {
@@ -134,7 +134,7 @@ public class BentoService extends Service {
                 }
 
                 if (intent != null) {
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                 }
             }
@@ -142,7 +142,7 @@ public class BentoService extends Service {
         }
     }
 
-    void checkUserLocation () {
+    void checkUserLocation() {
         if (User.location != null) return;
         Log.i(TAG, "checkUserLocation");
 
