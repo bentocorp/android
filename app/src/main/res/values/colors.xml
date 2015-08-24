@@ -15,8 +15,10 @@
     <color name="light_gray">#ffe3e3e3</color>
     <color name="gray_divisor">#d0d3d3</color>
 
-
-
+    <color name="blue">#3b5998</color>
+    <color name="dark_blue">#576070</color>
+    <color name="cyan">#55acee</color>
+    <color name="sms_green">#5dbc48</color>
 
     <color name="spinnerItem">#AAAAAA</color>
     <color name="editText">#AAAAAA</color>

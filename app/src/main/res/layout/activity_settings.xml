@@ -1,9 +1,12 @@
-<LinearLayout android:id="@+id/base_relative_layout"
-              xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="@color/bgcolor"
-              android:orientation="vertical">
+<LinearLayout
+    android:id="@+id/base_relative_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bgcolor"
+    android:orientation="vertical">
+
 
     <!-- actionbar -->
     <LinearLayout
@@ -15,260 +18,409 @@
         <include layout="@layout/actionbar"/>
     </LinearLayout>
 
-    <RelativeLayout
-        android:id="@+id/container_user"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/user_data_content"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/btn_padding">
-
-            <TextView
-                android:id="@+id/txt_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                />
-
-            <TextView
-                android:id="@+id/txt_phone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                />
-
-            <TextView
-                android:id="@+id/txt_email"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                />
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/btn_logout"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/user_data_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentStart="false"
-            android:background="@null"
-            android:onClick="onLogoutPressed"
-            android:padding="@dimen/btn_padding"
-            android:text="Log out"
-            android:textColor="@color/btn_green"
-            android:textStyle="bold"/>
-    </RelativeLayout>
-
-    <!-- content -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:orientation="vertical">
-
-        <RelativeLayout
-            android:id="@+id/container_sig_in"
             android:layout_width="match_parent"
-            android:layout_height="55sp">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <LinearLayout
+            <RelativeLayout
+                android:id="@+id/container_user"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:padding="@dimen/setting_ico_padd"
-                    android:src="@drawable/setting_user"
-                    />
+                android:layout_height="wrap_content">
 
                 <LinearLayout
+                    android:id="@+id/user_data_content"
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:background="@drawable/border_bottom"
-                    android:orientation="horizontal">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/btn_padding">
 
                     <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="fill_parent"
-                        android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:paddingStart="@dimen/btn_padding"
-                        android:text="Sign In"
+                        android:id="@+id/txt_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
                         />
 
-                    <ImageView
+                    <TextView
+                        android:id="@+id/txt_phone"
                         android:layout_width="wrap_content"
-                        android:layout_height="fill_parent"
-                        android:paddingRight="20dp"
-                        android:src="@drawable/arrow_gray_right"
+                        android:layout_height="wrap_content"
+                        />
+
+                    <TextView
+                        android:id="@+id/txt_email"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         />
                 </LinearLayout>
-            </LinearLayout>
 
-            <Button
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:background="@null"
-                android:onClick="onSignInPressed"/>
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="55sp">
-
-            <LinearLayout
-                android:id="@+id/btn_setting_faq"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
-
-                <ImageView
+                <Button
+                    android:id="@+id/btn_logout"
+                    style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:padding="@dimen/setting_ico_padd"
-                    android:src="@drawable/setting_help"
-                    />
+                    android:layout_alignBottom="@+id/user_data_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentStart="false"
+                    android:background="@null"
+                    android:onClick="onLogoutPressed"
+                    android:padding="@dimen/btn_padding"
+                    android:text="Log out"
+                    android:textColor="@color/btn_green"
+                    android:textStyle="bold"/>
+            </RelativeLayout>
 
-                <LinearLayout
+            <!-- content -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/container_sig_in"
+                    android:layout_width="match_parent"
+                    android:layout_height="55sp">
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        >
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:adjustViewBounds="true"
+                            android:padding="@dimen/setting_ico_padd"
+                            android:src="@drawable/setting_user"
+                            />
+
+                        <LinearLayout
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:background="@drawable/border_bottom"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="fill_parent"
+                                android:layout_weight="1"
+                                android:gravity="center_vertical"
+                                android:paddingStart="@dimen/btn_padding"
+                                android:text="Sign In"
+                                />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="fill_parent"
+                                android:paddingRight="20dp"
+                                android:src="@drawable/arrow_gray_right"
+                                />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <Button
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:background="@null"
+                        android:onClick="onSignInPressed"/>
+                </RelativeLayout>
+
+                <RelativeLayout
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:background="@drawable/border_bottom"
-                    android:orientation="horizontal">
+                    android:layout_height="55sp">
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="fill_parent"
-                        android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:paddingLeft="@dimen/btn_padding"
-                        android:text="FAQ"
-                        />
+                    <LinearLayout
+                        android:id="@+id/btn_setting_faq"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        >
 
-                    <ImageView
-                        android:layout_width="wrap_content"
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:adjustViewBounds="true"
+                            android:padding="@dimen/setting_ico_padd"
+                            android:src="@drawable/setting_help"
+                            />
+
+                        <LinearLayout
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:background="@drawable/border_bottom"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="fill_parent"
+                                android:layout_weight="1"
+                                android:gravity="center_vertical"
+                                android:paddingLeft="@dimen/btn_padding"
+                                android:text="FAQ"
+                                />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="fill_parent"
+                                android:paddingRight="20dp"
+                                android:src="@drawable/arrow_gray_right"
+                                />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <Button
+                        android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
-                        android:paddingRight="20dp"
-                        android:src="@drawable/arrow_gray_right"
-                        />
-                </LinearLayout>
+                        android:background="@null"
+                        android:onClick="onFaqPressed"/>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="55sp">
+
+                    <LinearLayout
+                        android:id="@+id/btn_setting_email"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        >
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:adjustViewBounds="true"
+                            android:padding="@dimen/setting_ico_padd"
+                            android:src="@drawable/setting_email"
+                            />
+
+                        <LinearLayout
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:background="@drawable/border_bottom"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="fill_parent"
+                                android:layout_weight="1"
+                                android:gravity="center_vertical"
+                                android:paddingLeft="@dimen/btn_padding"
+                                android:text="Email Support"
+                                />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="fill_parent"
+                                android:paddingRight="20dp"
+                                android:src="@drawable/arrow_gray_right"
+                                />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <Button
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:background="@null"
+                        android:onClick="onEmailSupportPressed"/>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="55sp">
+
+                    <LinearLayout
+                        android:id="@+id/btn_setting_phone"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        >
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:adjustViewBounds="true"
+                            android:padding="@dimen/setting_ico_padd"
+                            android:src="@drawable/setting_phone"
+                            />
+
+                        <LinearLayout
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:background="@drawable/border_bottom"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="fill_parent"
+                                android:layout_weight="1"
+                                android:gravity="center_vertical"
+                                android:paddingLeft="@dimen/btn_padding"
+                                android:text="Phone Support"
+
+                                />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="fill_parent"
+                                android:paddingRight="20dp"
+                                android:src="@drawable/arrow_gray_right"
+                                />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <Button
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:background="@null"
+                        android:onClick="onPhoneSupportPressed"/>
+                </RelativeLayout>
             </LinearLayout>
-
-            <Button
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:background="@null"
-                android:onClick="onFaqPressed"/>
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="55sp">
 
             <LinearLayout
-                android:id="@+id/btn_setting_email"
-                android:layout_width="fill_parent"
+                android:id="@+id/container_coupon"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:padding="@dimen/setting_ico_padd"
-                    android:src="@drawable/setting_email"
-                    />
+                android:orientation="vertical">
 
                 <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:background="@drawable/border_bottom"
-                    android:orientation="horizontal">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30sp"
+                    android:background="@color/dark_blue"
+                    android:orientation="vertical"
+                    android:padding="10sp">
+
+                    <com.bentonow.bentonow.ui.BackendTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:paddingBottom="10sp"
+                        android:textColor="@color/white"
+                        app:key="share-promo-message"/>
 
                     <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="fill_parent"
-                        android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:paddingLeft="@dimen/btn_padding"
-                        android:text="Email Support"
-                        />
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="fill_parent"
-                        android:paddingRight="20dp"
-                        android:src="@drawable/arrow_gray_right"
-                        />
+                        android:id="@+id/txt_coupon"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/app_name"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold"/>
                 </LinearLayout>
-            </LinearLayout>
-
-            <Button
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:background="@null"
-                android:onClick="onEmailSupportPressed"/>
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="55sp">
-
-            <LinearLayout
-                android:id="@+id/btn_setting_phone"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:padding="@dimen/setting_ico_padd"
-                    android:src="@drawable/setting_phone"
-                    />
 
                 <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:background="@drawable/border_bottom"
-                    android:orientation="horizontal">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="20sp">
 
-                    <TextView
+                    <RelativeLayout
                         android:layout_width="0dp"
-                        android:layout_height="fill_parent"
-                        android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:paddingLeft="@dimen/btn_padding"
-                        android:text="Phone Support"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
 
-                        />
+                        <com.bentonow.bentonow.ui.FontAwesomeButton
+                            android:id="@+id/btn_facebook"
+                            style="@style/btn_rounded"
+                            android:layout_centerHorizontal="true"
+                            android:background="@drawable/background_circle_blue"
+                            android:text="@string/fa_facebook"
+                            android:onClick="onFacebookPressed"/>
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="fill_parent"
-                        android:paddingRight="20dp"
-                        android:src="@drawable/arrow_gray_right"
-                        />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/btn_facebook"
+                            android:layout_marginTop="5sp"
+                            android:gravity="center"
+                            android:text="@string/share"
+                            android:textColor="@color/dark_blue"
+                            android:textStyle="bold"/>
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+
+                        <com.bentonow.bentonow.ui.FontAwesomeButton
+                            android:id="@+id/btn_twitter"
+                            style="@style/btn_rounded"
+                            android:layout_centerHorizontal="true"
+                            android:background="@drawable/background_circle_cyan"
+                            android:text="@string/fa_twitter"
+                            android:onClick="onTwitterPressed"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/btn_twitter"
+                            android:layout_marginTop="5sp"
+                            android:gravity="center"
+                            android:text="@string/tweet"
+                            android:textColor="@color/dark_blue"
+                            android:textStyle="bold"/>
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+
+                        <com.bentonow.bentonow.ui.FontAwesomeButton
+                            android:id="@+id/btn_sms"
+                            style="@style/btn_rounded"
+                            android:layout_centerHorizontal="true"
+                            android:background="@drawable/background_circle_sms_green"
+                            android:text="@string/fa_comment"
+                            android:onClick="onMessagePressed"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/btn_sms"
+                            android:layout_marginTop="5sp"
+                            android:gravity="center"
+                            android:text="@string/text"
+                            android:textColor="@color/dark_blue"
+                            android:textStyle="bold"/>
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+
+                        <com.bentonow.bentonow.ui.FontAwesomeButton
+                            android:id="@+id/btn_email"
+                            style="@style/btn_rounded"
+                            android:layout_centerHorizontal="true"
+                            android:background="@drawable/background_circle_dark_blue"
+                            android:text="@string/fa_envelope"
+                            android:onClick="onEmailPressed"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/btn_email"
+                            android:layout_marginTop="5sp"
+                            android:gravity="center"
+                            android:text="@string/email"
+                            android:textColor="@color/dark_blue"
+                            android:textStyle="bold"/>
+                    </RelativeLayout>
+
                 </LinearLayout>
             </LinearLayout>
-
-            <Button
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:background="@null"
-                android:onClick="onPhoneSupportPressed"/>
-        </RelativeLayout>
-    </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

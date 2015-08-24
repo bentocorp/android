@@ -68,4 +68,12 @@
     <string name="hash">####</string>
     <string name="cvc">CVC</string>
     <string name="message">message</string>
+    <string name="fa_facebook">&#xf09a;</string>
+    <string name="fa_twitter">&#xf099;</string>
+    <string name="share">SHARE</string>
+    <string name="tweet">TWEET</string>
+    <string name="text">TEXT</string>
+    <string name="fa_comment">&#xf075;</string>
+    <string name="email">EMAIL</string>
+    <string name="fa_envelope">&#xf0e0;</string>
 </resources>
