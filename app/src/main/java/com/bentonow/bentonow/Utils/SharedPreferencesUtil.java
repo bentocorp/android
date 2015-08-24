@@ -14,12 +14,12 @@ public class SharedPreferencesUtil {
 
     private static final String SHARED_PROJECT = "SharedPreferencesBento";
 
-    public static final String APP_FIRST_RUN = "app_first_run";
-    public static final String USER = "user";
-    public static final String LOCATION = "location";
-    public static final String ADDRESS = "address";
-    public static final String BACKENDTEXT = "backendText";
-    public static final String UUID_BENTO = "UUID_BENTO";
+    public static final String APP_FIRST_RUN = "app_first_run"; //String
+    public static final String USER = "user"; //String
+    public static final String LOCATION = "location"; //String
+    public static final String ADDRESS = "address"; //String
+    public static final String BACKENDTEXT = "backendText"; //String
+    public static final String UUID_BENTO = "UUID_BENTO"; //String
 
 
     /**

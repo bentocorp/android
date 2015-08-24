@@ -58,6 +58,8 @@ public class BentoNowUtils {
         if (sUuidBento.isEmpty())
             sUuidBento = UUID.randomUUID().toString();
 
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.UUID_BENTO, sUuidBento);
+
         return sUuidBento;
     }
 
