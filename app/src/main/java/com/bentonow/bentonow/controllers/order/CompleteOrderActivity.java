@@ -20,6 +20,7 @@ import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.Mixpanel;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.payment.EnterCreditCardActivity;
@@ -328,6 +329,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         dialog.show();
 
         Order.current.Stripe.stripeToken = User.current.stripe_token;
+        Order.current.IdempotentToken = BentoNowUtils.getUUIDBento();
 
         RequestParams params = new RequestParams();
         params.put("data", Order.current.toString());
@@ -396,6 +398,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                 Log.i(TAG, "Order: " + responseString);
 
                 User.current.stripe_token = null;
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.UUID_BENTO, "");
                 Settings.save(getApplicationContext());
 
                 dialog.dismiss();

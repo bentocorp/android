@@ -123,4 +123,5 @@ public class Order {
     public OrderDetails OrderDetails = new OrderDetails();
     public OrderStripe Stripe = new OrderStripe();
     public String CouponCode = null;
+    public String IdempotentToken = null;
 }

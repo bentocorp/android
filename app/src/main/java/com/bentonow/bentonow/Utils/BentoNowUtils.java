@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.UUID;
 
 /**
  * Created by Jose Torres on 8/17/15.
@@ -49,6 +50,15 @@ public class BentoNowUtils {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             mContext.startActivity(intent);
         }
+    }
+
+    public static String getUUIDBento() {
+        String sUuidBento = SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.UUID_BENTO);
+
+        if (sUuidBento.isEmpty())
+            sUuidBento = UUID.randomUUID().toString();
+
+        return sUuidBento;
     }
 
 }

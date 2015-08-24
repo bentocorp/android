@@ -19,6 +19,7 @@ public class SharedPreferencesUtil {
     public static final String LOCATION = "location";
     public static final String ADDRESS = "address";
     public static final String BACKENDTEXT = "backendText";
+    public static final String UUID_BENTO = "UUID_BENTO";
 
 
     /**

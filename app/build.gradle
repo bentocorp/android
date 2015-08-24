@@ -40,23 +40,24 @@ android {
         debug {
             debuggable true
             minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.main_title'), 'proguard-rules.pro'
             multiDexEnabled = true
         }
+    }
+
+    defaultConfig {
+        applicationId "com.bentonow.bentonow"
+        minSdkVersion 17
+        targetSdkVersion 22
+        versionCode 14
+        versionName '1.4'
     }
     productFlavors {
         production {
             applicationId "com.bentonow.bentonow"
-            minSdkVersion 17
-            targetSdkVersion 22
-            versionCode 14
-            versionName '1.4'
         }
         stage {
             applicationId "com.bentonow.bentonow.stage"
-            minSdkVersion 17
-            targetSdkVersion 22
-            versionCode 14
-            versionName '1.4'
         }
     }
 
@@ -75,7 +76,6 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.stripe:stripe-android:1.0.0'
     compile 'com.facebook.android:facebook-android-sdk:4.1.2'
-    compile 'com.github.satyan:sugar:1.4'
     compile('com.crashlytics.sdk.android:crashlytics:2.5.1@aar') {
         transitive = true;
     }
