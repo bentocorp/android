@@ -5,7 +5,6 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
@@ -29,12 +28,22 @@ public class Menu {
 
     static public void set (String data) {
         list = new ArrayList<>();
+        JSONObject json = null;
 
         try {
-            JSONObject json = new JSONObject(data);
+            json = new JSONObject(data);
             setMenuWithString(json.getString("/menu/{date}"));
-            setMenuWithString(json.getString("/menu/next/{date}"));
             Log.i(TAG, "menus: " + list.size());
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+            e.printStackTrace();
+        }
+
+        try {
+            if (json != null) {
+                setMenuWithString(json.getString("/menu/next/{date}"));
+                Log.i(TAG, "menus next: " + list.size());
+            }
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
             e.printStackTrace();
@@ -80,41 +89,49 @@ public class Menu {
     }
 
     static public Menu getNext () {
-        int lunchTime = Integer.parseInt(Settings.lunch.startTime.replace(":", ""));
-        int dinnerTime = Integer.parseInt(Settings.dinner.startTime.replace(":", ""));
-        int currentTime = Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
+        try {
+            int lunchTime = Integer.parseInt(Settings.lunch.startTime.replace(":", ""));
+            int dinnerTime = Integer.parseInt(Settings.dinner.startTime.replace(":", ""));
+            int currentTime = Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
 
-        if (list == null) return null;
+            if (list == null) return null;
 
-        if ((lunchTime + Settings.buffer_minutes*100) > currentTime) {
+            if ((lunchTime + Settings.buffer_minutes * 100) > currentTime) {
+                // Try to get the lunch menu
+                for (Menu menu : list) {
+                    if (menu.for_date.replace("-", "").equals(getTodayDate()) || menu.meal_name.equals("lunch"))
+                        continue;
+                    return menu;
+                }
+                // Try to get the dinner menu
+                for (Menu menu : list) {
+                    if (menu.for_date.replace("-", "").equals(getTodayDate()) || menu.meal_name.equals("dinner"))
+                        continue;
+                    return menu;
+                }
+            } else if ((dinnerTime + Settings.buffer_minutes * 100) > currentTime) {
+                // Try to get the dinner menu
+                for (Menu menu : list) {
+                    if (menu.for_date.replace("-", "").equals(getTodayDate()) || menu.meal_name.equals("dinner"))
+                        continue;
+                    return menu;
+                }
+            }
+
             // Try to get the lunch menu
             for (Menu menu : list) {
-                if (menu.for_date.replace("-", "").equals(getTodayDate()) || menu.meal_name.equals("lunch")) continue;
+                if (!menu.for_date.replace("-", "").equals(getTodayDate()) || menu.meal_name.equals("lunch"))
+                    continue;
                 return menu;
             }
-            // Try to get the dinner menu
-            for (Menu menu : list) {
-                if (menu.for_date.replace("-", "").equals(getTodayDate()) || menu.meal_name.equals("dinner")) continue;
-                return menu;
-            }
-        } else if ((dinnerTime + Settings.buffer_minutes*100) > currentTime) {
-            // Try to get the dinner menu
-            for (Menu menu : list) {
-                if (menu.for_date.replace("-", "").equals(getTodayDate()) || menu.meal_name.equals("dinner")) continue;
-                return menu;
-            }
-        }
 
-        // Try to get the lunch menu
-        for (Menu menu : list) {
-            if (!menu.for_date.replace("-", "").equals(getTodayDate()) || menu.meal_name.equals("lunch")) continue;
-            return menu;
-        }
-
-        // Try to get the lunch menu
-        for (Menu menu : list) {
-            if (!menu.for_date.replace("-", "").equals(getTodayDate()) || menu.meal_name.equals("dinner")) continue;
-            return menu;
+            // Try to get the lunch menu
+            for (Menu menu : list) {
+                if (!menu.for_date.replace("-", "").equals(getTodayDate()) || menu.meal_name.equals("dinner"))
+                    continue;
+                return menu;
+            }
+        } catch (Exception ignore) {
         }
 
         return null;

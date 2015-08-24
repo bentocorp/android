@@ -9,6 +9,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Order {
@@ -124,4 +125,20 @@ public class Order {
     public OrderStripe Stripe = new OrderStripe();
     public String CouponCode = null;
     public String IdempotentToken = null;
+
+    public static void clearIncomplete() {
+        ArrayList<Integer> ids = new ArrayList<>();
+        for (int i=0; i < current.OrderItems.size(); ++i) {
+            OrderItem orderItem = current.OrderItems.get(i);
+
+            if (orderItem.isComplete()) continue;
+            ids.add(i);
+        }
+
+        Collections.reverse(ids);
+
+        for (Integer i : ids) {
+            current.OrderItems.remove(i);
+        }
+    }
 }

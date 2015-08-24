@@ -163,5 +163,12 @@
         <item name="android:gravity">center_vertical</item>
     </style>
 
-
+    <style name="btn_rounded" parent="Button">
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:layout_width">50sp</item>
+        <item name="android:layout_height">50sp</item>
+        <item name="android:padding">5sp</item>
+        <item name="android:textSize">32sp</item>
+    </style>
 </resources>

@@ -1,5 +1,6 @@
 package com.bentonow.bentonow.controllers.errors;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -7,9 +8,8 @@ import android.util.Log;
 import android.view.View;
 
 import com.bentonow.bentonow.R;
-import com.bentonow.bentonow.controllers.BaseActivity;
 
-public class ErrorVersionActivity extends BaseActivity {
+public class ErrorVersionActivity extends Activity {
 
     static final String TAG = "ErrorVersionActivity";
 

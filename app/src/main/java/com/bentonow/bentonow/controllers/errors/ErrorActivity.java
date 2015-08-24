@@ -1,5 +1,6 @@
 package com.bentonow.bentonow.controllers.errors;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,7 +12,6 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.Email;
-import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.model.BackendText;
@@ -29,7 +29,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 
-public class ErrorActivity extends BaseActivity implements View.OnClickListener {
+public class ErrorActivity extends Activity implements View.OnClickListener {
     private static final String TAG = "ErrorActivity";
 
     TextView txt_email;
@@ -54,13 +54,15 @@ public class ErrorActivity extends BaseActivity implements View.OnClickListener 
     protected void onResume() {
         bIsOpen = true;
 
+        BentoApplication.onResume();
+
         Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE);
 
         TextView txt_title = (TextView) findViewById(R.id.txt_title);
         TextView txt_description = (TextView) findViewById(R.id.txt_description);
 
-        if (Settings.status.equals("sold out")) {
+        if (Settings.status.equals("sold out") || Menu.get() == null) {
             txt_title.setText(BackendText.get("sold-out-title"));
             txt_description.setText(BackendText.get("sold-out-text"));
         } else {
@@ -80,6 +82,13 @@ public class ErrorActivity extends BaseActivity implements View.OnClickListener 
     }
 
     void setupNextMenu() {
+    @Override
+    protected void onPause() {
+        super.onPause();
+        BentoApplication.onPause();
+    }
+
+    void setupNextMenu () {
         Menu menu = Menu.getNext();
 
         if (menu != null) {

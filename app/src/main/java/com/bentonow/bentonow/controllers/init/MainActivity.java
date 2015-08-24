@@ -50,18 +50,20 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         Log.i(TAG, "onCreate");
 
+        if (getCallingActivity() != null) Log.i(TAG, "callerActivity " + getCallingActivity());
+
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
                         .setDefaultFontPath("fonts/OpenSans-Regular.ttf")
                         .setFontAttrId(R.attr.fontPath)
                         .build()
         );
-
-        BentoApplication.status = "main";
     }
 
     @Override
     protected void onResume() {
         bIsOpen = true;
+
+        Log.i(TAG, "onResume");
 
         Order.cleanUp();
 
@@ -78,12 +80,14 @@ public class MainActivity extends Activity {
         }
 
         BentoApplication.onResume();
-        super.onResume();
+        BentoApplication.status = "main";
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+
+        Log.i(TAG, "onPause");
 
         BentoApplication.onPause();
     }
@@ -95,6 +99,8 @@ public class MainActivity extends Activity {
     }
 
     void loadData() {
+    void loadData () {
+        Log.i(TAG, "loadData");
         //noinspection deprecation
         BentoRestClient.get("/init/" + Menu.getTodayDate(), null, new TextHttpResponseHandler() {
             @Override
@@ -116,7 +122,8 @@ public class MainActivity extends Activity {
         });
     }
 
-    void set(String responseString) {
+    void set (String responseString) {
+        Log.i(TAG, "set");
         BackendText.set(responseString);
         Menu.set(responseString);
         Stock.set(responseString);
@@ -151,6 +158,7 @@ public class MainActivity extends Activity {
     }
 
     void checkAppStatus() {
+        Log.i(TAG, "checkAppStatus");
         if (Settings.min_version > BuildConfig.VERSION_CODE) {
             startActivity(new Intent(this, ErrorVersionActivity.class));
             finish();
@@ -165,7 +173,8 @@ public class MainActivity extends Activity {
         }
     }
 
-    void waitForUserLocation() {
+    void waitForUserLocation () {
+        Log.i(TAG, "waitForUserLocation");
         Log.i(TAG, "location " + User.location);
         if (User.location == null && Order.location == null) {
             final TextView message = (TextView) findViewById(R.id.txt_message);
@@ -199,10 +208,15 @@ public class MainActivity extends Activity {
         }
     }
 
-    void goNext() {
-        if (Settings.isInServiceArea(User.location) || Settings.isInServiceArea(Order.location)) {
+    void goNext () {
+        if (Menu.get() == null) {
+            Log.i(TAG, "goNext ErrorActivity");
+            startActivity(new Intent(this, ErrorActivity.class));
+        } else if (Settings.isInServiceArea(User.location) || Settings.isInServiceArea(Order.location)) {
+            Log.i(TAG, "goNext BuildBentoActivity");
             startActivity(new Intent(this, BuildBentoActivity.class));
         } else {
+            Log.i(TAG, "goNext DeliveryLocationActivity");
             Mixpanel.track(this, "Opening app outside of service area");
             startActivity(new Intent(this, DeliveryLocationActivity.class));
         }

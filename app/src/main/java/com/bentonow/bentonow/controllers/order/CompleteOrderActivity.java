@@ -72,6 +72,8 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_complete_order);
 
+        Order.clearIncomplete();
+
         txt_address = (TextView) findViewById(R.id.txt_address);
         txt_credit_card = (TextView) findViewById(R.id.txt_credit_card);
         txt_discount = (TextView) findViewById(R.id.txt_discount);

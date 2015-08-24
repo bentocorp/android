@@ -34,11 +34,13 @@ public class BentoService extends Service {
     public static String date = "";
 
     public static boolean isRunning() {
+        Log.i(TAG, "isRunning");
         return instance != null;
     }
 
     @Override
     public IBinder onBind(Intent intent) {
+        Log.i(TAG, "onBind");
         return null;
     }
 
@@ -63,12 +65,13 @@ public class BentoService extends Service {
     @Override
     public int onStartCommand(Intent intent,int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-        Log.i(TAG, "Service.onStartCommand()");
+        Log.i(TAG, "onStartCommand()");
         return(START_NOT_STICKY);
     }
 
     public static void init () {
         date = Menu.getTodayDate();
+        Log.i(TAG, "init");
     }
 
     void startTask () {
@@ -79,9 +82,11 @@ public class BentoService extends Service {
         };
         handler = new Handler();
         handler.postDelayed(task, 1000 * 30);
+        Log.i(TAG, "startTask");
     }
 
     void loadData() {
+        Log.i(TAG, "loadData");
         checkUserLocation();
 
         String currDate = Menu.getTodayDate();
@@ -110,30 +115,36 @@ public class BentoService extends Service {
     }
 
     void set (String responseString) {
-        Stock.set(responseString);
-        Settings.set(responseString);
+        Log.i(TAG, "set");
 
-        if (!Settings.status.equals(BentoApplication.status) && !BentoApplication.status.equals("main")) {
-            Intent intent = null;
-            switch (Settings.status) {
-                case "open":
-                    intent = new Intent(this, MainActivity.class);
-                    break;
-                case "sold out":
-                case "closed":
-                    intent = new Intent(this, ErrorActivity.class);
-                    break;
-            }
+        try {
+            Stock.set(responseString);
+            Settings.set(responseString);
 
-            if (intent != null) {
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
+            if (!Settings.status.equals(BentoApplication.status) && !BentoApplication.status.equals("main")) {
+                Intent intent = null;
+                switch (Settings.status) {
+                    case "open":
+                        intent = new Intent(this, MainActivity.class);
+                        break;
+                    case "sold out":
+                    case "closed":
+                        intent = new Intent(this, ErrorActivity.class);
+                        break;
+                }
+
+                if (intent != null) {
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                }
             }
+        } catch (Exception ignored) {
         }
     }
 
     void checkUserLocation () {
         if (User.location != null) return;
+        Log.i(TAG, "checkUserLocation");
 
         LocationManager mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         Location location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
