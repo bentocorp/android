@@ -24,18 +24,6 @@
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
-        <meta-data
-            android:name="DATABASE"
-            android:value="bento.db" />
-        <meta-data
-            android:name="VERSION"
-            android:value="1" />
-        <meta-data
-            android:name="QUERY_LOG"
-            android:value="false" />
-        <meta-data
-            android:name="DOMAIN_PACKAGE_NAME"
-            android:value="@string/package_orm_name" />
 
         <activity
             android:name=".controllers.init.MainActivity"
