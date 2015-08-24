@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.model.BackendText;
 
 public class CustomDialog extends Dialog implements View.OnClickListener {
@@ -22,7 +23,7 @@ public class CustomDialog extends Dialog implements View.OnClickListener {
     Button btn_cancel = null;
     ProgressBar progressBar = null;
 
-    public CustomDialog (Context context, String message, boolean progressbar) {
+    public CustomDialog(Context context, String message, boolean progressbar) {
         super(context);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.dialog_custom);
@@ -34,7 +35,7 @@ public class CustomDialog extends Dialog implements View.OnClickListener {
         progressBar.setVisibility(progressbar ? View.VISIBLE : View.GONE);
     }
 
-    public CustomDialog (Context context, boolean input) {
+    public CustomDialog(Context context, boolean input) {
         super(context);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(input ? R.layout.dialog_input : R.layout.dialog_custom);
@@ -51,7 +52,7 @@ public class CustomDialog extends Dialog implements View.OnClickListener {
         btn_cancel.setVisibility(View.VISIBLE);
     }
 
-    public CustomDialog (Context context) {
+    public CustomDialog(Context context) {
         super(context);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.dialog_custom);
@@ -62,7 +63,7 @@ public class CustomDialog extends Dialog implements View.OnClickListener {
         progressBar.setVisibility(View.GONE);
     }
 
-    public CustomDialog (Context context, String message, String acceptButton, String cancelButton) {
+    public CustomDialog(Context context, String message, String acceptButton, String cancelButton) {
         super(context);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.dialog_custom);
@@ -86,10 +87,11 @@ public class CustomDialog extends Dialog implements View.OnClickListener {
         btn_cancel.setVisibility(cancelButton == null ? View.GONE : View.VISIBLE);
 
         if (cancelButton != null) btn_cancel.setText(cancelButton);
-        if (acceptButton == null) btn_cancel.setBackgroundResource(R.drawable.bg_green_corner_bottom);
+        if (acceptButton == null)
+            btn_cancel.setBackgroundResource(R.drawable.bg_green_corner_bottom);
     }
 
-    void init () {
+    void init() {
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
@@ -101,19 +103,21 @@ public class CustomDialog extends Dialog implements View.OnClickListener {
         if (btn_cancel != null) btn_cancel.setVisibility(View.GONE);
     }
 
-    public void setMessage (String message) {
+    public void setMessage(String message) {
         try {
             ((TextView) findViewById(R.id.txt_message)).setText(message);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 
-    public void setText (String text) {
+    public void setText(String text) {
         try {
             txt_input.setText(text);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 
-    public String getText () {
+    public String getText() {
         try {
             return txt_input.getText().toString();
         } catch (Exception ignored) {
@@ -121,7 +125,7 @@ public class CustomDialog extends Dialog implements View.OnClickListener {
         }
     }
 
-    public EditText getEditText () {
+    public EditText getEditText() {
         try {
             return txt_input;
         } catch (Exception ignored) {
@@ -129,7 +133,7 @@ public class CustomDialog extends Dialog implements View.OnClickListener {
         }
     }
 
-    public void setOnCancelPressed (final View.OnClickListener listener) {
+    public void setOnCancelPressed(final View.OnClickListener listener) {
         btn_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -139,7 +143,7 @@ public class CustomDialog extends Dialog implements View.OnClickListener {
         });
     }
 
-    public void setOnOkPressed (final View.OnClickListener listener) {
+    public void setOnOkPressed(final View.OnClickListener listener) {
         if (txt_input != null) {
             txt_input.setOnEditorActionListener(new EditText.OnEditorActionListener() {
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -170,5 +174,11 @@ public class CustomDialog extends Dialog implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         dismiss();
+    }
+
+    @Override
+    public void dismiss() {
+        AndroidUtil.hideKeyboard(btn_ok);
+        super.dismiss();
     }
 }

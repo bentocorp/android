@@ -299,6 +299,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         dialog = new CustomDialog(this, true);
         dialog.show();
         dialog.setOnOkPressed(this);
+        dialog.setOnCancelPressed(this);
         action = "promo_code";
 
         if (BuildConfig.DEBUG) {
