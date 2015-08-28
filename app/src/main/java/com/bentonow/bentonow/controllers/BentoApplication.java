@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.bentonow.bentonow.BuildConfig;
+import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.Mixpanel;
 import com.bentonow.bentonow.model.Settings;
@@ -22,6 +23,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import io.fabric.sdk.android.Fabric;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 public class BentoApplication extends Application {
     private static final String TAG = "BentoApplication";
@@ -42,6 +44,14 @@ public class BentoApplication extends Application {
         if (!BuildConfig.DEBUG) {
             Mixpanel.getInstance(this);
         }
+
+
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                        .setDefaultFontPath("fonts/OpenSans-Regular.ttf")
+                        .setFontAttrId(R.attr.fontPath)
+                        .build()
+        );
+
 
         Settings.load(this);
 

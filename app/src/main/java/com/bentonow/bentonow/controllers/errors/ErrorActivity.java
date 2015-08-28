@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
@@ -62,7 +63,7 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
         TextView txt_title = (TextView) findViewById(R.id.txt_title);
         TextView txt_description = (TextView) findViewById(R.id.txt_description);
 
-        if (Settings.status.equals("sold out") || Menu.get() == null) {
+        if (Settings.status.equals("sold out")) {
             txt_title.setText(BackendText.get("sold-out-title"));
             txt_description.setText(BackendText.get("sold-out-text"));
         } else {
@@ -87,7 +88,7 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
         BentoApplication.onPause();
     }
 
-    void setupNextMenu () {
+    void setupNextMenu() {
         Menu menu = Menu.getNext();
 
         if (menu != null) {
@@ -96,7 +97,7 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
 
             DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 
-            if (menu.for_date.replace("-", "").equals(Menu.getTodayDate())) {
+            if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate())) {
                 btn_next_day_menu.setText(BackendText.get("closed-sneak-preview-button"));
             } else {
                 try {
@@ -188,7 +189,8 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
     }
 
     public void onNextDayMenuPressed(View view) {
-        if (Menu.get() == null) return;
+        if (Menu.getNext() == null)
+            return;
 
         Intent intent = new Intent(this, NextDayMenuActivity.class);
         intent.putExtra("title", btn_next_day_menu.getText().toString());
