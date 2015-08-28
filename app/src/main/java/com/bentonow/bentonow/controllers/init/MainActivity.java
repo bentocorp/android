@@ -215,7 +215,7 @@ public class MainActivity extends Activity {
     }
 
     void goNext() {
-        if (Menu.get() == null) {
+        if (Menu.get() == null || !Settings.status.equals("open")) {
             Log.i(TAG, "goNext ErrorActivity");
             BentoNowUtils.openErrorActivity(this);
             finish();
