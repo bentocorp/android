@@ -2,6 +2,8 @@ package com.bentonow.bentonow.model;
 
 import android.util.Log;
 
+import com.bentonow.bentonow.Utils.BentoNowUtils;
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -26,7 +28,7 @@ public class Menu {
     public String day_text;
     public List<Item> items;
 
-    static public void set (String data) {
+    static public void set(String data) {
         list = new ArrayList<>();
         JSONObject json = null;
 
@@ -50,7 +52,7 @@ public class Menu {
         }
     }
 
-    static void setMenuWithString (String data) {
+    static void setMenuWithString(String data) {
         try {
             JSONObject menu = new JSONObject(data).getJSONObject("menus");
             Gson gson = new Gson();
@@ -58,13 +60,15 @@ public class Menu {
 
             if (menu.has("lunch")) {
                 row = gson.fromJson(menu.getJSONObject("lunch").getString("Menu"), Menu.class);
-                row.items = gson.fromJson(menu.getJSONObject("lunch").getString("MenuItems"), new TypeToken<List<Item>>() {}.getType());
+                row.items = gson.fromJson(menu.getJSONObject("lunch").getString("MenuItems"), new TypeToken<List<Item>>() {
+                }.getType());
                 list.add(row);
             }
 
             if (menu.has("dinner")) {
                 row = gson.fromJson(menu.getJSONObject("dinner").getString("Menu"), Menu.class);
-                row.items = gson.fromJson(menu.getJSONObject("dinner").getString("MenuItems"), new TypeToken<List<Item>>() {}.getType());
+                row.items = gson.fromJson(menu.getJSONObject("dinner").getString("MenuItems"), new TypeToken<List<Item>>() {
+                }.getType());
                 list.add(row);
             }
         } catch (Exception e) {
@@ -74,12 +78,12 @@ public class Menu {
 
     }
 
-    static public Menu get () {
+    static public Menu get() {
         if (list != null) {
             String type = Settings.currentMenuType();
 
             for (Menu menu : list) {
-                if (!menu.for_date.replace("-", "").equals(getTodayDate()) || !menu.meal_name.equals(type))
+                if (!menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()) || !menu.meal_name.equals(type))
                     continue;
                 return menu;
             }
@@ -88,7 +92,7 @@ public class Menu {
         return null;
     }
 
-    static public Menu getNext () {
+    static public Menu getNext() {
         try {
             int lunchTime = Integer.parseInt(Settings.lunch.startTime.replace(":", ""));
             int dinnerTime = Integer.parseInt(Settings.dinner.startTime.replace(":", ""));
@@ -99,45 +103,36 @@ public class Menu {
             if ((lunchTime + Settings.buffer_minutes * 100) > currentTime) {
                 // Try to get the lunch menu
                 for (Menu menu : list) {
-                    if (menu.for_date.replace("-", "").equals(getTodayDate()) || menu.meal_name.equals("lunch"))
+                    if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()) || menu.meal_name.equals("lunch"))
                         continue;
                     return menu;
                 }
                 // Try to get the dinner menu
                 for (Menu menu : list) {
-                    if (menu.for_date.replace("-", "").equals(getTodayDate()) || menu.meal_name.equals("dinner"))
+                    if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()) || menu.meal_name.equals("dinner"))
                         continue;
                     return menu;
                 }
             } else if ((dinnerTime + Settings.buffer_minutes * 100) > currentTime) {
                 // Try to get the dinner menu
                 for (Menu menu : list) {
-                    if (menu.for_date.replace("-", "").equals(getTodayDate()) || menu.meal_name.equals("dinner"))
+                    if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()) || menu.meal_name.equals("dinner"))
                         continue;
                     return menu;
                 }
             }
 
-            // Try to get the lunch menu
+            // Try to get the next day menu
             for (Menu menu : list) {
-                if (!menu.for_date.replace("-", "").equals(getTodayDate()) || menu.meal_name.equals("lunch"))
-                    continue;
-                return menu;
-            }
-
-            // Try to get the lunch menu
-            for (Menu menu : list) {
-                if (!menu.for_date.replace("-", "").equals(getTodayDate()) || menu.meal_name.equals("dinner"))
+                if (!menu.for_date.replace("-", "").equals(BentoNowUtils.getTomorrowDate()))
                     continue;
                 return menu;
             }
         } catch (Exception ignore) {
+            DebugUtils.logError("getNext()", ignore);
         }
 
         return null;
     }
 
-    static public String getTodayDate () {
-        return new SimpleDateFormat("yyyyMMdd", Locale.US).format(new Date());
-    }
 }

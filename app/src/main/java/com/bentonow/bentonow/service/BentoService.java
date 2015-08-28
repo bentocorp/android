@@ -15,7 +15,6 @@ import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.controllers.errors.ErrorActivity;
 import com.bentonow.bentonow.controllers.init.MainActivity;
-import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.Stock;
 import com.bentonow.bentonow.model.User;
@@ -70,7 +69,7 @@ public class BentoService extends Service {
     }
 
     public static void init() {
-        date = Menu.getTodayDate();
+        date = BentoNowUtils.getTodayDate();
         Log.i(TAG, "init");
     }
 
@@ -89,7 +88,7 @@ public class BentoService extends Service {
         Log.i(TAG, "loadData");
         checkUserLocation();
 
-        String currDate = Menu.getTodayDate();
+        String currDate = BentoNowUtils.getTodayDate();
 
         Log.i(TAG, "date: " + date + " current date: " + currDate);
 

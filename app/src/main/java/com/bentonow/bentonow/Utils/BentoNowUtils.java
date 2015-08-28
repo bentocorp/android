@@ -8,8 +8,6 @@ import com.bentonow.bentonow.controllers.init.MainActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -17,23 +15,18 @@ import java.util.UUID;
  */
 public class BentoNowUtils {
 
-    static public String getTodayDate() {
-        return new SimpleDateFormat("yyyyMMdd", Locale.US).format(new Date());
+    public static final SimpleDateFormat sdfBento = new SimpleDateFormat("yyyyMMdd");
+
+    public static String getTodayDate() {
+        Calendar mToday = Calendar.getInstance();
+        return sdfBento.format(mToday.getTime());
     }
 
     public static String getTomorrowDate() {
-        String tomorrowDate;
-
         Calendar cDate = Calendar.getInstance();
-        int year = cDate.get(Calendar.YEAR);
-        int month = cDate.get(Calendar.MONTH);
-        int day = cDate.get(Calendar.DAY_OF_MONTH);
+        cDate.add(Calendar.DATE, 1);
 
-        String monthString = month < 10 ? "0" + String.valueOf(month + 1) : String.valueOf(month);
-        String TomorrowDayString = day < 10 ? "0" + String.valueOf(day) : String.valueOf(day);
-        tomorrowDate = String.valueOf(year) + monthString + TomorrowDayString;
-
-        return tomorrowDate;
+        return  sdfBento.format(cDate.getTime());
     }
 
     public static void openMainActivity(Context mContext) {

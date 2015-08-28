@@ -1,6 +1,7 @@
 package com.bentonow.bentonow.Utils;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -25,6 +26,17 @@ public class AndroidUtil {
             return;
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    public static String getAppVersionName(Context mContext) {
+        String sVersionName = "";
+        try {
+            PackageInfo pInfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
+            sVersionName = pInfo.versionName;
+        } catch (Exception ex) {
+            DebugUtils.logError("getAppVersionName", ex);
+        }
+        return sVersionName;
     }
 
 }
