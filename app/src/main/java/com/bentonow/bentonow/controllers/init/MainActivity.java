@@ -11,12 +11,12 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.BuildConfig;
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.Mixpanel;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BentoApplication;
-import com.bentonow.bentonow.controllers.errors.ErrorActivity;
 import com.bentonow.bentonow.controllers.errors.ErrorVersionActivity;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.order.BuildBentoActivity;
@@ -42,6 +42,8 @@ public class MainActivity extends Activity {
     static final String TAG = "MainActivity";
     int retry = 0;
     CountDownTimer timer;
+
+    private TextView txtVersion;
 
     public static boolean bIsOpen = false;
 
@@ -83,6 +85,8 @@ public class MainActivity extends Activity {
         BentoApplication.onResume();
         BentoApplication.status = "main";
 
+        getTxtVersion().setText(AndroidUtil.getAppVersionName(this));
+
         super.onResume();
     }
 
@@ -101,10 +105,10 @@ public class MainActivity extends Activity {
         super.onStop();
     }
 
-    void loadData () {
+    void loadData() {
         Log.i(TAG, "loadData");
         //noinspection deprecation
-        BentoRestClient.get("/init/" + Menu.getTodayDate(), null, new TextHttpResponseHandler() {
+        BentoRestClient.get("/init/" + BentoNowUtils.getTodayDate(), null, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 ((TextView) findViewById(R.id.txt_message)).setText(
@@ -124,7 +128,7 @@ public class MainActivity extends Activity {
         });
     }
 
-    void set (String responseString) {
+    void set(String responseString) {
         Log.i(TAG, "set");
         BackendText.set(responseString);
         Menu.set(responseString);
@@ -175,7 +179,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    void waitForUserLocation () {
+    void waitForUserLocation() {
         Log.i(TAG, "waitForUserLocation");
         Log.i(TAG, "location " + User.location);
         if (User.location == null && Order.location == null) {
@@ -210,10 +214,11 @@ public class MainActivity extends Activity {
         }
     }
 
-    void goNext () {
+    void goNext() {
         if (Menu.get() == null) {
             Log.i(TAG, "goNext ErrorActivity");
-            startActivity(new Intent(this, ErrorActivity.class));
+            BentoNowUtils.openErrorActivity(this);
+            finish();
         } else if (Settings.isInServiceArea(User.location) || Settings.isInServiceArea(Order.location)) {
             Log.i(TAG, "goNext BuildBentoActivity");
             startActivity(new Intent(this, BuildBentoActivity.class));
@@ -224,5 +229,11 @@ public class MainActivity extends Activity {
         }
 
         finish();
+    }
+
+    private TextView getTxtVersion() {
+        if (txtVersion == null)
+            txtVersion = (TextView) findViewById(R.id.txt_version);
+        return txtVersion;
     }
 }

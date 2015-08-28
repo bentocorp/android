@@ -1,56 +1,70 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".controllers.init.MainActivity">
 
     <ImageView
+        android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/imageView"
-        android:src="@drawable/bg_home"
+        android:contentDescription="@null"
         android:scaleType="centerCrop"
-        android:contentDescription="@null"/>
+        android:src="@drawable/bg_home" />
+
     <LinearLayout
         android:id="@+id/content"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:gravity="center"
         android:orientation="vertical"
-        android:padding="@dimen/general_padding"
-        android:gravity="center">
+        android:padding="@dimen/general_padding">
+
         <ImageView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
-            android:src="@drawable/logo_bento"
-            android:contentDescription="@null"/>
+            android:contentDescription="@null"
+            android:src="@drawable/logo_bento" />
 
         <TextView
             android:id="@+id/txt_slogan"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
-            android:text="@string/delicious_asian_food"
             android:gravity="center"
-            android:textColor="@color/white"
-            android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:textSize="@dimen/text_very_small"
-            />
+            android:paddingTop="10dp"
+            android:text="@string/delicious_asian_food"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_very_small" />
 
         <ProgressBar
+            android:id="@+id/home_preloader"
             android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:id="@+id/home_preloader" />
+            android:layout_height="32dp" />
 
         <TextView
             android:id="@+id/txt_message"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text=""
             android:gravity="center"
-            android:textColor="@color/white"
-            android:padding="@dimen/btn_padding" />
+            android:padding="@dimen/btn_padding"
+            android:text=""
+            android:textColor="@color/white" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/txt_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:text="1.5"
+        android:layout_margin="10dp"
+        android:textSize="20sp"
+        android:textColor="@color/red"
+        android:layout_alignParentTop="true"/>
 </RelativeLayout>
