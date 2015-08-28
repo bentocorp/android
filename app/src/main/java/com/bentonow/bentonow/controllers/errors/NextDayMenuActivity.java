@@ -1,5 +1,6 @@
 package com.bentonow.bentonow.controllers.errors;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,7 +14,7 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.Mixpanel;
-import com.bentonow.bentonow.controllers.BaseActivity;
+import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.model.Item;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.ui.ItemHolder;
@@ -23,8 +24,10 @@ import com.wsdcamp.list.LazyListAdapterInterface;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class NextDayMenuActivity extends BaseActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
+
+public class NextDayMenuActivity extends Activity implements View.OnClickListener, AdapterView.OnItemClickListener {
 
     static final String TAG = "NextDayMenuActivity";
 
@@ -83,6 +86,18 @@ public class NextDayMenuActivity extends BaseActivity implements View.OnClickLis
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        BentoApplication.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        BentoApplication.onPause();
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.actionbar_left_btn:
@@ -103,6 +118,11 @@ public class NextDayMenuActivity extends BaseActivity implements View.OnClickLis
 
         mainAdapter.notifyDataSetChanged();
         sideAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
     class MenuListAdapter implements LazyListAdapterInterface {
