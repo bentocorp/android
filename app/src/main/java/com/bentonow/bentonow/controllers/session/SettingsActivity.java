@@ -2,7 +2,6 @@ package com.bentonow.bentonow.controllers.session;
 
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,7 +20,6 @@ import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.ui.CustomDialog;
 import com.bentonow.bentonow.ui.FontAwesomeButton;
-import com.facebook.share.widget.ShareDialog;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -41,18 +39,20 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
         setContentView(R.layout.activity_settings);
         initActionbar();
 
-        Typeface font = Typeface.createFromAsset( getAssets(), "fonts/fontawesome-webfont.ttf" );
-        FontAwesomeButton button = (FontAwesomeButton)findViewById( R.id.btn_facebook );
-        button.setTypeface(font);
+        ((FontAwesomeButton)findViewById( R.id.btn_facebook )).setup(this);
+        ((FontAwesomeButton)findViewById( R.id.btn_twitter )).setup(this);
+        ((FontAwesomeButton)findViewById( R.id.btn_sms )).setup(this);
+        ((FontAwesomeButton)findViewById( R.id.btn_email )).setup(this);
 
-        button = (FontAwesomeButton)findViewById( R.id.btn_twitter );
-        button.setTypeface(font);
+        ((FontAwesomeButton)findViewById( R.id.btn_facebook )).setup(this);
+        ((FontAwesomeButton)findViewById( R.id.btn_twitter )).setup(this);
+        ((FontAwesomeButton)findViewById( R.id.btn_sms )).setup(this);
+        ((FontAwesomeButton)findViewById( R.id.btn_email )).setup(this);
 
-        button = (FontAwesomeButton)findViewById( R.id.btn_sms );
-        button.setTypeface(font);
-
-        button = (FontAwesomeButton)findViewById( R.id.btn_email );
-        button.setTypeface(font);
+        ((FontAwesomeButton)findViewById( R.id.ico_user )).setup(this);
+        ((FontAwesomeButton)findViewById( R.id.ico_faq )).setup(this);
+        ((FontAwesomeButton)findViewById( R.id.ico_mail_support )).setup(this);
+        ((FontAwesomeButton)findViewById( R.id.ico_phone_support )).setup(this);
     }
 
     @Override

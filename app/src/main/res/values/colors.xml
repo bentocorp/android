@@ -26,4 +26,6 @@
     <color name="headerText">#EEEEEE</color>
     <color name="dark_green">#5e7c40</color>
 
+    <color name="gray_icon">#bfc1c7</color>
+
 </resources>

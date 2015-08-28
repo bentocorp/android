@@ -7,8 +7,7 @@ import android.util.Log;
 import android.widget.Button;
 
 public class FontAwesomeButton extends Button {
-    static final String TAG = "ui.SSSocialCircle";
-    static Typeface tf = null;
+    final String TAG = getClass().getSimpleName();
 
     public FontAwesomeButton(Context context) {
         super(context);
@@ -25,9 +24,9 @@ public class FontAwesomeButton extends Button {
         setup(context);
     }
 
-    void setup (Context context) {
+    public void setup (Context context) {
         Log.i(TAG, "setup");
-        if (tf == null) tf = Typeface.createFromAsset(context.getAssets(), "fonts/fontawesome-webfont.ttf");
+        Typeface tf = Typeface.createFromAsset(context.getAssets(), "fonts/fontawesome-webfont.ttf");
         setTypeface(tf);
     }
 }

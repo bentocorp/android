@@ -76,4 +76,7 @@
     <string name="fa_comment">&#xf075;</string>
     <string name="email">EMAIL</string>
     <string name="fa_envelope">&#xf0e0;</string>
+    <string name="fa_user">&#xf007;</string>
+    <string name="fa_question_circle">&#xf059;</string>
+    <string name="fa_phone">&#xf095;</string>
 </resources>
