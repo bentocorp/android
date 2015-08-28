@@ -424,10 +424,10 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         txt_address.setText(Order.getStreetAddress());
         txt_credit_card.setText(User.current.card.last4);
 
-        txt_discount.setText("$ " + Order.current.OrderDetails.coupon_discount_cents / 100);
-        txt_tax.setText("$ " + Order.current.OrderDetails.tax_cents / 100);
-        txt_tip.setText(Order.current.OrderDetails.tip_percentage + "%");
-        txt_total.setText("$ " + Order.current.OrderDetails.total_cents / 100);
+        txt_discount.setText("$ " + ((double)Order.current.OrderDetails.coupon_discount_cents / 100));
+        txt_tax.setText("$ " + ((double)Order.current.OrderDetails.tax_cents / 100));
+        txt_tip.setText(((double)Order.current.OrderDetails.tip_percentage + "%"));
+        txt_total.setText("$ " + ((double)Order.current.OrderDetails.total_cents / 100));
 
         int card;
 
