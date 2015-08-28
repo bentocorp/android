@@ -6,6 +6,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Item;
@@ -104,10 +105,11 @@ public class ItemHolder {
             }
 
             if (image != null && item.image1.isEmpty()) {
-                image.setImageBitmap(null);
+                image.setImageResource(R.drawable.menu_placeholder);
             } else {
                 Picasso.with(context.getApplicationContext())
                         .load(item.image1)
+                        .placeholder(R.drawable.menu_placeholder)
                         .into(image);
             }
 
