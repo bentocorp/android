@@ -95,6 +95,7 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
 
         initActionbar();
         setupTextFields();
+        updateUI();
     }
 
     void setupTextFields () {
@@ -190,7 +191,9 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
     }
 
     void updateUI () {
-        boolean add_local_error = error.length() == 0;
+        Log.i(TAG, "updateUI");
+
+        boolean add_local_error = error == null || error.length() == 0;
 
         // EMAIL
         if (!validEmail()) {
@@ -254,10 +257,11 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
 
                 try {
                     error = new JSONObject(responseString).getString("error");
-                    updateUI();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
+                updateUI();
             }
 
             @SuppressWarnings("deprecation")
