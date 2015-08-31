@@ -7,12 +7,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
-import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Item;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Callback;
 
-public class ItemHolder {
+public class ItemHolder implements Callback {
 
     public ImageView image;
     public TextView title;
@@ -104,14 +104,15 @@ public class ItemHolder {
                 }
             }
 
-            if (image != null && item.image1.isEmpty()) {
-                image.setImageResource(R.drawable.menu_placeholder);
-            } else {
-                Picasso.with(context.getApplicationContext())
-                        .load(item.image1)
-                        .placeholder(R.drawable.menu_placeholder)
-                        .into(image);
-            }
+            try {
+                if (item.image1.isEmpty()) {
+                    image.setImageResource(R.drawable.menu_placeholder);
+                } else {
+                    Picasso.with(context.getApplicationContext())
+                            .load(item.image1)
+                            .into(image, this);
+                }
+            } catch (Exception ignored) {}
 
             if (btn != null) {
                 if (item.isSoldOut(countCurrent)) btn.setText("Sold Out");
@@ -126,4 +127,19 @@ public class ItemHolder {
             if (description != null) description.setVisibility(selected ? View.VISIBLE : View.GONE);
         }
     }
+
+    //region Picasso Callback
+
+    @Override
+    public void onSuccess() {
+
+    }
+
+    @Override
+    public void onError() {
+        if (image == null) return;
+        image.setImageResource(R.drawable.menu_placeholder);
+    }
+
+    //endregion
 }
