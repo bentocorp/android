@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.BuildConfig;
+import com.bentonow.bentonow.Utils.SocialNetworksUtil;
 import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.Email;
@@ -89,8 +90,8 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
         }
 
         if (BuildConfig.DEBUG) {
-            txt_email.setText("norman+16@10x.co");
-            txt_password.setText("holahola");
+            txt_email.setText("kokushos@gmail.com");
+            txt_password.setText("colossus");
         }
 
         initActionbar();
@@ -290,6 +291,10 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
         Intent intent = new Intent(this, HelpActivity.class);
         intent.putExtra("tos", true);
         startActivity(intent);
+    }
+
+    public void onForgotPassword(View view){
+        SocialNetworksUtil.openWebUrl(this, BackendText.get("forgot_password_url"));
     }
 
     @Override
