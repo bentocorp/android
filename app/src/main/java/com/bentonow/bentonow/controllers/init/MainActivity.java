@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.v4.content.IntentCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -157,7 +158,10 @@ public class MainActivity extends Activity {
         if (!SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.APP_FIRST_RUN)) {
             SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.APP_FIRST_RUN, true);
 
-            startActivity(new Intent(this, GettingStartedActivity.class));
+            Intent intent = new Intent(this, GettingStartedActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+
             finish();
         } else {
             checkAppStatus();
@@ -167,13 +171,19 @@ public class MainActivity extends Activity {
     void checkAppStatus() {
         Log.i(TAG, "checkAppStatus");
         if (Settings.min_version > BuildConfig.VERSION_CODE) {
-            startActivity(new Intent(this, ErrorVersionActivity.class));
+            Intent intent = new Intent(this, ErrorVersionActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+
             finish();
         } else if (!Settings.status.equals("open")) {
             BentoNowUtils.openErrorActivity(this);
             finish();
         } else if (Order.pendingOrders()) {
-            startActivity(new Intent(this, BuildBentoActivity.class));
+            Intent intent = new Intent(this, BuildBentoActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+
             finish();
         } else {
             waitForUserLocation();
@@ -222,11 +232,15 @@ public class MainActivity extends Activity {
             finish();
         } else if (Settings.isInServiceArea(User.location) || Settings.isInServiceArea(Order.location)) {
             Log.i(TAG, "goNext BuildBentoActivity");
-            startActivity(new Intent(this, BuildBentoActivity.class));
+            Intent intent = new Intent(this, BuildBentoActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
         } else {
             Log.i(TAG, "goNext DeliveryLocationActivity");
             Mixpanel.track(this, "Opening app outside of service area");
-            startActivity(new Intent(this, DeliveryLocationActivity.class));
+            Intent intent = new Intent(this, DeliveryLocationActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
         }
 
         finish();

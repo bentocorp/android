@@ -85,6 +85,7 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
     @Override
     protected void onPause() {
         super.onPause();
+        bIsOpen = false;
         BentoApplication.onPause();
     }
 
@@ -142,8 +143,19 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
     @Override
     protected void onStop() {
         bIsOpen = false;
-
         super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        bIsOpen = false;
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        BentoNowUtils.goToDashboard(this);
     }
 
     public void onSubmitPressed(View view) {

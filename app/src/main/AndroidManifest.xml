@@ -35,6 +35,7 @@
         </activity>
         <activity
             android:name=".controllers.errors.ErrorActivity"
+            android:noHistory="true"
             android:launchMode="singleInstance"
             android:screenOrientation="portrait"></activity>
         <activity
