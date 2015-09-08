@@ -14,7 +14,7 @@
         android:id="@+id/list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        tools:listitem="@layout/inc_menu_item_side">
+        tools:listitem="@layout/list_item_add">
 
     </ListView>
 </LinearLayout>

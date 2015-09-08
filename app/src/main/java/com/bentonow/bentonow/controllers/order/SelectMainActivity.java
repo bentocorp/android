@@ -52,7 +52,8 @@ public class SelectMainActivity extends BaseActivity implements View.OnClickList
             dialog.show();
         } else {
             orderIndex = Order.current.currentOrderItem;
-            currentSelectedItem = currentAddedItem = Order.current.OrderItems.get(orderIndex).items.get(0);
+            currentSelectedItem = Order.current.OrderItems.get(orderIndex).items.get(0);
+            currentAddedItem = Order.current.OrderItems.get(orderIndex).items.get(0);
 
             for (Item item : menu.items) {
                 if (!item.type.equals("main")) continue;
@@ -82,9 +83,21 @@ public class SelectMainActivity extends BaseActivity implements View.OnClickList
                 onBackPressed();
                 break;
             case R.id.btn:
-                if (currentSelectedItem.isSoldOut(true)) return;
+                if (currentSelectedItem.isSoldOut(true))
+                    return;
+
                 Order.current.OrderItems.get(orderIndex).items.set(0, currentSelectedItem);
+
                 onBackPressed();
+                break;
+            case R.id.btn_added:
+
+                //if (currentSelectedItem.itemId == Order.current.OrderItems.get(orderIndex).items.get(0).itemId)
+                Order.current.OrderItems.get(orderIndex).items.set(0, null);
+                currentAddedItem = null;
+
+                adapter.notifyDataSetChanged();
+                //onBackPressed();
                 break;
             case R.id.btn_ok:
                 dialog.dismiss();
@@ -128,6 +141,7 @@ public class SelectMainActivity extends BaseActivity implements View.OnClickList
             );
 
             holder.btn.setOnClickListener(this);
+            holder.btn_added.setOnClickListener(this);
 
             convertView.setTag(holder);
         } else {
