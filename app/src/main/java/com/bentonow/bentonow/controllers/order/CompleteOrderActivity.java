@@ -19,6 +19,7 @@ import com.bentonow.bentonow.BuildConfig;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Mixpanel;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseActivity;
@@ -334,12 +335,13 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
         Order.current.Stripe.stripeToken = User.current.stripe_token;
         Order.current.IdempotentToken = BentoNowUtils.getUUIDBento();
+        Order.current.Platform = "Android";
 
         RequestParams params = new RequestParams();
         params.put("data", Order.current.toString());
         params.put("api_token", User.current.api_token);
 
-        Log.i(TAG, "Order: " + Order.current.toString());
+        DebugUtils.logDebug(TAG, "Order: " + Order.current.toString());
 
         BentoRestClient.post("/order", params, new TextHttpResponseHandler() {
             @SuppressWarnings("deprecation")

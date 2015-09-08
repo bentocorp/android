@@ -2,6 +2,7 @@ package com.bentonow.bentonow.controllers;
 
 import android.app.Application;
 import android.content.Intent;
+import android.os.Handler;
 import android.util.Log;
 
 import com.bentonow.bentonow.BuildConfig;
@@ -30,7 +31,9 @@ public class BentoApplication extends Application {
 
     static Timer timer;
     static TimerTask stopService;
-    public static BentoApplication instance = null;
+    public static BentoApplication instance;
+
+    private Handler mHandler = new Handler();
     public static String status;
 
     @Override
@@ -103,5 +106,9 @@ public class BentoApplication extends Application {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void handlerPost(Runnable runnable) {
+        mHandler.post(runnable);
     }
 }

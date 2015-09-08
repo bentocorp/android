@@ -12,9 +12,8 @@ import android.util.Log;
 
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.controllers.BentoApplication;
-import com.bentonow.bentonow.controllers.errors.ErrorActivity;
-import com.bentonow.bentonow.controllers.init.MainActivity;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.Stock;
 import com.bentonow.bentonow.model.User;
@@ -121,28 +120,25 @@ public class BentoService extends Service {
             Settings.set(responseString);
 
             if (!Settings.status.equals(BentoApplication.status) && !BentoApplication.status.equals("main")) {
-                Intent intent = null;
                 switch (Settings.status) {
                     case "open":
-                        intent = new Intent(this, MainActivity.class);
+                        BentoNowUtils.openMainActivity(this);
                         break;
                     case "sold out":
                     case "closed":
-                        intent = new Intent(this, ErrorActivity.class);
+                        BentoNowUtils.openErrorActivity(this);
                         break;
                 }
 
-                if (intent != null) {
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                }
             }
-        } catch (Exception ignored) {
+        } catch (Exception ex) {
+            DebugUtils.logError(TAG, ex);
         }
     }
 
     void checkUserLocation() {
-        if (User.location != null) return;
+        if (User.location != null)
+            return;
         Log.i(TAG, "checkUserLocation");
 
         LocationManager mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);

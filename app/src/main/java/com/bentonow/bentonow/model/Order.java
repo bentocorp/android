@@ -147,6 +147,8 @@ public class Order {
     public OrderStripe Stripe = new OrderStripe();
     public String CouponCode = null;
     public String IdempotentToken = null;
+    public String Platform = null;
+
 
     public static void clearIncomplete() {
         ArrayList<Integer> ids = new ArrayList<>();
