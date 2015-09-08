@@ -40,7 +40,7 @@ public class Settings {
     static public String prefs_name = "BentoPrefs";
     static public SharedPreferences prefs;
 
-    static public void set (String data) {
+    static public void set(String data) {
         try {
             JSONObject settings = new JSONObject(data).getJSONObject("settings");
 
@@ -65,7 +65,7 @@ public class Settings {
         }
     }
 
-    static public String[] getServiceArea () {
+    static public String[] getServiceArea() {
         try {
             int dinnerTime = Integer.parseInt(Settings.dinner.startTime.replace(":", ""));
             int currentTime = Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
@@ -83,7 +83,7 @@ public class Settings {
         return new String[0];
     }
 
-    static public boolean isInServiceArea (LatLng location) {
+    static public boolean isInServiceArea(LatLng location) {
         if (location != null) {
             Log.i(TAG, "inServiceArea: Location " + location.toString());
             String[] area = getServiceArea();
@@ -103,7 +103,7 @@ public class Settings {
         }
     }
 
-    static public String currentMenuType () {
+    static public String currentMenuType() {
         try {
             int dinnerTime = Integer.parseInt(Settings.dinner.startTime.replace(":", ""));
             int currentTime = Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
@@ -115,20 +115,24 @@ public class Settings {
         return "";
     }
 
-    public static void load (Context context) {
+    public static void load(Context context) {
         SharedPreferences sharedPref = context.getSharedPreferences("user", 0);
         String user = sharedPref.getString("user", null);
         String location = sharedPref.getString("location", null);
         String address = sharedPref.getString("address", null);
         String backendText = sharedPref.getString("backendText", null);
 
-        if (User.current == null && user != null) User.current = new Gson().fromJson(user, User.class);
-        if (Order.location == null && location != null ) Order.location = new Gson().fromJson(location, LatLng.class);
-        if (Order.address == null && address != null) Order.address = new Gson().fromJson(address, Address.class);
-        if (BackendText.list.size() == 0 && backendText != null) BackendText.set(backendText);
+        if (User.current == null && user != null)
+            User.current = new Gson().fromJson(user, User.class);
+        if (Order.location == null && location != null)
+            Order.location = new Gson().fromJson(location, LatLng.class);
+        if (Order.address == null && address != null)
+            Order.address = new Gson().fromJson(address, Address.class);
+        if (BackendText.list.size() == 0 && backendText != null)
+            BackendText.set(backendText);
     }
 
-    public static void save (Context context) {
+    public static void save(Context context) {
         Gson gson = new Gson();
         String user = null;
         String location = null;

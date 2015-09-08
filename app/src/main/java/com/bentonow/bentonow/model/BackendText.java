@@ -18,14 +18,17 @@ public class BackendText {
     public String value;
     public String text;
 
-    public static void set (String data) {
+    public static void set(String data) {
         list = new ArrayList<>();
 
         try {
-            if (data.contains("/ioscopy")) data = new JSONObject(data).getString("/ioscopy");
+            if (data.contains("/ioscopy"))
+                data = new JSONObject(data).getString("/ioscopy");
+
 
             Gson gson = new Gson();
-            list = gson.fromJson(data, new TypeToken<List<BackendText>>() {}.getType());
+            list = gson.fromJson(data, new TypeToken<List<BackendText>>() {
+            }.getType());
             Log.i(TAG, "backend texts: " + list.size());
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
@@ -33,14 +36,17 @@ public class BackendText {
         }
     }
 
-    public static String get (String key) {
+    public static String get(String key) {
         if (list != null && key != null) {
             for (BackendText text : list) {
-                if (!text.key.equals(key)) continue;
+                if (!text.key.equals(key))
+                    continue;
                 String value = text.value;
 
-                if (text.key.equals("sign-up-sign-in-text")) return value.replace(" %.", "");
-                if (text.key.equals("sign-in-sign-up-text")) return value.replace(" %.", "");
+                if (text.key.equals("sign-up-sign-in-text"))
+                    return value.replace(" %.", "");
+                if (text.key.equals("sign-in-sign-up-text"))
+                    return value.replace(" %.", "");
 
                 return value;
             }

@@ -50,6 +50,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
     TextView txt_credit_card;
     TextView txt_discount;
     TextView txt_tax;
+    TextView txt_delivery_price;
     TextView txt_tip;
     TextView txt_total;
 
@@ -138,7 +139,8 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         updateUI();
     }
 
-    void track(String error) {
+    void
+    track(String error) {
         try {
             JSONObject params = new JSONObject();
             params.put("quantity", Order.current.OrderItems.size());
@@ -424,10 +426,12 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         txt_address.setText(Order.getStreetAddress());
         txt_credit_card.setText(User.current.card.last4);
 
-        txt_discount.setText("$ " + ((double)Order.current.OrderDetails.coupon_discount_cents / 100));
-        txt_tax.setText("$ " + ((double)Order.current.OrderDetails.tax_cents / 100));
-        txt_tip.setText(((double)Order.current.OrderDetails.tip_percentage + "%"));
-        txt_total.setText("$ " + ((double)Order.current.OrderDetails.total_cents / 100));
+        getTxtDeliveryPrice().setText("$ " + Order.current.OrderDetails.delivery_price);
+        txt_discount.setText(String.format(getString(R.string.money_format), (double) Order.current.OrderDetails.coupon_discount_cents / 100));
+        txt_tax.setText(String.format(getString(R.string.money_format), (double) Order.current.OrderDetails.tax_cents / 100));
+        txt_tip.setText(String.format(getString(R.string.tip_percentage),(double) Order.current.OrderDetails.tip_percentage) + " %");
+        txt_total.setText(String.format(getString(R.string.money_format), (double) Order.current.OrderDetails.total_cents / 100));
+
 
         int card;
 
@@ -532,4 +536,12 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
     }
 
     //endregion
+
+
+    public TextView getTxtDeliveryPrice() {
+        if (txt_delivery_price == null)
+            txt_delivery_price = (TextView) findViewById(R.id.txt_delivery_price);
+
+        return txt_delivery_price;
+    }
 }

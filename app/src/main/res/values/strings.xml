@@ -79,4 +79,7 @@
     <string name="fa_user">&#xf007;</string>
     <string name="fa_question_circle">&#xf059;</string>
     <string name="fa_phone">&#xf095;</string>
+
+    <string name="money_format">$ %.2f</string>
+    <string name="tip_percentage">%.0f</string>
 </resources>

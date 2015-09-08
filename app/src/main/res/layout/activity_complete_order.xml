@@ -1,11 +1,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                tools:context="com.bentonow.bentonow.controllers.order.CompleteOrderActivity"
-                android:id="@+id/base_relative_layout"
-                android:background="@color/bgcolor">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/base_relative_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bgcolor"
+    tools:context="com.bentonow.bentonow.controllers.order.CompleteOrderActivity">
 
     <!-- background -->
 
@@ -15,168 +15,165 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        >
-        <include layout="@layout/actionbar"/>
+        android:layout_centerHorizontal="true">
+
+        <include layout="@layout/actionbar" />
     </LinearLayout>
 
     <!-- INI CONTAINER -->
     <RelativeLayout
-        android:layout_below="@+id/ActionBarContainer"
-        android:layout_above="@+id/footer_container"
+        android:id="@+id/main_relative"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/main_relative">
+        android:layout_above="@+id/footer_container"
+        android:layout_below="@+id/ActionBarContainer">
         <!-- INI content -->
         <!-- ADDRESS -->
         <LinearLayout
             android:id="@+id/address_row"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:orientation="horizontal"
+            android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true">
+            android:background="@color/white"
+            android:orientation="horizontal">
+
             <TextView
                 android:id="@+id/txt_address"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textColor="@color/black"
+                android:layout_weight="1"
                 android:padding="@dimen/btn_padding"
-                android:layout_weight="1" />
+                android:textColor="@color/black" />
+
             <Button
                 style="?android:attr/buttonBarButtonStyle"
-                android:background="@null"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/change"
-                android:textSize="@dimen/text_very_very_small"
-                android:textColor="@color/btn_green"
-                android:padding="@dimen/btn_padding"
-                android:textStyle="bold"
+                android:background="@null"
                 android:onClick="onChangeAddressPressed"
-                />
+                android:padding="@dimen/btn_padding"
+                android:text="@string/change"
+                android:textColor="@color/btn_green"
+                android:textSize="@dimen/text_very_very_small"
+                android:textStyle="bold" />
         </LinearLayout>
+
         <View
             android:id="@+id/divisor_1"
             android:layout_width="fill_parent"
             android:layout_height="1px"
-            android:background="@color/divisor"
             android:layout_below="@+id/address_row"
-            />
+            android:background="@color/divisor" />
 
         <!-- PAYMENT METHOD -->
         <LinearLayout
             android:id="@+id/row_payment"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:orientation="horizontal"
             android:layout_below="@+id/divisor_1"
-            >
+            android:background="@color/white"
+            android:orientation="horizontal">
+
             <ImageView
                 android:id="@+id/img_credit_card"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
-                android:src="@drawable/card_empty"
+                android:contentDescription="@null"
                 android:padding="@dimen/btn_padding"
-                android:contentDescription="@null"/>
+                android:src="@drawable/card_empty" />
+
             <TextView
                 android:id="@+id/txt_credit_card"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:paddingTop="@dimen/btn_padding"
+                android:layout_weight="1"
                 android:paddingBottom="@dimen/btn_padding"
                 android:paddingEnd="@dimen/btn_padding"
-                android:layout_weight="1" />
+                android:paddingTop="@dimen/btn_padding"
+                android:textColor="@color/black" />
+
             <Button
                 style="?android:attr/buttonBarButtonStyle"
-                android:background="@null"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@null"
+                android:onClick="onChangeCreditCardPressed"
+                android:padding="@dimen/btn_padding"
                 android:text="@string/change"
                 android:textColor="@color/btn_green"
                 android:textSize="@dimen/text_very_very_small"
-                android:padding="@dimen/btn_padding"
-                android:textStyle="bold"
-                android:onClick="onChangeCreditCardPressed"
-                />
+                android:textStyle="bold" />
         </LinearLayout>
+
         <View
             android:id="@+id/divisor_2"
-            android:layout_below="@+id/row_payment"
             android:layout_width="fill_parent"
             android:layout_height="2dp"
-            android:background="@color/divisor"
-            />
+            android:layout_below="@+id/row_payment"
+            android:background="@color/divisor" />
 
         <!-- ORDER ITEMS -->
         <LinearLayout
             android:id="@+id/add_another_bento_header"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_below="@+id/divisor_2"
-            >
+            android:orientation="horizontal">
+
             <com.bentonow.bentonow.ui.BackendButton
                 style="?android:attr/buttonBarButtonStyle"
-                android:background="@null"
-                android:gravity="start"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textColor="@color/btn_green"
-                android:padding="@dimen/btn_padding"
-                android:textSize="@dimen/text_very_very_small"
                 android:layout_weight="1"
-                android:textStyle="bold"
+                android:background="@null"
+                android:gravity="start"
                 android:onClick="onAddAnotherBentoPressed"
-                app:key="complete-add-another"
-                />
+                android:padding="@dimen/btn_padding"
+                android:textColor="@color/btn_green"
+                android:textSize="@dimen/text_very_very_small"
+                android:textStyle="bold"
+                app:key="complete-add-another" />
+
             <com.bentonow.bentonow.ui.BackendButton
                 android:id="@+id/btn_delete"
                 style="?android:attr/buttonBarButtonStyle"
-                android:background="@null"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/btn_green"
+                android:background="@null"
+                android:onClick="onDeleteBentoPressed"
                 android:padding="@dimen/btn_padding"
+                android:textColor="@color/btn_green"
                 android:textSize="@dimen/text_very_very_small"
                 android:textStyle="bold"
-                android:onClick="onDeleteBentoPressed"
-                app:key="complete-edit"
-                />
+                app:key="complete-edit" />
         </LinearLayout>
 
         <View
             android:id="@+id/divisor_6"
-            android:layout_below="@+id/add_another_bento_header"
             android:layout_width="fill_parent"
             android:layout_height="1px"
-            android:background="@color/divisor"
-            />
+            android:layout_below="@+id/add_another_bento_header"
+            android:background="@color/divisor" />
 
         <ListView
             android:id="@+id/list"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            tools:listitem="@layout/list_item_order"
-            android:layout_below="@+id/divisor_6"
             android:layout_above="@+id/divisor_5"
             android:layout_alignParentStart="true"
+            android:layout_below="@+id/divisor_6"
             android:layout_marginLeft="@dimen/btn_padding"
             android:layout_marginRight="@dimen/btn_padding"
-            >
-        </ListView>
+            tools:listitem="@layout/list_item_order"></ListView>
 
         <View
             android:id="@+id/divisor_5"
-            android:layout_above="@+id/cents_details_container"
             android:layout_width="fill_parent"
             android:layout_height="2dp"
-            android:background="@color/divisor"
-            />
+            android:layout_above="@+id/cents_details_container"
+            android:background="@color/divisor" />
 
         <!-- ORDER ITEMS / ITEM -->
 
@@ -184,138 +181,168 @@
             android:id="@+id/cents_details_container"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:layout_alignParentBottom="true"
-            >
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/row_delivery_price"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="@dimen/btn_padding"
+                    android:textColor="@color/dark_gray"
+                    android:text="Delivery Fee"/>
+
+                <TextView
+                    android:id="@+id/txt_delivery_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/btn_padding"
+                    android:text="@string/zero_dollar"
+                    android:textColor="@color/dark_gray" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1px"
+                android:background="@color/divisor" />
+
             <LinearLayout
                 android:id="@+id/container_discount"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:background="@color/white"
-                android:visibility="visible"
-                >
+                android:orientation="horizontal"
+                android:visibility="visible">
+
                 <com.bentonow.bentonow.ui.BackendTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/dark_gray"
-                    android:padding="@dimen/btn_padding"
                     android:layout_weight="1"
-                    app:key="complete-promo-discount"/>
+                    android:padding="@dimen/btn_padding"
+                    android:textColor="@color/dark_gray"
+                    app:key="complete-promo-discount" />
+
                 <TextView
                     android:id="@+id/txt_discount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/zero_dollar"
-                    android:textColor="@color/dark_gray"
                     android:padding="@dimen/btn_padding"
-                    />
+                    android:text="@string/zero_dollar"
+                    android:textColor="@color/dark_gray" />
             </LinearLayout>
 
             <View
                 android:id="@+id/divisor_7"
                 android:layout_width="fill_parent"
                 android:layout_height="1px"
-                android:background="@color/divisor"
-                />
+                android:background="@color/divisor" />
 
             <LinearLayout
                 android:id="@+id/row_tax"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:background="@color/white"
-                >
+                android:orientation="horizontal">
+
                 <com.bentonow.bentonow.ui.BackendTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/dark_gray"
-                    android:padding="@dimen/btn_padding"
                     android:layout_weight="1"
+                    android:padding="@dimen/btn_padding"
+                    android:textColor="@color/dark_gray"
                     app:key="complete-tax" />
+
                 <TextView
                     android:id="@+id/txt_tax"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/zero_dollar"
-                    android:textColor="@color/dark_gray"
                     android:padding="@dimen/btn_padding"
-                    />
+                    android:text="@string/zero_dollar"
+                    android:textColor="@color/dark_gray" />
             </LinearLayout>
 
             <View
                 android:id="@+id/divisor_4"
                 android:layout_width="fill_parent"
                 android:layout_height="1px"
-                android:background="@color/divisor"
-                />
+                android:background="@color/divisor" />
+
+
 
             <!-- ORDER ITEMS / ITEM -->
+
             <LinearLayout
                 android:id="@+id/row_tip"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:background="@color/white"
-                >
+                android:orientation="horizontal">
+
                 <com.bentonow.bentonow.ui.BackendTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/dark_gray"
-                    android:padding="@dimen/btn_padding"
                     android:layout_weight="1"
+                    android:padding="@dimen/btn_padding"
+                    android:textColor="@color/dark_gray"
                     app:key="complete-tip" />
+
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
-                    android:orientation="horizontal"
-                    android:background="@drawable/btn_border_lineal_white"
                     android:layout_margin="5dp"
-                    >
+                    android:background="@drawable/btn_border_lineal_white"
+                    android:orientation="horizontal">
+
                     <Button
-                        android:background="@null"
                         android:layout_width="30sp"
                         android:layout_height="fill_parent"
+                        android:layout_weight="1"
+                        android:background="@null"
                         android:gravity="center"
-                        android:text="@string/minus"
+                        android:onClick="onMinusTipPressed"
                         android:paddingLeft="10dp"
                         android:paddingRight="10dp"
-                        android:textColor="@color/dark_gray"
-                        android:layout_weight="1"
-                        android:onClick="onMinusTipPressed"
-                        />
+                        android:text="@string/minus"
+                        android:textColor="@color/dark_gray" />
+
                     <View
                         android:layout_width="2dp"
                         android:layout_height="fill_parent"
-                        android:background="@color/divisor"
-                        />
+                        android:background="@color/divisor" />
+
                     <TextView
                         android:id="@+id/txt_tip_percent"
                         android:layout_width="wrap_content"
                         android:layout_height="fill_parent"
-                        android:gravity="center"
-                        android:text=""
-                        android:textColor="@color/dark_gray"
                         android:layout_weight="1"
+                        android:gravity="center"
                         android:padding="5dp"
-                        />
+                        android:text=""
+                        android:textColor="@color/dark_gray" />
+
                     <View
                         android:layout_width="2dp"
                         android:layout_height="fill_parent"
-                        android:background="@color/divisor"
-                        />
+                        android:background="@color/divisor" />
+
                     <Button
-                        android:layout_weight="1"
                         android:layout_width="30sp"
                         android:layout_height="fill_parent"
+                        android:layout_weight="1"
+                        android:background="@null"
                         android:gravity="center"
-                        android:text="@string/plus"
+                        android:onClick="onPlusTipPressed"
                         android:paddingLeft="10dp"
                         android:paddingRight="10dp"
-                        android:textColor="@color/dark_gray"
-                        android:onClick="onPlusTipPressed"
-                        android:background="@null"
-                        />
+                        android:text="@string/plus"
+                        android:textColor="@color/dark_gray" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -323,49 +350,48 @@
                 android:id="@+id/divisor_3"
                 android:layout_width="fill_parent"
                 android:layout_height="1px"
-                android:background="@color/divisor"
-                />
+                android:background="@color/divisor" />
             <!-- ORDER ITEMS / ITEM -->
             <LinearLayout
                 android:id="@+id/row_total"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:background="@color/white"
                 android:baselineAligned="false"
-                >
+                android:orientation="horizontal">
+
                 <com.bentonow.bentonow.ui.BackendTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/dark_gray"
                     android:padding="@dimen/btn_padding"
-                    app:key="complete-total"
-                    />
+                    android:textColor="@color/dark_gray"
+                    app:key="complete-total" />
+
                 <com.bentonow.bentonow.ui.BackendButton
                     style="?android:attr/buttonBarButtonStyle"
-                    android:background="@null"
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
+                    android:background="@null"
                     android:gravity="center_vertical"
-                    android:textStyle="bold"
-                    android:textColor="@color/btn_green"
-                    android:padding="@dimen/btn_padding"
-                    android:textSize="@dimen/text_very_very_small"
                     android:onClick="onAddPromoCodePressed"
-                    app:key="complete-add-promo"
-                    />
+                    android:padding="@dimen/btn_padding"
+                    android:textColor="@color/btn_green"
+                    android:textSize="@dimen/text_very_very_small"
+                    android:textStyle="bold"
+                    app:key="complete-add-promo" />
+
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"></LinearLayout>
+
                 <TextView
                     android:id="@+id/txt_total"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/zero_dollar"
-                    android:textColor="@color/dark_gray"
                     android:padding="@dimen/btn_padding"
-                    />
+                    android:text="@string/zero_dollar"
+                    android:textColor="@color/dark_gray" />
             </LinearLayout>
 
         </LinearLayout>
@@ -380,18 +406,17 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        >
+        android:layout_alignParentStart="true">
+
         <com.bentonow.bentonow.ui.BackendButton
-            android:background="@color/btn_green"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:background="@color/btn_green"
             android:gravity="center"
-            android:textColor="@color/white"
-            android:padding="@dimen/btn_padding"
             android:onClick="onLetsEatPressed"
-            app:key="complete-button"
-             />
+            android:padding="@dimen/btn_padding"
+            android:textColor="@color/white"
+            app:key="complete-button" />
     </LinearLayout>
 
     <!--OVERLAY-->
@@ -401,27 +426,27 @@
         android:layout_height="fill_parent"
         android:background="#90000000"
         android:visibility="gone">
+
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:weightSum="5"
-            android:orientation="vertical"
             android:layout_centerVertical="true"
             android:gravity="center"
+            android:orientation="vertical"
             android:padding="@dimen/general_padding"
-            >
+            android:weightSum="5">
+
             <EditText
                 android:id="@+id/promo_code"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_white_bordered"
-                android:padding="@dimen/btn_padding"
                 android:hint="Your promo code"
-                android:textCursorDrawable="@null"
-                android:textColor="@color/black"
-                android:textSize="@dimen/text_small"
+                android:padding="@dimen/btn_padding"
                 android:singleLine="true"
-                />
+                android:textColor="@color/black"
+                android:textCursorDrawable="@null"
+                android:textSize="@dimen/text_small" />
 
             <View
                 android:layout_width="fill_parent"
@@ -432,12 +457,12 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_green_cornered"
-                android:text="ADD PROMO CODE"
-                android:padding="@dimen/btn_padding"
-                android:textStyle="bold"
                 android:gravity="center"
+                android:padding="@dimen/btn_padding"
+                android:text="ADD PROMO CODE"
                 android:textColor="@color/white"
-                />
+                android:textStyle="bold" />
+
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="10dp" />
@@ -446,12 +471,11 @@
                 android:id="@+id/btn_cancel_promo"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="CANCEL"
-                android:textStyle="bold"
-                android:padding="@dimen/btn_padding"
                 android:gravity="center"
+                android:padding="@dimen/btn_padding"
+                android:text="CANCEL"
                 android:textColor="@color/white"
-                />
+                android:textStyle="bold" />
 
         </LinearLayout>
     </RelativeLayout>
@@ -467,48 +491,49 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:weightSum="5"
-            android:orientation="vertical"
-            android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:gravity="center"
+            android:layout_centerVertical="true"
             android:baselineAligned="false"
-            android:padding="@dimen/general_padding">
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/general_padding"
+            android:weightSum="5">
 
             <LinearLayout
                 android:id="@+id/message_box"
                 android:layout_width="fill_parent"
                 android:layout_height="0dp"
-                android:orientation="vertical"
-                android:background="@drawable/overlay_message"
                 android:layout_weight="3"
+                android:background="@drawable/overlay_message"
+                android:orientation="vertical"
                 android:visibility="gone">
+
                 <TextView
+                    android:id="@+id/coupon_result_message"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="@dimen/btn_padding"
-                    android:id="@+id/coupon_result_message"
-                    android:textColor="@color/black"
-                    android:text="Invalid Coupon" />
+                    android:text="Invalid Coupon"
+                    android:textColor="@color/black" />
+
                 <TextView
                     android:id="@+id/btn_ok"
                     android:layout_width="fill_parent"
                     android:layout_height="0dp"
-                    android:padding="@dimen/btn_padding"
                     android:layout_weight="1"
-                    android:textColor="@color/white"
                     android:background="@drawable/bg_green_corner_left_right_bottom"
                     android:gravity="center"
+                    android:padding="@dimen/btn_padding"
                     android:text="@string/ok"
-                    />
+                    android:textColor="@color/white" />
             </LinearLayout>
 
             <ProgressBar
+                android:id="@+id/progressBar"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/progressBar" />
+                android:layout_height="wrap_content" />
         </LinearLayout>
 
     </RelativeLayout>
@@ -523,40 +548,41 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:weightSum="5"
-            android:orientation="vertical"
-            android:layout_centerVertical="true"
             android:layout_alignParentStart="true"
-            android:gravity="center"
+            android:layout_centerVertical="true"
             android:baselineAligned="false"
-            android:padding="@dimen/general_padding">
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/general_padding"
+            android:weightSum="5">
 
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="0dp"
-                android:orientation="vertical"
-                android:background="@drawable/overlay_message"
                 android:layout_weight="3"
+                android:background="@drawable/overlay_message"
+                android:orientation="vertical"
                 android:visibility="visible">
+
                 <TextView
+                    android:id="@+id/result_message_souldout"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="@dimen/btn_padding"
-                    android:id="@+id/result_message_souldout"
-                    android:textColor="@color/black"
-                    android:text="" />
+                    android:text=""
+                    android:textColor="@color/black" />
+
                 <TextView
                     android:id="@+id/btn_ok_souldout"
                     android:layout_width="fill_parent"
                     android:layout_height="0dp"
-                    android:padding="@dimen/btn_padding"
                     android:layout_weight="1"
-                    android:textColor="@color/white"
                     android:background="@drawable/bg_green_corner_left_right_bottom"
                     android:gravity="center"
+                    android:padding="@dimen/btn_padding"
                     android:text="@string/ok"
-                    />
+                    android:textColor="@color/white" />
             </LinearLayout>
         </LinearLayout>
     </RelativeLayout>
@@ -566,46 +592,46 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="#90000000"
-        android:visibility="gone" >
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:weightSum="5"
-            android:orientation="vertical"
-            android:layout_centerVertical="true"
             android:layout_alignParentStart="true"
-            android:gravity="center"
+            android:layout_centerVertical="true"
             android:baselineAligned="false"
-            android:padding="@dimen/general_padding" >
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/general_padding"
+            android:weightSum="5">
 
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="0dp"
-                android:orientation="vertical"
-                android:background="@drawable/overlay_message"
                 android:layout_weight="3"
-                android:visibility="visible" >
+                android:background="@drawable/overlay_message"
+                android:orientation="vertical"
+                android:visibility="visible">
 
                 <TextView
+                    android:id="@+id/text_closed"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="@dimen/btn_padding"
-                    android:id="@+id/text_closed"
-                    android:textColor="@color/black"
-                    android:text="" />
+                    android:text=""
+                    android:textColor="@color/black" />
 
                 <TextView
                     android:id="@+id/btn_ok_closed"
                     android:layout_width="fill_parent"
                     android:layout_height="0dp"
-                    android:padding="@dimen/btn_padding"
                     android:layout_weight="1"
-                    android:textColor="@color/white"
                     android:background="@drawable/bg_green_corner_left_right_bottom"
                     android:gravity="center"
-                    android:text="@string/ok" />
+                    android:padding="@dimen/btn_padding"
+                    android:text="@string/ok"
+                    android:textColor="@color/white" />
             </LinearLayout>
         </LinearLayout>
     </RelativeLayout>
@@ -620,54 +646,55 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:weightSum="5"
-            android:orientation="horizontal"
-            android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:baselineAligned="false"
             android:gravity="center"
-            android:baselineAligned="false">
+            android:orientation="horizontal"
+            android:weightSum="5">
+
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/overlay_message"
                 android:layout_weight="3"
-                >
+                android:background="@drawable/overlay_message"
+                android:orientation="vertical">
+
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:text="Are you sure you want to remove your Bento?"
                     android:gravity="center"
                     android:padding="@dimen/btn_padding"
-                    android:textAppearance="@style/SmallText"
-                    />
+                    android:text="Are you sure you want to remove your Bento?"
+                    android:textAppearance="@style/SmallText" />
+
                 <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
+
                     <TextView
                         android:id="@+id/btn_bento_cancel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:padding="@dimen/btn_padding"
                         android:layout_weight="1"
-                        android:textColor="@color/white"
                         android:background="@drawable/btn_green_corned_left_bottom"
                         android:gravity="center"
+                        android:padding="@dimen/btn_padding"
                         android:text="No"
-                        />
+                        android:textColor="@color/white" />
+
                     <TextView
                         android:id="@+id/btn_bento_ok"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:padding="@dimen/btn_padding"
                         android:layout_weight="1"
-                        android:textColor="@color/white"
                         android:background="@drawable/bg_green_corner_right_bottom"
                         android:gravity="center"
+                        android:padding="@dimen/btn_padding"
                         android:text="Yes"
-                        />
+                        android:textColor="@color/white" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
@@ -685,54 +712,55 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:weightSum="5"
-            android:orientation="horizontal"
-            android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:baselineAligned="false"
             android:gravity="center"
-            android:baselineAligned="false">
+            android:orientation="horizontal"
+            android:weightSum="5">
+
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/overlay_message"
                 android:layout_weight="3"
-                >
+                android:background="@drawable/overlay_message"
+                android:orientation="vertical">
+
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:text="Are you sure you want to remove your Bento?"
                     android:gravity="center"
                     android:padding="@dimen/btn_padding"
-                    android:textAppearance="@style/SmallText"
-                    />
+                    android:text="Are you sure you want to remove your Bento?"
+                    android:textAppearance="@style/SmallText" />
+
                 <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
+
                     <TextView
                         android:id="@+id/btn_change_address_cancel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:padding="@dimen/btn_padding"
                         android:layout_weight="1"
-                        android:textColor="@color/white"
                         android:background="@drawable/btn_green_corned_left_bottom"
                         android:gravity="center"
+                        android:padding="@dimen/btn_padding"
                         android:text="No"
-                        />
+                        android:textColor="@color/white" />
+
                     <TextView
                         android:id="@+id/btn_change_address_ok"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:padding="@dimen/btn_padding"
                         android:layout_weight="1"
-                        android:textColor="@color/white"
                         android:background="@drawable/bg_green_corner_right_bottom"
                         android:gravity="center"
+                        android:padding="@dimen/btn_padding"
                         android:text="Yes"
-                        />
+                        android:textColor="@color/white" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

@@ -2,6 +2,7 @@ package com.bentonow.bentonow.model;
 
 import android.location.Address;
 
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.model.order.OrderDetails;
 import com.bentonow.bentonow.model.order.OrderItem;
 import com.bentonow.bentonow.model.order.OrderStripe;
@@ -23,7 +24,7 @@ public class Order {
     public static LatLng location;
     public static Address address;
 
-    public static int countItemsById (int itemId) {
+    public static int countItemsById(int itemId) {
         int count = 0;
         if (current != null) {
             for (OrderItem orderItem : current.OrderItems) {
@@ -36,11 +37,11 @@ public class Order {
         return count;
     }
 
-    public static boolean pendingOrders () {
+    public static boolean pendingOrders() {
         return countCompletedOrders() > 0;
     }
 
-    public static int countCompletedOrders () {
+    public static int countCompletedOrders() {
         int count = 0;
 
         for (OrderItem item : current.OrderItems) {
@@ -50,17 +51,17 @@ public class Order {
         return count;
     }
 
-    public static void cleanUp () {
+    public static void cleanUp() {
 
         current = new Order();
     }
 
-    public static String getFullAddress () {
+    public static String getFullAddress() {
         if (address == null) return "";
 
         String addrss = "";
 
-        for (int i=0; i < address.getMaxAddressLineIndex(); ++i) {
+        for (int i = 0; i < address.getMaxAddressLineIndex(); ++i) {
             if (addrss.length() > 0) addrss += ", ";
             addrss += address.getAddressLine(i);
         }
@@ -68,7 +69,7 @@ public class Order {
         return addrss;
     }
 
-    public static String getStreetAddress () {
+    public static String getStreetAddress() {
         if (address == null) return "";
         return address.getThoroughfare() + ", " + address.getSubThoroughfare();
     }
@@ -87,30 +88,51 @@ public class Order {
         return new GsonBuilder().serializeNulls().create().toJson(this).replace("lng", "long").replaceAll("itemId", "id");
     }
 
-    public static void calculate () {
-        int order = 0;
+    public static void calculate() {
+        int bento_total = 0;
+        long subtotal;
+        long subtotal_taxed;
+        long tax;
+        int tip;
         long total;
+
         double tax_percent = Double.parseDouble(BackendText.get("tax_percent"));
+        current.OrderDetails.delivery_price = BackendText.get("delivery_price");
+        long delivery_percent = (new Double(Double.parseDouble(current.OrderDetails.delivery_price) * 100).longValue());
 
         for (OrderItem item : current.OrderItems) {
-            order += item.unit_price * 100;
+            bento_total += item.unit_price * 100;
         }
 
-        current.OrderDetails.tip_cents = order * current.OrderDetails.tip_percentage / 100;
+        subtotal = bento_total + delivery_percent;
 
-        if (current.OrderDetails.coupon_discount_cents > order) {
-            current.OrderDetails.tax_cents = 0;
-        } else {
-            current.OrderDetails.tax_cents = Math.round((order - current.OrderDetails.coupon_discount_cents) * (tax_percent / 100));
-        }
+        if (subtotal - current.OrderDetails.coupon_discount_cents <= 0)
+            subtotal_taxed = 0;
+        else
+            subtotal_taxed = subtotal - current.OrderDetails.coupon_discount_cents;
 
-        total = (current.OrderDetails.tax_cents + current.OrderDetails.tip_cents + order) - current.OrderDetails.coupon_discount_cents;
+        tip = bento_total * current.OrderDetails.tip_percentage / 100;
+        current.OrderDetails.tip_cents = tip;
 
-        if (total < 50 && total > 10) {
-            total = 50;
-        } else if (total <= 0) {
+        tax = Math.round( subtotal_taxed * (tax_percent / 100));
+
+        current.OrderDetails.tax_cents = tax;
+
+        if ((subtotal + tax + tip - current.OrderDetails.coupon_discount_cents) <= 0)
             total = 0;
+        else {
+            if ((subtotal + tax + tip - current.OrderDetails.coupon_discount_cents) < 50)
+                total = 50;
+            else
+                total = subtotal + tax + tip - current.OrderDetails.coupon_discount_cents;
         }
+
+
+        DebugUtils.logDebug(TAG, "Subtotal: " + subtotal);
+        DebugUtils.logDebug(TAG, "Subtotal Taxed: " + subtotal_taxed);
+        DebugUtils.logDebug(TAG, "Tax: " + tax);
+        DebugUtils.logDebug(TAG, "Tip: " + tip);
+        DebugUtils.logDebug(TAG, "Total: " + total);
 
         current.OrderDetails.total_cents = total;
     }
@@ -128,7 +150,7 @@ public class Order {
 
     public static void clearIncomplete() {
         ArrayList<Integer> ids = new ArrayList<>();
-        for (int i=0; i < current.OrderItems.size(); ++i) {
+        for (int i = 0; i < current.OrderItems.size(); ++i) {
             OrderItem orderItem = current.OrderItems.get(i);
 
             if (orderItem.isComplete()) continue;

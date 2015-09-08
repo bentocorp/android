@@ -18,7 +18,7 @@ public class Stock {
     public int itemId;
     public int qty;
 
-    public static void set (String data) {
+    public static void set(String data) {
         list = new ArrayList<>();
         try {
             JSONObject json = new JSONObject(data);
@@ -29,7 +29,8 @@ public class Stock {
                 data = json.getJSONObject("/status/all").getString("menu");
             }
             Gson gson = new Gson();
-            list = gson.fromJson(data, new TypeToken<List<Stock>>() {}.getType());
+            list = gson.fromJson(data, new TypeToken<List<Stock>>() {
+            }.getType());
             Log.i(TAG, "stock: " + list.size());
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage());
@@ -37,19 +38,17 @@ public class Stock {
         }
     }
 
-    public static boolean isSold (int itemId, boolean countCurrent) {
+    public static boolean isSold(int itemId, boolean countCurrent) {
         int min = countCurrent ? 0 : -1;
         for (Stock stock : list) {
-            if (stock.itemId == itemId &&
-                    stock.qty > 0 &&
-                    (stock.qty - Order.countItemsById(itemId)) > min
-                ) return false;
+            if (stock.itemId == itemId && stock.qty > 0 && (stock.qty - Order.countItemsById(itemId)) > min)
+                return false;
         }
 
         return true;
     }
 
-    public static boolean isSold (String type) {
+    public static boolean isSold(String type) {
         int sold = 0;
         int qty = 0;
         Menu menu = Menu.get();
@@ -67,7 +66,7 @@ public class Stock {
         return sold >= qty;
     }
 
-    public static boolean isSold () {
+    public static boolean isSold() {
         return isSold("main") || isSold("side");
     }
 }

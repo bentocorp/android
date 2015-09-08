@@ -8,4 +8,5 @@ public class OrderDetails {
     public long tax_cents = 0;
     public int tip_cents = 0;
     public long total_cents = 0;
+    public String delivery_price = "";
 }

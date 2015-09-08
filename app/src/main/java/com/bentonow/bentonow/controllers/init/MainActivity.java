@@ -85,7 +85,8 @@ public class MainActivity extends Activity {
         BentoApplication.onResume();
         BentoApplication.status = "main";
 
-        getTxtVersion().setText(AndroidUtil.getAppVersionName(this));
+        if (BuildConfig.DEBUG)
+            getTxtVersion().setText(AndroidUtil.getAppVersionName(this));
 
         super.onResume();
     }

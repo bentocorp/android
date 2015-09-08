@@ -49,15 +49,16 @@ android {
         applicationId "com.bentonow.bentonow"
         minSdkVersion 17
         targetSdkVersion 22
-        versionCode 14
-        versionName '1.4'
+        versionCode 15
     }
     productFlavors {
         production {
             applicationId "com.bentonow.bentonow"
+            versionName '1.5-rc1'
         }
         stage {
             applicationId "com.bentonow.bentonow.stage"
+            versionName '1.5-rc1-dev'
         }
     }
 
