@@ -108,7 +108,7 @@ public class Settings {
             int dinnerTime = Integer.parseInt(Settings.dinner.startTime.replace(":", ""));
             int currentTime = Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
 
-            return dinnerTime > currentTime ? "lunch" : "dinner";
+            return dinnerTime >= currentTime ? "lunch" : "dinner";
         } catch (Exception ignore) {
         }
 

@@ -1,110 +1,138 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/base_relative_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.bentonow.bentonow.controllers.errors.ErrorActivity"
-    android:id="@+id/base_relative_layout">
+    tools:context="com.bentonow.bentonow.controllers.errors.ErrorActivity">
 
     <!-- BACKGROUND -->
     <ImageView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:src="@drawable/bg_error_closed"
-        android:scaleType="centerCrop"/>
+        android:scaleType="centerCrop"
+        android:src="@drawable/bg_error_closed" />
 
     <!-- ACTIONBAR -->
     <LinearLayout
-        android:orientation="vertical"
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:id="@+id/linearLayout">
+        android:orientation="vertical">
+
         <include layout="@layout/actionbar_center_logo" />
     </LinearLayout>
 
     <!-- MAIN CONTAINER -->
     <LinearLayout
-        android:orientation="vertical"
         android:id="@+id/ll_cont"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@+id/linearLayout"
         android:layout_above="@+id/footer"
+        android:layout_below="@+id/linearLayout"
         android:gravity="center"
-        >
+        android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/text_content"
-            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:padding="@dimen/general_padding">
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/general_padding"
+            android:paddingLeft="@dimen/general_padding"
+            android:paddingRight="@dimen/general_padding">
 
             <TextView
+                android:id="@+id/txt_title"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/error_closed_title"
-                android:id="@+id/txt_title"
-                android:textIsSelectable="false"
-                android:textSize="@dimen/title1"
-                android:textColor="@color/white"
                 android:gravity="center_horizontal"
-                />
+                android:text="@string/error_closed_title"
+                android:textColor="@color/white"
+                android:textIsSelectable="false"
+                android:textSize="@dimen/title1" />
 
             <TextView
+                android:id="@+id/txt_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/error_closed_text"
-                android:id="@+id/txt_description"
                 android:gravity="center"
+                android:text="@string/error_closed_text"
                 android:textColor="@color/white"
-                android:textSize="@dimen/text_normal"
-                />
+                android:textSize="@dimen/text_normal" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:background="@color/white"
             android:gravity="center_vertical"
-            >
+            android:orientation="horizontal">
+
             <ImageView
-                android:padding="@dimen/ic_email_padding"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_email"/>
+                android:padding="@dimen/ic_email_padding"
+                android:src="@drawable/ic_email" />
+
             <EditText
+                android:id="@+id/txt_email"
                 android:layout_width="fill_parent"
                 android:layout_height="match_parent"
-                android:hint="@string/error_closed_input_mail_hint"
-                android:textSize="@dimen/text_small"
                 android:background="#00000000"
-                android:id="@+id/txt_email"
+                android:hint="@string/error_closed_input_mail_hint"
                 android:inputType="textEmailAddress"
+                android:singleLine="true"
                 android:textCursorDrawable="@null"
-                android:singleLine="true"/>
+                android:textSize="@dimen/text_small" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:background="@color/btn_green"
-            >
+            android:orientation="horizontal">
+
             <Button
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:background="@null"
                 android:gravity="center"
-                android:textColor="@color/white"
+                android:onClick="onSubmitPressed"
                 android:padding="@dimen/btn_padding"
                 android:text="@string/btn_submit_text"
-                android:background="@null"
-                android:onClick="onSubmitPressed"/>
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/general_padding"
+            android:orientation="vertical">
+
+            <com.bentonow.bentonow.ui.BackendTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/message_open"
+                android:textColor="@color/white"
+                android:textSize="17sp"
+                app:key="open-line1" />
+
+            <com.bentonow.bentonow.ui.BackendTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/message_open"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                app:key="open-line2" />
+
 
         </LinearLayout>
 
@@ -112,18 +140,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="@dimen/general_padding"
-            >
+            android:paddingLeft="@dimen/general_padding"
+            android:paddingRight="@dimen/general_padding">
+
             <Button
-                android:background="@drawable/btn_border_lineal_white"
+                android:id="@+id/btn_next_day_menu"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/btn_border_lineal_white"
                 android:gravity="center"
-                android:textColor="@color/white"
+                android:onClick="onNextDayMenuPressed"
                 android:padding="@dimen/btn_padding"
                 android:text="See next day Menu"
-                android:id="@+id/btn_next_day_menu"
-                android:onClick="onNextDayMenuPressed"/>
+                android:textColor="@color/white" />
 
         </LinearLayout>
 
@@ -131,31 +160,33 @@
 
     <!-- FOOTER -->
     <LinearLayout
+        android:id="@+id/footer"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:orientation="horizontal"
-        android:padding="@dimen/btn_padding"
-        android:id="@+id/footer"
-        android:layout_alignParentBottom="true">
+        android:padding="@dimen/btn_padding">
+
         <com.bentonow.bentonow.ui.BackendButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@null"
+            android:onClick="onPrivacyPolicyPressed"
             android:text="@string/privacy_policy"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:textColor="@color/white"
-            app:key="closed-privacy-policy-link"
-            android:background="@null"
-            android:onClick="onPrivacyPolicyPressed"/>
+            app:key="closed-privacy-policy-link" />
+
         <com.bentonow.bentonow.ui.BackendButton
-            android:layout_weight="1"
-            android:gravity="right"
-            android:textColor="@color/white"
-            android:text="@string/TermsAndConditions"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:key="closed-terms-link"
+            android:layout_weight="1"
             android:background="@null"
-            android:onClick="onTermAndConditionsPressed"/>
+            android:gravity="right"
+            android:onClick="onTermAndConditionsPressed"
+            android:text="@string/TermsAndConditions"
+            android:textColor="@color/white"
+            app:key="closed-terms-link" />
     </LinearLayout>
 
     <!-- OVERLAY -->
@@ -169,40 +200,40 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:weightSum="5"
-            android:orientation="horizontal"
-            android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:baselineAligned="false"
             android:gravity="center"
-            android:baselineAligned="false">
+            android:orientation="horizontal"
+            android:weightSum="5">
+
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/overlay_message"
                 android:layout_weight="3"
-                >
+                android:background="@drawable/overlay_message"
+                android:orientation="vertical">
+
                 <com.bentonow.bentonow.ui.BackendTextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/message_open"
                     android:gravity="center"
                     android:padding="@dimen/btn_padding"
-                    app:key="closed-confirmation-text"
-                    />
+                    android:text="@string/message_open"
+                    app:key="closed-confirmation-text" />
+
                 <com.bentonow.bentonow.ui.BackendTextView
                     android:id="@+id/btn_ok"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/btn_padding"
                     android:layout_weight="1"
-                    android:textColor="@color/white"
                     android:background="@drawable/bg_green_corner_left_right_bottom"
                     android:gravity="center"
+                    android:padding="@dimen/btn_padding"
                     android:text="@string/ok"
-                    app:key="closed-confirmation-button"
-                    />
+                    android:textColor="@color/white"
+                    app:key="closed-confirmation-button" />
             </LinearLayout>
         </LinearLayout>
 

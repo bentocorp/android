@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
@@ -106,12 +107,12 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
                     String title = day + "'s " + menu.meal_name.substring(0, 1).toUpperCase() + menu.meal_name.substring(1);
                     btn_next_day_menu.setText(title);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    DebugUtils.logError(TAG, "setupNextMenu: " + e.getLocalizedMessage());
                     btn_next_day_menu.setVisibility(View.INVISIBLE);
                 }
             }
         } else {
-            Log.i(TAG, "menu: null");
+            DebugUtils.logDebug(TAG, "setupNextMenu: " + "menu: null");
             btn_next_day_menu.setVisibility(View.INVISIBLE);
         }
     }
