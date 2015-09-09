@@ -81,19 +81,18 @@ public class Menu {
             int lunchTime = Integer.parseInt(Settings.lunch.startTime.replace(":", ""));
             int dinnerTime = Integer.parseInt(Settings.dinner.startTime.replace(":", ""));
 
-            if (lunchTime <= BentoNowUtils.getCurrentTime()) {
+            if (lunchTime <= BentoNowUtils.getCurrentTime() && dinnerTime > BentoNowUtils.getCurrentTime()) {
                 // Try to get the lunch menu
                 for (Menu menu : list) {
                     if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()) && menu.meal_name.equals("lunch"))
                         return menu;
                 }
 
-            } else if (dinnerTime <= BentoNowUtils.getCurrentTime()) {
+            } else if (dinnerTime <= BentoNowUtils.getCurrentTime() && 220000 >= BentoNowUtils.getCurrentTime()) {
                 // Try to get the dinner menu
                 for (Menu menu : list) {
                     if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()) && menu.meal_name.equals("dinner"))
-                        continue;
-                    return menu;
+                        return menu;
                 }
             }
 
@@ -104,7 +103,7 @@ public class Menu {
 
     static public Menu getNext() {
         try {
-
+            String sMenuType = Settings.currentMenuType();
             Calendar mToday = Calendar.getInstance();
             int lunchTime = Integer.parseInt(Settings.lunch.startTime.replace(":", ""));
             int dinnerTime = Integer.parseInt(Settings.dinner.startTime.replace(":", ""));
@@ -114,17 +113,14 @@ public class Menu {
 
             // Try to get the next menu
             if (mToday.get(Calendar.HOUR_OF_DAY) < 21) {
-                if ((lunchTime + Settings.buffer_minutes * 100) >= BentoNowUtils.getCurrentTime()) {
+                if ((lunchTime + Settings.buffer_minutes * 100) <= BentoNowUtils.getCurrentTime() && (dinnerTime + Settings.buffer_minutes * 100) > BentoNowUtils.getCurrentTime()) {
                     // Try to get the lunch menu
                     for (Menu menu : list) {
-                        if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()) && menu.meal_name.equals("lunch")) {
+                        if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()) && menu.meal_name.equals(sMenuType))
                             return menu;
-                        } else if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()) && menu.meal_name.equals("dinner")) {
-                            return menu;
-                        }
                     }
 
-                } else if ((dinnerTime + Settings.buffer_minutes * 100) >= BentoNowUtils.getCurrentTime()) {
+                } else if ((dinnerTime + Settings.buffer_minutes * 100) <= BentoNowUtils.getCurrentTime() && 220000 >= BentoNowUtils.getCurrentTime()) {
                     // Try to get the dinner menu
                     for (Menu menu : list) {
                         if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()) && menu.meal_name.equals("dinner")) {

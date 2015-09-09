@@ -14,6 +14,7 @@ import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Email;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.model.BackendText;
@@ -50,6 +51,8 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
 
         txt_email = (EditText) findViewById(R.id.txt_email);
         btn_next_day_menu = (Button) findViewById(R.id.btn_next_day_menu);
+
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_STORE_CHANGIN, false);
     }
 
     @Override
@@ -88,6 +91,9 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
         super.onPause();
         bIsOpen = false;
         BentoApplication.onPause();
+
+        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_STORE_CHANGIN))
+            finish();
     }
 
     void setupNextMenu() {

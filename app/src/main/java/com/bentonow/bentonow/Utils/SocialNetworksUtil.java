@@ -25,7 +25,7 @@ public class SocialNetworksUtil {
             for (Signature signature : info.signatures) {
                 MessageDigest md = MessageDigest.getInstance("SHA");
                 md.update(signature.toByteArray());
-                DebugUtils.logDebug(Base64.encodeToString(md.digest(), Base64.DEFAULT));
+                DebugUtils.logDebug("Keyhash: ", Base64.encodeToString(md.digest(), Base64.DEFAULT));
             }
         } catch (Exception e) {
             DebugUtils.logError(e);

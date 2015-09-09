@@ -20,6 +20,8 @@ public class SharedPreferencesUtil {
     public static final String ADDRESS = "address"; //String
     public static final String BACKENDTEXT = "backendText"; //String
     public static final String UUID_BENTO = "UUID_BENTO"; //String
+    public static final String IS_BENTO_SERVICE_RUNNING = "IS_BENTO_SERVICE_RUNNING"; //boolean
+    public static final String IS_STORE_CHANGIN = "IS_STORE_CHANGIN"; //boolean
 
 
     /**

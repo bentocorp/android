@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.session.SettingsActivity;
 import com.bentonow.bentonow.controllers.session.SignUpActivity;
@@ -78,7 +79,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
         if (Order.current.OrderItems.size() == 0) {
             Order.current.OrderItems.add(new OrderItem());
         } else if (Order.current.OrderItems.size() <= orderIndex) {
-            orderIndex = Order.current.OrderItems.size()-1;
+            orderIndex = Order.current.OrderItems.size() - 1;
         }
 
         updateUI();
@@ -92,12 +93,12 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
         actionbar_left_btn.setImageResource(R.drawable.ic_ab_user);
         actionbar_left_btn.setOnClickListener(this);
 
-        actionbar_right_btn = (ImageView)findViewById(R.id.actionbar_right_btn);
+        actionbar_right_btn = (ImageView) findViewById(R.id.actionbar_right_btn);
         actionbar_right_btn.setImageResource(R.drawable.ic_ab_bento);
         actionbar_right_btn.setOnClickListener(this);
     }
 
-    void initOrder () {
+    void initOrder() {
         mainHolder = new ItemHolder(
                 this,
                 null,
@@ -154,7 +155,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
         );
     }
 
-    public void updateUI () {
+    public void updateUI() {
         if (Order.current.OrderItems.get(orderIndex).isComplete() && !Stock.isSold()) {
             btn_continue.setBackgroundColor(getResources().getColor(R.color.btn_green));
             btn_continue.setText(BackendText.get("build-button-2"));
@@ -173,7 +174,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
             actionbar_right_btn.setImageResource(R.drawable.ic_ab_bento);
         } else {
             actionbar_right_badge.setVisibility(View.VISIBLE);
-            actionbar_right_badge.setText(Order.countCompletedOrders()+"");
+            actionbar_right_badge.setText(Order.countCompletedOrders() + "");
             actionbar_right_btn.setImageResource(R.drawable.ic_ab_bento_completed);
         }
 
@@ -186,7 +187,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
         side4Holder.setData(item.items.get(4), false);
     }
 
-    void autocomplete () {
+    void autocomplete() {
         OrderItem orderItem = Order.current.OrderItems.get(orderIndex);
         Item item;
 
@@ -202,7 +203,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
 
                 if (item == null) continue;
 
-                ids[i-1] = item.itemId;
+                ids[i - 1] = item.itemId;
 
                 item = item.clone();
                 item.type += i;
@@ -259,50 +260,50 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
         }
     }
 
-    public void onAddMainPressed (View view) {
+    public void onAddMainPressed(View view) {
         Intent intent = new Intent(this, SelectMainActivity.class);
         intent.putExtra("orderIndex", orderIndex);
         startActivity(intent);
     }
 
-    public void onAddSide1Pressed (View view) {
+    public void onAddSide1Pressed(View view) {
         Intent intent = new Intent(this, SelectSideActivity.class);
         intent.putExtra("orderIndex", orderIndex);
         intent.putExtra("itemIndex", 1);
         startActivity(intent);
     }
 
-    public void onAddSide2Pressed (View view) {
+    public void onAddSide2Pressed(View view) {
         Intent intent = new Intent(this, SelectSideActivity.class);
         intent.putExtra("orderIndex", orderIndex);
         intent.putExtra("itemIndex", 2);
         startActivity(intent);
     }
 
-    public void onAddSide3Pressed (View view) {
+    public void onAddSide3Pressed(View view) {
         Intent intent = new Intent(this, SelectSideActivity.class);
         intent.putExtra("orderIndex", orderIndex);
         intent.putExtra("itemIndex", 3);
         startActivity(intent);
     }
 
-    public void onAddSide4Pressed (View view) {
+    public void onAddSide4Pressed(View view) {
         Intent intent = new Intent(this, SelectSideActivity.class);
         intent.putExtra("orderIndex", orderIndex);
         intent.putExtra("itemIndex", 4);
         startActivity(intent);
     }
 
-    public void onAddAnotherBentoPressed (View view) {
+    public void onAddAnotherBentoPressed(View view) {
         if (!Order.current.OrderItems.get(orderIndex).isComplete() || Stock.isSold()) return;
 
         Order.current.OrderItems.add(new OrderItem());
-        Order.current.currentOrderItem = orderIndex = Order.current.OrderItems.size()-1;
+        Order.current.currentOrderItem = orderIndex = Order.current.OrderItems.size() - 1;
 
         updateUI();
     }
 
-    public void onContinueOrderPressed (View view) {
+    public void onContinueOrderPressed(View view) {
         if (!Order.current.OrderItems.get(orderIndex).isComplete()) {
             if (Order.current.OrderItems.get(orderIndex).items.get(0) == null) {
                 startActivity(new Intent(this, SelectMainActivity.class));
@@ -330,7 +331,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
         } else if (User.current == null) {
             track();
             startActivity(new Intent(this, SignUpActivity.class));
-        } else if (Order.location == null || Order.address == null){
+        } else if (Order.location == null || Order.address == null) {
             Intent intent = new Intent(this, DeliveryLocationActivity.class);
             intent.putExtra("completeOrder", true);
             startActivity(intent);
@@ -344,7 +345,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
     // Mixpanel
     //****
 
-    private void track () {
+    private void track() {
         try {
             OrderItem item = Order.current.OrderItems.get(orderIndex);
 
@@ -359,5 +360,12 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_STORE_CHANGIN))
+            finish();
     }
 }

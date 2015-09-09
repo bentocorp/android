@@ -61,6 +61,8 @@ public class MainActivity extends Activity {
                         .setFontAttrId(R.attr.fontPath)
                         .build()
         );
+
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_STORE_CHANGIN, false);
     }
 
     @Override
@@ -159,7 +161,7 @@ public class MainActivity extends Activity {
             SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.APP_FIRST_RUN, true);
 
             Intent intent = new Intent(this, GettingStartedActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
 
             finish();
@@ -172,7 +174,7 @@ public class MainActivity extends Activity {
         Log.i(TAG, "checkAppStatus");
         if (Settings.min_version > BuildConfig.VERSION_CODE) {
             Intent intent = new Intent(this, ErrorVersionActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
 
             finish();
@@ -181,7 +183,7 @@ public class MainActivity extends Activity {
             finish();
         } else if (Order.pendingOrders()) {
             Intent intent = new Intent(this, BuildBentoActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
 
             finish();

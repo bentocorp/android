@@ -119,6 +119,13 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_STORE_CHANGIN))
+            finish();
+    }
+
     private void initActionbar() {
         TextView actionbar_title = (TextView) findViewById(R.id.actionbar_title);
         actionbar_title.setText(BackendText.get("complete-title"));
@@ -431,7 +438,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         getTxtDeliveryPrice().setText("$ " + Order.current.OrderDetails.delivery_price);
         txt_discount.setText(String.format(getString(R.string.money_format), (double) Order.current.OrderDetails.coupon_discount_cents / 100));
         txt_tax.setText(String.format(getString(R.string.money_format), (double) Order.current.OrderDetails.tax_cents / 100));
-        txt_tip.setText(String.format(getString(R.string.tip_percentage),(double) Order.current.OrderDetails.tip_percentage) + " %");
+        txt_tip.setText(String.format(getString(R.string.tip_percentage), (double) Order.current.OrderDetails.tip_percentage) + " %");
         txt_total.setText(String.format(getString(R.string.money_format), (double) Order.current.OrderDetails.total_cents / 100));
 
 

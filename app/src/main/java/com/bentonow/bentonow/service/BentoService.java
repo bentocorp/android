@@ -13,6 +13,7 @@ import android.util.Log;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.DebugUtils;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.Stock;
@@ -25,15 +26,17 @@ import org.apache.http.Header;
 public class BentoService extends Service {
 
     private static final String TAG = "BentoService";
-    private static BentoService instance;
-    private Handler handler;
-    private Runnable task;
+    private static Handler handler;
+    private static Runnable task;
 
     public static String date = "";
 
     public static boolean isRunning() {
-        Log.i(TAG, "isRunning");
-        return instance != null;
+        if (task == null || handler == null)
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_BENTO_SERVICE_RUNNING, false);
+
+        Log.i(TAG, "isRunning: " + SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_BENTO_SERVICE_RUNNING));
+        return SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_BENTO_SERVICE_RUNNING);
     }
 
     @Override
@@ -45,19 +48,20 @@ public class BentoService extends Service {
     @Override
     public void onCreate() {
         Log.i(TAG, "onCreate()");
-        instance = this;
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_BENTO_SERVICE_RUNNING, true);
 
         loadData();
     }
 
+
     @Override
     public void onDestroy() {
-        instance = null;
         Log.i(TAG, "onDestroy()");
         if (handler != null && task != null) {
             handler.removeCallbacks(task);
         }
         super.onDestroy();
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_BENTO_SERVICE_RUNNING, false);
     }
 
     @Override
@@ -100,6 +104,7 @@ public class BentoService extends Service {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 Log.e(TAG, "cannot loadData");
+                onDestroy();
             }
 
             @Override
@@ -120,6 +125,7 @@ public class BentoService extends Service {
             Settings.set(responseString);
 
             if (!Settings.status.equals(BentoApplication.status) && !BentoApplication.status.equals("main")) {
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_STORE_CHANGIN, true);
                 switch (Settings.status) {
                     case "open":
                         BentoNowUtils.openMainActivity(this);

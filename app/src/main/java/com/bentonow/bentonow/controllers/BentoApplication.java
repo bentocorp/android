@@ -8,7 +8,9 @@ import android.util.Log;
 import com.bentonow.bentonow.BuildConfig;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoRestClient;
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Mixpanel;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.service.BentoService;
 import com.crashlytics.android.Crashlytics;
@@ -76,11 +78,13 @@ public class BentoApplication extends Application {
         stopService = new TimerTask() {
             @Override
             public void run() {
-                Log.i(TAG, "stopping service");
+                DebugUtils.logDebug(TAG, "stopping service");
                 try {
                     instance.stopService(new Intent(instance, BentoService.class));
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_BENTO_SERVICE_RUNNING, false);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    DebugUtils.logError(TAG, "stopping service: " + e.toString());
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_BENTO_SERVICE_RUNNING, false);
                 }
             }
         };
@@ -98,12 +102,12 @@ public class BentoApplication extends Application {
             timer = null;
         }
 
-        if (!BentoService.isRunning() && instance != null) {
+        if (!BentoService.isRunning()) {
             Log.i(TAG, "starting service");
             try {
                 instance.startService(new Intent(instance, BentoService.class));
             } catch (Exception e) {
-                e.printStackTrace();
+                DebugUtils.logError("BentoService: ", e);
             }
         }
     }

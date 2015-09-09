@@ -4,9 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 
@@ -24,13 +24,20 @@ public class OrderConfirmedActivity extends BaseActivity implements View.OnClick
         actionbar_right_btn.setOnClickListener(this);
     }
 
-    public void onFaqPressed (View view) {
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_STORE_CHANGIN))
+            finish();
+    }
+
+    public void onFaqPressed(View view) {
         Intent intent = new Intent(this, HelpActivity.class);
         intent.putExtra("faq", true);
         startActivity(intent);
     }
 
-    public void onAddAnotherBentoPressed (View view) {
+    public void onAddAnotherBentoPressed(View view) {
         onBackPressed();
     }
 

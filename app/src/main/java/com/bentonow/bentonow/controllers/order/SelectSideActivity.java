@@ -12,13 +12,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseActivity;
-import com.bentonow.bentonow.ui.CustomDialog;
 import com.bentonow.bentonow.model.Item;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
+import com.bentonow.bentonow.ui.CustomDialog;
 import com.bentonow.bentonow.ui.ItemHolder;
-import com.google.gson.Gson;
 import com.wsdcamp.list.LazyListAdapter;
 import com.wsdcamp.list.LazyListAdapterInterface;
 
@@ -153,5 +153,12 @@ public class SelectSideActivity extends BaseActivity implements View.OnClickList
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         currentSelectedItem = ((ItemHolder) view.getTag()).item;
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_STORE_CHANGIN))
+            finish();
     }
 }

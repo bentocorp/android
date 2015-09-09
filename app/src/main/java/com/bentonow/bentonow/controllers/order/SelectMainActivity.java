@@ -11,6 +11,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.ui.CustomDialog;
 import com.bentonow.bentonow.model.Item;
@@ -160,5 +161,12 @@ public class SelectMainActivity extends BaseActivity implements View.OnClickList
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         currentSelectedItem = ((ItemHolder) view.getTag()).item;
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_STORE_CHANGIN))
+            finish();
     }
 }
