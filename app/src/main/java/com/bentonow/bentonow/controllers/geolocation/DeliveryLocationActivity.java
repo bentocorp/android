@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -23,19 +24,27 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.DebugUtils;
+import com.bentonow.bentonow.Utils.LocationUtils;
 import com.bentonow.bentonow.Utils.Mixpanel;
+import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.errors.BummerActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.controllers.order.BuildBentoActivity;
+import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
 import com.bentonow.bentonow.controllers.session.SignUpActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.ui.CustomDialog;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -59,7 +68,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class DeliveryLocationActivity extends BaseFragmentActivity implements GoogleMap.OnMapLoadedCallback, GoogleMap.OnMapClickListener, View.OnClickListener, AdapterView.OnItemClickListener, View.OnKeyListener, TextView.OnEditorActionListener {
+public class DeliveryLocationActivity extends BaseFragmentActivity implements GoogleMap.OnMapLoadedCallback, GoogleMap.OnMapClickListener, View.OnClickListener, AdapterView.OnItemClickListener, View.OnKeyListener,
+        TextView.OnEditorActionListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     static final String TAG = "DeliveryLocationActivit";
 
@@ -77,6 +87,14 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
     CustomDialog dialog;
 
+    private boolean mRequestingLocationUpdates;
+    private GoogleApiClient mGoogleApiClient;
+    private Location mCurrentLocation;
+    private LocationRequest mLocationRequest;
+    private LatLng mLastLocations;
+    private LatLng mLastOrderLocation;
+    private Address sOrderAddress;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate");
@@ -84,7 +102,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
         setContentView(R.layout.activity_delivery_location);
 
-        imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
         txt_address = (AutoCompleteTextView) findViewById(R.id.txt_address);
         chck_i_agree = (CheckBox) findViewById(R.id.chck_iagree);
@@ -95,12 +113,22 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
         initActionbar();
         setupAutocomplete();
+
+        mLastLocations = User.location;
+        mLastOrderLocation = Order.location;
+        sOrderAddress = Order.address;
+
+        mRequestingLocationUpdates = true;
+        buildGoogleApiClient();
     }
 
     @Override
     protected void onResume() {
         Log.i(TAG, "onResume");
         super.onResume();
+        if (mGoogleApiClient.isConnected()) {
+            startLocationUpdates();
+        }
         setupMap();
     }
 
@@ -108,6 +136,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     protected void onPause() {
         Log.i(TAG, "onPause");
         super.onPause();
+        stopLocationUpdates();
     }
 
     private void initActionbar() {
@@ -115,7 +144,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         actionbar_title.setText(getResources().getString(R.string.delivery_location_actionbar_title));
 
         if (getIntent() != null && getIntent().getBooleanExtra("btnBack", false)) {
-            ImageView actionbar_left_btn = (ImageView)findViewById(R.id.actionbar_left_btn);
+            ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
             actionbar_left_btn.setImageResource(R.drawable.ic_ab_back);
             actionbar_left_btn.setOnClickListener(this);
         }
@@ -125,16 +154,16 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         actionbar_right_btn.setOnClickListener(this);
     }
 
-    void updateUI () {
+    void updateUI() {
         progressBar.setVisibility(View.GONE);
 
-        if (chck_i_agree.isChecked() && Order.address != null) {
+        if (chck_i_agree.isChecked() && sOrderAddress != null) {
             btn_continue.setBackgroundColor(getResources().getColor(R.color.btn_green));
         } else {
             btn_continue.setBackgroundColor(getResources().getColor(R.color.gray));
         }
 
-        btn_current_location.setVisibility(User.location != null ? View.VISIBLE : View.GONE);
+        // btn_current_location.setVisibility(User.location != null ? View.VISIBLE : View.GONE);
         btn_clear.setVisibility(txt_address.getText().length() > 0 ? View.VISIBLE : View.GONE);
     }
 
@@ -153,10 +182,10 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         LatLng point = null;
         float zoom = 12f;
 
-        if (Order.location != null) {
-            point = Order.location;
-        } else if (User.location != null) {
-            point = User.location;
+        if (mLastOrderLocation != null) {
+            point = mLastOrderLocation;
+        } else if (mLastLocations != null) {
+            point = mLastLocations;
         }
 
         if (point == null) {
@@ -172,10 +201,10 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
     @Override
     public void onMapLoaded() {
-        if (Order.location != null) {
-            markerLocation(Order.location);
-        } else if (User.location != null) {
-            markerLocation(User.location);
+        if (mLastOrderLocation != null) {
+            markerLocation(mLastOrderLocation);
+        } else if (mLastLocations != null) {
+            markerLocation(mLastLocations);
         }
 
         map.setOnMapClickListener(this);
@@ -186,7 +215,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         if (latLng != null) {
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
             txt_address.setText("", false);
-            Order.address = null;
+            sOrderAddress = null;
 
             markerLocation(latLng);
             updateUI();
@@ -202,7 +231,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             );
         }
 
-        Order.location = latLng;
+        mLastOrderLocation = latLng;
         marker.setPosition(latLng);
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, map.getCameraPosition().zoom > 11f ? map.getCameraPosition().zoom : 17f));
         scanCurrentLocation(latLng);
@@ -224,12 +253,12 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         }
 
         if (matches != null && !matches.isEmpty()) {
-            Order.address = matches.get(0);
+            sOrderAddress = matches.get(0);
 
-            Log.i(TAG, "full address: " + Order.getFullAddress());
-            Log.i(TAG, "address: " + Order.getStreetAddress());
+            Log.i(TAG, "full address: " + LocationUtils.getFullAddress(sOrderAddress));
+            Log.i(TAG, "address: " + LocationUtils.getStreetAddress(sOrderAddress));
 
-            txt_address.setText(Order.getFullAddress(), false);
+            txt_address.setText(LocationUtils.getFullAddress(sOrderAddress), false);
         } else {
             txt_address.setText("", false);
         }
@@ -241,24 +270,30 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     //Click listeners
     //**
 
-    public void onClearPressed (View view) {
+    public void onClearPressed(View view) {
         txt_address.setText("");
-        Order.address = null;
+        sOrderAddress = null;
         updateUI();
     }
 
-    public void onCurrentLocationPressed (View view) {
-        if (User.location == null || map == null) return;
-        markerLocation(User.location);
-        scanCurrentLocation(User.location);
+    public void onCurrentLocationPressed(View view) {
+        WidgetsUtils.createShortToast("Getting your location");
+        startLocationUpdates();
+    }
+
+    private void updateCurrentLocation() {
+        if (mLastLocations == null || map == null)
+            return;
+        markerLocation(mLastLocations);
+        scanCurrentLocation(mLastLocations);
         updateUI();
     }
 
-    public void onAgreePressed (View view) {
+    public void onAgreePressed(View view) {
         updateUI();
     }
 
-    public void onHelpPressed (View view) {
+    public void onHelpPressed(View view) {
         dialog = new CustomDialog(
                 this,
                 BackendText.get("delivery-agree-message"),
@@ -269,8 +304,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         dialog.show();
     }
 
-    public void onContinuePressed (View view) {
-        if (Order.address == null || Order.location == null || !chck_i_agree.isChecked()) {
+    public void onContinuePressed(View view) {
+        if (sOrderAddress == null || mLastOrderLocation == null || !chck_i_agree.isChecked()) {
             Log.i(TAG, "onContinuePressed ALERT");
             new FadeInOut(this, findViewById(R.id.alert_i_agree), R.anim.fadein, R.anim.fadeout);
             return;
@@ -278,11 +313,14 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
         Log.i(TAG, "onContinuePressed OK");
 
-        boolean isInDeliveryArea = Settings.isInServiceArea(Order.location);
+        boolean isInDeliveryArea = Settings.isInServiceArea(mLastOrderLocation);
 
         Log.i(TAG, "onContinuePressed isInDeliveryArea " + (isInDeliveryArea ? "YES" : "NO"));
 
         if (isInDeliveryArea) {
+            Order.location = mLastOrderLocation;
+            User.location = mLastLocations;
+            Order.address = sOrderAddress;
             if (getIntent().getBooleanExtra("back", false)) {
                 onBackPressed();
             } else if (User.current != null && getIntent().getBooleanExtra("completeOrder", false)) {
@@ -298,14 +336,14 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         } else {
             try {
                 JSONObject params = new JSONObject();
-                params.put("address", Order.getFullAddress());
+                params.put("address", LocationUtils.getFullAddress(sOrderAddress));
                 Mixpanel.track(DeliveryLocationActivity.this, "Selected address outside of service area", params);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
             Intent intent = new Intent(getApplicationContext(), BummerActivity.class);
-            intent.putExtra("invalid_address", Order.address.toString());
+            intent.putExtra("invalid_address", sOrderAddress.toString());
             startActivity(intent);
         }
     }
@@ -345,9 +383,9 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
         @Override
         public String getItem(int index) {
-            try{
+            try {
                 return resultList.get(index);
-            }catch (IndexOutOfBoundsException ignore){
+            } catch (IndexOutOfBoundsException ignore) {
                 return "";
             }
         }
@@ -361,7 +399,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                     if (constraint != null) {
                         // Retrieve the autocomplete results.
                         resultList = autocomplete(constraint.toString());
-                        Log.i(TAG,"resultList: "+resultList);
+                        Log.i(TAG, "resultList: " + resultList);
 
                         // Assign the data to the FilterResults
                         filterResults.values = resultList;
@@ -382,7 +420,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         }
     }
 
-    void setupAutocomplete () {
+    void setupAutocomplete() {
         txt_address.setAdapter(new GooglePlacesAutocompleteAdapter(this, R.layout.listitem_locationaddress));
         txt_address.setText("", false);
         txt_address.setOnItemClickListener(this);
@@ -468,8 +506,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         return resultList;
     }
 
-    private void checkAddress (String str) {
-        Log.i(TAG,"checkAddress()");
+    private void checkAddress(String str) {
+        Log.i(TAG, "checkAddress()");
 
         Geocoder geoCoderClick = new Geocoder(getApplicationContext(), Locale.getDefault());
         try {
@@ -480,5 +518,81 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        DebugUtils.logDebug("buildGoogleApiClient", "onConnected:");
+
+        mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (mCurrentLocation != null) {
+            mLastLocations = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    updateCurrentLocation();
+                }
+            });
+        }
+
+        if (mRequestingLocationUpdates) {
+            startLocationUpdates();
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        DebugUtils.logDebug("buildGoogleApiClient", "onConnectionSuspended: " + i);
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        DebugUtils.logDebug("buildGoogleApiClient", connectionResult.toString());
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        DebugUtils.logDebug("buildGoogleApiClient", "onLocationChanged:");
+        mCurrentLocation = location;
+        mLastLocations = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                updateCurrentLocation();
+                mRequestingLocationUpdates = false;
+                stopLocationUpdates();
+            }
+        });
+    }
+
+    protected void startLocationUpdates() {
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, getLocationRequest(), this);
+    }
+
+    protected void stopLocationUpdates() {
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+    }
+
+    protected LocationRequest getLocationRequest() {
+        if (mLocationRequest == null) {
+            mLocationRequest = new LocationRequest();
+            mLocationRequest.setInterval(10000);
+            mLocationRequest.setFastestInterval(5000);
+            mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        }
+        return mLocationRequest;
+    }
+
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+        mGoogleApiClient.connect();
     }
 }
