@@ -1,27 +1,29 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/base_relative_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/base_relative_layout"
-    android:background="@color/bgcolor"
-    >
+    android:background="@color/bgcolor">
+
     <!-- actionbar -->
     <LinearLayout
         android:id="@+id/ActionBarContainer"
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        >
+        android:orientation="vertical">
+
         <include layout="@layout/actionbar" />
     </LinearLayout>
 
     <!-- Focus hack start -->
-    <LinearLayout android:focusable="true"
-        android:focusableInTouchMode="true" android:layout_width="0px"
-        android:layout_height="0px" />
+    <LinearLayout
+        android:layout_width="0px"
+        android:layout_height="0px"
+        android:focusable="true"
+        android:focusableInTouchMode="true" />
     <!-- Focus hack end -->
 
     <!-- container -->
@@ -29,32 +31,31 @@
         android:id="@+id/container_alert"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_below="@+id/ActionBarContainer"
         android:background="@color/orange"
-        android:visibility="gone"
-        android:layout_toEndOf="@id/ActionBarContainer"
-        android:layout_below="@+id/ActionBarContainer">
+        android:orientation="horizontal"
+        android:visibility="gone">
+
         <ImageView
-            android:padding="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_precaution"
-            />
+            android:padding="10dp"
+            android:src="@drawable/ic_precaution" />
+
         <TextView
             android:id="@+id/txt_message"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:textSize="@dimen/text_small"
             android:minHeight="53sp"
             android:textColor="@color/white"
-            />
+            android:textSize="@dimen/text_small" />
     </LinearLayout>
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/scrollView"
         android:layout_below="@+id/container_alert">
 
         <LinearLayout
@@ -68,33 +69,30 @@
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="10dp"
                 android:layout_marginLeft="@dimen/general_padding"
                 android:layout_marginRight="@dimen/general_padding"
+                android:layout_marginTop="10dp"
                 android:gravity="center"
-                >
+                android:orientation="vertical">
                 <!-- Facebook -->
                 <ImageButton
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/btn_facebook_signup"
-                    android:scaleType="centerCrop"
-                    android:background="@null"
                     android:adjustViewBounds="true"
+                    android:background="@null"
                     android:onClick="onFacebookPressed"
-                    />
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/btn_facebook_signup" />
 
                 <!-- divisor -->
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/or_divider"
-                    android:adjustViewBounds="true"
                     android:layout_margin="10dp"
+                    android:adjustViewBounds="true"
                     android:paddingLeft="@dimen/general_padding"
                     android:paddingRight="@dimen/general_padding"
-                    />
+                    android:src="@drawable/or_divider" />
             </LinearLayout>
 
             <!-- divisor -->
@@ -107,34 +105,35 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:background="@color/white"
                 android:gravity="center_vertical"
-                >
+                android:orientation="horizontal">
+
                 <ImageView
                     android:id="@+id/img_user"
-                    android:padding="@dimen/ic_email_padding"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_signup_profile"/>
+                    android:padding="@dimen/ic_email_padding"
+                    android:src="@drawable/ic_signup_profile" />
 
                 <!-- divisor -->
                 <View
                     android:layout_width="1px"
                     android:layout_height="fill_parent"
                     android:background="@color/divisor" />
+
                 <EditText
                     android:id="@+id/txt_name"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:hint="Your name"
-                    android:textSize="@dimen/text_small"
-                    android:textColor="@color/gray"
                     android:background="@color/transparent"
+                    android:hint="Your name"
+                    android:inputType="textCapWords"
                     android:padding="@dimen/btn_padding"
-                    android:textCursorDrawable="@null"
                     android:singleLine="true"
-                    android:inputType="textCapWords" />
+                    android:textColor="@color/gray"
+                    android:textCursorDrawable="@null"
+                    android:textSize="@dimen/text_small" />
             </LinearLayout>
 
             <!-- divisor -->
@@ -147,17 +146,18 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:background="@color/white"
                 android:gravity="center_vertical"
+                android:orientation="horizontal"
 
                 >
+
                 <ImageView
                     android:id="@+id/img_email"
-                    android:padding="@dimen/ic_email_padding"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_signup_email"/>
+                    android:padding="@dimen/ic_email_padding"
+                    android:src="@drawable/ic_signup_email" />
 
                 <!-- divisor -->
                 <View
@@ -169,14 +169,14 @@
                     android:id="@+id/txt_email"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:hint="Email address"
-                    android:textSize="@dimen/text_small"
-                    android:textColor="@color/gray"
                     android:background="@color/transparent"
-                    android:padding="@dimen/btn_padding"
-                    android:textCursorDrawable="@null"
+                    android:hint="Email address"
                     android:inputType="textEmailAddress"
-                    android:singleLine="true" />
+                    android:padding="@dimen/btn_padding"
+                    android:singleLine="true"
+                    android:textColor="@color/gray"
+                    android:textCursorDrawable="@null"
+                    android:textSize="@dimen/text_small" />
             </LinearLayout>
 
             <!-- divisor -->
@@ -189,50 +189,52 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:background="@color/white"
                 android:gravity="center_vertical"
-                >
+                android:orientation="horizontal">
+
                 <ImageView
                     android:id="@+id/img_phone"
-                    android:padding="@dimen/ic_email_padding"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_signup_phone"/>
+                    android:padding="@dimen/ic_email_padding"
+                    android:src="@drawable/ic_signup_phone" />
 
                 <!-- divisor -->
                 <View
                     android:layout_width="1px"
                     android:layout_height="fill_parent"
                     android:background="@color/divisor" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
-                    android:textSize="@dimen/text_small"
-                    android:textColor="@color/gray"
                     android:background="@color/transparent"
-                    android:paddingLeft="@dimen/btn_padding"
+                    android:gravity="center"
                     android:paddingBottom="@dimen/btn_padding"
+                    android:paddingLeft="@dimen/btn_padding"
                     android:paddingTop="@dimen/btn_padding"
                     android:text="+1 "
-                    android:gravity="center"/>
+                    android:textColor="@color/gray"
+                    android:textSize="@dimen/text_small" />
+
                 <EditText
                     android:id="@+id/txt_phone"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:hint="Phone number"
-                    android:textSize="@dimen/text_small"
-                    android:textColor="@color/gray"
                     android:background="@color/transparent"
-                    android:padding="@dimen/btn_padding"
-                    android:textCursorDrawable="@null"
                     android:digits="1234567890"
-                    android:paddingRight="@dimen/btn_padding"
-                    android:paddingBottom="@dimen/btn_padding"
-                    android:paddingTop="@dimen/btn_padding"
-                    android:maxLength="16"
+                    android:hint="Phone number"
                     android:inputType="phone"
-                    android:singleLine="true" />
+                    android:maxLength="16"
+                    android:padding="@dimen/btn_padding"
+                    android:paddingBottom="@dimen/btn_padding"
+                    android:paddingRight="@dimen/btn_padding"
+                    android:paddingTop="@dimen/btn_padding"
+                    android:singleLine="true"
+                    android:textColor="@color/gray"
+                    android:textCursorDrawable="@null"
+                    android:textSize="@dimen/text_small" />
             </LinearLayout>
 
             <!-- divisor -->
@@ -245,16 +247,16 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:background="@color/white"
                 android:gravity="center_vertical"
-                >
+                android:orientation="horizontal">
+
                 <ImageView
                     android:id="@+id/img_password"
-                    android:padding="@dimen/ic_email_padding"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_signup_key"/>
+                    android:padding="@dimen/ic_email_padding"
+                    android:src="@drawable/ic_signup_key" />
 
                 <!-- divisor -->
                 <View
@@ -266,15 +268,15 @@
                     android:id="@+id/txt_password"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:hint="@string/password"
-                    android:textSize="@dimen/text_small"
-                    android:textColor="@color/gray"
                     android:background="@color/transparent"
-                    android:padding="@dimen/btn_padding"
-                    android:textCursorDrawable="@null"
+                    android:hint="@string/password"
                     android:inputType="textPassword"
+                    android:padding="@dimen/btn_padding"
                     android:password="true"
-                    android:singleLine="true" />
+                    android:singleLine="true"
+                    android:textColor="@color/gray"
+                    android:textCursorDrawable="@null"
+                    android:textSize="@dimen/text_small" />
             </LinearLayout>
 
             <!-- divisor -->
@@ -286,46 +288,44 @@
             <!-- submit button -->
             <com.bentonow.bentonow.ui.BackendButton
                 android:id="@+id/btn_signup"
-                android:background="@drawable/btn_dark_gray"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textColor="@color/white"
-                android:padding="@dimen/btn_padding"
-                android:text="SIGN UP"
-                android:layout_marginTop="10dp"
                 android:layout_marginLeft="@dimen/general_padding"
                 android:layout_marginRight="@dimen/general_padding"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/btn_dark_gray"
+                android:gravity="center"
                 android:onClick="onSignUpPressed"
-                app:key="sign-up-button"
-                />
+                android:padding="@dimen/btn_padding"
+                android:text="SIGN UP"
+                android:textColor="@color/white"
+                app:key="sign-up-button" />
 
             <!-- sign in -->
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:gravity="center"
-                >
+                android:orientation="horizontal">
+
                 <com.bentonow.bentonow.ui.BackendTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Already have an account?"
                     android:textColor="@color/dark_gray"
-                    app:key="sign-up-sign-in-text"
-                    />
+                    app:key="sign-up-sign-in-text" />
+
                 <com.bentonow.bentonow.ui.BackendButton
+                    style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/btn_green"
-                    android:text="Sign in."
-                    android:padding="@dimen/btn_padding"
-                    android:textStyle="bold"
                     android:background="@null"
-                    style="?android:attr/buttonBarButtonStyle"
                     android:onClick="onSignInPressed"
-                    app:key="sign-up-sign-in-link"
-                    />
+                    android:padding="@dimen/btn_padding"
+                    android:text="Sign in."
+                    android:textColor="@color/btn_green"
+                    android:textStyle="bold"
+                    app:key="sign-up-sign-in-link" />
             </LinearLayout>
 
             <LinearLayout
@@ -333,26 +333,28 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:padding="@dimen/btn_padding">
+
                 <com.bentonow.bentonow.ui.BackendButton
-                    android:layout_weight="1"
-                    android:text="@string/privacy_policy"
+                    style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/btn_green"
+                    android:layout_weight="1"
                     android:background="@null"
-                    style="?android:attr/buttonBarButtonStyle"
                     android:onClick="onPrivacyPolicyPressed"
+                    android:text="@string/privacy_policy"
+                    android:textColor="@color/btn_green"
                     app:key="sign-up-privacy-policy-link" />
+
                 <com.bentonow.bentonow.ui.BackendButton
                     android:id="@+id/btn_terms_conditions"
-                    android:layout_weight="1"
-                    android:textColor="@color/btn_green"
-                    android:text="@string/TermsAndConditions"
+                    style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:background="@null"
-                    style="?android:attr/buttonBarButtonStyle"
                     android:onClick="onTermAndConditionsPressed"
+                    android:text="@string/TermsAndConditions"
+                    android:textColor="@color/btn_green"
                     app:key="sign-up-terms-link" />
             </LinearLayout>
         </LinearLayout>

@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bentonow.bentonow.Utils.BentoNowUtils;
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.Email;
@@ -68,6 +70,7 @@ public class SignUpActivity extends BaseActivity implements View.OnClickListener
     String error = "";
 
     boolean beganRegistration = false;
+    private User registerUser;
     //endregion
 
     @Override
@@ -102,7 +105,7 @@ public class SignUpActivity extends BaseActivity implements View.OnClickListener
         setupTextFields();
     }
 
-    void setupTextFields () {
+    void setupTextFields() {
         TextWatcher watcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -143,26 +146,11 @@ public class SignUpActivity extends BaseActivity implements View.OnClickListener
             @Override
             public void afterTextChanged(Editable editable) {
                 String phone = txt_phone.getText().toString().replaceAll("[^0-9]", "");
-                StringBuilder sb;
 
                 if (oldLength != phone.length()) {
                     oldLength = phone.length();
 
-                    if (phone.length() <= 3) {
-                        sb = new StringBuilder(phone)
-                                .insert(0, "(");
-                    } else if (phone.length() <= 6) {
-                        sb = new StringBuilder(phone)
-                                .insert(0, "(")
-                                .insert(4, ") ");
-                    } else {
-                        sb = new StringBuilder(phone)
-                                .insert(0, "(")
-                                .insert(4, ") ")
-                                .insert(9, " - ");
-                    }
-
-                    txt_phone.setText(sb.toString());
+                    txt_phone.setText(BentoNowUtils.getPhoneFromNumber(txt_phone.getText().toString()));
                     txt_phone.setSelection(txt_phone.getText().length());
 
                     txt_phone.setTextColor(getResources().getColor(R.color.gray));
@@ -193,30 +181,28 @@ public class SignUpActivity extends BaseActivity implements View.OnClickListener
 
     //region SignUp
 
-    private void validate () {
+    private void validate() {
         btn_signup.setBackgroundResource(valid() ? R.drawable.bg_green_cornered : R.drawable.btn_dark_gray);
     }
 
-    boolean valid () {
-        return  validName() &&
-                validEmail() &&
-                validPhone() &&
-                validPassword();
+    boolean valid() {
+        return validName() && validEmail() && validPhone() && validPassword();
     }
 
-    boolean validName () {
+    boolean validName() {
         return !txt_name.getText().toString().equals("") && !error.contains("name");
     }
 
-    boolean validEmail () {
+    boolean validEmail() {
         return Email.isValid(txt_email.getText().toString()) && !error.contains("email");
     }
 
-    boolean validPhone () {
-        return txt_phone.getText().length() == 16 && !error.contains("phone");
+    boolean validPhone() {
+        String sPhone = BentoNowUtils.getNumberFromPhone(txt_phone.getText().toString());
+        return sPhone.length() == 10 && !error.contains("phone");
     }
 
-    boolean validPassword () {
+    boolean validPassword() {
         return txt_password.getText().length() >= 6 && !error.contains("password");
     }
 
@@ -225,7 +211,8 @@ public class SignUpActivity extends BaseActivity implements View.OnClickListener
 
         try {
             Log.i(TAG, "onSignUpSuccess: " + responseString);
-            User.current = new Gson().fromJson(responseString, User.class);
+            User mUser = new Gson().fromJson(responseString, User.class);
+            registerUser.api_token = mUser.api_token;
 
             if (getIntent().getBooleanExtra("settings", false)) {
                 onBackPressed();
@@ -237,10 +224,11 @@ public class SignUpActivity extends BaseActivity implements View.OnClickListener
                 startActivity(new Intent(SignUpActivity.this, CompleteOrderActivity.class));
             }
 
+            User.current = registerUser;
             Settings.save(getApplicationContext());
             finish();
         } catch (Exception e) {
-            e.printStackTrace();
+            DebugUtils.logError(TAG, "onSignUpSuccess: " + e.toString());
         }
     }
 
@@ -257,14 +245,14 @@ public class SignUpActivity extends BaseActivity implements View.OnClickListener
         actionbar_left_btn.setOnClickListener(this);
     }
 
-    void updateUI () {
+    void updateUI() {
         boolean add_local_error = error.length() == 0;
 
         if (!validName()) {
             txt_name.setTextColor(getResources().getColor(R.color.orange));
             img_user.setImageResource(R.drawable.ic_signup_profile_error);
             if (add_local_error) error = "The name field is required.";
-        }else{
+        } else {
             txt_name.setTextColor(getResources().getColor(R.color.gray));
             img_user.setImageResource(R.drawable.ic_signup_profile);
         }
@@ -277,7 +265,7 @@ public class SignUpActivity extends BaseActivity implements View.OnClickListener
                 error += (error.length() > 0 ? "\n" : "") + "The name field is required.";
             else if (add_local_error)
                 error += (error.length() > 0 ? "\n" : "") + "The email must be a valid email address.";
-        }else{
+        } else {
             txt_email.setTextColor(getResources().getColor(R.color.gray));
             img_email.setImageResource(R.drawable.ic_signup_email);
         }
@@ -286,11 +274,11 @@ public class SignUpActivity extends BaseActivity implements View.OnClickListener
         if (!validPhone()) {
             txt_phone.setTextColor(getResources().getColor(R.color.orange));
             img_phone.setImageResource(R.drawable.ic_signup_phone_error);
-            if (add_local_error && txt_phone.getText().length() == 0)
+            if (add_local_error && txt_phone.getText().toString().isEmpty())
                 error += (error.length() > 0 ? "\n" : "") + "The phone field is required.";
             else if (add_local_error)
                 error += (error.length() > 0 ? "\n" : "") + "The phone must be a valid phone number.";
-        }else{
+        } else {
             txt_phone.setTextColor(getResources().getColor(R.color.gray));
             img_phone.setImageResource(R.drawable.ic_signup_phone);
         }
@@ -303,7 +291,7 @@ public class SignUpActivity extends BaseActivity implements View.OnClickListener
                 error += (error.length() > 0 ? "\n" : "") + "The password field is required.";
             else if (add_local_error)
                 error += (error.length() > 0 ? "\n" : "") + "The password must be at least 6 characters.";
-        }else{
+        } else {
             txt_password.setTextColor(getResources().getColor(R.color.gray));
             img_password.setImageResource(R.drawable.ic_signup_key);
         }
@@ -317,20 +305,23 @@ public class SignUpActivity extends BaseActivity implements View.OnClickListener
 
     //region OnClick
 
-    public void onFacebookPressed (View view) {
+    public void onFacebookPressed(View view) {
         LoginManager.getInstance().logOut();
         LoginManager.getInstance().logInWithReadPermissions(this, Collections.singletonList("email"));
     }
 
-    public void onSignUpPressed (View view) {
+    public void onSignUpPressed(View view) {
         updateUI();
 
-        if (!valid()) return;
+        if (!valid()) {
+            DebugUtils.logDebug(TAG, "onSignUpPressed: " + "invalid");
+            return;
+        }
 
-        final User registerUser = new User();
+        registerUser = new User();
         registerUser.firstname = txt_name.getText().toString();
         registerUser.email = txt_email.getText().toString();
-        registerUser.phone = txt_phone.getText().toString().replace("(", "").replace(")", "").replace(" ", "");
+        registerUser.phone = BentoNowUtils.getPhoneFromNumber(txt_phone.getText().toString());
         registerUser.password = txt_password.getText().toString();
 
         dialog = new CustomDialog(this, BackendText.get("sign-up-sign-in-link"), true);
@@ -375,20 +366,20 @@ public class SignUpActivity extends BaseActivity implements View.OnClickListener
         });
     }
 
-    public void onSignInPressed (View view) {
+    public void onSignInPressed(View view) {
         Intent intent = new Intent(this, SignInActivity.class);
         intent.putExtra("settings", getIntent().getBooleanExtra("settings", false));
         startActivity(intent);
         finish();
     }
 
-    public void onPrivacyPolicyPressed (View view) {
+    public void onPrivacyPolicyPressed(View view) {
         Intent intent = new Intent(this, HelpActivity.class);
         intent.putExtra("privacy", true);
         startActivity(intent);
     }
 
-    public void onTermAndConditionsPressed (View view) {
+    public void onTermAndConditionsPressed(View view) {
         Intent intent = new Intent(this, HelpActivity.class);
         intent.putExtra("tos", true);
         startActivity(intent);

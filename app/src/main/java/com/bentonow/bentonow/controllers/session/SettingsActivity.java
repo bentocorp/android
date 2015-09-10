@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.model.BackendText;
@@ -88,7 +89,7 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
                             User.current.firstname + " " + User.current.lastname : User.current.firstname
             );
 
-            ((TextView)findViewById(R.id.txt_phone)).setText(User.current.phone);
+            ((TextView)findViewById(R.id.txt_phone)).setText(BentoNowUtils.getPhoneFromNumber(User.current.phone));
             ((TextView)findViewById(R.id.txt_email)).setText(User.current.email);
 
             ((TextView)findViewById(R.id.txt_coupon)).setText(User.current.coupon_code);
