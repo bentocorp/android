@@ -1,11 +1,8 @@
 package com.bentonow.bentonow.model;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.location.Location;
 import android.util.Log;
 
+import com.bentonow.bentonow.BuildConfig;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.model.user.Card;
 import com.bentonow.bentonow.model.user.CouponRequest;
@@ -41,7 +38,7 @@ public class User {
     public Card card = new Card();
     //endregion
 
-    public static void requestCoupon (String email, String reason, TextHttpResponseHandler response) {
+    public static void requestCoupon(String email, String reason, TextHttpResponseHandler response) {
         CouponRequest couponRequest = new CouponRequest();
         couponRequest.email = email;
         couponRequest.reason = reason;
@@ -57,7 +54,7 @@ public class User {
         BentoRestClient.post("/coupon/request", params, response);
     }
 
-    public void login (TextHttpResponseHandler responseHandler) {
+    public void login(TextHttpResponseHandler responseHandler) {
         card = null;
 
         String endpoint = password != null ? "/user/login" : "/user/fblogin";
@@ -68,10 +65,13 @@ public class User {
 
         Log.i(TAG, "login data: " + data);
 
-        BentoRestClient.post(endpoint, params, responseHandler);
+        if (password != null || !BuildConfig.DEBUG)
+            BentoRestClient.post(endpoint, params, responseHandler);
+        else
+            BentoRestClient.postFace(endpoint, params, responseHandler);
     }
 
-    public void register (TextHttpResponseHandler responseHandler) {
+    public void register(TextHttpResponseHandler responseHandler) {
         card = null;
 
         String endpoint = password != null ? "/user/signup" : "/user/fbsignup";

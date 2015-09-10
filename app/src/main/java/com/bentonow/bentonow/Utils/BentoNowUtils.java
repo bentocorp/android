@@ -21,7 +21,7 @@ public class BentoNowUtils {
 
 
     public static int getCurrentTime() {
-        //return 230000;
+        //return 120000;
          return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
     }
 
@@ -71,4 +71,52 @@ public class BentoNowUtils {
         return sUuidBento;
     }
 
+    public static String getNumberFromPhone(String sPhone) {
+        if (sPhone == null)
+            sPhone = "";
+        return sPhone.replaceAll("\\D+", "");
+    }
+
+    public static String getPhoneFromNumber(String sNumber) {
+        sNumber = getNumberFromPhone(sNumber);
+        String sPhone = "(";
+
+        for (int a = 0; a < sNumber.length(); a++) {
+
+            switch (a) {
+                case 0:
+                    sPhone += sNumber.charAt(a);
+                    break;
+                case 1:
+                    sPhone += sNumber.charAt(a);
+                    break;
+                case 2:
+                    sPhone += sNumber.charAt(a) + ") ";
+                    break;
+                case 3:
+                    sPhone += sNumber.charAt(a);
+                    break;
+                case 4:
+                    sPhone += sNumber.charAt(a);
+                    break;
+                case 5:
+                    sPhone += sNumber.charAt(a) + " - ";
+                    break;
+                case 6:
+                    sPhone += sNumber.charAt(a);
+                    break;
+                case 7:
+                    sPhone += sNumber.charAt(a);
+                    break;
+                case 8:
+                    sPhone += sNumber.charAt(a);
+                    break;
+                case 9:
+                    sPhone += sNumber.charAt(a);
+                    break;
+            }
+        }
+
+        return sPhone;
+    }
 }

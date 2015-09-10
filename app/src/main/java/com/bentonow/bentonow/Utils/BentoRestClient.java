@@ -11,7 +11,6 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -43,7 +42,7 @@ public class BentoRestClient {
                 }
             };
 
-            sslContext.init(null, new TrustManager[] { tm }, null);
+            sslContext.init(null, new TrustManager[]{tm}, null);
         }
 
         @Override
@@ -62,7 +61,7 @@ public class BentoRestClient {
 
     static AsyncHttpClient client = new AsyncHttpClient();
 
-    public static void init () throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableKeyException, KeyManagementException {
+    public static void init() throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableKeyException, KeyManagementException {
         // We initialize a default Keystore
         KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
         // We load the KeyStore
@@ -85,6 +84,12 @@ public class BentoRestClient {
         Log.i(TAG, "[POST] " + getAbsoluteUrl(url));
         Log.i(TAG, "[params] " + (params != null ? params.toString() : "null"));
         client.post(getAbsoluteUrl(url), params, responseHandler);
+    }
+
+    public static void postFace(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
+        Log.i(TAG, "[POST] https://api2.bentonow.com" + url);
+        Log.i(TAG, "[params] " + (params != null ? params.toString() : "null"));
+        client.post("https://api2.bentonow.com" + url, params, responseHandler);
     }
 
     private static String getAbsoluteUrl(String relativeUrl) {
