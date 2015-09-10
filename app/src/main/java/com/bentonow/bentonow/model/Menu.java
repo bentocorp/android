@@ -113,14 +113,14 @@ public class Menu {
 
             // Try to get the next menu
             if (mToday.get(Calendar.HOUR_OF_DAY) < 21) {
-                if ((lunchTime + Settings.buffer_minutes * 100) <= BentoNowUtils.getCurrentTime() && (dinnerTime + Settings.buffer_minutes * 100) > BentoNowUtils.getCurrentTime()) {
+                if ((lunchTime + Settings.buffer_minutes * 100) >= BentoNowUtils.getCurrentTime()) {
                     // Try to get the lunch menu
                     for (Menu menu : list) {
                         if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()) && menu.meal_name.equals(sMenuType))
                             return menu;
                     }
 
-                } else if ((dinnerTime + Settings.buffer_minutes * 100) <= BentoNowUtils.getCurrentTime() && 220000 >= BentoNowUtils.getCurrentTime()) {
+                } else if ((dinnerTime + Settings.buffer_minutes * 100) >= BentoNowUtils.getCurrentTime()) {
                     // Try to get the dinner menu
                     for (Menu menu : list) {
                         if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()) && menu.meal_name.equals("dinner")) {

@@ -1,10 +1,10 @@
 package com.bentonow.bentonow.model;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Address;
 import android.util.Log;
 
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.google.maps.android.PolyUtil;
@@ -115,40 +115,54 @@ public class Settings {
         return "";
     }
 
-    public static void load(Context context) {
-        SharedPreferences sharedPref = context.getSharedPreferences("user", 0);
-        String user = sharedPref.getString("user", null);
-        String location = sharedPref.getString("location", null);
-        String address = sharedPref.getString("address", null);
-        String backendText = sharedPref.getString("backendText", null);
+    public static void load() {
+        String user = SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.USER);
+        String location = SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.LOCATION);
+        String address = SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.ADDRESS);
+        String backendText = SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.BACKENDTEXT);
 
-        if (User.current == null && user != null)
+        if (User.current == null && !user.isEmpty())
             User.current = new Gson().fromJson(user, User.class);
-        if (Order.location == null && location != null)
+        if (Order.location == null && !location.isEmpty())
             Order.location = new Gson().fromJson(location, LatLng.class);
-        if (Order.address == null && address != null)
+        if (Order.address == null && !address.isEmpty())
             Order.address = new Gson().fromJson(address, Address.class);
-        if (BackendText.list.size() == 0 && backendText != null)
+        if (BackendText.list.size() == 0 && !backendText.isEmpty())
             BackendText.set(backendText);
     }
 
-    public static void save(Context context) {
+    public static void save() {
         Gson gson = new Gson();
-        String user = null;
-        String location = null;
-        String address = null;
+        String user = "";
+        String location = "";
+        String address = "";
         String backendText = gson.toJson(BackendText.list);
 
-        if (User.current != null) user = gson.toJson(User.current);
-        if (Order.location != null) location = gson.toJson(Order.location);
-        if (Order.address != null) address = gson.toJson(Order.address);
+        if (User.current != null)
+            user = gson.toJson(User.current);
+        if (Order.location != null)
+            location = gson.toJson(Order.location);
+        if (Order.address != null)
+            address = gson.toJson(Order.address);
 
-        SharedPreferences sharedPref = context.getSharedPreferences("user", 0);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString("user", user);
-        editor.putString("location", location);
-        editor.putString("address", address);
-        if (BackendText.list.size() > 0) editor.putString("backendText", backendText);
-        editor.apply();
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.USER, user);
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.LOCATION, location);
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ADDRESS, address);
+
+        if (BackendText.list.size() > 0)
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.BACKENDTEXT, backendText);
+    }
+
+    public static void updateUser(User mUserInfo) {
+        Gson gson = new Gson();
+        String user;
+
+        if (User.current != null) {
+            User.current.coupon_code = mUserInfo.coupon_code;
+            user = gson.toJson(User.current);
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.USER, user);
+        }
+
+
     }
 }

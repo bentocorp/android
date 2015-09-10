@@ -112,7 +112,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
             intent.putExtra("completeOrder", true);
             startActivity(intent);
             finish();
-        } else if (User.current.card.last4 == null || User.current.card.last4.isEmpty()) {
+        } else if (User.current.card == null || User.current.card.last4 == null || User.current.card.last4.isEmpty()) {
             startActivity(new Intent(this, EnterCreditCardActivity.class));
         } else {
             updateUI();

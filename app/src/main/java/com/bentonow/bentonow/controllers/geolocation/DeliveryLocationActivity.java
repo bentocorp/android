@@ -573,7 +573,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
     protected void stopLocationUpdates() {
-        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        if (mGoogleApiClient.isConnected())
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
     }
 
     protected LocationRequest getLocationRequest() {

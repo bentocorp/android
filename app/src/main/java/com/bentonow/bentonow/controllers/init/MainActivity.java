@@ -130,6 +130,8 @@ public class MainActivity extends Activity {
                 set(responseString);
             }
         });
+
+
     }
 
     void set(String responseString) {
@@ -160,10 +162,15 @@ public class MainActivity extends Activity {
         if (!SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.APP_FIRST_RUN)) {
             SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.APP_FIRST_RUN, true);
 
-            Intent intent = new Intent(this, GettingStartedActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            startActivity(intent);
-
+            if (Settings.min_version > BuildConfig.VERSION_CODE) {
+                Intent intent = new Intent(this, ErrorVersionActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
+            } else {
+                Intent intent = new Intent(this, GettingStartedActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
+            }
             finish();
         } else {
             checkAppStatus();
