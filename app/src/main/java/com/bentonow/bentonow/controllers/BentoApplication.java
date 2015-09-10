@@ -58,7 +58,7 @@ public class BentoApplication extends Application {
         );
 
 
-        Settings.load(this);
+        Settings.load();
 
         try {
             FacebookSdk.sdkInitialize(this);

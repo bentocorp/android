@@ -171,7 +171,7 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
                 startActivity(new Intent(SignInActivity.this, CompleteOrderActivity.class));
             }
 
-            Settings.save(getApplicationContext());
+            Settings.save();
             finish();
         } catch (Exception e) {
             e.printStackTrace();

@@ -124,7 +124,7 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
                 } else if (action.equals("logout")) {
                     User.current = null;
                     updateUI();
-                    Settings.save(this);
+                    Settings.save();
                 }
 
                 action = "";

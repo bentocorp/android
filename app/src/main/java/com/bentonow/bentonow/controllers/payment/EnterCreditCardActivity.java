@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -408,7 +407,7 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
                             User.current.stripe_token = token.getId();
                             User.current.card.last4 = txt_last4.getText().toString();
                             User.current.card.brand = CreditCard.getHolder(txt_number.getText().toString());
-                            Settings.save(getApplicationContext());
+                            Settings.save();
                             dialog.dismiss();
                             onBackPressed();
                         }

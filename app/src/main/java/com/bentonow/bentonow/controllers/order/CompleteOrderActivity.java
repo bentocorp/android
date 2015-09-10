@@ -213,7 +213,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                     Log.i(TAG, "discount " + discount);
 
                     Order.current.OrderDetails.coupon_discount_cents = discount;
-                    Settings.save(CompleteOrderActivity.this);
+                    Settings.save();
 
                     updateUI();
                 }
@@ -381,7 +381,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                     case 406:
                         if (responseString.contains("You cannot use a Stripe token more than once")) {
                             User.current.stripe_token = null;
-                            Settings.save(getApplicationContext());
+                            Settings.save();
                             error = "";
                             onLetsEatPressed(null);
                         }
@@ -412,7 +412,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
                 User.current.stripe_token = null;
                 SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.UUID_BENTO, "");
-                Settings.save(getApplicationContext());
+                Settings.save();
 
                 dialog.dismiss();
 

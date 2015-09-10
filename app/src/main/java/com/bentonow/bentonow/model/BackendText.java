@@ -37,6 +37,9 @@ public class BackendText {
     }
 
     public static String get(String key) {
+        if (list == null)
+            Settings.load();
+
         if (list != null && key != null) {
             for (BackendText text : list) {
                 if (!text.key.equals(key))

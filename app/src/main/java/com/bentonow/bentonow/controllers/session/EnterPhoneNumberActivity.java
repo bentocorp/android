@@ -235,7 +235,7 @@ public class EnterPhoneNumberActivity extends BaseActivity implements View.OnCli
                     startActivity(new Intent(EnterPhoneNumberActivity.this, CompleteOrderActivity.class));
                 }
 
-                Settings.save(getApplicationContext());
+                Settings.save();
                 finish();
             }
         });
