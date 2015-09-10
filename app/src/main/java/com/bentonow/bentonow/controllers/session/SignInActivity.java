@@ -13,13 +13,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.BuildConfig;
-import com.bentonow.bentonow.Utils.SocialNetworksUtil;
-import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.Email;
+import com.bentonow.bentonow.Utils.SocialNetworksUtil;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
+import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
@@ -99,7 +99,7 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
         updateUI();
     }
 
-    void setupTextFields () {
+    void setupTextFields() {
         TextWatcher watcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -138,19 +138,19 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
 
     //region SignIn
 
-    private void validate () {
+    private void validate() {
         btn_signin.setBackgroundResource(valid() ? R.drawable.bg_green_cornered : R.drawable.btn_dark_gray);
     }
 
-    boolean valid () {
-        return  validEmail() && validPassword();
+    boolean valid() {
+        return validEmail() && validPassword();
     }
 
-    boolean validEmail () {
+    boolean validEmail() {
         return Email.isValid(txt_email.getText().toString()) && !error.contains("email");
     }
 
-    boolean validPassword () {
+    boolean validPassword() {
         return txt_password.getText().length() >= 6 && !error.contains("password");
     }
 
@@ -191,7 +191,7 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
         actionbar_left_btn.setOnClickListener(this);
     }
 
-    void updateUI () {
+    void updateUI() {
         Log.i(TAG, "updateUI");
 
         boolean add_local_error = error == null || error.length() == 0;
@@ -204,7 +204,7 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
                 error += (error.length() > 0 ? "\n" : "") + "The email field is required.";
             else if (add_local_error)
                 error += (error.length() > 0 ? "\n" : "") + "The email must be a valid email address.";
-        }else{
+        } else {
             txt_email.setTextColor(getResources().getColor(R.color.gray));
             img_email.setImageResource(R.drawable.ic_signup_email);
         }
@@ -217,7 +217,7 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
                 error += (error.length() > 0 ? "\n" : "") + "The password field is required.";
             else if (add_local_error)
                 error += (error.length() > 0 ? "\n" : "") + "The password must be at least 6 characters.";
-        }else{
+        } else {
             txt_password.setTextColor(getResources().getColor(R.color.gray));
             img_password.setImageResource(R.drawable.ic_signup_key);
         }
@@ -231,12 +231,12 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
 
     //region OnClick
 
-    public void onFacebookPressed (View view) {
+    public void onFacebookPressed(View view) {
         LoginManager.getInstance().logOut();
         LoginManager.getInstance().logInWithReadPermissions(this, Collections.singletonList("email"));
     }
 
-    public void onSignInPressed (View view) {
+    public void onSignInPressed(View view) {
         updateUI();
 
         if (!valid()) return;
@@ -274,26 +274,26 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
         });
     }
 
-    public void onSignUpPressed (View view) {
+    public void onSignUpPressed(View view) {
         Intent intent = new Intent(this, SignUpActivity.class);
         intent.putExtra("settings", getIntent().getBooleanExtra("settings", false));
         startActivity(intent);
         finish();
     }
 
-    public void onPrivacyPolicyPressed (View view) {
+    public void onPrivacyPolicyPressed(View view) {
         Intent intent = new Intent(this, HelpActivity.class);
         intent.putExtra("privacy", true);
         startActivity(intent);
     }
 
-    public void onTermAndConditionsPressed (View view) {
+    public void onTermAndConditionsPressed(View view) {
         Intent intent = new Intent(this, HelpActivity.class);
         intent.putExtra("tos", true);
         startActivity(intent);
     }
 
-    public void onForgotPassword(View view){
+    public void onForgotPassword(View view) {
         SocialNetworksUtil.openWebUrl(this, BackendText.get("forgot_password_url"));
     }
 
@@ -382,4 +382,5 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
     }
 
     //endregion
+
 }

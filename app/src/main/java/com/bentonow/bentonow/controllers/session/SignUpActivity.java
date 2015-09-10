@@ -211,8 +211,17 @@ public class SignUpActivity extends BaseActivity implements View.OnClickListener
 
         try {
             Log.i(TAG, "onSignUpSuccess: " + responseString);
-            User mUser = new Gson().fromJson(responseString, User.class);
-            registerUser.api_token = mUser.api_token;
+
+            if (registerUser != null) {
+                User mUser = new Gson().fromJson(responseString, User.class);
+                registerUser.api_token = mUser.api_token;
+                User.current = registerUser;
+            } else {
+                User.current = new Gson().fromJson(responseString, User.class);
+            }
+
+            Settings.save();
+
 
             if (getIntent().getBooleanExtra("settings", false)) {
                 onBackPressed();
@@ -224,8 +233,6 @@ public class SignUpActivity extends BaseActivity implements View.OnClickListener
                 startActivity(new Intent(SignUpActivity.this, CompleteOrderActivity.class));
             }
 
-            User.current = registerUser;
-            Settings.save(getApplicationContext());
             finish();
         } catch (Exception e) {
             DebugUtils.logError(TAG, "onSignUpSuccess: " + e.toString());
