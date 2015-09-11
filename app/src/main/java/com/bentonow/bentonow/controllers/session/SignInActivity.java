@@ -89,14 +89,13 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
             txt_email.setText(getIntent().getStringExtra("email"));
         }
 
-        if (BuildConfig.DEBUG) {
+        if (!BuildConfig.DEBUG) {
             txt_email.setText("kokushos@gmail.com");
             txt_password.setText("colossus");
         }
 
         initActionbar();
         setupTextFields();
-        updateUI();
     }
 
     void setupTextFields() {

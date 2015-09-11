@@ -31,7 +31,7 @@
         android:layout_height="wrap_content"
         android:background="@color/orange"
         android:orientation="horizontal"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <ImageView
             android:layout_width="wrap_content"
