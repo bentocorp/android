@@ -81,7 +81,7 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
         actionbar_left_btn.setOnClickListener(this);
     }
 
-    void updateUI () {
+    void updateUI() {
         btn_save.setBackgroundResource(isValid() ? R.drawable.bg_green_cornered : R.drawable.btn_dark_gray);
 
         txt_number.setVisibility(focused == R.id.txt_number ? View.VISIBLE : View.GONE);
@@ -150,15 +150,15 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
         return isNumberValid() && isDateValid() && isCVCValid();
     }
 
-    private boolean isNumberValid () {
+    private boolean isNumberValid() {
         return CreditCard.isValidLuhn(txt_number.getText().toString());
     }
 
-    private boolean isDateValid () {
+    private boolean isDateValid() {
         return txt_date.getText().length() == 5;
     }
 
-    private boolean isCVCValid () {
+    private boolean isCVCValid() {
         if (CreditCard.getHolder(txt_number.getText().toString()).equals("American Express"))
             return txt_cvc.length() == 4;
         else
@@ -198,6 +198,7 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
 
         txt_date.addTextChangedListener(new TextWatcher() {
             int oldLength;
+
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -225,7 +226,8 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
                             if (month > 1) {
                                 charSequence = "0" + charSequence;
                             }
-                        } catch (Exception ignored) {}
+                        } catch (Exception ignored) {
+                        }
                     } else if (charSequence.length() == 2) {
                         try {
                             int month = Integer.parseInt(charSequence);
@@ -235,7 +237,8 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
                                 txt_date.setText(charSequence);
                                 txt_date.setSelection(charSequence.length());
                             }
-                        } catch (Exception ignored) {}
+                        } catch (Exception ignored) {
+                        }
                     }
 
                     if (charSequence.length() == 3) {
@@ -245,7 +248,8 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
                             if (year == 0) {
                                 charSequence = charSequence.substring(0, 2);
                             }
-                        } catch (Exception ignored) {}
+                        } catch (Exception ignored) {
+                        }
                     } else if (charSequence.length() == 4) {
                         try {
                             int year = Integer.parseInt(charSequence.substring(2));
@@ -256,7 +260,8 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
                             if (year < currYear) {
                                 charSequence = charSequence.substring(0, 3);
                             }
-                        } catch (Exception ignored) {}
+                        } catch (Exception ignored) {
+                        }
                     }
 
                     if (charSequence.length() >= 2) {
@@ -349,7 +354,7 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
         }
     }
 
-    public void onClearPressed (View v) {
+    public void onClearPressed(View v) {
         txt_number.setText("");
         txt_date.setText("");
         txt_cvc.setText("");
@@ -360,12 +365,12 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
         updateUI();
     }
 
-    public void onLast4Pressed (View v) {
+    public void onLast4Pressed(View v) {
         focused = R.id.txt_number;
         updateUI();
     }
 
-    public void onSavePressed (View v) {
+    public void onSavePressed(View v) {
         hideSoftKeyboard();
 
         Card card = new Card(
@@ -405,6 +410,8 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
                     new TokenCallback() {
                         public void onSuccess(Token token) {
                             User.current.stripe_token = token.getId();
+                            if (User.current.card == null)
+                                User.current.card = new com.bentonow.bentonow.model.user.Card();
                             User.current.card.last4 = txt_last4.getText().toString();
                             User.current.card.brand = CreditCard.getHolder(txt_number.getText().toString());
                             Settings.save();
@@ -430,7 +437,7 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
 
     //region Credit Card
 
-    int getMonth () {
+    int getMonth() {
         try {
             String[] date = txt_date.getText().toString().split("/");
             return Integer.parseInt(date[0]);
@@ -440,7 +447,7 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
         return 0;
     }
 
-    int getYear () {
+    int getYear() {
         try {
             String[] date = txt_date.getText().toString().split("/");
             return Integer.parseInt(date[1]);

@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.BuildConfig;
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.Utils.SocialNetworksUtil;
 import com.bentonow.bentonow.controllers.BaseActivity;
@@ -89,7 +90,7 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
             txt_email.setText(getIntent().getStringExtra("email"));
         }
 
-        if (!BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             txt_email.setText("kokushos@gmail.com");
             txt_password.setText("colossus");
         }
@@ -257,8 +258,9 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
 
                 try {
                     error = new JSONObject(responseString).getString("error");
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    error = "No Network";
+                    DebugUtils.logError(TAG, "onCompleted(): " + e.getLocalizedMessage());
                 }
 
                 updateUI();
@@ -364,8 +366,8 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
                         String message = new JSONObject(responseString).getString("error");
                         dialog = new CustomDialog(SignInActivity.this, message, null, "OK");
                         dialog.show();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                    } catch (Exception e) {
+                        DebugUtils.logError(TAG, "onCompleted(): " + e.getLocalizedMessage());
                     }
                 }
 

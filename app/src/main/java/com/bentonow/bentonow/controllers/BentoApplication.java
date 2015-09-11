@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
 
-import com.bentonow.bentonow.BuildConfig;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.DebugUtils;
@@ -46,9 +45,7 @@ public class BentoApplication extends Application {
 
         Log.i(TAG, "onCreate");
 
-        if (!BuildConfig.DEBUG) {
-            Mixpanel.getInstance(this);
-        }
+        Mixpanel.getInstance(this);
 
 
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()

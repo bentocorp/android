@@ -197,16 +197,10 @@ public class EnterPhoneNumberActivity extends BaseActivity implements View.OnCli
                 try {
                     JSONObject json = new JSONObject(responseString);
 
-                    CustomDialog dialog = new CustomDialog(
-                            EnterPhoneNumberActivity.this,
-                            json.has("error") ? json.getString("error") : json.getString("Error"),
-                            "OK",
-                            null
-                    );
+                    CustomDialog dialog = new CustomDialog(EnterPhoneNumberActivity.this,json.has("error") ? json.getString("error") : json.getString("Error"),"OK",null);
                     dialog.show();
-
                     return;
-                } catch (JSONException ignore) {
+                } catch (Exception ignore) {
                     Crashlytics.log(1, TAG, responseString);
                 }
 

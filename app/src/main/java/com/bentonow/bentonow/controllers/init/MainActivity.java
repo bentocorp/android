@@ -115,10 +115,8 @@ public class MainActivity extends Activity {
         BentoRestClient.get("/init/" + BentoNowUtils.getTodayDate(), null, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                ((TextView) findViewById(R.id.txt_message)).setText(
-                        "We seem to have trouble connecting to the network, please wait while we retry"
-                                + (retry > 0 ? "(" + retry + ")" : "")
-                );
+                ((TextView) findViewById(R.id.txt_message))
+                        .setText("We seem to have trouble connecting to the network, please wait while we retry"+ (retry > 0 ? "(" + retry + ")" : ""));
                 ++retry;
                 Log.i(TAG, "retry: " + retry);
                 loadData();

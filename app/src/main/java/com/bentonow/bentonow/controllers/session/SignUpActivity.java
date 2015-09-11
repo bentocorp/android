@@ -351,8 +351,8 @@ public class SignUpActivity extends BaseActivity implements View.OnClickListener
                             for (int i = 0; i < messages.length(); ++i) {
                                 error += (error.length() > 0 ? "\n" : "") + messages.get(i);
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                        } catch (Exception e) {
+                            DebugUtils.logError(TAG, "onSignUpPressed(): " + e.getLocalizedMessage());
                         }
 
                         updateUI();

@@ -181,18 +181,18 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                     dialog.dismiss();
 
                     Log.i(TAG, "requestPromoCode failed " + responseString);
+                    String sError;
 
                     try {
-                        new CustomDialog(
-                                CompleteOrderActivity.this,
-                                new JSONObject(responseString).getString("error"),
-                                null,
-                                "OK"
-                        );
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                        sError = new JSONObject(responseString).getString("error");
+                    } catch (Exception e) {
+                        sError = "No Network";
+                        DebugUtils.logError(TAG, "requestPromoCode(): " + e.getLocalizedMessage());
                     }
+
+                    new CustomDialog(CompleteOrderActivity.this, sError, null, "OK");
                 }
+
 
                 @SuppressWarnings("deprecation")
                 @Override
@@ -206,8 +206,8 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
                     try {
                         discount = Integer.parseInt(new JSONObject(responseString).getString("amountOff").replace(".", ""));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                    } catch (Exception e) {
+                        DebugUtils.logError(TAG, "requestPromoCode(): " + e.getLocalizedMessage());
                     }
 
                     Log.i(TAG, "discount " + discount);
@@ -366,7 +366,9 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                     } else {
                         error = json.getString("error");
                     }
-                } catch (JSONException ignore) {
+                } catch (Exception ignore) {
+                    error = "No Network";
+                    DebugUtils.logError(TAG, "onFailure(): " + ignore.toString());
                 }
 
                 switch (statusCode) {
