@@ -22,6 +22,7 @@ import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Mixpanel;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
+import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.payment.EnterCreditCardActivity;
@@ -274,6 +275,10 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                     case "promo_code":
                         requestPromoCode(dialog.getText());
                         break;
+                    case "no_items":
+                        WidgetsUtils.createShortToast("There was a problem please try again");
+                        onBackPressed();
+                        break;
                 }
                 action = "";
                 break;
@@ -347,6 +352,12 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         RequestParams params = new RequestParams();
         params.put("data", Order.current.toString());
         params.put("api_token", User.current.api_token);
+
+        if (Order.current.OrderItems == null || Order.current.OrderItems.isEmpty()) {
+            action = "no_items";
+            DebugUtils.logError(TAG, "Order Items 0 ");
+            return;
+        }
 
         DebugUtils.logDebug(TAG, "Order: " + Order.current.toString());
 
