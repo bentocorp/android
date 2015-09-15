@@ -39,6 +39,7 @@ import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
+import com.bentonow.bentonow.ui.BackendTextView;
 import com.bentonow.bentonow.ui.CustomDialog;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -77,6 +78,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     Marker marker;
     AutoCompleteTextView txt_address;
 
+    private BackendTextView txtAlertAgree;
     CheckBox chck_i_agree;
     Button btn_continue;
     ImageButton btn_clear;
@@ -304,12 +306,30 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         dialog.show();
     }
 
-    public void onContinuePressed(View view) {
+    private boolean isValidLocation() {
+        boolean bIsValid = true;
+
         if (sOrderAddress == null || mLastOrderLocation == null || !chck_i_agree.isChecked()) {
-            Log.i(TAG, "onContinuePressed ALERT");
-            new FadeInOut(this, findViewById(R.id.alert_i_agree), R.anim.fadein, R.anim.fadeout);
-            return;
+            bIsValid = false;
+            String sError = getString(R.string.alert_tab_checkbox);
+
+            if (sOrderAddress == null || mLastOrderLocation == null)
+                sError = getString(R.string.delivery_alert_no_address);
+
+            txtAlertAgree().setText(sError);
+
+            new FadeInOut(this, txtAlertAgree(), R.anim.fadein, R.anim.fadeout);
         }
+
+        DebugUtils.logDebug(TAG, "isValidLocation(): " + bIsValid);
+
+        return bIsValid;
+    }
+
+    public void onContinuePressed(View view) {
+
+        if (!isValidLocation())
+            return;
 
         Log.i(TAG, "onContinuePressed OK");
 
@@ -338,7 +358,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                 JSONObject params = new JSONObject();
                 params.put("address", LocationUtils.getFullAddress(sOrderAddress));
                 Mixpanel.track(DeliveryLocationActivity.this, "Selected address outside of service area", params);
-            } catch (JSONException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
@@ -595,5 +615,11 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                 .addApi(LocationServices.API)
                 .build();
         mGoogleApiClient.connect();
+    }
+
+    private BackendTextView txtAlertAgree() {
+        if (txtAlertAgree == null)
+            txtAlertAgree = (BackendTextView) findViewById(R.id.alert_i_agree);
+        return txtAlertAgree;
     }
 }

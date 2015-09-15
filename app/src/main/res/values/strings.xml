@@ -16,6 +16,7 @@
     <string name="btn_cancel_text">Cancel</string>
     <string name="iagree_label">I agree to meet my driver curbside.</string>
     <string name="alert_tab_checkbox">Please tap the checkbox to confirm the curbside delivery.</string>
+    <string name="delivery_alert_no_address">Please enter your delivery address.</string>
     <string name="title_activity_error_invalid_address">ErrorInvalidAddressActivity</string>
     <string name="title_activity_bento_select_main">BentoSelectMainActivity</string>
 
