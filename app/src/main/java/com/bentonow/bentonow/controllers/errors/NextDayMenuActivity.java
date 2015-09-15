@@ -166,7 +166,7 @@ public class NextDayMenuActivity extends Activity implements View.OnClickListene
                         R.id.txt_description,
                         R.id.img_sold_out,
                         R.id.img_gradient,
-                        R.id.btn,
+                        R.id.btn_add_to_bento,
                         R.id.btn_added
                 );
 
@@ -182,7 +182,7 @@ public class NextDayMenuActivity extends Activity implements View.OnClickListene
             }
 
             holder.updateUI(false);
-            holder.btn.setVisibility(View.GONE);
+            holder.btn_add_to_bento.setVisibility(View.GONE);
             holder.btn_added.setVisibility(View.GONE);
             holder.soldOut.setVisibility(View.GONE);
 

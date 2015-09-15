@@ -85,7 +85,7 @@ public class SelectSideActivity extends BaseActivity implements View.OnClickList
             case R.id.actionbar_left_btn:
                 onBackPressed();
                 break;
-            case R.id.btn:
+            case R.id.btn_add_to_bento:
                 if (currentSelectedItem.isSoldOut(true)) return;
                 Item item = currentSelectedItem.clone();
                 item.type += itemIndex;
@@ -130,11 +130,11 @@ public class SelectSideActivity extends BaseActivity implements View.OnClickList
                     R.id.txt_description,
                     R.id.img_sold_out,
                     R.id.img_gradient,
-                    R.id.btn,
+                    R.id.btn_add_to_bento,
                     R.id.btn_added
             );
 
-            holder.btn.setOnClickListener(this);
+            holder.btn_add_to_bento.setOnClickListener(this);
 
             convertView.setTag(holder);
         } else {
