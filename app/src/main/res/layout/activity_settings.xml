@@ -1,7 +1,6 @@
-<LinearLayout
-    android:id="@+id/base_relative_layout"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/base_relative_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bgcolor"
@@ -15,7 +14,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <include layout="@layout/actionbar"/>
+        <include layout="@layout/actionbar" />
     </LinearLayout>
 
     <ScrollView
@@ -41,22 +40,37 @@
 
                     <TextView
                         android:id="@+id/txt_name"
+                        style="@style/TextViewSettingsUserInfo"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textStyle="bold"
-                        />
+                        android:text="@string/app_name"
+                        android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/txt_phone"
+                    <LinearLayout
+                        android:id="@+id/layout_container_phone"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        />
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/txt_phone"
+                            style="@style/TextViewSettingsUserInfo"
+                            android:layout_width="wrap_content"
+                            android:text="(552)664-316" />
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_marginLeft="10dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_action_editor_mode_edit" />
+
+                    </LinearLayout>
 
                     <TextView
                         android:id="@+id/txt_email"
+                        style="@style/TextViewSettingsUserInfo"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        />
+                        android:text="kokushos@gmail.com" />
                 </LinearLayout>
 
                 <Button
@@ -72,7 +86,7 @@
                     android:padding="@dimen/btn_padding"
                     android:text="Log out"
                     android:textColor="@color/btn_green"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
             </RelativeLayout>
 
             <!-- content -->
@@ -90,13 +104,12 @@
                     <LinearLayout
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        >
+                        android:orientation="horizontal">
 
                         <com.bentonow.bentonow.ui.FontAwesomeButton
                             android:id="@+id/ico_user"
                             style="@style/icon_white"
-                            android:text="@string/fa_user"/>
+                            android:text="@string/fa_user" />
 
                         <LinearLayout
                             android:layout_width="fill_parent"
@@ -110,15 +123,13 @@
                                 android:layout_weight="1"
                                 android:gravity="center_vertical"
                                 android:paddingStart="@dimen/btn_padding"
-                                android:text="Sign In"
-                                />
+                                android:text="Sign In" />
 
                             <ImageView
                                 android:layout_width="wrap_content"
                                 android:layout_height="fill_parent"
                                 android:paddingRight="20dp"
-                                android:src="@drawable/arrow_gray_right"
-                                />
+                                android:src="@drawable/arrow_gray_right" />
                         </LinearLayout>
                     </LinearLayout>
 
@@ -126,7 +137,7 @@
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
                         android:background="@null"
-                        android:onClick="onSignInPressed"/>
+                        android:onClick="onSignInPressed" />
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -137,13 +148,12 @@
                         android:id="@+id/btn_setting_faq"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        >
+                        android:orientation="horizontal">
 
                         <com.bentonow.bentonow.ui.FontAwesomeButton
                             android:id="@+id/ico_faq"
                             style="@style/icon_white"
-                            android:text="@string/fa_question_circle"/>
+                            android:text="@string/fa_question_circle" />
 
                         <LinearLayout
                             android:layout_width="fill_parent"
@@ -157,15 +167,13 @@
                                 android:layout_weight="1"
                                 android:gravity="center_vertical"
                                 android:paddingLeft="@dimen/btn_padding"
-                                android:text="FAQ"
-                                />
+                                android:text="FAQ" />
 
                             <ImageView
                                 android:layout_width="wrap_content"
                                 android:layout_height="fill_parent"
                                 android:paddingRight="20dp"
-                                android:src="@drawable/arrow_gray_right"
-                                />
+                                android:src="@drawable/arrow_gray_right" />
                         </LinearLayout>
                     </LinearLayout>
 
@@ -173,7 +181,7 @@
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
                         android:background="@null"
-                        android:onClick="onFaqPressed"/>
+                        android:onClick="onFaqPressed" />
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -184,13 +192,12 @@
                         android:id="@+id/btn_setting_email"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        >
+                        android:orientation="horizontal">
 
                         <com.bentonow.bentonow.ui.FontAwesomeButton
                             android:id="@+id/ico_mail_support"
                             style="@style/icon_white"
-                            android:text="@string/fa_envelope"/>
+                            android:text="@string/fa_envelope" />
 
                         <LinearLayout
                             android:layout_width="fill_parent"
@@ -204,15 +211,13 @@
                                 android:layout_weight="1"
                                 android:gravity="center_vertical"
                                 android:paddingLeft="@dimen/btn_padding"
-                                android:text="Email Support"
-                                />
+                                android:text="Email Support" />
 
                             <ImageView
                                 android:layout_width="wrap_content"
                                 android:layout_height="fill_parent"
                                 android:paddingRight="20dp"
-                                android:src="@drawable/arrow_gray_right"
-                                />
+                                android:src="@drawable/arrow_gray_right" />
                         </LinearLayout>
                     </LinearLayout>
 
@@ -220,7 +225,7 @@
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
                         android:background="@null"
-                        android:onClick="onEmailSupportPressed"/>
+                        android:onClick="onEmailSupportPressed" />
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -231,13 +236,12 @@
                         android:id="@+id/btn_setting_phone"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        >
+                        android:orientation="horizontal">
 
                         <com.bentonow.bentonow.ui.FontAwesomeButton
                             android:id="@+id/ico_phone_support"
                             style="@style/icon_white"
-                            android:text="@string/fa_phone"/>
+                            android:text="@string/fa_phone" />
 
                         <LinearLayout
                             android:layout_width="fill_parent"
@@ -259,8 +263,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="fill_parent"
                                 android:paddingRight="20dp"
-                                android:src="@drawable/arrow_gray_right"
-                                />
+                                android:src="@drawable/arrow_gray_right" />
                         </LinearLayout>
                     </LinearLayout>
 
@@ -268,7 +271,7 @@
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
                         android:background="@null"
-                        android:onClick="onPhoneSupportPressed"/>
+                        android:onClick="onPhoneSupportPressed" />
                 </RelativeLayout>
             </LinearLayout>
 
@@ -292,7 +295,7 @@
                         android:gravity="center"
                         android:paddingBottom="10sp"
                         android:textColor="@color/white"
-                        app:key="share-promo-message"/>
+                        app:key="share-promo-message" />
 
                     <TextView
                         android:id="@+id/txt_coupon"
@@ -302,7 +305,7 @@
                         android:text="@string/app_name"
                         android:textColor="@color/white"
                         android:textSize="18sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -321,8 +324,8 @@
                             style="@style/btn_rounded"
                             android:layout_centerHorizontal="true"
                             android:background="@drawable/background_circle_blue"
-                            android:text="@string/fa_facebook"
-                            android:onClick="onFacebookPressed"/>
+                            android:onClick="onFacebookPressed"
+                            android:text="@string/fa_facebook" />
 
                         <TextView
                             android:layout_width="match_parent"
@@ -332,7 +335,7 @@
                             android:gravity="center"
                             android:text="@string/share"
                             android:textColor="@color/dark_blue"
-                            android:textStyle="bold"/>
+                            android:textStyle="bold" />
                     </RelativeLayout>
 
                     <RelativeLayout
@@ -345,8 +348,8 @@
                             style="@style/btn_rounded"
                             android:layout_centerHorizontal="true"
                             android:background="@drawable/background_circle_cyan"
-                            android:text="@string/fa_twitter"
-                            android:onClick="onTwitterPressed"/>
+                            android:onClick="onTwitterPressed"
+                            android:text="@string/fa_twitter" />
 
                         <TextView
                             android:layout_width="match_parent"
@@ -356,7 +359,7 @@
                             android:gravity="center"
                             android:text="@string/tweet"
                             android:textColor="@color/dark_blue"
-                            android:textStyle="bold"/>
+                            android:textStyle="bold" />
                     </RelativeLayout>
 
                     <RelativeLayout
@@ -369,8 +372,8 @@
                             style="@style/btn_rounded"
                             android:layout_centerHorizontal="true"
                             android:background="@drawable/background_circle_sms_green"
-                            android:text="@string/fa_comment"
-                            android:onClick="onMessagePressed"/>
+                            android:onClick="onMessagePressed"
+                            android:text="@string/fa_comment" />
 
                         <TextView
                             android:layout_width="match_parent"
@@ -380,7 +383,7 @@
                             android:gravity="center"
                             android:text="@string/text"
                             android:textColor="@color/dark_blue"
-                            android:textStyle="bold"/>
+                            android:textStyle="bold" />
                     </RelativeLayout>
 
                     <RelativeLayout
@@ -393,8 +396,8 @@
                             style="@style/btn_rounded"
                             android:layout_centerHorizontal="true"
                             android:background="@drawable/background_circle_dark_blue"
-                            android:text="@string/fa_envelope"
-                            android:onClick="onEmailPressed"/>
+                            android:onClick="onEmailPressed"
+                            android:text="@string/fa_envelope" />
 
                         <TextView
                             android:layout_width="match_parent"
@@ -404,7 +407,7 @@
                             android:gravity="center"
                             android:text="@string/email"
                             android:textColor="@color/dark_blue"
-                            android:textStyle="bold"/>
+                            android:textStyle="bold" />
                     </RelativeLayout>
 
                 </LinearLayout>

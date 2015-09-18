@@ -114,8 +114,7 @@
         <item name="android:textAllCaps">false</item>
     </style>
 
-    <style name="BackendButton" parent="Button">
-    </style>
+    <style name="BackendButton" parent="Button"></style>
 
     <style name="Save" parent="@style/Button">
         <item name="android:layout_width">160dp</item>
@@ -162,6 +161,14 @@
         <item name="android:textColor">@color/headerText</item>
         <item name="android:gravity">center_vertical</item>
     </style>
+
+    <style name="TextViewSettingsUserInfo" parent="@android:style/Widget.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">20dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
 
     <style name="btn_rounded" parent="Button">
         <item name="android:gravity">center</item>

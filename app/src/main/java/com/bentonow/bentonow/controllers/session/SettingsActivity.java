@@ -9,6 +9,7 @@ import android.provider.Telephony;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,6 +17,7 @@ import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.DebugUtils;
+import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.model.BackendText;
@@ -40,6 +42,8 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
     String action = "";
     private String message = null;
     private String url = "https://goo.gl/5pA0iE";
+
+    private LinearLayout layoutCcontainerPhone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +91,7 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
     void updateUI() {
         findViewById(R.id.container_user).setVisibility(User.current == null ? View.GONE : View.VISIBLE);
         findViewById(R.id.container_sig_in).setVisibility(User.current != null ? View.GONE : View.VISIBLE);
+        getLayoutContainerPhone().setOnClickListener(this);
 
         if (User.current != null) {
             ((TextView) findViewById(R.id.txt_name)).setText(User.current.lastname != null ? User.current.firstname + " " + User.current.lastname : User.current.firstname);
@@ -134,6 +139,9 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
                 }
 
                 action = "";
+                break;
+            case R.id.layout_container_phone:
+                WidgetsUtils.createShortToast("Show dialog new phone");
                 break;
         }
     }
@@ -249,33 +257,40 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
     //endregion
 
     private void getUserInfo() {
-            RequestParams params = new RequestParams();
-            params.put("api_token", User.current.api_token);
-            BentoRestClient.get("/user/info", params, new TextHttpResponseHandler() {
-                @SuppressWarnings("deprecation")
-                @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    DebugUtils.logError(TAG, "getUserInfo:  " + responseString);
+        RequestParams params = new RequestParams();
+        params.put("api_token", User.current.api_token);
+        BentoRestClient.get("/user/info", params, new TextHttpResponseHandler() {
+            @SuppressWarnings("deprecation")
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                DebugUtils.logError(TAG, "getUserInfo:  " + responseString);
 
-                }
+            }
 
-                @SuppressWarnings("deprecation")
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    DebugUtils.logDebug(TAG, "getUserInfo: " + responseString);
-                    try {
-                        User mUserInfo = new Gson().fromJson(responseString, User.class);
-                        Settings.updateUser(mUserInfo);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                updateUI();
-                            }
-                        });
-                    } catch (Exception ex) {
-                        DebugUtils.logError(TAG, "getUserInfo(): " + ex.getLocalizedMessage());
-                    }
+            @SuppressWarnings("deprecation")
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                DebugUtils.logDebug(TAG, "getUserInfo: " + responseString);
+                try {
+                    User mUserInfo = new Gson().fromJson(responseString, User.class);
+                    Settings.updateUser(mUserInfo);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateUI();
+                        }
+                    });
+                } catch (Exception ex) {
+                    DebugUtils.logError(TAG, "getUserInfo(): " + ex.getLocalizedMessage());
                 }
-            });
-        }
+            }
+        });
+    }
+
+    private LinearLayout getLayoutContainerPhone() {
+        if (layoutCcontainerPhone == null)
+            layoutCcontainerPhone = (LinearLayout) findViewById(R.id.layout_container_phone);
+
+        return layoutCcontainerPhone;
+    }
 }

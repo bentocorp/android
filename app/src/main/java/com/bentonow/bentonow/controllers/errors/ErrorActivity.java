@@ -170,20 +170,12 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
             CustomDialog dialog = new CustomDialog(this, "Invalid email address.", null, "OK");
             dialog.show();
         } else {
-            User.requestCoupon(
-                    txt_email.getText().toString(),
-                    Settings.status,
-                    new TextHttpResponseHandler() {
+            User.requestCoupon(txt_email.getText().toString(), Settings.status, new TextHttpResponseHandler() {
                         @SuppressWarnings("deprecation")
                         @Override
                         public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                             Log.e(TAG, responseString);
-                            CustomDialog dialog = new CustomDialog(
-                                    ErrorActivity.this,
-                                    "We having issues connecting to the server, please try later.",
-                                    null,
-                                    "OK"
-                            );
+                            CustomDialog dialog = new CustomDialog(ErrorActivity.this, "We having issues connecting to the server, please try later.", null, "OK" );
                             dialog.show();
                         }
 

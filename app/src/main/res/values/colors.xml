@@ -7,6 +7,7 @@
     <color name="bgcolor">#edf0f0</color>
     <color name="red">#e66633</color>
     <color name="black">#000000</color>
+    <color name="black_60">#99000000</color>
     <color name="actionbar_title_color">#4f5055</color>
     <color name="orange">#e97200</color>
     <color name="transparent">#00660066</color>

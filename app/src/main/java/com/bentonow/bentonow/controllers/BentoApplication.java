@@ -10,6 +10,7 @@ import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Mixpanel;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
+import com.bentonow.bentonow.listener.InterfaceWebRequest;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.service.BentoService;
 import com.crashlytics.android.Crashlytics;
@@ -107,6 +108,21 @@ public class BentoApplication extends Application {
                 DebugUtils.logError("BentoService: ", e);
             }
         }
+    }
+
+
+    public void doInBackground(Runnable runnable) {
+        new Thread(runnable).start();
+    }
+
+
+    public void webRequest(final InterfaceWebRequest interfaceWebRequest) {
+        doInBackground(new Runnable() {
+            @Override
+            public void run() {
+                interfaceWebRequest.dispatchRequest();
+            }
+        });
     }
 
     public void handlerPost(Runnable runnable) {

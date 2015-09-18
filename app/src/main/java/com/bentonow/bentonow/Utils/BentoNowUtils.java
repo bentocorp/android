@@ -8,8 +8,6 @@ import com.bentonow.bentonow.controllers.init.MainActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -21,8 +19,8 @@ public class BentoNowUtils {
 
 
     public static int getCurrentTime() {
-        //return 120000;
-         return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
+        return 130000;
+         //return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
     }
 
     public static String getTodayDate() {
