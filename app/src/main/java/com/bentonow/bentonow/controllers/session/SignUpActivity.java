@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.Utils.BentoNowUtils;
+import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
 import com.bentonow.bentonow.R;
@@ -227,7 +228,7 @@ public class SignUpActivity extends BaseActivity implements View.OnClickListener
                 onBackPressed();
             } else if (Order.location == null) {
                 Intent intent = new Intent(SignUpActivity.this, DeliveryLocationActivity.class);
-                intent.putExtra("completeOrder", true);
+                intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.COMPLETE_ORDER);
                 startActivity(intent);
             } else {
                 startActivity(new Intent(SignUpActivity.this, CompleteOrderActivity.class));

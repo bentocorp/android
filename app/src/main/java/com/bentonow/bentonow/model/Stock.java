@@ -32,7 +32,7 @@ public class Stock {
             list = gson.fromJson(data, new TypeToken<List<Stock>>() {
             }.getType());
             Log.i(TAG, "stock: " + list.size());
-        } catch (JSONException e) {
+        } catch (Exception e) {
             Log.e(TAG, e.getMessage());
             e.printStackTrace();
         }

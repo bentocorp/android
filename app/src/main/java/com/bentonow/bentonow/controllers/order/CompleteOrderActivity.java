@@ -19,6 +19,7 @@ import com.bentonow.bentonow.BuildConfig;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
+import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Mixpanel;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
@@ -110,7 +111,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
             finish();
         } else if (Order.location == null || Order.address == null) {
             Intent intent = new Intent(this, DeliveryLocationActivity.class);
-            intent.putExtra("completeOrder", true);
+            intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.COMPLETE_ORDER);
             startActivity(intent);
             finish();
         } else if (User.current.card == null || User.current.card.last4 == null || User.current.card.last4.isEmpty()) {
@@ -293,7 +294,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
     public void onChangeAddressPressed(View v) {
         Intent intent = new Intent(this, DeliveryLocationActivity.class);
-        intent.putExtra("back", true);
+        intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.CHANGE);
         startActivity(intent);
     }
 

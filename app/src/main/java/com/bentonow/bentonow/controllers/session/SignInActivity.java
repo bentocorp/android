@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.BuildConfig;
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.Utils.SocialNetworksUtil;
@@ -165,7 +166,7 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
                 onBackPressed();
             } else if (Order.location == null) {
                 Intent intent = new Intent(SignInActivity.this, DeliveryLocationActivity.class);
-                intent.putExtra("completeOrder", true);
+                intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.COMPLETE_ORDER);
                 startActivity(intent);
             } else {
                 startActivity(new Intent(SignInActivity.this, CompleteOrderActivity.class));

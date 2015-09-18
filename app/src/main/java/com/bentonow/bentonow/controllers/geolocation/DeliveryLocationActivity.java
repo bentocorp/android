@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.LocationUtils;
 import com.bentonow.bentonow.Utils.Mixpanel;
@@ -34,7 +35,6 @@ import com.bentonow.bentonow.controllers.errors.BummerActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.controllers.order.BuildBentoActivity;
 import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
-import com.bentonow.bentonow.controllers.session.SignUpActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
@@ -72,7 +72,9 @@ import java.util.Locale;
 public class DeliveryLocationActivity extends BaseFragmentActivity implements GoogleMap.OnMapLoadedCallback, GoogleMap.OnMapClickListener, View.OnClickListener, AdapterView.OnItemClickListener, View.OnKeyListener,
         TextView.OnEditorActionListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
-    static final String TAG = "DeliveryLocationActivit";
+    public static final String TAG = "DeliveryLocationAct";
+
+    public static final String TAG_DELIVERY_ACTION = "DeliveryAction";
 
     GoogleMap map; // Might be null if Google Play services APK is not available.
     Marker marker;
@@ -97,12 +99,19 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private LatLng mLastOrderLocation;
     private Address sOrderAddress;
 
+    private ConstantUtils.optDeliveryAction optDelivery;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_delivery_location);
+
+        try {
+            optDelivery = (ConstantUtils.optDeliveryAction) getIntent().getExtras().getSerializable(TAG_DELIVERY_ACTION);
+        } catch (Exception ex) {
+            optDelivery = ConstantUtils.optDeliveryAction.NONE;
+        }
 
         imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
@@ -126,9 +135,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
     @Override
     protected void onResume() {
-        Log.i(TAG, "onResume");
         super.onResume();
-        if (mGoogleApiClient.isConnected()) {
+        if (mGoogleApiClient.isConnected() && optDelivery != ConstantUtils.optDeliveryAction.CHANGE) {
             startLocationUpdates();
         }
         setupMap();
@@ -136,7 +144,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
     @Override
     protected void onPause() {
-        Log.i(TAG, "onPause");
         super.onPause();
         stopLocationUpdates();
     }
@@ -145,7 +152,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         TextView actionbar_title = (TextView) findViewById(R.id.actionbar_title);
         actionbar_title.setText(getResources().getString(R.string.delivery_location_actionbar_title));
 
-        if (getIntent() != null && getIntent().getBooleanExtra("btnBack", false)) {
+        if (optDelivery == ConstantUtils.optDeliveryAction.CHANGE) {
             ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
             actionbar_left_btn.setImageResource(R.drawable.ic_ab_back);
             actionbar_left_btn.setOnClickListener(this);
@@ -341,17 +348,31 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             Order.location = mLastOrderLocation;
             User.location = mLastLocations;
             Order.address = sOrderAddress;
-            if (getIntent().getBooleanExtra("back", false)) {
-                onBackPressed();
-            } else if (User.current != null && getIntent().getBooleanExtra("completeOrder", false)) {
-                startActivity(new Intent(this, CompleteOrderActivity.class));
-            } else if (User.current == null && getIntent().getBooleanExtra("completeOrder", false)) {
-                startActivity(new Intent(this, SignUpActivity.class));
-            } else {
-                Intent intent = new Intent(this, BuildBentoActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
+
+            switch (optDelivery) {
+                case CHANGE:
+                    onBackPressed();
+                    break;
+                case COMPLETE_ORDER:
+                    if (User.current != null)
+                        startActivity(new Intent(this, CompleteOrderActivity.class));
+                    else if (User.current == null) {
+                        Intent intent = new Intent(this, BuildBentoActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                    } else {
+                        Intent intent = new Intent(this, BuildBentoActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                    }
+                    break;
+                case NONE:
+                    Intent intent = new Intent(this, BuildBentoActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    break;
             }
+
             finish();
         } else {
             try {
@@ -545,20 +566,22 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     public void onConnected(Bundle bundle) {
         DebugUtils.logDebug("buildGoogleApiClient", "onConnected:");
 
-        mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (mCurrentLocation != null) {
-            mLastLocations = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+        if (optDelivery != ConstantUtils.optDeliveryAction.CHANGE) {
+            mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            if (mCurrentLocation != null) {
+                mLastLocations = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
 
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    updateCurrentLocation();
-                }
-            });
-        }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateCurrentLocation();
+                    }
+                });
+            }
 
-        if (mRequestingLocationUpdates) {
-            startLocationUpdates();
+            if (mRequestingLocationUpdates) {
+                startLocationUpdates();
+            }
         }
     }
 
