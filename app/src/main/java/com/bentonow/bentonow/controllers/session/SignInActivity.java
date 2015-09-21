@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.BuildConfig;
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Email;
@@ -24,7 +25,6 @@ import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
-import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.ui.CustomDialog;
 import com.facebook.AccessToken;
@@ -172,7 +172,8 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
                 startActivity(new Intent(SignInActivity.this, CompleteOrderActivity.class));
             }
 
-            Settings.save();
+            BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);
+
             finish();
         } catch (Exception e) {
             e.printStackTrace();

@@ -12,7 +12,7 @@ import java.util.List;
 
 public class BackendText {
     static final String TAG = "model.BackendText";
-    static List<BackendText> list = new ArrayList<>();
+    public static List<BackendText> list = new ArrayList<>();
 
     public String key;
     public String value;

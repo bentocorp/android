@@ -12,19 +12,18 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
-import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
-import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.Utils.Mixpanel;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
+import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
-import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.ui.CustomDialog;
 import com.facebook.AccessToken;
@@ -221,7 +220,7 @@ public class SignUpActivity extends BaseActivity implements View.OnClickListener
                 User.current = new Gson().fromJson(responseString, User.class);
             }
 
-            Settings.save();
+            BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);
 
 
             if (getIntent().getBooleanExtra("settings", false)) {

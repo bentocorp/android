@@ -9,9 +9,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.Mixpanel;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
+import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.session.SettingsActivity;
@@ -337,8 +339,11 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
             intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.COMPLETE_ORDER);
             startActivity(intent);
         } else {
-            track();
-            startActivity(new Intent(this, CompleteOrderActivity.class));
+            if (BentoNowUtils.calculateSoldOutItems().isEmpty()) {
+                track();
+                startActivity(new Intent(this, CompleteOrderActivity.class));
+            }else
+                WidgetsUtils.createShortToast(R.string.error_sold_out_items);
         }
     }
 

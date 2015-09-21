@@ -15,10 +15,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.BentoNowUtils;
+import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.CreditCard;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.model.BackendText;
-import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.ui.BackendButton;
 import com.bentonow.bentonow.ui.CustomDialog;
@@ -414,7 +415,7 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
                                 User.current.card = new com.bentonow.bentonow.model.user.Card();
                             User.current.card.last4 = txt_last4.getText().toString();
                             User.current.card.brand = CreditCard.getHolder(txt_number.getText().toString());
-                            Settings.save();
+                            BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);
                             dialog.dismiss();
                             onBackPressed();
                         }

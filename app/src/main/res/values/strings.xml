@@ -39,6 +39,9 @@
     <string name="alert_error_enter_valid_number">Please enter a valid phone number.</string>
     <string name="alert_error_mismatch">Phone numbers entered must match.</string>
 
+    <string name="error_web_request">There is an error, please try again later</string>
+    <string name="error_sold_out_items">There are sold out items, please change them before continue</string>
+
 
     <string name="cardNumber">1234 5678 9012 3456</string>
     <string name="save">Save</string>

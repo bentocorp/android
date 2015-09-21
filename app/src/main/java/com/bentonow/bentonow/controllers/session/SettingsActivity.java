@@ -16,13 +16,14 @@ import android.widget.Toast;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
+import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.dialog.EditPhoneDialog;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
+import com.bentonow.bentonow.listener.ListenerDialog;
 import com.bentonow.bentonow.model.BackendText;
-import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.ui.CustomDialog;
 import com.bentonow.bentonow.ui.FontAwesomeButton;
@@ -136,16 +137,55 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
                 } else if (action.equals("logout")) {
                     User.current = null;
                     updateUI();
-                    Settings.save();
+                    BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);
                 }
 
                 action = "";
                 break;
             case R.id.layout_container_phone:
+                EditPhoneDialog editDialog = new EditPhoneDialog();
+                editDialog.setmListenerDialog(new ListenerDialog() {
+                    @Override
+                    public void btnOkClick(String sPhoneNumber) {
+                        DebugUtils.logDebug(TAG, "btnOkClick: " + sPhoneNumber);
+                        updatePhoneNumber(sPhoneNumber);
+                    }
 
-                WidgetsUtils.createShortToast("Show dialog new phone");
+                    @Override
+                    public void btnOnCancel() {
+                    }
+                });
+                editDialog.show(getFragmentManager(), EditPhoneDialog.TAG);
                 break;
         }
+    }
+
+    private void updatePhoneNumber(final String sPhoneNumber) {
+        RequestParams params = new RequestParams();
+        params.put("api_token", User.current.api_token);
+        params.put("data", "{\"new_phone\":\"" + sPhoneNumber + "\"}");
+        BentoRestClient.post("/user/phone", params, new TextHttpResponseHandler() {
+            @SuppressWarnings("deprecation")
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                DebugUtils.logError(TAG, "getUserInfo:  " + responseString);
+                WidgetsUtils.createShortToast(R.string.error_web_request);
+            }
+
+            @SuppressWarnings("deprecation")
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                User.current.phone = sPhoneNumber;
+                BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.USER);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateUI();
+                    }
+                });
+            }
+        });
     }
 
     public void onLogoutPressed(View v) {
@@ -275,7 +315,7 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
                 DebugUtils.logDebug(TAG, "getUserInfo: " + responseString);
                 try {
                     User mUserInfo = new Gson().fromJson(responseString, User.class);
-                    Settings.updateUser(mUserInfo);
+                    BentoNowUtils.updateUser(mUserInfo);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

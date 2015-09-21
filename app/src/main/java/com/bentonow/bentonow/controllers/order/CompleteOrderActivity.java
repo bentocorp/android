@@ -31,7 +31,6 @@ import com.bentonow.bentonow.controllers.session.SignInActivity;
 import com.bentonow.bentonow.controllers.session.SignUpActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
-import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.Stock;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.order.OrderItem;
@@ -215,7 +214,8 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                     Log.i(TAG, "discount " + discount);
 
                     Order.current.OrderDetails.coupon_discount_cents = discount;
-                    Settings.save();
+
+                    BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);
 
                     updateUI();
                 }
@@ -278,6 +278,9 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                         break;
                     case "no_items":
                         WidgetsUtils.createShortToast("There was a problem please try again");
+                        onBackPressed();
+                        break;
+                    case "sold_out":
                         onBackPressed();
                         break;
                 }
@@ -395,13 +398,16 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                     case 406:
                         if (responseString.contains("You cannot use a Stripe token more than once")) {
                             User.current.stripe_token = null;
-                            Settings.save();
+                            BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);
                             error = "";
                             onLetsEatPressed(null);
                         }
                         break;
                     case 410:
+                        action = "sold_out";
                         Stock.set(responseString);
+                        error += BentoNowUtils.calculateSoldOutItems();
+                        break;
                     case 423:
                         action = "closed";
                         break;
@@ -426,7 +432,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
                 User.current.stripe_token = null;
                 SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.UUID_BENTO, "");
-                Settings.save();
+                BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);
 
                 dialog.dismiss();
 
@@ -436,6 +442,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
             }
         });
     }
+
 
     //endregion
 

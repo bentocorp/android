@@ -131,38 +131,4 @@ public class Settings {
             BackendText.set(backendText);
     }
 
-    public static void save() {
-        Gson gson = new Gson();
-        String user = "";
-        String location = "";
-        String address = "";
-        String backendText = gson.toJson(BackendText.list);
-
-        if (User.current != null)
-            user = gson.toJson(User.current);
-        if (Order.location != null)
-            location = gson.toJson(Order.location);
-        if (Order.address != null)
-            address = gson.toJson(Order.address);
-
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.USER, user);
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.LOCATION, location);
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ADDRESS, address);
-
-        if (BackendText.list.size() > 0)
-            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.BACKENDTEXT, backendText);
-    }
-
-    public static void updateUser(User mUserInfo) {
-        Gson gson = new Gson();
-        String user;
-
-        if (User.current != null) {
-            User.current.coupon_code = mUserInfo.coupon_code;
-            user = gson.toJson(User.current);
-            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.USER, user);
-        }
-
-
-    }
 }

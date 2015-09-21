@@ -5,6 +5,13 @@ import android.content.Intent;
 
 import com.bentonow.bentonow.controllers.errors.ErrorActivity;
 import com.bentonow.bentonow.controllers.init.MainActivity;
+import com.bentonow.bentonow.model.BackendText;
+import com.bentonow.bentonow.model.Item;
+import com.bentonow.bentonow.model.Order;
+import com.bentonow.bentonow.model.Stock;
+import com.bentonow.bentonow.model.User;
+import com.bentonow.bentonow.model.order.OrderItem;
+import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -123,5 +130,71 @@ public class BentoNowUtils {
     public static boolean validPhoneNumber(String sPhoneNumber) {
         String sPhone = getNumberFromPhone(sPhoneNumber);
         return sPhone.length() == 10;
+    }
+
+    public static void saveSettings(ConstantUtils.optSaveSettings optSave) {
+        Gson gson = new Gson();
+        String user = "";
+        String location = "";
+        String address = "";
+        String backendText = gson.toJson(BackendText.list);
+
+        if (User.current != null)
+            user = gson.toJson(User.current);
+        if (Order.location != null)
+            location = gson.toJson(Order.location);
+        if (Order.address != null)
+            address = gson.toJson(Order.address);
+
+        switch (optSave) {
+            case ALL:
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.USER, user);
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.LOCATION, location);
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ADDRESS, address);
+
+                if (BackendText.list.size() > 0)
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.BACKENDTEXT, backendText);
+                break;
+            case USER:
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.USER, user);
+                break;
+            case LOCATION:
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.LOCATION, location);
+                break;
+            case ADDRESS:
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ADDRESS, address);
+                break;
+            case BACKEND_TEXT:
+                if (BackendText.list.size() > 0)
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.BACKENDTEXT, backendText);
+                break;
+        }
+
+    }
+
+    public static void updateUser(User mUserInfo) {
+        Gson gson = new Gson();
+        String user;
+
+        if (User.current != null) {
+            User.current.coupon_code = mUserInfo.coupon_code;
+            user = gson.toJson(User.current);
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.USER, user);
+        }
+    }
+
+
+    public static String calculateSoldOutItems() {
+        String sSoldOutItems = "";
+
+        for (OrderItem mOrders : Order.current.OrderItems) {
+            for (Item mItem : mOrders.items)
+                if (Stock.isSold(mItem.itemId, true)) {
+                    sSoldOutItems = "\n- " + mItem.name;
+                    DebugUtils.logDebug("calculateSoldOutItems:", mItem.name);
+                }
+        }
+
+        return sSoldOutItems;
     }
 }
