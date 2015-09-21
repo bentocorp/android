@@ -1,75 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/layout_main_container"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black_60"
-    android:baselineAligned="false"
-    android:gravity="center"
-    android:orientation="horizontal"
-    android:padding="@dimen/general_padding">
+    android:background="@color/black_60">
 
-    <LinearLayout
-        android:id="@+id/container_alert"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <EditText
-            android:id="@+id/edit_text_phone_number"
-            android:layout_width="fill_parent"
+
+
+        <LinearLayout
+            android:id="@+id/container_alert"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_white_bordered"
-            android:padding="@dimen/btn_padding"
-            android:singleLine="true"
-            android:textColor="@color/black"
-            android:textCursorDrawable="@null"
-            android:textSize="@dimen/text_small" />
+            android:orientation="vertical"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/general_padding"
+            android:layout_alignParentStart="true">
 
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="10dp" />
+            <RelativeLayout
+                android:id="@+id/layout_alert_error"
+                android:layout_width="match_parent"
+                android:background="@color/alert_background"
+                android:visibility="invisible"
+                android:layout_height="48dp">
 
-        <EditText
-            android:id="@+id/txt_input"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_white_bordered"
-            android:padding="@dimen/btn_padding"
-            android:singleLine="true"
-            android:textColor="@color/black"
-            android:textCursorDrawable="@null"
-            android:textSize="@dimen/text_small" />
+                <ImageView
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="8dp"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_action_alert_error"
+                    android:id="@+id/imageView3" />
 
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="10dp" />
+                <TextView
+                    android:id="@+id/alert_error_phone"
+                    android:layout_width="match_parent"
+                    android:layout_marginLeft="12dp"
+                    android:layout_height="match_parent"
+                    android:text="@string/alert_error_enter_valid_number"
+                    android:textColor="@color/white"
+                    android:gravity="left|center"
+                    android:textSize="@dimen/text_very_small"
+                    android:layout_toEndOf="@+id/imageView3" />
 
-        <Button
-            android:id="@+id/btn_ok"
-            style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/background_gray_rounded_corners"
-            android:gravity="center"
-            android:padding="@dimen/btn_padding"
-            android:text="@string/change_phone_number"
-            android:textColor="@color/white"
-            android:textStyle="bold" />
+            </RelativeLayout>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="10dp" />
+            <EditText
+                android:id="@+id/edit_text_phone_number"
+                style="@style/EditTextPhone"
+                android:layout_width="fill_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_white_bordered"
+                android:hint="@string/edit_hint_enter_phone"
+                android:padding="@dimen/btn_padding"
+                android:textSize="@dimen/text_small" />
 
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="10dp" />
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="10dp" />
 
-        <Button
-            android:id="@+id/btn_cancel"
-            style="@style/Base.Widget.AppCompat.Button.Borderless"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="@dimen/btn_padding"
-            android:text="@string/btn_cancel_text"
-            android:textColor="@color/white"
-            android:textStyle="bold" />
-    </LinearLayout>
-</LinearLayout>
+            <EditText
+                android:id="@+id/edit_text_confirm_phone"
+                style="@style/EditTextPhone"
+                android:layout_width="fill_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_white_bordered"
+                android:hint="@string/edit_hint_confirm_phone"
+                android:padding="@dimen/btn_padding"
+                android:textSize="@dimen/text_small" />
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="10dp" />
+
+            <Button
+                android:id="@+id/btn_ok"
+                style="@style/Base.Widget.AppCompat.Button.Borderless"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/background_gray_rounded_corners"
+                android:gravity="center"
+                android:padding="@dimen/btn_padding"
+                android:text="@string/change_phone_number"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="10dp" />
+
+            <Button
+                android:id="@+id/btn_cancel"
+                style="@style/Base.Widget.AppCompat.Button.Borderless"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/transparent"
+                android:gravity="center"
+                android:padding="@dimen/btn_padding"
+                android:text="@string/btn_cancel_text"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </RelativeLayout>
+</FrameLayout>

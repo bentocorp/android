@@ -19,6 +19,7 @@ import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseActivity;
+import com.bentonow.bentonow.controllers.dialog.EditPhoneDialog;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Settings;
@@ -141,6 +142,7 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
                 action = "";
                 break;
             case R.id.layout_container_phone:
+
                 WidgetsUtils.createShortToast("Show dialog new phone");
                 break;
         }

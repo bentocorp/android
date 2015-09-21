@@ -17,6 +17,29 @@
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
+    <!-- Dialogs -->
+    <style name="Theme_Dialog_Transparent" parent="android:Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowTitleStyle">@null</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowAnimationStyle">@anim/fadein</item>
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="Theme_Full_Dialog_Translucent" parent="android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center</item>
+    </style>
+
     <!--<style name="AudioFileInfoOverlayText">
         <item name="android:paddingLeft">4px</item>
         <item name="android:paddingBottom">4px</item>
@@ -169,6 +192,16 @@
         <item name="android:gravity">center</item>
     </style>
 
+
+    <style name="EditTextPhone" >
+        <item name="android:textCursorDrawable">@null</item>
+        <item name="android:textColor">@color/gray</item>
+        <item name="android:inputType">phone</item>
+        <item name="android:maxLength">16</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:digits">1234567890</item>
+
+    </style>
 
     <style name="btn_rounded" parent="Button">
         <item name="android:gravity">center</item>

@@ -12,16 +12,20 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
+import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BentoApplication;
+import com.bentonow.bentonow.controllers.dialog.EditPhoneDialog;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
+import com.bentonow.bentonow.listener.ListenerDialog;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.ui.CustomDialog;
+import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.apache.http.Header;
@@ -165,8 +169,43 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
         BentoNowUtils.goToDashboard(this);
     }
 
+
+    private void updatePhoneNumber() {
+        RequestParams params = new RequestParams();
+        params.put("api_token", User.current.api_token);
+        BentoRestClient.get("/user/phone", params, new TextHttpResponseHandler() {
+            @SuppressWarnings("deprecation")
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                DebugUtils.logError(TAG, "getUserInfo:  " + responseString);
+
+            }
+
+            @SuppressWarnings("deprecation")
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                DebugUtils.logDebug(TAG, "updatePhoneNumber: " + responseString);
+
+            }
+        });
+    }
+
     public void onSubmitPressed(View view) {
-        if (!Email.isValid(txt_email.getText().toString())) {
+        EditPhoneDialog editDialog = new EditPhoneDialog();
+        editDialog.setmListenerDialog(new ListenerDialog() {
+            @Override
+            public void btnOkClick(String sPhoneNumber) {
+                DebugUtils.logDebug(TAG, "btnOkClick: " + sPhoneNumber);
+                updatePhoneNumber();
+            }
+
+            @Override
+            public void btnOnCancel() {
+            }
+        });
+        editDialog.show(getFragmentManager(), EditPhoneDialog.TAG);
+
+        /*if (!Email.isValid(txt_email.getText().toString())) {
             CustomDialog dialog = new CustomDialog(this, "Invalid email address.", null, "OK");
             dialog.show();
         } else {
@@ -196,7 +235,7 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
                             dialog.show();
                         }
                     });
-        }
+        }*/
     }
 
     public void onNextDayMenuPressed(View view) {

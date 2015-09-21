@@ -34,6 +34,12 @@
     <string name="title_activity_enter_credit_card">EnterCreditCardActivity</string>
 
 
+    <string name="edit_hint_enter_phone">Enter your phone number</string>
+    <string name="edit_hint_confirm_phone">Confirm your phone number</string>
+    <string name="alert_error_enter_valid_number">Please enter a valid phone number.</string>
+    <string name="alert_error_mismatch">Phone numbers entered must match.</string>
+
+
     <string name="cardNumber">1234 5678 9012 3456</string>
     <string name="save">Save</string>
 
