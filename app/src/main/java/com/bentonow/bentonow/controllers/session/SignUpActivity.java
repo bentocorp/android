@@ -17,7 +17,7 @@ import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Email;
-import com.bentonow.bentonow.Utils.Mixpanel;
+import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
@@ -110,7 +110,7 @@ public class SignUpActivity extends BaseActivity implements View.OnClickListener
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (!beganRegistration) {
-                    Mixpanel.track(SignUpActivity.this, "Began Registration");
+                    MixpanelUtils.track(SignUpActivity.this, "Began Registration");
                     beganRegistration = true;
                 }
             }

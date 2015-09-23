@@ -28,7 +28,7 @@ import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.LocationUtils;
-import com.bentonow.bentonow.Utils.Mixpanel;
+import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.errors.BummerActivity;
@@ -378,7 +378,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             try {
                 JSONObject params = new JSONObject();
                 params.put("address", LocationUtils.getFullAddress(sOrderAddress));
-                Mixpanel.track(DeliveryLocationActivity.this, "Selected address outside of service area", params);
+                MixpanelUtils.track(DeliveryLocationActivity.this, "Selected address outside of service area", params);
             } catch (Exception e) {
                 e.printStackTrace();
             }

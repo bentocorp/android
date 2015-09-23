@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
-import com.bentonow.bentonow.Utils.Mixpanel;
+import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseActivity;
@@ -50,6 +50,8 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
 
     CustomDialog dialog;
 
+    public static boolean bIsOpen = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,11 +72,12 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
     @Override
     protected void onResume() {
         super.onResume();
+        bIsOpen = true;
 
         if (Order.current == null) {
             Order.current = new Order();
 
-            Mixpanel.track(this, "Began building a Bento");
+            MixpanelUtils.track(this, "Began building a Bento");
         }
 
         orderIndex = Order.current.currentOrderItem;
@@ -339,10 +342,11 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
             intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.COMPLETE_ORDER);
             startActivity(intent);
         } else {
-            if (BentoNowUtils.calculateSoldOutItems().isEmpty()) {
+            if (!BentoNowUtils.isSoldOutOrder(Order.current.OrderItems.get(orderIndex))) {
+                Order.current.OrderItems.get(orderIndex).bIsSoldoOut = false;
                 track();
                 startActivity(new Intent(this, CompleteOrderActivity.class));
-            }else
+            } else
                 WidgetsUtils.createShortToast(R.string.error_sold_out_items);
         }
     }
@@ -362,7 +366,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
             params.put("side3", item.items.get(3) == null ? "0" : item.items.get(3).itemId);
             params.put("side4", item.items.get(4) == null ? "0" : item.items.get(4).itemId);
 
-            Mixpanel.track(this, "Bento requested", params);
+            MixpanelUtils.track(this, "Bento requested", params);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -371,9 +375,14 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
     @Override
     protected void onPause() {
         super.onPause();
+        bIsOpen = false;
         if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_STORE_CHANGIN))
             finish();
     }
 
-
+    @Override
+    protected void onStop() {
+        super.onStop();
+        bIsOpen = false;
+    }
 }

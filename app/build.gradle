@@ -81,7 +81,7 @@ dependencies {
         transitive = true;
     }
     compile 'me.grantland:autofittextview:0.2.+'
-    compile 'com.mixpanel.android:mixpanel-android:4.6.2'
+    compile 'com.mixpanel.android:mixpanel-android:4.6.4'
     compile 'com.loopj.android:android-async-http:1.4.8'
     compile 'com.google.code.gson:gson:2.3.1'
 }

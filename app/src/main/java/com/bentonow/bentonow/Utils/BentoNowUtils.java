@@ -5,6 +5,7 @@ import android.content.Intent;
 
 import com.bentonow.bentonow.controllers.errors.ErrorActivity;
 import com.bentonow.bentonow.controllers.init.MainActivity;
+import com.bentonow.bentonow.controllers.order.BuildBentoActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Item;
 import com.bentonow.bentonow.model.Order;
@@ -45,6 +46,14 @@ public class BentoNowUtils {
     public static void openMainActivity(Context mContext) {
         if (!MainActivity.bIsOpen) {
             Intent intent = new Intent(mContext, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            mContext.startActivity(intent);
+        }
+    }
+
+    public static void openBuildBentoActivity(Context mContext) {
+        if (!BuildBentoActivity.bIsOpen) {
+            Intent intent = new Intent(mContext, BuildBentoActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(intent);
         }
@@ -183,18 +192,34 @@ public class BentoNowUtils {
         }
     }
 
-
     public static String calculateSoldOutItems() {
         String sSoldOutItems = "";
 
-        for (OrderItem mOrders : Order.current.OrderItems) {
-            for (Item mItem : mOrders.items)
+        for (int a = 0; a < Order.current.OrderItems.size(); a++) {
+            boolean bIsSoldOut = false;
+            for (Item mItem : Order.current.OrderItems.get(a).items) {
                 if (Stock.isSold(mItem.itemId, true)) {
-                    sSoldOutItems = "\n- " + mItem.name;
+                    bIsSoldOut = true;
+                    if (!sSoldOutItems.contains(mItem.name))
+                        sSoldOutItems += "\n- " + mItem.name;
                     DebugUtils.logDebug("calculateSoldOutItems:", mItem.name);
                 }
+            }
+
+            Order.current.OrderItems.get(a).bIsSoldoOut = bIsSoldOut;
+        }
+        return sSoldOutItems;
+    }
+
+    public static boolean isSoldOutOrder(OrderItem mOrder) {
+        boolean bIsSoldOut = false;
+        for (Item mItem : mOrder.items) {
+            if (Stock.isSold(mItem.itemId, true)) {
+                bIsSoldOut = true;
+                DebugUtils.logDebug("calculateSoldOutItems:", mItem.name);
+            }
         }
 
-        return sSoldOutItems;
+        return bIsSoldOut;
     }
 }

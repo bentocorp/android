@@ -9,6 +9,7 @@ import java.util.List;
 public class OrderItem {
     public String item_type = "CustomerBentoBox";
     public int unit_price = 0;
+    public boolean bIsSoldoOut = false;
     public List<Item> items = new ArrayList<>();
 
     public OrderItem () {

@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
-import com.bentonow.bentonow.Utils.Mixpanel;
+import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.model.Item;
 import com.bentonow.bentonow.model.Menu;
@@ -43,7 +43,7 @@ public class NextDayMenuActivity extends Activity implements View.OnClickListene
 
         setContentView(R.layout.activity_next_day_menu);
 
-        Mixpanel.track(this, "Previewed Today's Menu");
+        MixpanelUtils.track(this, "Previewed Today's Menu");
 
         Menu menu = Menu.getNext();
 

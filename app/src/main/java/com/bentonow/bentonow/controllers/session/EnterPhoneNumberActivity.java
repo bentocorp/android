@@ -15,7 +15,7 @@ import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.ConstantUtils;
-import com.bentonow.bentonow.Utils.Mixpanel;
+import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
@@ -218,7 +218,7 @@ public class EnterPhoneNumberActivity extends BaseActivity implements View.OnCli
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
                 User.current = new Gson().fromJson(responseString, User.class);
-                Mixpanel.track(EnterPhoneNumberActivity.this, "Completed Registration");
+                MixpanelUtils.track(EnterPhoneNumberActivity.this, "Completed Registration");
 
                 if (getIntent().getBooleanExtra("settings", false)) {
                     onBackPressed();

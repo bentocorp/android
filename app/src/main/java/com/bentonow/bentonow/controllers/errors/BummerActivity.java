@@ -9,8 +9,9 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.Email;
-import com.bentonow.bentonow.Utils.Mixpanel;
+import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
+import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.ui.CustomDialog;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
@@ -49,35 +50,27 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
         try {
             JSONObject params = new JSONObject();
             params.put("Address", Order.getFullAddress());
-            Mixpanel.track(this, "Selected Address Outside of Service Area", params);
+            MixpanelUtils.track(this, "Selected Address Outside of Service Area", params);
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    public void onChangePressed (View view) {
+    public void onChangePressed(View view) {
         onBackPressed();
     }
 
-    public void onSubmitPressed (View view) {
+    public void onSubmitPressed(View view) {
         if (!Email.isValid(txt_email.getText().toString())) {
             CustomDialog dialog = new CustomDialog(this, "Invalid email address.", null, "OK");
             dialog.show();
         } else {
-            User.requestCoupon(
-                    txt_email.getText().toString(),
-                    "outside of delivery zone",
-                    new TextHttpResponseHandler() {
+            User.requestCoupon(txt_email.getText().toString(), "outside of delivery zone", new TextHttpResponseHandler() {
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                     Log.e(TAG, responseString);
-                    CustomDialog dialog = new CustomDialog(
-                            BummerActivity.this,
-                            "We having issues connecting to the server, please try later.",
-                            null,
-                            "OK"
-                    );
+                    CustomDialog dialog = new CustomDialog(BentoApplication.instance, "We having issues connecting to the server, please try later.", null, "OK");
                     dialog.show();
                 }
 
@@ -86,12 +79,7 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
                     Log.i(TAG, responseString);
                     txt_email.setText("");
-                    CustomDialog dialog = new CustomDialog(
-                            BummerActivity.this,
-                            "Thanks! We'll let you know when we're in your area.",
-                            null,
-                            "OK"
-                    );
+                    CustomDialog dialog = new CustomDialog(BentoApplication.instance, "Thanks! We'll let you know when we're in your area.", null, "OK");
                     dialog.show();
                 }
             });
