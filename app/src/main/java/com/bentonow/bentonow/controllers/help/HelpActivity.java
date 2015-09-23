@@ -7,19 +7,20 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.controllers.BaseActivity;
-import com.bentonow.bentonow.ui.CustomDialog;
 import com.bentonow.bentonow.model.BackendText;
+import com.bentonow.bentonow.ui.CustomDialog;
 
 public class HelpActivity extends BaseActivity implements View.OnClickListener {
 
     private static final String TAG = "HelpActivity";
-    private WebView browser;
+    private WebView mWebBrowser;
     private TextView info_email;
     private TextView info_phone;
 
@@ -37,9 +38,8 @@ public class HelpActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void initElements() {
-        browser = (WebView) findViewById(R.id.webview);
-        info_email = (TextView)findViewById(R.id.info_email);
-        info_phone = (TextView)findViewById(R.id.info_phone);
+        info_email = (TextView) findViewById(R.id.info_email);
+        info_phone = (TextView) findViewById(R.id.info_phone);
     }
 
     private void loadData() {
@@ -53,11 +53,11 @@ public class HelpActivity extends BaseActivity implements View.OnClickListener {
 
         // BROWSER
         if (getIntent().getBooleanExtra("faq", false)) {
-            browser.loadUrl(BackendText.get("faq-body"));
+            loadDataInWebView(BackendText.get("faq-body"));
         } else if (getIntent().getBooleanExtra("tos", false)) {
-            browser.loadUrl(BackendText.get("terms-conditions-body"));
+            loadDataInWebView(BackendText.get("terms-conditions-body"));
         } else if (getIntent().getBooleanExtra("privacy", false)) {
-            browser.loadUrl(BackendText.get("privacy-policy-body"));
+            loadDataInWebView(BackendText.get("privacy-policy-body"));
         } else {
             onBackPressed();
         }
@@ -78,6 +78,16 @@ public class HelpActivity extends BaseActivity implements View.OnClickListener {
         actionbar_left_btn.setImageResource(R.drawable.ic_ab_back);
         actionbar_left_btn.setOnClickListener(this);
 
+    }
+
+    private void loadDataInWebView(String sHtmlString) {
+        getWebBrowser().setWebViewClient(new WebViewClient() {
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                view.loadUrl(url);
+                return true;
+            }
+        });
+        getWebBrowser().loadUrl(sHtmlString);
     }
 
     @Override
@@ -110,5 +120,12 @@ public class HelpActivity extends BaseActivity implements View.OnClickListener {
                 onBackPressed();
                 break;
         }
+    }
+
+    private WebView getWebBrowser() {
+        if (mWebBrowser == null)
+            mWebBrowser = (WebView) findViewById(R.id.webview);
+
+        return mWebBrowser;
     }
 }
