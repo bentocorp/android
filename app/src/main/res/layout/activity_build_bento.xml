@@ -1,404 +1,424 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:autofit="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:autofit="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/base_relative_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.bentonow.bentonow.controllers.order.BuildBentoActivity"
-    android:id="@+id/base_relative_layout"
-    android:background="@color/bgcolor">
+    android:background="@color/bgcolor"
+    tools:context="com.bentonow.bentonow.controllers.order.BuildBentoActivity">
 
     <RelativeLayout
+        android:id="@+id/ActionBarCont"
         android:layout_width="match_parent"
         android:layout_height="@dimen/actionbar_height"
-        android:layout_alignParentTop="true"
-        android:id="@+id/ActionBarCont"
-        >
+        android:layout_alignParentTop="true">
+
         <include layout="@layout/actionbar" />
 
     </RelativeLayout>
 
     <!-- content -->
     <LinearLayout
+        android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="@dimen/general_padding"
-        android:id="@+id/linearLayout3"
-        android:layout_below="@+id/ActionBarCont"
+        android:layout_above="@+id/linearLayout4"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_above="@+id/linearLayout4">
+        android:layout_below="@+id/ActionBarCont"
+        android:orientation="vertical"
+        android:padding="@dimen/general_padding">
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:orientation="vertical"
             android:background="@drawable/btn_gray"
+            android:orientation="vertical"
             android:weightSum="3">
+
             <LinearLayout
                 android:id="@+id/build_main"
-                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                >
+                android:orientation="vertical">
+
                 <RelativeLayout
                     android:layout_width="fill_parent"
                     android:layout_height="@dimen/main_menu_item_height"
-                    android:layout_weight="1"
-                    >
+                    android:layout_weight="1">
+
                     <ImageView
                         android:id="@+id/img_main"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/tmp_trans"
-                        android:scaleType="centerCrop"/>
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/tmp_trans" />
 
                     <RelativeLayout
                         android:id="@+id/container_main_title"
-                        android:visibility="gone"
                         android:layout_width="fill_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:visibility="gone">
+
                         <ImageView
                             android:layout_width="fill_parent"
                             android:layout_height="fill_parent"
                             android:src="@drawable/menu_gradient" />
+
                         <me.grantland.widget.AutofitTextView
                             android:id="@+id/txt_main_title"
-                            android:singleLine="true"
-                            autofit:minTextSize="8sp"
                             android:layout_width="fill_parent"
                             android:layout_height="fill_parent"
-                            android:textAppearance="@style/BentoBuilderBoxMainName"
                             android:gravity="center"
-                            android:text="@null"
                             android:paddingLeft="10dp"
                             android:paddingRight="10dp"
-                            />
+                            android:singleLine="true"
+                            android:text="@null"
+                            android:textAppearance="@style/BentoBuilderBoxMainName"
+                            autofit:minTextSize="8sp" />
                     </RelativeLayout>
 
                     <com.bentonow.bentonow.ui.BackendTextView
+                        android:id="@+id/btn_add_main"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:text="@string/add_main_dish"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:background="@null"
                         android:gravity="center"
-                        android:id="@+id/btn_add_main"
+                        android:text="@string/add_main_dish"
                         android:textColor="@color/btn_green"
                         android:textStyle="bold"
-                        android:background="@null"
-                        android:layout_centerVertical="true"
-                        android:layout_centerHorizontal="true"
-                        app:key="build-main"
-                        />
+                        app:key="build-main" />
+
                     <ImageView
                         android:id="@+id/img_main_sold_out"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:src="@drawable/banner_sold_out"
-                        android:layout_alignParentRight="true"
                         android:layout_alignParentEnd="true"
-                        android:visibility="invisible"
-                        />
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/banner_sold_out"
+                        android:visibility="invisible" />
+
                     <Button
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@null"
-                        android:onClick="onAddMainPressed"/>
+                        android:onClick="onAddMainPressed" />
                 </RelativeLayout>
             </LinearLayout>
+
             <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/main_menu_item_height"
                 android:layout_weight="1"
-                android:baselineAligned="false">
+                android:baselineAligned="false"
+                android:orientation="horizontal">
+
                 <LinearLayout
                     android:id="@+id/btn_bento_side_1"
-                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
                     android:background="@drawable/btn_gray_square"
-                    >
+                    android:orientation="vertical">
+
                     <RelativeLayout
                         android:layout_width="fill_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1">
+
                         <ImageView
                             android:id="@+id/img_side1"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/tmp_trans"
                             android:scaleType="centerCrop"
-                            />
+                            android:src="@drawable/tmp_trans" />
+
                         <RelativeLayout
                             android:id="@+id/container_side1_title"
-                            android:visibility="gone"
                             android:layout_width="fill_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="wrap_content"
+                            android:visibility="gone">
+
                             <ImageView
                                 android:layout_width="fill_parent"
                                 android:layout_height="fill_parent"
                                 android:src="@drawable/menu_gradient" />
+
                             <me.grantland.widget.AutofitTextView
                                 android:id="@+id/txt_side1_title"
-                                android:singleLine="true"
-                                autofit:minTextSize="8sp"
                                 android:layout_width="fill_parent"
                                 android:layout_height="fill_parent"
-                                android:textAppearance="@style/BentoBuilderBoxMainName"
                                 android:gravity="center"
-                                android:text="@null"
                                 android:paddingLeft="10dp"
                                 android:paddingRight="10dp"
-                                />
+                                android:singleLine="true"
+                                android:text="@null"
+                                android:textAppearance="@style/BentoBuilderBoxMainName"
+                                autofit:minTextSize="8sp" />
                         </RelativeLayout>
+
                         <com.bentonow.bentonow.ui.BackendTextView
+                            android:id="@+id/btn_add_side1"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:background="@null"
-                            android:text="@string/add_side"
-                            android:id="@+id/btn_add_side1"
-                            android:textStyle="bold"
-                            android:textColor="@color/btn_green"
-                            android:layout_centerVertical="true"
                             android:layout_centerHorizontal="true"
+                            android:layout_centerVertical="true"
+                            android:background="@null"
                             android:gravity="center"
-                            app:key="build-side-1"
-                            />
+                            android:text="@string/add_side"
+                            android:textColor="@color/btn_green"
+                            android:textStyle="bold"
+                            app:key="build-side-1" />
+
                         <ImageView
                             android:id="@+id/img_side1_sold_out"
                             android:layout_width="50dp"
                             android:layout_height="50dp"
-                            android:src="@drawable/banner_sold_out"
-                            android:layout_alignParentRight="true"
                             android:layout_alignParentEnd="true"
-                            android:visibility="invisible"
-                            />
+                            android:layout_alignParentRight="true"
+                            android:src="@drawable/banner_sold_out"
+                            android:visibility="invisible" />
+
                         <Button
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:background="@null"
-                            android:onClick="onAddSide1Pressed"/>
+                            android:onClick="onAddSide1Pressed" />
                     </RelativeLayout>
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/btn_bento_side_2"
-                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
                     android:background="@drawable/btn_gray_square"
-                    >
+                    android:orientation="vertical">
+
                     <RelativeLayout
                         android:layout_width="fill_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1">
+
                         <ImageView
                             android:id="@+id/img_side2"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/tmp_trans"
-                            android:scaleType="centerCrop" />
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/tmp_trans" />
+
                         <RelativeLayout
                             android:id="@+id/container_side2_title"
-                            android:visibility="gone"
                             android:layout_width="fill_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="wrap_content"
+                            android:visibility="gone">
+
                             <ImageView
                                 android:layout_width="fill_parent"
                                 android:layout_height="fill_parent"
                                 android:src="@drawable/menu_gradient" />
+
                             <me.grantland.widget.AutofitTextView
                                 android:id="@+id/txt_side2_title"
-                                android:singleLine="true"
-                                autofit:minTextSize="8sp"
                                 android:layout_width="fill_parent"
                                 android:layout_height="fill_parent"
-                                android:textAppearance="@style/BentoBuilderBoxMainName"
                                 android:gravity="center"
-                                android:text="@null"
                                 android:paddingLeft="10dp"
                                 android:paddingRight="10dp"
-                                />
+                                android:singleLine="true"
+                                android:text="@null"
+                                android:textAppearance="@style/BentoBuilderBoxMainName"
+                                autofit:minTextSize="8sp" />
                         </RelativeLayout>
+
                         <com.bentonow.bentonow.ui.BackendTextView
+                            android:id="@+id/btn_add_side2"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:background="@null"
-                            android:text="@string/add_side"
-                            android:id="@+id/btn_add_side2"
-                            android:textStyle="bold"
-                            android:shadowColor="@color/btn_green"
-                            android:textColor="@color/btn_green"
-                            android:layout_centerVertical="true"
                             android:layout_centerHorizontal="true"
+                            android:layout_centerVertical="true"
+                            android:background="@null"
                             android:gravity="center"
-                            app:key="build-side-2"
-                            />
+                            android:shadowColor="@color/btn_green"
+                            android:text="@string/add_side"
+                            android:textColor="@color/btn_green"
+                            android:textStyle="bold"
+                            app:key="build-side-2" />
+
                         <ImageView
                             android:id="@+id/img_side2_sold_out"
                             android:layout_width="50dp"
                             android:layout_height="50dp"
-                            android:src="@drawable/banner_sold_out"
-                            android:layout_alignParentRight="true"
                             android:layout_alignParentEnd="true"
-                            android:visibility="invisible"
-                            />
+                            android:layout_alignParentRight="true"
+                            android:src="@drawable/banner_sold_out"
+                            android:visibility="invisible" />
+
                         <Button
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:background="@null"
-                            android:onClick="onAddSide2Pressed"/>
+                            android:onClick="onAddSide2Pressed" />
                     </RelativeLayout>
                 </LinearLayout>
             </LinearLayout>
+
             <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/main_menu_item_height"
                 android:layout_weight="1"
-                android:baselineAligned="false">
+                android:baselineAligned="false"
+                android:orientation="horizontal">
+
                 <LinearLayout
                     android:id="@+id/btn_bento_side_3"
-                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
                     android:background="@drawable/btn_build_side_3"
-                    >
+                    android:orientation="vertical">
+
                     <RelativeLayout
                         android:layout_width="fill_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="1"
-                        >
+                        android:layout_weight="1">
+
                         <ImageView
                             android:id="@+id/img_side3"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/tmp_trans"
-                            android:scaleType="centerCrop" />
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/tmp_trans" />
+
                         <RelativeLayout
                             android:id="@+id/container_side3_title"
-                            android:visibility="gone"
                             android:layout_width="fill_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="wrap_content"
+                            android:visibility="gone">
+
                             <ImageView
                                 android:layout_width="fill_parent"
                                 android:layout_height="fill_parent"
                                 android:src="@drawable/menu_gradient" />
+
                             <me.grantland.widget.AutofitTextView
                                 android:id="@+id/txt_side3_title"
-                                android:singleLine="true"
-                                autofit:minTextSize="8sp"
                                 android:layout_width="fill_parent"
                                 android:layout_height="fill_parent"
-                                android:textAppearance="@style/BentoBuilderBoxMainName"
                                 android:gravity="center"
-                                android:text="@null"
                                 android:paddingLeft="10dp"
                                 android:paddingRight="10dp"
-                                />
+                                android:singleLine="true"
+                                android:text="@null"
+                                android:textAppearance="@style/BentoBuilderBoxMainName"
+                                autofit:minTextSize="8sp" />
                         </RelativeLayout>
+
                         <com.bentonow.bentonow.ui.BackendTextView
+                            android:id="@+id/btn_add_side3"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
+                            android:layout_centerHorizontal="true"
+                            android:layout_centerVertical="true"
                             android:background="@null"
+                            android:gravity="center"
                             android:text="@string/add_side"
-                            android:id="@+id/btn_add_side3"
                             android:textColor="@color/btn_green"
                             android:textStyle="bold"
-                            android:layout_centerVertical="true"
-                            android:layout_centerHorizontal="true"
-                            android:gravity="center"
-                            app:key="build-side-3"
-                            />
+                            app:key="build-side-3" />
+
                         <ImageView
                             android:id="@+id/img_side3_sold_out"
                             android:layout_width="50dp"
                             android:layout_height="50dp"
-                            android:src="@drawable/banner_sold_out"
-                            android:layout_alignParentRight="true"
                             android:layout_alignParentEnd="true"
-                            android:visibility="invisible"
-                            />
+                            android:layout_alignParentRight="true"
+                            android:src="@drawable/banner_sold_out"
+                            android:visibility="invisible" />
+
                         <Button
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:background="@null"
-                            android:onClick="onAddSide3Pressed"/>
+                            android:onClick="onAddSide3Pressed" />
                     </RelativeLayout>
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/btn_bento_side_4"
-                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
                     android:background="@drawable/btn_build_side_4"
-                    >
+                    android:orientation="vertical">
+
                     <RelativeLayout
                         android:layout_width="fill_parent"
                         android:layout_height="0dp"
-                        android:layout_weight="1"
-                        >
+                        android:layout_weight="1">
+
                         <ImageView
                             android:id="@+id/img_side4"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/tmp_trans"
-                            android:scaleType="centerCrop" />
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/tmp_trans" />
+
                         <RelativeLayout
                             android:id="@+id/container_side4_title"
-                            android:visibility="gone"
                             android:layout_width="fill_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="wrap_content"
+                            android:visibility="gone">
+
                             <ImageView
                                 android:layout_width="fill_parent"
                                 android:layout_height="fill_parent"
                                 android:src="@drawable/menu_gradient" />
+
                             <me.grantland.widget.AutofitTextView
                                 android:id="@+id/txt_side4_title"
-                                android:singleLine="true"
-                                autofit:minTextSize="8sp"
                                 android:layout_width="fill_parent"
                                 android:layout_height="fill_parent"
-                                android:textAppearance="@style/BentoBuilderBoxMainName"
                                 android:gravity="center"
-                                android:text="@null"
                                 android:paddingLeft="10dp"
                                 android:paddingRight="10dp"
-                                />
+                                android:singleLine="true"
+                                android:text="@null"
+                                android:textAppearance="@style/BentoBuilderBoxMainName"
+                                autofit:minTextSize="8sp" />
                         </RelativeLayout>
+
                         <com.bentonow.bentonow.ui.BackendTextView
+                            android:id="@+id/btn_add_side4"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
+                            android:layout_centerHorizontal="true"
+                            android:layout_centerVertical="true"
                             android:background="@null"
+                            android:gravity="center"
                             android:text="@string/add_side"
-                            android:id="@+id/btn_add_side4"
                             android:textColor="@color/btn_green"
                             android:textStyle="bold"
-                            android:layout_centerVertical="true"
-                            android:layout_centerHorizontal="true"
-                            android:gravity="center"
-                            app:key="build-side-4"
-                            />
+                            app:key="build-side-4" />
+
                         <ImageView
                             android:id="@+id/img_side4_sold_out"
                             android:layout_width="50dp"
                             android:layout_height="50dp"
-                            android:src="@drawable/banner_sold_out"
-                            android:layout_alignParentRight="true"
                             android:layout_alignParentEnd="true"
-                            android:visibility="invisible"
-                            />
+                            android:layout_alignParentRight="true"
+                            android:src="@drawable/banner_sold_out"
+                            android:visibility="invisible" />
+
                         <Button
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:background="@null"
-                            android:onClick="onAddSide4Pressed"/>
+                            android:onClick="onAddSide4Pressed" />
                     </RelativeLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -407,28 +427,29 @@
     </LinearLayout>
 
     <LinearLayout
-        android:orientation="vertical"
+        android:id="@+id/linearLayout4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/footer_container"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/linearLayout4"
+        android:layout_marginBottom="@dimen/general_padding"
         android:layout_marginLeft="@dimen/general_padding"
         android:layout_marginRight="@dimen/general_padding"
-        android:layout_marginBottom="@dimen/general_padding">
-            <com.bentonow.bentonow.ui.BackendButton
-                android:id="@+id/btn_add_another_bento"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/add_another_bento"
-                android:padding="@dimen/btn_padding"
-                android:gravity="center"
-                android:background="@drawable/btn_gray_pressed"
-                android:textColor="@color/btn_green"
-                android:textStyle="bold"
-                app:key="complete-add-another"
-                android:onClick="onAddAnotherBentoPressed"/>
+        android:orientation="vertical">
+
+        <com.bentonow.bentonow.ui.BackendButton
+            android:id="@+id/btn_add_another_bento"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btn_gray_pressed"
+            android:gravity="center"
+            android:onClick="onAddAnotherBentoPressed"
+            android:padding="@dimen/btn_padding"
+            android:text="@string/add_another_bento"
+            android:textColor="@color/btn_green"
+            android:textStyle="bold"
+            app:key="complete-add-another" />
     </LinearLayout>
 
     <RelativeLayout
@@ -437,20 +458,19 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        >
+        android:layout_alignParentStart="true">
+
         <com.bentonow.bentonow.ui.BackendButton
             android:id="@+id/btn_continue"
-            android:background="@color/gray"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:background="@color/gray"
             android:gravity="center"
-            android:textColor="@color/white"
+            android:onClick="onContinueOrderPressed"
             android:padding="@dimen/btn_padding"
             android:text="@string/btn_continue_text"
-            app:key="build-button-1"
-            android:onClick="onContinueOrderPressed"
-            />
+            android:textColor="@color/white"
+            app:key="build-button-1" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -458,58 +478,58 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="#90000000"
-        android:visibility="gone"
-        >
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:weightSum="5"
-            android:orientation="horizontal"
-            android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:baselineAligned="false"
             android:gravity="center"
-            android:baselineAligned="false">
+            android:orientation="horizontal"
+            android:weightSum="5">
+
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/overlay_message"
                 android:layout_weight="3"
-                >
+                android:background="@drawable/overlay_message"
+                android:orientation="vertical">
+
                 <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:text="You didn't finish your Bento.\nWant us to finish it for you?"
                     android:padding="@dimen/btn_padding"
-                    />
+                    android:text="You didn't finish your Bento.\nWant us to finish it for you?" />
+
                 <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
+
                     <TextView
                         android:id="@+id/btn_no_complete_for_me"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:padding="@dimen/btn_padding"
                         android:layout_weight="1"
-                        android:textColor="@color/white"
                         android:background="@drawable/btn_green_corned_left_bottom"
                         android:gravity="center"
+                        android:padding="@dimen/btn_padding"
                         android:text="No"
-                        />
+                        android:textColor="@color/white" />
+
                     <TextView
                         android:id="@+id/btn_yes_complete_for_me"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:padding="@dimen/btn_padding"
                         android:layout_weight="1"
-                        android:textColor="@color/white"
                         android:background="@drawable/bg_green_corner_right_bottom"
                         android:gravity="center"
+                        android:padding="@dimen/btn_padding"
                         android:text="Yes"
-                        />
+                        android:textColor="@color/white" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

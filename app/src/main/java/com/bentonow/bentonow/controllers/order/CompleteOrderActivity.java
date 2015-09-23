@@ -21,7 +21,7 @@ import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
-import com.bentonow.bentonow.Utils.Mixpanel;
+import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseActivity;
@@ -36,6 +36,7 @@ import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.order.OrderItem;
 import com.bentonow.bentonow.ui.BackendButton;
 import com.bentonow.bentonow.ui.CustomDialog;
+import com.crashlytics.android.Crashlytics;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.wsdcamp.list.LazyListAdapter;
@@ -101,32 +102,6 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         initActionbar();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (User.current == null) {
-            startActivity(new Intent(this, SignUpActivity.class));
-            finish();
-        } else if (Order.location == null || Order.address == null) {
-            Intent intent = new Intent(this, DeliveryLocationActivity.class);
-            intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.COMPLETE_ORDER);
-            startActivity(intent);
-            finish();
-        } else if (User.current.card == null || User.current.card.last4 == null || User.current.card.last4.isEmpty()) {
-            startActivity(new Intent(this, EnterCreditCardActivity.class));
-        } else {
-            updateUI();
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_STORE_CHANGIN))
-            finish();
-    }
-
     private void initActionbar() {
         TextView actionbar_title = (TextView) findViewById(R.id.actionbar_title);
         actionbar_title.setText(BackendText.get("complete-title"));
@@ -134,6 +109,12 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
         actionbar_left_btn.setImageResource(R.drawable.ic_ab_back);
         actionbar_left_btn.setOnClickListener(this);
+    }
+
+    private void emptyOrders() {
+        Order.current = null;
+        BentoNowUtils.openBuildBentoActivity(this);
+        finish();
     }
 
     void deleteBento() {
@@ -148,17 +129,48 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         updateUI();
     }
 
-    void
-    track(String error) {
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (User.current == null) {
+            startActivity(new Intent(this, SignUpActivity.class));
+            finish();
+        } else if (Order.location == null || Order.address == null) {
+            Intent intent = new Intent(this, DeliveryLocationActivity.class);
+            intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.COMPLETE_ORDER);
+            startActivity(intent);
+            finish();
+        } else if (User.current.card == null || User.current.card.last4 == null || User.current.card.last4.isEmpty()) {
+            startActivity(new Intent(this, EnterCreditCardActivity.class));
+        } else if (Order.current.OrderItems == null || Order.current.OrderItems.isEmpty()) {
+            emptyOrders();
+        } else {
+            updateUI();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_STORE_CHANGIN))
+            finish();
+    }
+
+
+    void track(String error) {
         try {
             JSONObject params = new JSONObject();
-            params.put("quantity", Order.current.OrderItems.size());
+            if (Order.current.OrderItems == null)
+                params.put("quantity", 0);
+            else
+                params.put("quantity", Order.current.OrderItems.size());
             params.put("payment method", User.current.card.brand);
             params.put("total price", Order.current.OrderDetails.total_cents / 100);
             params.put("status", error == null ? "success" : "failure");
             params.put("status_error", error);
 
-            Mixpanel.track(CompleteOrderActivity.this, "Placed an order", params);
+            MixpanelUtils.track(CompleteOrderActivity.this, "Placed an order", params);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -281,7 +293,13 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                         onBackPressed();
                         break;
                     case "sold_out":
-                        onBackPressed();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.notifyDataSetChanged();
+                                updateUI();
+                            }
+                        });
                         break;
                 }
                 action = "";
@@ -359,7 +377,10 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
         if (Order.current.OrderItems == null || Order.current.OrderItems.isEmpty()) {
             action = "no_items";
+            track(action);
+            Crashlytics.log(Log.ERROR, getString(R.string.app_name), "No Items in the Order");
             DebugUtils.logError(TAG, "Order Items 0 ");
+            emptyOrders();
             return;
         }
 
@@ -519,6 +540,9 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         }
 
         public void set(OrderItem item, int position) {
+            txt_name.setTextColor(item.bIsSoldoOut ? getResources().getColor(R.color.orange) : getResources().getColor(R.color.btn_green));
+            txt_price.setTextColor(item.bIsSoldoOut ? getResources().getColor(R.color.orange) : getResources().getColor(R.color.btn_green));
+
             txt_name.setText(item.items.get(0).name);
             txt_price.setText("$ " + item.unit_price);
 
