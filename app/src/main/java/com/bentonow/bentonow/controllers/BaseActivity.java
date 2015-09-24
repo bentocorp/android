@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.model.Menu;
+import com.facebook.appevents.AppEventsLogger;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -27,6 +28,7 @@ public class BaseActivity extends Activity {
     protected void onResume() {
         super.onResume();
         BentoApplication.onResume();
+        AppEventsLogger.activateApp(this);
 
         if (Menu.get() == null) {
             BentoNowUtils.openMainActivity(this);
@@ -37,5 +39,6 @@ public class BaseActivity extends Activity {
     protected void onPause() {
         super.onPause();
         BentoApplication.onPause();
+        AppEventsLogger.deactivateApp(this);
     }
 }
