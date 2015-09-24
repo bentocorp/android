@@ -4,6 +4,8 @@ import android.content.SharedPreferences;
 import android.location.Address;
 import android.util.Log;
 
+import com.bentonow.bentonow.Utils.BentoNowUtils;
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
@@ -67,17 +69,13 @@ public class Settings {
 
     static public String[] getServiceArea() {
         try {
-            int dinnerTime = Integer.parseInt(Settings.dinner.startTime.replace(":", ""));
-            int currentTime = Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
-
-            if (dinnerTime >= currentTime) {
-                return serviceArea_dinner.split(" ");
-            } else {
+            if (BentoNowUtils.getCurrentTime() < 163000)
                 return serviceArea_lunch.split(" ");
-            }
+            else
+                return serviceArea_dinner.split(" ");
+
         } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-            e.printStackTrace();
+            DebugUtils.logError("getServiceArea()", e);
         }
 
         return new String[0];

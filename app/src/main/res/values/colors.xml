@@ -8,6 +8,8 @@
     <color name="red">#e66633</color>
     <color name="black">#000000</color>
     <color name="black_60">#99000000</color>
+    <color name="blue">#3b5998</color>
+    <color name="blue_20">#323b5998</color>
     <color name="actionbar_title_color">#4f5055</color>
     <color name="orange">#e97200</color>
 
@@ -17,7 +19,6 @@
     <color name="light_gray">#ffe3e3e3</color>
     <color name="gray_divisor">#d0d3d3</color>
 
-    <color name="blue">#3b5998</color>
     <color name="dark_blue">#576070</color>
     <color name="cyan">#55acee</color>
     <color name="sms_green">#5dbc48</color>

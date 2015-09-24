@@ -50,7 +50,7 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
         try {
             JSONObject params = new JSONObject();
             params.put("Address", Order.getFullAddress());
-            MixpanelUtils.track(this, "Selected Address Outside of Service Area", params);
+            MixpanelUtils.track("Selected Address Outside of Service Area", params);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -122,9 +122,9 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
             double lng = Double.valueOf(loc[0]);
             rectOptions.add(new LatLng(lat, lng));
         }
-        rectOptions.fillColor(getResources().getColor(R.color.btn_green_trans));
+        rectOptions.fillColor(getResources().getColor(R.color.blue_20));
         rectOptions.strokeWidth(5);
-        rectOptions.strokeColor(getResources().getColor(R.color.btn_green));
+        rectOptions.strokeColor(getResources().getColor(R.color.blue));
 
         map.addPolygon(rectOptions);
     }
