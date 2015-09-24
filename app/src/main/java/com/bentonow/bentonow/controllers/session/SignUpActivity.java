@@ -110,7 +110,7 @@ public class SignUpActivity extends BaseActivity implements View.OnClickListener
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (!beganRegistration) {
-                    MixpanelUtils.track(SignUpActivity.this, "Began Registration");
+                    MixpanelUtils.track("Began Registration");
                     beganRegistration = true;
                 }
             }
@@ -219,6 +219,8 @@ public class SignUpActivity extends BaseActivity implements View.OnClickListener
             } else {
                 User.current = new Gson().fromJson(responseString, User.class);
             }
+
+            MixpanelUtils.signUpUser();
 
             BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);
 

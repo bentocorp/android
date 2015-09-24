@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentActivity;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.model.Menu;
+import com.facebook.appevents.AppEventsLogger;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -34,6 +35,7 @@ public class BaseFragmentActivity extends FragmentActivity {
     protected void onResume() {
         super.onResume();
         BentoApplication.onResume();
+        AppEventsLogger.activateApp(this);
 
         if (Menu.get() == null) {
             BentoNowUtils.openMainActivity(this);
@@ -44,5 +46,6 @@ public class BaseFragmentActivity extends FragmentActivity {
     protected void onPause() {
         super.onPause();
         BentoApplication.onPause();
+        AppEventsLogger.deactivateApp(this);
     }
 }

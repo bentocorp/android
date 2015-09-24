@@ -378,7 +378,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             try {
                 JSONObject params = new JSONObject();
                 params.put("address", LocationUtils.getFullAddress(sOrderAddress));
-                MixpanelUtils.track(DeliveryLocationActivity.this, "Selected address outside of service area", params);
+                MixpanelUtils.track("Selected address outside of service area", params);
             } catch (Exception e) {
                 e.printStackTrace();
             }

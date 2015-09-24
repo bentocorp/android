@@ -46,7 +46,7 @@ public class BentoApplication extends Application {
 
         Log.i(TAG, "onCreate");
 
-        MixpanelUtils.getInstance(this);
+        MixpanelUtils.getInstance();
 
 
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()

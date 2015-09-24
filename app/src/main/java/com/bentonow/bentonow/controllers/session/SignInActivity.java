@@ -18,6 +18,7 @@ import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Email;
+import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SocialNetworksUtil;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
@@ -161,6 +162,8 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
         try {
             Log.i(TAG, "onSignInSuccess: " + responseString);
             User.current = new Gson().fromJson(responseString, User.class);
+
+            MixpanelUtils.logInUser();
 
             if (getIntent().getBooleanExtra("settings", false)) {
                 onBackPressed();

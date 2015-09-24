@@ -14,8 +14,11 @@ import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.order.OrderItem;
 import com.google.gson.Gson;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -27,8 +30,20 @@ public class BentoNowUtils {
 
 
     public static int getCurrentTime() {
-        return 130000;
-        //return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
+        // return 123000;
+        return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
+    }
+
+    public static String getMixpanelDate() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String sMixpanelDate = "";
+        try {
+            sMixpanelDate = dateFormat.format(Calendar.getInstance().getTime());
+        } catch (Exception ex) {
+            DebugUtils.logError("getMixpanelDate()", ex);
+        }
+
+        return sMixpanelDate;
     }
 
     public static String getTodayDate() {

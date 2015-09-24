@@ -18,6 +18,7 @@ import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
+import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.dialog.EditPhoneDialog;
@@ -136,6 +137,7 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
                     startActivity(intent);
                 } else if (action.equals("logout")) {
                     User.current = null;
+                    MixpanelUtils.clearPreferences();
                     updateUI();
                     BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);
                 }
@@ -177,6 +179,7 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
                 User.current.phone = sPhoneNumber;
                 BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.USER);
+                MixpanelUtils.setProfileProperties();
 
                 runOnUiThread(new Runnable() {
                     @Override

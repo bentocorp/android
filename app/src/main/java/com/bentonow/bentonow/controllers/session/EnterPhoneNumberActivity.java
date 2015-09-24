@@ -218,7 +218,7 @@ public class EnterPhoneNumberActivity extends BaseActivity implements View.OnCli
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
                 User.current = new Gson().fromJson(responseString, User.class);
-                MixpanelUtils.track(EnterPhoneNumberActivity.this, "Completed Registration");
+                MixpanelUtils.track("Completed Registration");
 
                 if (getIntent().getBooleanExtra("settings", false)) {
                     onBackPressed();

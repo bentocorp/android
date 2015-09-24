@@ -43,7 +43,7 @@ public class NextDayMenuActivity extends Activity implements View.OnClickListene
 
         setContentView(R.layout.activity_next_day_menu);
 
-        MixpanelUtils.track(this, "Previewed Today's Menu");
+        MixpanelUtils.track("Previewed Today's Menu");
 
         Menu menu = Menu.getNext();
 

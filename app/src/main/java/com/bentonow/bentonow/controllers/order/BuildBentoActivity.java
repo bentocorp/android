@@ -77,7 +77,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
         if (Order.current == null) {
             Order.current = new Order();
 
-            MixpanelUtils.track(this, "Began building a Bento");
+            MixpanelUtils.track("Began Building A Bento");
         }
 
         orderIndex = Order.current.currentOrderItem;
@@ -366,7 +366,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
             params.put("side3", item.items.get(3) == null ? "0" : item.items.get(3).itemId);
             params.put("side4", item.items.get(4) == null ? "0" : item.items.get(4).itemId);
 
-            MixpanelUtils.track(this, "Bento requested", params);
+            MixpanelUtils.track("Bento Requested", params);
         } catch (Exception e) {
             e.printStackTrace();
         }

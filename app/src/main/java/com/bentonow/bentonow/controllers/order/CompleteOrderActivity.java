@@ -170,7 +170,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
             params.put("status", error == null ? "success" : "failure");
             params.put("status_error", error);
 
-            MixpanelUtils.track(CompleteOrderActivity.this, "Placed an order", params);
+            MixpanelUtils.track("Placed An Order", params);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -448,6 +448,8 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
                 track(null);
+
+                MixpanelUtils.trackRevenue((double) Order.current.OrderDetails.total_cents / 100);
 
                 Log.i(TAG, "Order: " + responseString);
 

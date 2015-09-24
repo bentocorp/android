@@ -244,7 +244,7 @@ public class MainActivity extends Activity {
             startActivity(intent);
         } else {
             Log.i(TAG, "goNext DeliveryLocationActivity");
-            MixpanelUtils.track(this, "Opening app outside of service area");
+            MixpanelUtils.track("Opened App Outside of Service Area");
             Intent intent = new Intent(this, DeliveryLocationActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
