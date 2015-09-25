@@ -5,6 +5,9 @@ package com.bentonow.bentonow.Utils;
  */
 public class ConstantUtils {
 
+    public static final String sFixed = "fixed";
+
     public enum optDeliveryAction {NONE, CHANGE, COMPLETE_ORDER}
+
     public enum optSaveSettings {ALL, USER, LOCATION, ADDRESS, BACKEND_TEXT}
 }

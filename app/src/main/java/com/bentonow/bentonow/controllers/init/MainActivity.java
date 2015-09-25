@@ -15,6 +15,7 @@ import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
+import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BentoApplication;
@@ -116,7 +117,7 @@ public class MainActivity extends Activity {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 ((TextView) findViewById(R.id.txt_message))
-                        .setText("We seem to have trouble connecting to the network, please wait while we retry"+ (retry > 0 ? "(" + retry + ")" : ""));
+                        .setText("We seem to have trouble connecting to the network, please wait while we retry" + (retry > 0 ? "(" + retry + ")" : ""));
                 ++retry;
                 Log.i(TAG, "retry: " + retry);
                 loadData();
@@ -233,7 +234,9 @@ public class MainActivity extends Activity {
     }
 
     void goNext() {
-        if (Menu.get() == null || !Settings.status.equals("open")) {
+        Menu mCurrentMenu = Menu.get();
+
+        if (mCurrentMenu == null || !Settings.status.equals("open") || mCurrentMenu.menu_type.equals(ConstantUtils.sFixed)) {
             Log.i(TAG, "goNext ErrorActivity");
             BentoNowUtils.openErrorActivity(this);
             finish();

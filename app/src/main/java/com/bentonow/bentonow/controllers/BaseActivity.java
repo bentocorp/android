@@ -30,7 +30,9 @@ public class BaseActivity extends Activity {
         BentoApplication.onResume();
         AppEventsLogger.activateApp(this);
 
-        if (Menu.get() == null) {
+        Menu mCurrentMenu = Menu.get();
+
+        if (mCurrentMenu == null || mCurrentMenu.menu_type.equals("fixed")) {
             BentoNowUtils.openMainActivity(this);
         }
     }

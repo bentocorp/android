@@ -11,6 +11,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.ui.CustomDialog;
@@ -47,7 +48,7 @@ public class SelectMainActivity extends BaseActivity implements View.OnClickList
 
         Menu menu = Menu.get();
 
-        if (menu == null) {
+        if (menu == null || menu.menu_type.equals(ConstantUtils.sFixed)) {
             dialog = new CustomDialog(this, "There is no current menu to show", "OK", null);
             dialog.setOnOkPressed(this);
             dialog.show();

@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
+import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
@@ -35,8 +36,10 @@ import java.util.Locale;
 public class ErrorActivity extends Activity implements View.OnClickListener {
     private static final String TAG = "ErrorActivity";
 
-    TextView txt_email;
-    Button btn_next_day_menu;
+    private TextView txt_title;
+    private TextView txt_description;
+    private TextView txt_email;
+    private Button btn_next_day_menu;
 
     public static boolean bIsOpen = false;
 
@@ -50,7 +53,6 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
         BentoApplication.status = Settings.status;
 
         txt_email = (EditText) findViewById(R.id.txt_email);
-        btn_next_day_menu = (Button) findViewById(R.id.btn_next_day_menu);
 
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_STORE_CHANGIN, false);
     }
@@ -64,19 +66,27 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
         Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE);
 
-        TextView txt_title = (TextView) findViewById(R.id.txt_title);
-        TextView txt_description = (TextView) findViewById(R.id.txt_description);
+        Menu mCurrentMenu = Menu.get();
 
-        if (Settings.status.equals("sold out")) {
-            txt_title.setText(BackendText.get("sold-out-title"));
-            txt_description.setText(BackendText.get("sold-out-text"));
+        if (Settings.status.equals("open") && mCurrentMenu != null && mCurrentMenu.menu_type.equals(ConstantUtils.sFixed)) {
+            getTxtTitle().setText("We're currently doing something awesome!");
+            getTxtDescription().setText("We're preparing a new section.... check back soon!");
+
+            DebugUtils.logDebug(TAG, "setupNextMenu: " + "menu: fixed");
+            getBtnNextDayMenu().setVisibility(View.INVISIBLE);
         } else {
-            txt_title.setText(BackendText.get("closed-title"));
-            if (hour >= 2000) {
-                txt_description.setText(BackendText.get("closed-text-latenight"));
+            if (Settings.status.equals("sold out")) {
+                getTxtTitle().setText(BackendText.get("sold-out-title"));
+                getTxtDescription().setText(BackendText.get("sold-out-text"));
             } else {
-                txt_description.setText(BackendText.get("closed-text"));
+                getTxtTitle().setText(BackendText.get("closed-title"));
+                if (hour >= 2000) {
+                    getTxtDescription().setText(BackendText.get("closed-text-latenight"));
+                } else {
+                    getTxtDescription().setText(BackendText.get("closed-text"));
+                }
             }
+
         }
 
         BentoApplication.status = Settings.status;
@@ -101,25 +111,26 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
 
         if (menu != null) {
             Log.i(TAG, "menu: " + menu.toString());
-            btn_next_day_menu.setVisibility(View.VISIBLE);
+            getBtnNextDayMenu().setVisibility(View.VISIBLE);
 
             DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 
             if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate())) {
-                btn_next_day_menu.setText(BackendText.get("closed-sneak-preview-button"));
+                getBtnNextDayMenu().setText(BackendText.get("closed-sneak-preview-button"));
             } else {
                 try {
                     String day = new SimpleDateFormat("EEEE", Locale.ENGLISH).format(format.parse(menu.for_date));
                     String title = day + "'s " + menu.meal_name.substring(0, 1).toUpperCase() + menu.meal_name.substring(1);
-                    btn_next_day_menu.setText(title);
+                    getBtnNextDayMenu().setText(title);
                 } catch (Exception e) {
                     DebugUtils.logError(TAG, "setupNextMenu: " + e.getLocalizedMessage());
-                    btn_next_day_menu.setVisibility(View.INVISIBLE);
+                    getBtnNextDayMenu().setVisibility(View.INVISIBLE);
                 }
             }
+
         } else {
             DebugUtils.logDebug(TAG, "setupNextMenu: " + "menu: null");
-            btn_next_day_menu.setVisibility(View.INVISIBLE);
+            getBtnNextDayMenu().setVisibility(View.INVISIBLE);
         }
     }
 
@@ -171,31 +182,31 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
             dialog.show();
         } else {
             User.requestCoupon(txt_email.getText().toString(), Settings.status, new TextHttpResponseHandler() {
-                        @SuppressWarnings("deprecation")
-                        @Override
-                        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                            Log.e(TAG, responseString);
-                            CustomDialog dialog = new CustomDialog(ErrorActivity.this, "We having issues connecting to the server, please try later.", null, "OK" );
-                            dialog.show();
-                        }
+                @SuppressWarnings("deprecation")
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    Log.e(TAG, responseString);
+                    CustomDialog dialog = new CustomDialog(ErrorActivity.this, "We having issues connecting to the server, please try later.", null, "OK");
+                    dialog.show();
+                }
 
-                        @SuppressWarnings("deprecation")
-                        @Override
-                        public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                            String message = Settings.status.equals("sold out") ?
-                                    BackendText.get("sold-out-confirmation-text") :
-                                    BackendText.get("closed-confirmation-text");
-                            Log.i(TAG, responseString);
-                            txt_email.setText("");
-                            CustomDialog dialog = new CustomDialog(
-                                    ErrorActivity.this,
-                                    message,
-                                    null,
-                                    "OK"
-                            );
-                            dialog.show();
-                        }
-                    });
+                @SuppressWarnings("deprecation")
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                    String message = Settings.status.equals("sold out") ?
+                            BackendText.get("sold-out-confirmation-text") :
+                            BackendText.get("closed-confirmation-text");
+                    Log.i(TAG, responseString);
+                    txt_email.setText("");
+                    CustomDialog dialog = new CustomDialog(
+                            ErrorActivity.this,
+                            message,
+                            null,
+                            "OK"
+                    );
+                    dialog.show();
+                }
+            });
         }
     }
 
@@ -204,7 +215,7 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
             return;
 
         Intent intent = new Intent(this, NextDayMenuActivity.class);
-        intent.putExtra("title", btn_next_day_menu.getText().toString());
+        intent.putExtra("title", getBtnNextDayMenu().getText().toString());
         startActivity(intent);
     }
 
@@ -219,4 +230,26 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
         intent.putExtra("tos", true);
         startActivity(intent);
     }
+
+    private TextView getTxtTitle() {
+        if (txt_title == null)
+            txt_title = (TextView) findViewById(R.id.txt_title);
+
+        return txt_title;
+    }
+
+    private TextView getTxtDescription() {
+        if (txt_description == null)
+            txt_description = (TextView) findViewById(R.id.txt_description);
+
+        return txt_description;
+    }
+
+    private Button getBtnNextDayMenu() {
+        if (btn_next_day_menu == null)
+            btn_next_day_menu = (Button) findViewById(R.id.btn_next_day_menu);
+
+        return btn_next_day_menu;
+    }
+
 }
