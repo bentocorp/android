@@ -1,0 +1,22 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/base_relative_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bgcolor"
+    android:orientation="vertical"
+    tools:context="com.bentonow.bentonow.controllers.order.BuildFixedBentoActivity">
+
+    <include layout="@layout/actionbar" />
+
+
+    <ListView
+        android:id="@+id/list_bento"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:listitem="@layout/list_item_build_fixed">
+
+    </ListView>
+</LinearLayout>
+
+

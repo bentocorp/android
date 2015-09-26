@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:autofit="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bgcolor"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="340dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:id="@+id/relativeLayout">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/txt_title"
+            android:layout_marginTop="30dp">
+
+            <ImageView
+                android:id="@+id/img_dish_fixed"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:adjustViewBounds="true"
+                android:contentDescription="@null"
+                android:scaleType="centerCrop"
+                android:src="@drawable/tmp_trans" />
+
+            <ImageView
+                android:id="@+id/img_sold_out"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
+                android:layout_alignParentEnd="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/banner_sold_out" />
+
+            <ImageView
+                android:id="@+id/img_gradient"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:contentDescription="@null"
+                android:src="@drawable/menu_gradient" />
+        </RelativeLayout>
+
+
+        <me.grantland.widget.AutofitTextView
+            android:id="@+id/txt_title"
+            android:layout_width="fill_parent"
+            android:layout_height="48dp"
+            android:layout_above="@+id/btn_add_to_bento"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/btn_border_lineal_white"
+            android:gravity="center"
+            android:padding="10dp"
+            android:singleLine="true"
+            android:text="@string/app_name"
+            android:textAppearance="@style/TxtMenuFixBoxMainName"
+            autofit:minTextSize="8sp" />
+
+
+        <me.grantland.widget.AutofitTextView
+            android:id="@+id/btn_add_to_bento"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:background="@drawable/btn_border_lineal_green_normal"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="@string/add_bento_to_cart"
+            android:textAppearance="@style/BentoBuilderBoxMainName"
+            android:textSize="15sp" />
+    </RelativeLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_below="@+id/relativeLayout"
+        android:layout_alignParentStart="true">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_gravity="bottom|center"
+            android:layout_height="2dp"
+            android:background="@color/gray_divisor" />
+    </FrameLayout>
+</RelativeLayout>
