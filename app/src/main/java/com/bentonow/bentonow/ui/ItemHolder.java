@@ -1,17 +1,18 @@
 package com.bentonow.bentonow.ui;
 
 import android.app.Activity;
+import android.media.Image;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.DebugUtils;
+import com.bentonow.bentonow.Utils.ImageUtils;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Item;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
-public class ItemHolder implements Callback {
+public class ItemHolder {
 
     public ImageView image;
     public TextView title;
@@ -104,14 +105,17 @@ public class ItemHolder implements Callback {
             }
 
             try {
-                if (item.image1.isEmpty()) {
-                    image.setImageResource(R.drawable.menu_placeholder);
-                } else {
-                    Picasso.with(context.getApplicationContext())
-                            .load(item.image1)
-                            .into(image, this);
+
+                if (image.getTag() == null || !image.getTag().equals(item.image1)) {
+                    if (item.type.equals("main"))
+                        ImageUtils.initImageLoader().displayImage(item.image1, image, ImageUtils.dishMainImageOptions());
+                    else
+                        ImageUtils.initImageLoader().displayImage(item.image1, image, ImageUtils.dishSideImageOptions());
+                    image.setTag(item.image1);
                 }
-            } catch (Exception ignored) {
+            } catch (Exception ex) {
+                DebugUtils.logError("LoadImage", ex);
+                image.setImageResource(R.drawable.menu_placeholder);
             }
 
             if (btn_add_to_bento != null) {
@@ -130,19 +134,4 @@ public class ItemHolder implements Callback {
             if (description != null) description.setVisibility(selected ? View.VISIBLE : View.GONE);
         }
     }
-
-    //region Picasso Callback
-
-    @Override
-    public void onSuccess() {
-
-    }
-
-    @Override
-    public void onError() {
-        if (image == null) return;
-        image.setImageResource(R.drawable.menu_placeholder);
-    }
-
-    //endregion
 }

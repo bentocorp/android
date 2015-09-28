@@ -49,8 +49,10 @@ public class DishFixGridListAdapter extends ArrayAdapter<Item> {
         viewHolder.getTxtDescription().setText(mDishItem.description);
         viewHolder.getTxtDescription().setVisibility(iDishSelected == position ? View.VISIBLE : View.GONE);
 
-        ImageUtils.initImageLoader().displayImage(mDishItem.image1, viewHolder.getImageDish(), ImageUtils.dishImageOptions());
-
+        if (viewHolder.getImageDish().getTag() == null || !viewHolder.getImageDish().getTag().equals(mDishItem.image1)) {
+            ImageUtils.initImageLoader().displayImage(mDishItem.image1, viewHolder.getImageDish(), ImageUtils.dishSideImageOptions());
+            viewHolder.getImageDish().setTag(mDishItem.image1);
+        }
 
         //if (mDishItem.isSoldOut(countCurrent)) btn_add_to_bento.setText("Sold Out");
         //else if (!mDishItem.canBeAdded()) btn_add_to_bento.setText("Reached to max");

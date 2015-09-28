@@ -9,6 +9,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -25,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
@@ -33,8 +35,10 @@ import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.errors.BummerActivity;
+import com.bentonow.bentonow.controllers.fragment.MySupportMapFragment;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
+import com.bentonow.bentonow.listener.OnCustomDragListener;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
@@ -48,6 +52,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -69,27 +74,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class DeliveryLocationActivity extends BaseFragmentActivity implements GoogleMap.OnMapLoadedCallback, GoogleMap.OnMapClickListener, View.OnClickListener, AdapterView.OnItemClickListener, View.OnKeyListener,
+public class DeliveryLocationActivity extends BaseFragmentActivity implements GoogleMap.OnMapLoadedCallback, View.OnClickListener, AdapterView.OnItemClickListener, View.OnKeyListener,
         TextView.OnEditorActionListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     public static final String TAG = "DeliveryLocationAct";
 
     public static final String TAG_DELIVERY_ACTION = "DeliveryAction";
 
-    GoogleMap map; // Might be null if Google Play services APK is not available.
-    Marker marker;
-    AutoCompleteTextView txt_address;
+    private GoogleMap googleMap; // Might be null if Google Play services APK is not available.
+    private MySupportMapFragment mapFragment;
+    private AutoCompleteTextView txt_address;
 
     private BackendTextView txtAlertAgree;
-    CheckBox chck_i_agree;
-    Button btn_continue;
-    ImageButton btn_clear;
-    ImageButton btn_current_location;
-    ProgressBar progressBar;
+    private CheckBox check_i_agree;
+    private Button btn_continue;
+    private ImageButton btn_clear;
+    private ImageButton btn_current_location;
+    private ProgressBar progressBar;
 
-    InputMethodManager imm;
-
-    CustomDialog dialog;
+    private CustomDialog dialog;
 
     private boolean mRequestingLocationUpdates;
     private GoogleApiClient mGoogleApiClient;
@@ -113,15 +116,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             optDelivery = ConstantUtils.optDeliveryAction.NONE;
         }
 
-        imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-
-        txt_address = (AutoCompleteTextView) findViewById(R.id.txt_address);
-        chck_i_agree = (CheckBox) findViewById(R.id.chck_iagree);
-        btn_continue = (Button) findViewById(R.id.btn_continue);
-        btn_clear = (ImageButton) findViewById(R.id.btn_clear);
-        btn_current_location = (ImageButton) findViewById(R.id.btn_current_location);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-
         initActionbar();
         setupAutocomplete();
 
@@ -131,22 +125,29 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
         mRequestingLocationUpdates = true;
         buildGoogleApiClient();
+
+        getMapFragment().setOnDragListener(new OnCustomDragListener() {
+
+            @Override
+            public void onDrag(MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        getTxtAddress().setText("", false);
+                        sOrderAddress = null;
+                        mLastLocations = getGoogleMap().getCameraPosition().target;
+                        mLastOrderLocation = mLastLocations;
+                        scanCurrentLocation(mLastLocations);
+                        updateUI();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (mGoogleApiClient.isConnected() && optDelivery != ConstantUtils.optDeliveryAction.CHANGE) {
-            startLocationUpdates();
-        }
-        setupMap();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        stopLocationUpdates();
-    }
 
     private void initActionbar() {
         TextView actionbar_title = (TextView) findViewById(R.id.actionbar_title);
@@ -164,16 +165,16 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
     void updateUI() {
-        progressBar.setVisibility(View.GONE);
+        getProgressBar().setVisibility(View.GONE);
 
-        if (chck_i_agree.isChecked() && sOrderAddress != null) {
-            btn_continue.setBackgroundColor(getResources().getColor(R.color.btn_green));
+        if (getCheckIAgree().isChecked() && sOrderAddress != null) {
+            getBtnContinue().setBackgroundColor(getResources().getColor(R.color.btn_green));
         } else {
-            btn_continue.setBackgroundColor(getResources().getColor(R.color.gray));
+            getBtnContinue().setBackgroundColor(getResources().getColor(R.color.gray));
         }
 
         // btn_current_location.setVisibility(User.location != null ? View.VISIBLE : View.GONE);
-        btn_clear.setVisibility(txt_address.getText().length() > 0 ? View.VISIBLE : View.GONE);
+        getBtnClear().setVisibility(getTxtAddress().getText().length() > 0 ? View.VISIBLE : View.GONE);
     }
 
     //****
@@ -181,11 +182,10 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     //****
 
     private void setupMap() {
-        if (map != null) return;
-        map = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+        if (getGoogleMap() != null) return;
 
         Log.i(TAG, "get map fragment");
-        if (map == null) return;
+        if (getMapFragment() == null) return;
 
         Log.i(TAG, "setup marker");
         LatLng point = null;
@@ -204,8 +204,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             zoom = 17f;
         }
 
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(point, zoom));
-        map.setOnMapLoadedCallback(this);
+        getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(point, zoom));
+        getGoogleMap().setOnMapLoadedCallback(this);
     }
 
     @Override
@@ -215,41 +215,18 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         } else if (mLastLocations != null) {
             markerLocation(mLastLocations);
         }
-
-        map.setOnMapClickListener(this);
-    }
-
-    @Override
-    public void onMapClick(LatLng latLng) {
-        if (latLng != null) {
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
-            txt_address.setText("", false);
-            sOrderAddress = null;
-
-            markerLocation(latLng);
-            updateUI();
-        }
     }
 
     private void markerLocation(LatLng latLng) {
-        if (marker == null) {
-            marker = map.addMarker(
-                    new MarkerOptions()
-                            .position(latLng)
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.location_marker_hi))
-            );
-        }
-
         mLastOrderLocation = latLng;
-        marker.setPosition(latLng);
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, map.getCameraPosition().zoom > 11f ? map.getCameraPosition().zoom : 17f));
+        getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, getGoogleMap().getCameraPosition().zoom > 11f ? getGoogleMap().getCameraPosition().zoom : 17f));
         scanCurrentLocation(latLng);
     }
 
     private void scanCurrentLocation(LatLng location) {
-        txt_address.setText("", false);
-        btn_clear.setVisibility(View.INVISIBLE);
-        progressBar.setVisibility(View.VISIBLE);
+        getTxtAddress().setText("", false);
+        getBtnClear().setVisibility(View.INVISIBLE);
+        getProgressBar().setVisibility(View.VISIBLE);
 
         Geocoder geoCoder = new Geocoder(getApplicationContext());
         List<Address> matches = null;
@@ -267,20 +244,16 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             Log.i(TAG, "full address: " + LocationUtils.getFullAddress(sOrderAddress));
             Log.i(TAG, "address: " + LocationUtils.getStreetAddress(sOrderAddress));
 
-            txt_address.setText(LocationUtils.getFullAddress(sOrderAddress), false);
+            getTxtAddress().setText(LocationUtils.getFullAddress(sOrderAddress), false);
         } else {
-            txt_address.setText("", false);
+            getTxtAddress().setText("", false);
         }
 
         updateUI();
     }
 
-    //***
-    //Click listeners
-    //**
-
     public void onClearPressed(View view) {
-        txt_address.setText("");
+        getTxtAddress().setText("");
         sOrderAddress = null;
         updateUI();
     }
@@ -291,7 +264,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
     private void updateCurrentLocation() {
-        if (mLastLocations == null || map == null)
+        if (mLastLocations == null || getGoogleMap() == null)
             return;
         markerLocation(mLastLocations);
         scanCurrentLocation(mLastLocations);
@@ -316,16 +289,16 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private boolean isValidLocation() {
         boolean bIsValid = true;
 
-        if (sOrderAddress == null || mLastOrderLocation == null || !chck_i_agree.isChecked()) {
+        if (sOrderAddress == null || mLastOrderLocation == null || !getCheckIAgree().isChecked()) {
             bIsValid = false;
             String sError = getString(R.string.alert_tab_checkbox);
 
             if (sOrderAddress == null || mLastOrderLocation == null)
                 sError = getString(R.string.delivery_alert_no_address);
 
-            txtAlertAgree().setText(sError);
+            getTxtAlertAgree().setText(sError);
 
-            new FadeInOut(this, txtAlertAgree(), R.anim.fadein, R.anim.fadeout);
+            new FadeInOut(this, getTxtAlertAgree(), R.anim.fadein, R.anim.fadeout);
         }
 
         DebugUtils.logDebug(TAG, "isValidLocation(): " + bIsValid);
@@ -384,22 +357,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         }
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.actionbar_left_btn:
-                onBackPressed();
-                break;
-            case R.id.actionbar_right_btn:
-                startActivity(new Intent(DeliveryLocationActivity.this, HelpActivity.class));
-                break;
-            case R.id.btn_ok:
-                chck_i_agree.setChecked(true);
-                dialog.dismiss();
-                updateUI();
-                break;
-        }
-    }
 
     //***
     //Autocomplete
@@ -456,45 +413,15 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         }
     }
 
+
     void setupAutocomplete() {
-        txt_address.setAdapter(new GooglePlacesAutocompleteAdapter(this, R.layout.listitem_locationaddress));
-        txt_address.setText("", false);
-        txt_address.setOnItemClickListener(this);
-        txt_address.setOnKeyListener(this);
-        txt_address.setOnEditorActionListener(this);
+        getTxtAddress().setAdapter(new GooglePlacesAutocompleteAdapter(this, R.layout.listitem_locationaddress));
+        getTxtAddress().setText("", false);
+        getTxtAddress().setOnItemClickListener(this);
+        getTxtAddress().setOnKeyListener(this);
+        getTxtAddress().setOnEditorActionListener(this);
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(txt_address.getWindowToken(), 0);
-        String str = (String) adapterView.getItemAtPosition(position);
-        if (str != null) {
-            checkAddress(str);
-        }
-    }
-
-    @Override
-    public boolean onKey(View v, int keyCode, KeyEvent event) {
-        updateUI();
-        return false;
-    }
-
-    @Override
-    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        if (event != null) {
-            // if shift key is down, then we want to insert the '\n' char in the TextView;
-            // otherwise, the default action is to send the message.
-            if (!event.isShiftPressed()) {
-                imm.hideSoftInputFromWindow(txt_address.getWindowToken(), 0);
-                return true;
-            }
-            return false;
-        }
-
-        imm.hideSoftInputFromWindow(txt_address.getWindowToken(), 0);
-        return true;
-    }
 
     public ArrayList<String> autocomplete(String input) {
         ArrayList<String> resultList = null;
@@ -557,6 +484,101 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
 
+    protected void startLocationUpdates() {
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, getLocationRequest(), this);
+    }
+
+    protected void stopLocationUpdates() {
+        if (mGoogleApiClient.isConnected())
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+    }
+
+    protected LocationRequest getLocationRequest() {
+        if (mLocationRequest == null) {
+            mLocationRequest = new LocationRequest();
+            mLocationRequest.setInterval(10000);
+            mLocationRequest.setFastestInterval(5000);
+            mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        }
+        return mLocationRequest;
+    }
+
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+        mGoogleApiClient.connect();
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mGoogleApiClient.isConnected() && optDelivery != ConstantUtils.optDeliveryAction.CHANGE) {
+            startLocationUpdates();
+        }
+        setupMap();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.actionbar_left_btn:
+                onBackPressed();
+                break;
+            case R.id.actionbar_right_btn:
+                startActivity(new Intent(DeliveryLocationActivity.this, HelpActivity.class));
+                break;
+            case R.id.btn_ok:
+                getCheckIAgree().setChecked(true);
+                dialog.dismiss();
+                updateUI();
+                break;
+        }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getTxtAddress().getWindowToken(), 0);
+        String str = (String) adapterView.getItemAtPosition(position);
+        if (str != null) {
+            checkAddress(str);
+        }
+    }
+
+    @Override
+    public boolean onKey(View v, int keyCode, KeyEvent event) {
+        updateUI();
+        return false;
+    }
+
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        if (event != null) {
+            // if shift key is down, then we want to insert the '\n' char in the TextView;
+            // otherwise, the default action is to send the message.
+            if (!event.isShiftPressed()) {
+                AndroidUtil.hideKeyboard(v);
+                return true;
+            }
+            return false;
+        }
+        AndroidUtil.hideKeyboard(v);
+        return true;
+    }
+
+
     @Override
     public void onConnected(Bundle bundle) {
         DebugUtils.logDebug("buildGoogleApiClient", "onConnected:");
@@ -606,38 +628,58 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         });
     }
 
-    protected void startLocationUpdates() {
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, getLocationRequest(), this);
+
+    private MySupportMapFragment getMapFragment() {
+        if (mapFragment == null)
+            mapFragment = ((MySupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapCurrentLocation));
+        return mapFragment;
     }
 
-    protected void stopLocationUpdates() {
-        if (mGoogleApiClient.isConnected())
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+    private GoogleMap getGoogleMap() {
+        if (googleMap == null)
+            googleMap = getMapFragment().getMap();
+        return googleMap;
     }
 
-    protected LocationRequest getLocationRequest() {
-        if (mLocationRequest == null) {
-            mLocationRequest = new LocationRequest();
-            mLocationRequest.setInterval(10000);
-            mLocationRequest.setFastestInterval(5000);
-            mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        }
-        return mLocationRequest;
-    }
-
-
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-        mGoogleApiClient.connect();
-    }
-
-    private BackendTextView txtAlertAgree() {
+    private BackendTextView getTxtAlertAgree() {
         if (txtAlertAgree == null)
             txtAlertAgree = (BackendTextView) findViewById(R.id.alert_i_agree);
         return txtAlertAgree;
+    }
+
+    private AutoCompleteTextView getTxtAddress() {
+        if (txt_address == null)
+            txt_address = (AutoCompleteTextView) findViewById(R.id.txt_address);
+        return txt_address;
+    }
+
+    private CheckBox getCheckIAgree() {
+        if (check_i_agree == null)
+            check_i_agree = (CheckBox) findViewById(R.id.chck_iagree);
+        return check_i_agree;
+    }
+
+    private Button getBtnContinue() {
+        if (btn_continue == null)
+            btn_continue = (Button) findViewById(R.id.btn_continue);
+        return btn_continue;
+    }
+
+    private ImageButton getBtnClear() {
+        if (btn_clear == null)
+            btn_clear = (ImageButton) findViewById(R.id.btn_clear);
+        return btn_clear;
+    }
+
+    private ImageButton getBtnCurrentLocation() {
+        if (btn_current_location == null)
+            btn_current_location = (ImageButton) findViewById(R.id.btn_current_location);
+        return btn_current_location;
+    }
+
+    private ProgressBar getProgressBar() {
+        if (progressBar == null)
+            progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        return progressBar;
     }
 }

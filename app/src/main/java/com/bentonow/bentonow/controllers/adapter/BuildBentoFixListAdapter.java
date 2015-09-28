@@ -49,7 +49,10 @@ public class BuildBentoFixListAdapter extends ArrayAdapter<Item> {
 
         viewHolder.getTxtTitle().setText(mDish.name);
 
-        ImageUtils.initImageLoader().displayImage(mDish.image1, viewHolder.getImageDish(), ImageUtils.dishImageOptions());
+        if (viewHolder.getImageDish().getTag() == null || !viewHolder.getImageDish().getTag().equals(mDish.image1)) {
+            ImageUtils.initImageLoader().displayImage(mDish.image1, viewHolder.getImageDish(), ImageUtils.dishMainImageOptions());
+            viewHolder.getImageDish().setTag(mDish.image1);
+        }
 
         viewHolder.getImageDish().setOnClickListener(new View.OnClickListener() {
             @Override

@@ -30,7 +30,6 @@ import com.bentonow.bentonow.model.User;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.loopj.android.http.TextHttpResponseHandler;
-import com.squareup.picasso.Picasso;
 
 import org.apache.http.Header;
 
@@ -137,19 +136,6 @@ public class MainActivity extends Activity {
         Menu.set(responseString);
         Stock.set(responseString);
         Settings.set(responseString);
-
-        Menu menu = Menu.get();
-
-        if (menu != null) {
-            for (Item item : menu.items) {
-                if (item.image1 == null || item.image1.isEmpty()) continue;
-                try {
-                    Picasso.with(getApplicationContext()).load(item.image1).fetch(null);
-                    Log.i(TAG, "caching: " + item.image1);
-                } catch (Exception ignore) {
-                }
-            }
-        }
 
         checkFirstRun();
     }

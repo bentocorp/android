@@ -18,6 +18,7 @@ import android.media.ThumbnailUtils;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.controllers.BentoApplication;
 import com.nostra13.universalimageloader.cache.disc.impl.BaseDiskCache;
+import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -31,16 +32,17 @@ import java.io.File;
 public class ImageUtils {
 
     private static ImageLoader imageLoader;
-    private static DisplayImageOptions imgOptions;
     private static File cacheDir;
 
     public static ImageLoader initImageLoader() {
         if (imageLoader == null) {
-            ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(BentoApplication.instance).threadPriority(5)
-                    .diskCache(new BaseDiskCache(getImageDirectory(BentoApplication.instance)) {
-                    })// .writeDebugLogs()
-                    .tasksProcessingOrder(QueueProcessingType.LIFO)
-                    .memoryCacheExtraOptions(800, 800)
+            ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(BentoApplication.instance).threadPriority(3)
+                    .tasksProcessingOrder(QueueProcessingType.FIFO)
+                    .diskCacheExtraOptions(800, 800, null)
+                    .memoryCache(new LruMemoryCache(2 * 1024 * 1024))
+                    .memoryCacheSize(2 * 1024 * 1024)
+                    .diskCacheSize(50 * 1024 * 1024)
+                    .diskCacheFileCount(40)
                     .build();
             imageLoader = ImageLoader.getInstance();
             imageLoader.init(config);
@@ -60,16 +62,24 @@ public class ImageUtils {
         initImageLoader().clearDiskCache();
     }
 
-    public static DisplayImageOptions dishImageOptions() {
-        if (imgOptions == null)
-            imgOptions = new DisplayImageOptions.Builder()
-                    .showImageOnLoading(R.drawable.menu_placeholder)
-                    .showImageForEmptyUri(R.drawable.menu_placeholder)
-                    .showImageOnFail(R.drawable.menu_placeholder)
-                    .cacheInMemory(true).cacheOnDisk(true)
-                    .bitmapConfig(Config.ARGB_8888)
-                    .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2).build();
-        return imgOptions;
+    public static DisplayImageOptions dishMainImageOptions() {
+        return new DisplayImageOptions.Builder()
+                .showImageOnLoading(R.drawable.menu_placeholder)
+                .showImageForEmptyUri(R.drawable.menu_placeholder)
+                .showImageOnFail(R.drawable.menu_placeholder)
+                .cacheInMemory(true).cacheOnDisk(true)
+                .bitmapConfig(Config.ARGB_8888)
+                .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2).build();
+    }
+
+    public static DisplayImageOptions dishSideImageOptions() {
+        return new DisplayImageOptions.Builder()
+                .showImageOnLoading(R.drawable.menu_placeholder_side)
+                .showImageForEmptyUri(R.drawable.menu_placeholder_side)
+                .showImageOnFail(R.drawable.menu_placeholder_side)
+                .cacheInMemory(true).cacheOnDisk(true)
+                .bitmapConfig(Config.ARGB_8888)
+                .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2).build();
     }
 
 

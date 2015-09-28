@@ -55,7 +55,7 @@ public class SelectSideFixActivity extends BaseActivity implements View.OnClickL
             getSideHeader().getTxtDescription().setText(mDishMain.description);
             getSideHeader().getImgIsSoldOut().setVisibility(mDishMain.isSoldOut(true) ? View.VISIBLE : View.GONE);
 
-            ImageUtils.initImageLoader().displayImage(mDishMain.image1, getSideHeader().getImgMainSide(), ImageUtils.dishImageOptions());
+            ImageUtils.initImageLoader().displayImage(mDishMain.image1, getSideHeader().getImgMainSide(), ImageUtils.dishSideImageOptions());
             getSideHeader().getImgMainSide().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
