@@ -11,8 +11,8 @@
     tools:context="com.bentonow.bentonow.controllers.payment.EnterCreditCardActivity"
     >
 
-    <!-- actionbar -->
-    <include layout="@layout/actionbar"/>
+    <!-- bento_toolbar -->
+    <include layout="@layout/bento_toolbar"/>
 
     <com.bentonow.bentonow.ui.BackendTextView
         android:layout_width="fill_parent"

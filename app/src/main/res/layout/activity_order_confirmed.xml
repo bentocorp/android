@@ -7,7 +7,7 @@
     android:id="@+id/base_relative_layout"
     android:background="@color/bgcolor">
 
-    <!-- actionbar -->
+    <!-- bento_toolbar -->
     <LinearLayout
         android:id="@+id/ActionBarContainer"
         android:layout_width="match_parent"

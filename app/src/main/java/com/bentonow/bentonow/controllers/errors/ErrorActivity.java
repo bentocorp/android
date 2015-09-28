@@ -66,25 +66,15 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
         Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE);
 
-        Menu mCurrentMenu = Menu.get();
-
-        if (Settings.status.equals("open") && mCurrentMenu != null && mCurrentMenu.menu_type.equals(ConstantUtils.sFixed)) {
-            getTxtTitle().setText("We're currently doing something awesome!");
-            getTxtDescription().setText("We're preparing a new section.... check back soon!");
-
-            DebugUtils.logDebug(TAG, "setupNextMenu: " + "menu: fixed");
-            getBtnNextDayMenu().setVisibility(View.INVISIBLE);
+        if (Settings.status.equals("sold out")) {
+            getTxtTitle().setText(BackendText.get("sold-out-title"));
+            getTxtDescription().setText(BackendText.get("sold-out-text"));
         } else {
-            if (Settings.status.equals("sold out")) {
-                getTxtTitle().setText(BackendText.get("sold-out-title"));
-                getTxtDescription().setText(BackendText.get("sold-out-text"));
+            getTxtTitle().setText(BackendText.get("closed-title"));
+            if (hour >= 2000) {
+                getTxtDescription().setText(BackendText.get("closed-text-latenight"));
             } else {
-                getTxtTitle().setText(BackendText.get("closed-title"));
-                if (hour >= 2000) {
-                    getTxtDescription().setText(BackendText.get("closed-text-latenight"));
-                } else {
-                    getTxtDescription().setText(BackendText.get("closed-text"));
-                }
+                getTxtDescription().setText(BackendText.get("closed-text"));
             }
 
         }

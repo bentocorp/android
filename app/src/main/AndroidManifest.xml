@@ -25,8 +25,7 @@
             android:name=".controllers.init.MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleInstance"
-            android:screenOrientation="portrait"
-            android:theme="@style/fullscreen">
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -41,13 +40,15 @@
             android:screenOrientation="portrait"></activity>
         <activity
             android:name=".controllers.init.GettingStartedActivity"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".controllers.help.HelpActivity"
             android:screenOrientation="portrait"></activity>
         <activity
             android:name=".controllers.order.BuildBentoActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".controllers.order.BuildFixedBentoActivity"
             android:screenOrientation="portrait"></activity>
         <activity
             android:name=".controllers.geolocation.DeliveryLocationActivity"
@@ -60,6 +61,9 @@
             android:screenOrientation="portrait"></activity>
         <activity
             android:name=".controllers.order.SelectSideActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".controllers.order.SelectSideFixActivity"
             android:screenOrientation="portrait"></activity>
         <activity
             android:name=".controllers.session.SignUpActivity"

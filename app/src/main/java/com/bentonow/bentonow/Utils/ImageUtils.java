@@ -31,6 +31,7 @@ import java.io.File;
 public class ImageUtils {
 
     private static ImageLoader imageLoader;
+    private static DisplayImageOptions imgOptions;
     private static File cacheDir;
 
     public static ImageLoader initImageLoader() {
@@ -39,11 +40,10 @@ public class ImageUtils {
                     .diskCache(new BaseDiskCache(getImageDirectory(BentoApplication.instance)) {
                     })// .writeDebugLogs()
                     .tasksProcessingOrder(QueueProcessingType.LIFO)
-                    .memoryCacheExtraOptions(700, 700)
+                    .memoryCacheExtraOptions(800, 800)
                     .build();
             imageLoader = ImageLoader.getInstance();
             imageLoader.init(config);
-            L.writeLogs(false);
         }
         return imageLoader;
     }
@@ -61,14 +61,15 @@ public class ImageUtils {
     }
 
     public static DisplayImageOptions dishImageOptions() {
-        DisplayImageOptions options = new DisplayImageOptions.Builder()
-                .showImageOnLoading(R.drawable.menu_placeholder)
-                .showImageForEmptyUri(R.drawable.menu_placeholder)
-                .showImageOnFail(R.drawable.menu_placeholder)
-                .cacheInMemory(true).cacheOnDisk(true)
-                .bitmapConfig(Config.ARGB_8888)
-                .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2).build();
-        return options;
+        if (imgOptions == null)
+            imgOptions = new DisplayImageOptions.Builder()
+                    .showImageOnLoading(R.drawable.menu_placeholder)
+                    .showImageForEmptyUri(R.drawable.menu_placeholder)
+                    .showImageOnFail(R.drawable.menu_placeholder)
+                    .cacheInMemory(true).cacheOnDisk(true)
+                    .bitmapConfig(Config.ARGB_8888)
+                    .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2).build();
+        return imgOptions;
     }
 
 

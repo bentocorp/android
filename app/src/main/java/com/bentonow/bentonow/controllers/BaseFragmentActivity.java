@@ -39,7 +39,7 @@ public class BaseFragmentActivity extends FragmentActivity {
 
         Menu mCurrentMenu = Menu.get();
 
-        if (mCurrentMenu == null || mCurrentMenu.menu_type.equals("fixed")) {
+        if (mCurrentMenu == null) {
             BentoNowUtils.openMainActivity(this);
         }
     }

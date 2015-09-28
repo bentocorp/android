@@ -1,14 +1,15 @@
 /**
  * @author Kokusho Torres
- * 08/10/2014
+ * 27/10/2015
  */
 package com.bentonow.bentonow.ui.wrapper;
 
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+
+import me.grantland.widget.AutofitTextView;
 
 public class ItemBentoFixWrapper {
 
@@ -16,17 +17,17 @@ public class ItemBentoFixWrapper {
 
     private ImageView img_dish_fixed = null;
     private ImageView img_sold_out = null;
-    private ImageView img_action_star = null;
-    private TextView txt_article_name = null;
+    private AutofitTextView txt_title = null;
+    private AutofitTextView btn_add_to_bento = null;
 
     public ItemBentoFixWrapper(View base) {
         this.base = base;
     }
 
-    public TextView getTxtArticleName() {
-        if (img_dish_fixed == null)
-            img_dish_fixed = (TextView) base.findViewById(R.id.img_dish_fixed);
-        return img_dish_fixed;
+    public AutofitTextView getBtnAddToBento() {
+        if (btn_add_to_bento == null)
+            btn_add_to_bento = (AutofitTextView) base.findViewById(R.id.btn_add_to_bento);
+        return btn_add_to_bento;
     }
 
     public ImageView getImageDish() {
@@ -41,10 +42,10 @@ public class ItemBentoFixWrapper {
         return img_sold_out;
     }
 
-    public ImageView getImageStar() {
-        if (img_action_star == null)
-            img_action_star = (ImageView) base.findViewById(R.id.img_action_star);
-        return img_action_star;
+    public AutofitTextView getTxtTitle() {
+        if (txt_title == null)
+            txt_title = (AutofitTextView) base.findViewById(R.id.txt_title);
+        return txt_title;
     }
 
 }

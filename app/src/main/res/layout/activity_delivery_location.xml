@@ -15,7 +15,7 @@
         android:layout_alignParentTop="true"
         android:orientation="vertical">
 
-        <include layout="@layout/actionbar"/>
+        <include layout="@layout/bento_toolbar"/>
     </LinearLayout>
 
     <!-- content -->

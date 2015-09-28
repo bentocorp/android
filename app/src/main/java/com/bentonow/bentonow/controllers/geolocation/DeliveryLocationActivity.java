@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.LocationUtils;
@@ -33,7 +34,6 @@ import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.errors.BummerActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
-import com.bentonow.bentonow.controllers.order.BuildBentoActivity;
 import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
@@ -357,19 +357,14 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                     if (User.current != null)
                         startActivity(new Intent(this, CompleteOrderActivity.class));
                     else if (User.current == null) {
-                        Intent intent = new Intent(this, BuildBentoActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
+                        BentoNowUtils.openBuildBentoActivity(this);
                     } else {
-                        Intent intent = new Intent(this, BuildBentoActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
+
+                        BentoNowUtils.openBuildBentoActivity(this);
                     }
                     break;
                 case NONE:
-                    Intent intent = new Intent(this, BuildBentoActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
+                    BentoNowUtils.openBuildBentoActivity(this);
                     break;
             }
 

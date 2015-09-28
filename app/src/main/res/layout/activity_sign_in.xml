@@ -5,14 +5,14 @@
     android:layout_height="match_parent"
     android:background="@color/bgcolor"
     android:orientation="vertical">
-    <!-- actionbar -->
+    <!-- bento_toolbar -->
     <LinearLayout
         android:id="@+id/ActionBarContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <include layout="@layout/actionbar" />
+        <include layout="@layout/bento_toolbar" />
 
     </LinearLayout>
 

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/bgcolor">
 
-    <!-- actionbar -->
+    <!-- bento_toolbar -->
     <LinearLayout
         android:id="@+id/ActionBarContainer"
         android:layout_width="match_parent"
@@ -15,7 +15,7 @@
         android:layout_centerHorizontal="true"
         android:orientation="vertical">
 
-        <include layout="@layout/actionbar" />
+        <include layout="@layout/bento_toolbar" />
     </LinearLayout>
 
     <!-- Focus hack start -->

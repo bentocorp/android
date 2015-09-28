@@ -15,13 +15,11 @@ import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
-import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.controllers.errors.ErrorVersionActivity;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
-import com.bentonow.bentonow.controllers.order.BuildBentoActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Item;
 import com.bentonow.bentonow.model.Menu;
@@ -188,10 +186,7 @@ public class MainActivity extends Activity {
             BentoNowUtils.openErrorActivity(this);
             finish();
         } else if (Order.pendingOrders()) {
-            Intent intent = new Intent(this, BuildBentoActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            startActivity(intent);
-
+            BentoNowUtils.openBuildBentoActivity(this);
             finish();
         } else {
             waitForUserLocation();
@@ -236,15 +231,12 @@ public class MainActivity extends Activity {
     void goNext() {
         Menu mCurrentMenu = Menu.get();
 
-        if (mCurrentMenu == null || !Settings.status.equals("open") || mCurrentMenu.menu_type.equals(ConstantUtils.sFixed)) {
+        if (mCurrentMenu == null || !Settings.status.equals("open")) {
             Log.i(TAG, "goNext ErrorActivity");
             BentoNowUtils.openErrorActivity(this);
             finish();
         } else if (Settings.isInServiceArea(User.location) || Settings.isInServiceArea(Order.location)) {
-            Log.i(TAG, "goNext BuildBentoActivity");
-            Intent intent = new Intent(this, BuildBentoActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            startActivity(intent);
+            BentoNowUtils.openBuildBentoActivity(this);
         } else {
             Log.i(TAG, "goNext DeliveryLocationActivity");
             MixpanelUtils.track("Opened App Outside of Service Area");

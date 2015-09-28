@@ -3,42 +3,58 @@ package com.bentonow.bentonow.controllers.order;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
-import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseActivity;
+import com.bentonow.bentonow.controllers.adapter.BuildBentoFixListAdapter;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.session.SettingsActivity;
 import com.bentonow.bentonow.controllers.session.SignUpActivity;
+import com.bentonow.bentonow.listener.ListenerMainDishFix;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Item;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
+import com.bentonow.bentonow.model.Stock;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.order.OrderItem;
+import com.bentonow.bentonow.ui.BackendButton;
 import com.bentonow.bentonow.ui.CustomDialog;
-import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
-public class BuildFixedBentoActivity extends BaseActivity implements View.OnClickListener {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class BuildFixedBentoActivity extends BaseActivity implements View.OnClickListener, ListenerMainDishFix {
 
     static final String TAG = "BuildFixedBentoActivity";
 
     private ImageView menuItemBuildBento;
-
+    private ImageView actionbarLeftBtn;
+    private TextView txtToolbarTitle;
+    private TextView txtToolbarBadge;
+    private BackendButton btnComplete;
+    private ListView mListBento;
     private CustomDialog dialog;
 
-    private int orderIndex = 0;
+    private BuildBentoFixListAdapter aListBento;
+
+    private ArrayList<Item> aSideDish = new ArrayList<>();
+
     public static boolean bIsOpen = false;
+
+    private Menu mMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,57 +62,75 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
 
         setContentView(R.layout.activity_build_fix_bento);
 
-        TextView actionbar_title = (TextView) findViewById(R.id.actionbar_title);
-        actionbar_title.setText(BackendText.get("build-title"));
+        getTxtToolbarTitle().setText(BackendText.get("build-title"));
 
-        ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
-        actionbar_left_btn.setImageResource(R.drawable.ic_ab_user);
-        actionbar_left_btn.setOnClickListener(this);
-
+        getActionbarLeftBtn().setImageResource(R.drawable.ic_ab_user);
         getMenuItemBuildBento().setImageResource(R.drawable.ic_ab_bento);
+
+        getActionbarLeftBtn().setOnClickListener(this);
         getMenuItemBuildBento().setOnClickListener(this);
+        getButtonComplete().setOnClickListener(this);
 
-        initOrder();
+        getListBento().setAdapter(getAdapterListBento());
 
-        Log.i(TAG, new Gson().toJson(Menu.list));
     }
 
-    void initOrder() {
+    private void addMainDishes() {
+        mMenu = Menu.get();
+
+        if (mMenu == null) {
+            dialog = new CustomDialog(this, "There is no current menu to show", "OK", null);
+            dialog.setOnOkPressed(this);
+            dialog.show();
+        } else {
+            getAdapterListBento().clear();
+            for (Item item : mMenu.items) {
+                if (item.type.equals("main"))
+                    getAdapterListBento().add(item);
+            }
+
+            setSideDishList();
+        }
+
+        getAdapterListBento().addAll();
     }
 
-    public void updateUI() {
+    private void updateUI() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                getTxtToolbarBadge().setVisibility(Order.current.OrderItems.size() != 0 ? View.VISIBLE : View.INVISIBLE);
+                getTxtToolbarBadge().setText(String.valueOf(Order.current.OrderItems.size()));
+
+                if (!Order.current.OrderItems.isEmpty() && !Stock.isSold()) {
+                    getButtonComplete().setBackgroundColor(getResources().getColor(R.color.btn_green));
+                    getButtonComplete().setText(BackendText.get("build-button-2"));
+                } else {
+                    getButtonComplete().setBackgroundColor(getResources().getColor(R.color.gray));
+                    getButtonComplete().setText(BackendText.get("build-button-1"));
+                }
+            }
+        });
     }
 
-    void autocomplete() {
-        OrderItem orderItem = Order.current.OrderItems.get(0);
-        Item item;
+    private void autocompleteBento(Item mDish) {
+        OrderItem orderItem = new OrderItem();
 
         if (orderItem.items.get(0) == null) {
-            orderItem.items.set(0, Item.getFirstAvailable("main", null));
+            if (mDish == null)
+                orderItem.items.set(0, Item.getFirstAvailable("main", null));
+            else
+                orderItem.items.set(0, mDish);
         }
 
-        int[] ids = new int[4];
-
-        for (int i = 1; i < 5; ++i) {
-            if (orderItem.items.get(i) == null) {
-                item = Item.getFirstAvailable("side", ids);
-
-                if (item == null) continue;
-
-                ids[i - 1] = item.itemId;
-
-                item = item.clone();
-                item.type += i;
-                orderItem.items.set(i, item);
-            }
+        for (int a = 0; a < aSideDish.size(); a++) {
+            orderItem.items.set(a + 1, aSideDish.get(a));
         }
+
+        Order.current.OrderItems.add(orderItem);
 
         updateUI();
     }
-
-    //****
-    // Click
-    //****
 
     @Override
     public void onClick(View v) {
@@ -106,15 +140,11 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
                 startActivity(intent);
                 break;
             case R.id.actionbar_right_btn:
-                if (Order.current.OrderItems.get(orderIndex).isComplete()) {
-                    onContinueOrderPressed(null);
+                if (!Order.current.OrderItems.isEmpty()) {
+                    onContinueOrderPressed();
                 } else {
-                    dialog = new CustomDialog(
-                            this,
-                            BackendText.get("build-not-complete-text"),
-                            BackendText.get("build-not-complete-confirmation-2"),
-                            BackendText.get("build-not-complete-confirmation-1")
-                    );
+                    dialog = new CustomDialog(this, BackendText.get("build-not-complete-text"),
+                            BackendText.get("build-not-complete-confirmation-2"), BackendText.get("build-not-complete-confirmation-1"));
                     dialog.setOnOkPressed(this);
                     dialog.setOnCancelPressed(this);
                     dialog.show();
@@ -122,86 +152,110 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
                 break;
             case R.id.btn_ok:
                 dialog.dismiss();
-                autocomplete();
+                autocompleteBento(null);
 
-                if (Order.countCompletedOrders() > 0) {
-                    onContinueOrderPressed(null);
-                }
+                onContinueOrderPressed();
                 break;
-            case R.id.btn_cancel:
-                dialog.dismiss();
-
-                if (Order.current.OrderItems.size() > 1) {
-                    Order.current.OrderItems.remove(orderIndex);
-                    orderIndex = Order.current.OrderItems.size() - 1;
-                    onContinueOrderPressed(null);
-                }
+            case R.id.btn_continue:
+                onContinueOrderPressed();
                 break;
         }
     }
 
 
-    public void onContinueOrderPressed(View view) {
-        if (!Order.current.OrderItems.get(orderIndex).isComplete()) {
-            if (Order.current.OrderItems.get(orderIndex).items.get(0) == null) {
-                startActivity(new Intent(this, SelectMainActivity.class));
-            } else if (Order.current.OrderItems.get(orderIndex).items.get(1) == null) {
-                Intent intent = new Intent(this, SelectSideActivity.class);
-                intent.putExtra("orderIndex", orderIndex);
-                intent.putExtra("itemIndex", 1);
-                startActivity(intent);
-            } else if (Order.current.OrderItems.get(orderIndex).items.get(2) == null) {
-                Intent intent = new Intent(this, SelectSideActivity.class);
-                intent.putExtra("orderIndex", orderIndex);
-                intent.putExtra("itemIndex", 2);
-                startActivity(intent);
-            } else if (Order.current.OrderItems.get(orderIndex).items.get(3) == null) {
-                Intent intent = new Intent(this, SelectSideActivity.class);
-                intent.putExtra("orderIndex", orderIndex);
-                intent.putExtra("itemIndex", 3);
-                startActivity(intent);
-            } else if (Order.current.OrderItems.get(orderIndex).items.get(4) == null) {
-                Intent intent = new Intent(this, SelectSideActivity.class);
-                intent.putExtra("orderIndex", orderIndex);
-                intent.putExtra("itemIndex", 4);
-                startActivity(intent);
+    private void onContinueOrderPressed() {
+        if (!Order.current.OrderItems.isEmpty()) {
+
+            boolean bOrderComplete = true;
+            for (OrderItem mOrder : Order.current.OrderItems) {
+                bOrderComplete = mOrder.isComplete();
+                if (!bOrderComplete)
+                    return;
             }
-        } else if (User.current == null) {
-            track();
-            startActivity(new Intent(this, SignUpActivity.class));
-        } else if (Order.location == null || Order.address == null) {
-            Intent intent = new Intent(this, DeliveryLocationActivity.class);
-            intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.COMPLETE_ORDER);
-            startActivity(intent);
-        } else {
-            if (!BentoNowUtils.isSoldOutOrder(Order.current.OrderItems.get(orderIndex))) {
-                Order.current.OrderItems.get(orderIndex).bIsSoldoOut = false;
-                track();
-                startActivity(new Intent(this, CompleteOrderActivity.class));
-            } else
-                WidgetsUtils.createShortToast(R.string.error_sold_out_items);
+
+            if (bOrderComplete)
+                if (User.current == null) {
+                    trackBuildBentos();
+                    startActivity(new Intent(this, SignUpActivity.class));
+                } else if (Order.location == null || Order.address == null) {
+                    Intent intent = new Intent(this, DeliveryLocationActivity.class);
+                    intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.COMPLETE_ORDER);
+                    startActivity(intent);
+                } else {
+                    trackBuildBentos();
+                    startActivity(new Intent(this, CompleteOrderActivity.class));
+                }
+            else
+                WidgetsUtils.createShortToast("There are not enough dishes to build a bento, try again later");
+        } else
+            WidgetsUtils.createShortToast("Add some Bentos in your cart");
+    }
+
+    private void trackBuildBentos() {
+        try {
+            for (OrderItem item : Order.current.OrderItems) {
+
+                JSONObject params = new JSONObject();
+                params.put("main", item.items.get(0) == null ? "0" : item.items.get(0).itemId);
+                params.put("side1", item.items.get(1) == null ? "0" : item.items.get(1).itemId);
+                params.put("side2", item.items.get(2) == null ? "0" : item.items.get(2).itemId);
+                params.put("side3", item.items.get(3) == null ? "0" : item.items.get(3).itemId);
+                params.put("side4", item.items.get(4) == null ? "0" : item.items.get(4).itemId);
+
+                MixpanelUtils.track("Bento Requested", params);
+            }
+        } catch (Exception e) {
+            DebugUtils.logError("trackBuildBentos()", e);
         }
     }
 
-    //****
-    // Mixpanel
-    //****
-
-    private void track() {
-        try {
-            OrderItem item = Order.current.OrderItems.get(orderIndex);
-
-            JSONObject params = new JSONObject();
-            params.put("main", item.items.get(0) == null ? "0" : item.items.get(0).itemId);
-            params.put("side1", item.items.get(1) == null ? "0" : item.items.get(1).itemId);
-            params.put("side2", item.items.get(2) == null ? "0" : item.items.get(2).itemId);
-            params.put("side3", item.items.get(3) == null ? "0" : item.items.get(3).itemId);
-            params.put("side4", item.items.get(4) == null ? "0" : item.items.get(4).itemId);
-
-            MixpanelUtils.track("Bento Requested", params);
-        } catch (Exception e) {
-            e.printStackTrace();
+    private void setSideDishList() {
+        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_ORDER_SOLD_OUT)) {
+            aSideDish.clear();
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_ORDER_SOLD_OUT, false);
         }
+
+        if (aSideDish.isEmpty()) {
+            int[] ids = new int[4];
+            Item item;
+
+            for (int i = 1; i < 5; ++i) {
+                item = Item.getFirstAvailable("side", ids);
+
+                if (item == null)
+                    continue;
+
+                ids[i - 1] = item.itemId;
+
+                item = item.clone();
+                item.type += i;
+                aSideDish.add(item);
+            }
+        }
+    }
+
+    private void openSideFixActivity(Item mDish) {
+        if (aSideDish.isEmpty())
+            WidgetsUtils.createShortToast("Empty Side Message");
+        else {
+            Intent iSideFixActivity = new Intent(this, SelectSideFixActivity.class);
+            iSideFixActivity.putExtra(Item.TAG, mDish);
+            iSideFixActivity.putParcelableArrayListExtra(Item.TAG_LIST, aSideDish);
+            startActivity(iSideFixActivity);
+        }
+    }
+
+
+    @Override
+    public void onDishClick(final int iDishPosition) {
+        openSideFixActivity(getAdapterListBento().getItem(iDishPosition));
+    }
+
+    @Override
+    public void onAddToBentoClick(int iDishPosition) {
+        autocompleteBento(getAdapterListBento().getItem(iDishPosition));
+
+        WidgetsUtils.createShortToast(R.string.added_to_cart);
     }
 
     @Override
@@ -209,12 +263,14 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
         super.onResume();
         bIsOpen = true;
 
+
         if (Order.current == null) {
             Order.current = new Order();
 
             MixpanelUtils.track("Began Building A Bento");
         }
 
+        addMainDishes();
         updateUI();
     }
 
@@ -232,9 +288,48 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
         bIsOpen = false;
     }
 
+
+    private ImageView getActionbarLeftBtn() {
+        if (actionbarLeftBtn == null)
+            actionbarLeftBtn = (ImageView) findViewById(R.id.actionbar_left_btn);
+        return actionbarLeftBtn;
+    }
+
+    private TextView getTxtToolbarTitle() {
+        if (txtToolbarTitle == null)
+            txtToolbarTitle = (TextView) findViewById(R.id.actionbar_title);
+        return txtToolbarTitle;
+    }
+
+    private TextView getTxtToolbarBadge() {
+        if (txtToolbarBadge == null)
+            txtToolbarBadge = (TextView) findViewById(R.id.actionbar_right_badge);
+        return txtToolbarBadge;
+    }
+
     private ImageView getMenuItemBuildBento() {
         if (menuItemBuildBento == null)
             menuItemBuildBento = (ImageView) findViewById(R.id.actionbar_right_btn);
         return menuItemBuildBento;
     }
+
+    private ListView getListBento() {
+        if (mListBento == null)
+            mListBento = (ListView) findViewById(R.id.list_bento);
+        return mListBento;
+    }
+
+    private BuildBentoFixListAdapter getAdapterListBento() {
+        if (aListBento == null)
+            aListBento = new BuildBentoFixListAdapter(this, this);
+        return aListBento;
+    }
+
+    private BackendButton getButtonComplete() {
+        if (btnComplete == null)
+            btnComplete = (BackendButton) findViewById(R.id.btn_continue);
+        return btnComplete;
+    }
+
+
 }

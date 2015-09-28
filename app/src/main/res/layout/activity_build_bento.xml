@@ -14,7 +14,7 @@
         android:layout_height="?android:attr/actionBarSize"
         android:layout_alignParentTop="true">
 
-        <include layout="@layout/actionbar" />
+        <include layout="@layout/bento_toolbar" />
 
     </RelativeLayout>
 

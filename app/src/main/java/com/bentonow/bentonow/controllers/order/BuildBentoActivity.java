@@ -186,11 +186,11 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
 
         OrderItem item = Order.current.OrderItems.get(orderIndex);
 
-        mainHolder.setData(item.items.get(0), false);
-        side1Holder.setData(item.items.get(1), false);
-        side2Holder.setData(item.items.get(2), false);
-        side3Holder.setData(item.items.get(3), false);
-        side4Holder.setData(item.items.get(4), false);
+        mainHolder.setData(item.items.get(0), true);
+        side1Holder.setData(item.items.get(1), true);
+        side2Holder.setData(item.items.get(2), true);
+        side3Holder.setData(item.items.get(3), true);
+        side4Holder.setData(item.items.get(4), true);
     }
 
     void autocomplete() {
@@ -342,12 +342,15 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
             intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.COMPLETE_ORDER);
             startActivity(intent);
         } else {
-            if (!BentoNowUtils.isSoldOutOrder(Order.current.OrderItems.get(orderIndex))) {
+            String sSoldOutItems = BentoNowUtils.calculateSoldOutItems();
+            if (sSoldOutItems.isEmpty()) {
                 Order.current.OrderItems.get(orderIndex).bIsSoldoOut = false;
                 track();
                 startActivity(new Intent(this, CompleteOrderActivity.class));
-            } else
-                WidgetsUtils.createShortToast(R.string.error_sold_out_items);
+            } else {
+                updateUI();
+                WidgetsUtils.createShortToast(String.format(getString(R.string.error_sold_out_items), sSoldOutItems));
+            }
         }
     }
 

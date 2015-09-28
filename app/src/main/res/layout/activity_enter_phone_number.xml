@@ -6,7 +6,7 @@
                 android:id="@+id/base_relative_layout"
                 android:background="@color/bgcolor"
     >
-    <!-- actionbar -->
+    <!-- bento_toolbar -->
     <LinearLayout
         android:id="@+id/ActionBarContainer"
         android:orientation="vertical"
@@ -15,7 +15,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         >
-        <include layout="@layout/actionbar" />
+        <include layout="@layout/bento_toolbar" />
     </LinearLayout>
 
     <!-- container -->

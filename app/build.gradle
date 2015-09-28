@@ -54,11 +54,11 @@ android {
     productFlavors {
         production {
             applicationId "com.bentonow.bentonow"
-            versionName '1.6-rc3'
+            versionName '1.6-rc4'
         }
         stage {
             applicationId "com.bentonow.bentonow.stage"
-            versionName '1.6-rc3-dev'
+            versionName '1.6-rc4-dev'
         }
     }
 
@@ -78,7 +78,7 @@ dependencies {
     compile 'com.stripe:stripe-android:1.0.0'
     compile 'com.facebook.android:facebook-android-sdk:4.1.2'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.4'
-    compile('com.crashlytics.sdk.android:crashlytics:2.5.1@aar') {
+    compile('com.crashlytics.sdk.android:crashlytics:2.3.0@aar') {
         transitive = true;
     }
     compile 'me.grantland:autofittextview:0.2.+'

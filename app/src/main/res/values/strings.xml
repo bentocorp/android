@@ -40,7 +40,7 @@
     <string name="alert_error_mismatch">Phone numbers entered must match.</string>
 
     <string name="error_web_request">There is an error, please try again later</string>
-    <string name="error_sold_out_items">There are sold out items, please change them before continue</string>
+    <string name="error_sold_out_items">There are sold out items, please change them before continue \n%s</string>
 
 
     <string name="cardNumber">1234 5678 9012 3456</string>
@@ -67,8 +67,10 @@
     <string name="added_to_bento">ADDED TO BENTO</string>
     <string name="add_to_bento">ADD TO BENTO</string>
     <string name="add_bento_to_cart">ADD BENTO TO CART</string>
+    <string name="added_to_cart">Added To Cart</string>
     <string name="side_dishes">Side Dishes</string>
     <string name="main_dishes">Main Dishes</string>
+    <string name="main_dish">Main Dish</string>
     <string name="question_concerns">Questions or Concerns?</string>
     <string name="btn_ok_text">Ok</string>
     <string name="zero_dollar">$0</string>

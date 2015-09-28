@@ -3,11 +3,14 @@ package com.bentonow.bentonow.Utils;
 import android.content.Context;
 import android.content.Intent;
 
+import com.bentonow.bentonow.BuildConfig;
 import com.bentonow.bentonow.controllers.errors.ErrorActivity;
 import com.bentonow.bentonow.controllers.init.MainActivity;
 import com.bentonow.bentonow.controllers.order.BuildBentoActivity;
+import com.bentonow.bentonow.controllers.order.BuildFixedBentoActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Item;
+import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Stock;
 import com.bentonow.bentonow.model.User;
@@ -30,8 +33,11 @@ public class BentoNowUtils {
 
 
     public static int getCurrentTime() {
-        // return 123000;
-        return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
+        if (BuildConfig.DEBUG)
+            //return 183000;
+            return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
+        else
+            return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
     }
 
     public static String getMixpanelDate() {
@@ -67,11 +73,19 @@ public class BentoNowUtils {
     }
 
     public static void openBuildBentoActivity(Context mContext) {
-        if (!BuildBentoActivity.bIsOpen) {
-            Intent intent = new Intent(mContext, BuildBentoActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            mContext.startActivity(intent);
-        }
+        Menu mCurrentMenu = Menu.get();
+
+        Intent iBuildBento;
+
+        if (mCurrentMenu.menu_type.equals(ConstantUtils.sFixed))
+            iBuildBento = new Intent(mContext, BuildFixedBentoActivity.class);
+        else
+            iBuildBento = new Intent(mContext, BuildBentoActivity.class);
+
+        iBuildBento.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        if (!BuildBentoActivity.bIsOpen)
+            mContext.startActivity(iBuildBento);
     }
 
     public static void openErrorActivity(Context mContext) {
@@ -213,7 +227,7 @@ public class BentoNowUtils {
         for (int a = 0; a < Order.current.OrderItems.size(); a++) {
             boolean bIsSoldOut = false;
             for (Item mItem : Order.current.OrderItems.get(a).items) {
-                if (Stock.isSold(mItem.itemId, true)) {
+                if (mItem.isSoldOut(true)) {
                     bIsSoldOut = true;
                     if (!sSoldOutItems.contains(mItem.name))
                         sSoldOutItems += "\n- " + mItem.name;
@@ -229,7 +243,7 @@ public class BentoNowUtils {
     public static boolean isSoldOutOrder(OrderItem mOrder) {
         boolean bIsSoldOut = false;
         for (Item mItem : mOrder.items) {
-            if (Stock.isSold(mItem.itemId, true)) {
+            if (mItem.isSoldOut(true)) {
                 bIsSoldOut = true;
                 DebugUtils.logDebug("calculateSoldOutItems:", mItem.name);
             }
