@@ -1,6 +1,5 @@
 package com.bentonow.bentonow.controllers.init;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,11 +16,10 @@ import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
-import com.bentonow.bentonow.controllers.BentoApplication;
+import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.errors.ErrorVersionActivity;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.model.BackendText;
-import com.bentonow.bentonow.model.Item;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
@@ -36,7 +34,7 @@ import org.apache.http.Header;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends BaseFragmentActivity {
 
     static final String TAG = "MainActivity";
     int retry = 0;
@@ -83,22 +81,12 @@ public class MainActivity extends Activity {
             dialog.show();
         }
 
-        BentoApplication.onResume();
-        BentoApplication.status = "main";
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, "main");
 
         if (BuildConfig.DEBUG)
             getTxtVersion().setText(AndroidUtil.getAppVersionName(this));
 
         super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        Log.i(TAG, "onPause");
-
-        BentoApplication.onPause();
     }
 
     @Override
@@ -150,7 +138,7 @@ public class MainActivity extends Activity {
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
             } else {
-                Intent intent = new Intent(this, GettingStartedActivity.class);
+                Intent intent = new Intent(this, GettingStartedMenuActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
             }

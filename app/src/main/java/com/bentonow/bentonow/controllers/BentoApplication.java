@@ -36,7 +36,6 @@ public class BentoApplication extends Application {
     public static BentoApplication instance;
 
     private Handler mHandler = new Handler();
-    public static String status;
 
     @Override
     public void onCreate() {

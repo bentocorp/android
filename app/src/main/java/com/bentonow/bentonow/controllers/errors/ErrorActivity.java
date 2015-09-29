@@ -1,6 +1,5 @@
 package com.bentonow.bentonow.controllers.errors;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,12 +11,12 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
-import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
-import com.bentonow.bentonow.controllers.BentoApplication;
+import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
+import com.bentonow.bentonow.controllers.session.SettingsMenuActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Settings;
@@ -33,13 +32,15 @@ import java.util.Calendar;
 import java.util.Locale;
 
 
-public class ErrorActivity extends Activity implements View.OnClickListener {
+public class ErrorActivity extends BaseFragmentActivity implements View.OnClickListener {
     private static final String TAG = "ErrorActivity";
 
     private TextView txt_title;
     private TextView txt_description;
-    private TextView txt_email;
+    private EditText edit_txt_email;
     private Button btn_next_day_menu;
+    private ImageView actionbar_left_btn;
+    private ImageView actionbar_right_btn;
 
     public static boolean bIsOpen = false;
 
@@ -48,11 +49,13 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_error);
 
-        initActionbar();
+        getMenuItemInfo().setImageResource(R.drawable.ic_ab_help);
+        getMenuItemInfo().setOnClickListener(this);
 
-        BentoApplication.status = Settings.status;
+        getMenuItemProfile().setImageResource(R.drawable.ic_signup_profile);
+        getMenuItemProfile().setOnClickListener(this);
 
-        txt_email = (EditText) findViewById(R.id.txt_email);
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
 
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_STORE_CHANGIN, false);
     }
@@ -60,8 +63,6 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
     @Override
     protected void onResume() {
         bIsOpen = true;
-
-        BentoApplication.onResume();
 
         Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE);
@@ -79,7 +80,7 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
 
         }
 
-        BentoApplication.status = Settings.status;
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
 
         setupNextMenu();
 
@@ -90,7 +91,6 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
     protected void onPause() {
         super.onPause();
         bIsOpen = false;
-        BentoApplication.onPause();
 
         if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_STORE_CHANGIN))
             finish();
@@ -124,16 +124,6 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    void initActionbar() {
-        ImageView actionbar_right_btn = (ImageView) findViewById(R.id.actionbar_right_btn);
-        actionbar_right_btn.setImageResource(R.drawable.ic_ab_help);
-        actionbar_right_btn.setOnClickListener(this);
-
-        ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
-        actionbar_left_btn.setImageResource(R.drawable.ic_ab_back);
-        actionbar_left_btn.setOnClickListener(this);
-    }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -143,7 +133,8 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
                 startActivity(intent);
                 break;
             case R.id.actionbar_left_btn:
-                onBackPressed();
+                Intent iSettingsActivity = new Intent(this, SettingsMenuActivity.class);
+                startActivity(iSettingsActivity);
                 break;
         }
     }
@@ -167,11 +158,11 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
     }
 
     public void onSubmitPressed(View view) {
-        if (!Email.isValid(txt_email.getText().toString())) {
+        if (!Email.isValid(getEditTxtEmail().getText().toString())) {
             CustomDialog dialog = new CustomDialog(this, "Invalid email address.", null, "OK");
             dialog.show();
         } else {
-            User.requestCoupon(txt_email.getText().toString(), Settings.status, new TextHttpResponseHandler() {
+            User.requestCoupon(getEditTxtEmail().getText().toString(), Settings.status, new TextHttpResponseHandler() {
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
@@ -187,7 +178,7 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
                             BackendText.get("sold-out-confirmation-text") :
                             BackendText.get("closed-confirmation-text");
                     Log.i(TAG, responseString);
-                    txt_email.setText("");
+                    getEditTxtEmail().setText("");
                     CustomDialog dialog = new CustomDialog(
                             ErrorActivity.this,
                             message,
@@ -242,4 +233,24 @@ public class ErrorActivity extends Activity implements View.OnClickListener {
         return btn_next_day_menu;
     }
 
+    private ImageView getMenuItemInfo() {
+        if (actionbar_right_btn == null)
+            actionbar_right_btn = (ImageView) findViewById(R.id.actionbar_right_btn);
+
+        return actionbar_right_btn;
+    }
+
+    private ImageView getMenuItemProfile() {
+        if (actionbar_left_btn == null)
+            actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
+
+        return actionbar_left_btn;
+    }
+
+    private EditText getEditTxtEmail() {
+        if (edit_txt_email == null)
+            edit_txt_email = (EditText) findViewById(R.id.txt_email);
+
+        return edit_txt_email;
+    }
 }

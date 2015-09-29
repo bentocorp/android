@@ -24,11 +24,11 @@ import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
-import com.bentonow.bentonow.controllers.BaseActivity;
+import com.bentonow.bentonow.controllers.BaseMenuActivity;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.payment.EnterCreditCardActivity;
-import com.bentonow.bentonow.controllers.session.SignInActivity;
-import com.bentonow.bentonow.controllers.session.SignUpActivity;
+import com.bentonow.bentonow.controllers.session.SignInMenuActivity;
+import com.bentonow.bentonow.controllers.session.SignUpMenuActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Stock;
@@ -46,7 +46,7 @@ import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class CompleteOrderActivity extends BaseActivity implements View.OnClickListener, LazyListAdapterInterface, OnItemClickListener {
+public class CompleteOrderMenuActivity extends BaseMenuActivity implements View.OnClickListener, LazyListAdapterInterface, OnItemClickListener {
     private static final String TAG = "CompleteOrderActivity";
 
     TextView txt_address;
@@ -134,7 +134,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         super.onResume();
 
         if (User.current == null) {
-            startActivity(new Intent(this, SignUpActivity.class));
+            startActivity(new Intent(this, SignUpMenuActivity.class));
             finish();
         } else if (Order.location == null || Order.address == null) {
             Intent intent = new Intent(this, DeliveryLocationActivity.class);
@@ -203,7 +203,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                         DebugUtils.logError(TAG, "requestPromoCode(): " + e.getLocalizedMessage());
                     }
 
-                    new CustomDialog(CompleteOrderActivity.this, sError, null, "OK");
+                    new CustomDialog(CompleteOrderMenuActivity.this, sError, null, "OK");
                 }
 
 
@@ -282,7 +282,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                         startActivity(new Intent(this, EnterCreditCardActivity.class));
                         break;
                     case "sign_in":
-                        startActivity(new Intent(this, SignInActivity.class));
+                        startActivity(new Intent(this, SignInMenuActivity.class));
                         finish();
                         break;
                     case "promo_code":
@@ -439,9 +439,9 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                 track(error);
 
                 if (!error.equals("")) {
-                    dialog = new CustomDialog(CompleteOrderActivity.this, error, "Ok", null);
+                    dialog = new CustomDialog(CompleteOrderMenuActivity.this, error, "Ok", null);
                     dialog.show();
-                    dialog.setOnOkPressed(CompleteOrderActivity.this);
+                    dialog.setOnOkPressed(CompleteOrderMenuActivity.this);
                 }
             }
 
@@ -460,7 +460,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
                 dialog.dismiss();
 
-                startActivity(new Intent(CompleteOrderActivity.this, OrderConfirmedActivity.class));
+                startActivity(new Intent(CompleteOrderMenuActivity.this, OrderConfirmedMenuActivity.class));
                 Order.cleanUp();
                 finish();
             }

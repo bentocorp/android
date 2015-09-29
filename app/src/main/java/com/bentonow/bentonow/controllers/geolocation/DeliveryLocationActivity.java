@@ -37,7 +37,7 @@ import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.errors.BummerActivity;
 import com.bentonow.bentonow.controllers.fragment.MySupportMapFragment;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
-import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
+import com.bentonow.bentonow.controllers.order.CompleteOrderMenuActivity;
 import com.bentonow.bentonow.listener.OnCustomDragListener;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
@@ -52,12 +52,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.wsdcamp.anim.FadeInOut;
 
 import org.json.JSONArray;
@@ -328,7 +323,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                     break;
                 case COMPLETE_ORDER:
                     if (User.current != null)
-                        startActivity(new Intent(this, CompleteOrderActivity.class));
+                        startActivity(new Intent(this, CompleteOrderMenuActivity.class));
                     else if (User.current == null) {
                         BentoNowUtils.openBuildBentoActivity(this);
                     } else {

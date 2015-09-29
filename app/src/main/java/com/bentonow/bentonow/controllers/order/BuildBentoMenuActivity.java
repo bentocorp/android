@@ -14,10 +14,10 @@ import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
-import com.bentonow.bentonow.controllers.BaseActivity;
+import com.bentonow.bentonow.controllers.BaseMenuActivity;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
-import com.bentonow.bentonow.controllers.session.SettingsActivity;
-import com.bentonow.bentonow.controllers.session.SignUpActivity;
+import com.bentonow.bentonow.controllers.session.SettingsMenuActivity;
+import com.bentonow.bentonow.controllers.session.SignUpMenuActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Item;
 import com.bentonow.bentonow.model.Menu;
@@ -32,7 +32,7 @@ import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
-public class BuildBentoActivity extends BaseActivity implements View.OnClickListener {
+public class BuildBentoMenuActivity extends BaseMenuActivity implements View.OnClickListener {
 
     static final String TAG = "BuildBentoActivity";
 
@@ -228,7 +228,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.actionbar_left_btn:
-                Intent intent = new Intent(this, SettingsActivity.class);
+                Intent intent = new Intent(this, SettingsMenuActivity.class);
                 startActivity(intent);
                 break;
             case R.id.actionbar_right_btn:
@@ -267,34 +267,34 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
     }
 
     public void onAddMainPressed(View view) {
-        Intent intent = new Intent(this, SelectMainActivity.class);
+        Intent intent = new Intent(this, SelectMainMenuActivity.class);
         intent.putExtra("orderIndex", orderIndex);
         startActivity(intent);
     }
 
     public void onAddSide1Pressed(View view) {
-        Intent intent = new Intent(this, SelectSideActivity.class);
+        Intent intent = new Intent(this, SelectSideMenuActivity.class);
         intent.putExtra("orderIndex", orderIndex);
         intent.putExtra("itemIndex", 1);
         startActivity(intent);
     }
 
     public void onAddSide2Pressed(View view) {
-        Intent intent = new Intent(this, SelectSideActivity.class);
+        Intent intent = new Intent(this, SelectSideMenuActivity.class);
         intent.putExtra("orderIndex", orderIndex);
         intent.putExtra("itemIndex", 2);
         startActivity(intent);
     }
 
     public void onAddSide3Pressed(View view) {
-        Intent intent = new Intent(this, SelectSideActivity.class);
+        Intent intent = new Intent(this, SelectSideMenuActivity.class);
         intent.putExtra("orderIndex", orderIndex);
         intent.putExtra("itemIndex", 3);
         startActivity(intent);
     }
 
     public void onAddSide4Pressed(View view) {
-        Intent intent = new Intent(this, SelectSideActivity.class);
+        Intent intent = new Intent(this, SelectSideMenuActivity.class);
         intent.putExtra("orderIndex", orderIndex);
         intent.putExtra("itemIndex", 4);
         startActivity(intent);
@@ -312,31 +312,31 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
     public void onContinueOrderPressed(View view) {
         if (!Order.current.OrderItems.get(orderIndex).isComplete()) {
             if (Order.current.OrderItems.get(orderIndex).items.get(0) == null) {
-                startActivity(new Intent(this, SelectMainActivity.class));
+                startActivity(new Intent(this, SelectMainMenuActivity.class));
             } else if (Order.current.OrderItems.get(orderIndex).items.get(1) == null) {
-                Intent intent = new Intent(this, SelectSideActivity.class);
+                Intent intent = new Intent(this, SelectSideMenuActivity.class);
                 intent.putExtra("orderIndex", orderIndex);
                 intent.putExtra("itemIndex", 1);
                 startActivity(intent);
             } else if (Order.current.OrderItems.get(orderIndex).items.get(2) == null) {
-                Intent intent = new Intent(this, SelectSideActivity.class);
+                Intent intent = new Intent(this, SelectSideMenuActivity.class);
                 intent.putExtra("orderIndex", orderIndex);
                 intent.putExtra("itemIndex", 2);
                 startActivity(intent);
             } else if (Order.current.OrderItems.get(orderIndex).items.get(3) == null) {
-                Intent intent = new Intent(this, SelectSideActivity.class);
+                Intent intent = new Intent(this, SelectSideMenuActivity.class);
                 intent.putExtra("orderIndex", orderIndex);
                 intent.putExtra("itemIndex", 3);
                 startActivity(intent);
             } else if (Order.current.OrderItems.get(orderIndex).items.get(4) == null) {
-                Intent intent = new Intent(this, SelectSideActivity.class);
+                Intent intent = new Intent(this, SelectSideMenuActivity.class);
                 intent.putExtra("orderIndex", orderIndex);
                 intent.putExtra("itemIndex", 4);
                 startActivity(intent);
             }
         } else if (User.current == null) {
             track();
-            startActivity(new Intent(this, SignUpActivity.class));
+            startActivity(new Intent(this, SignUpMenuActivity.class));
         } else if (Order.location == null || Order.address == null) {
             Intent intent = new Intent(this, DeliveryLocationActivity.class);
             intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.COMPLETE_ORDER);
@@ -346,7 +346,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
             if (sSoldOutItems.isEmpty()) {
                 Order.current.OrderItems.get(orderIndex).bIsSoldoOut = false;
                 track();
-                startActivity(new Intent(this, CompleteOrderActivity.class));
+                startActivity(new Intent(this, CompleteOrderMenuActivity.class));
             } else {
                 updateUI();
                 WidgetsUtils.createShortToast(String.format(getString(R.string.error_sold_out_items), sSoldOutItems));

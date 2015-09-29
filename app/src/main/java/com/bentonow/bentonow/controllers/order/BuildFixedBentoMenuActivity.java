@@ -14,11 +14,11 @@ import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
-import com.bentonow.bentonow.controllers.BaseActivity;
+import com.bentonow.bentonow.controllers.BaseMenuActivity;
 import com.bentonow.bentonow.controllers.adapter.BuildBentoFixListAdapter;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
-import com.bentonow.bentonow.controllers.session.SettingsActivity;
-import com.bentonow.bentonow.controllers.session.SignUpActivity;
+import com.bentonow.bentonow.controllers.session.SettingsMenuActivity;
+import com.bentonow.bentonow.controllers.session.SignUpMenuActivity;
 import com.bentonow.bentonow.listener.ListenerMainDishFix;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Item;
@@ -33,10 +33,8 @@ import com.bentonow.bentonow.ui.CustomDialog;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
-public class BuildFixedBentoActivity extends BaseActivity implements View.OnClickListener, ListenerMainDishFix {
+public class BuildFixedBentoMenuActivity extends BaseMenuActivity implements View.OnClickListener, ListenerMainDishFix {
 
     static final String TAG = "BuildFixedBentoActivity";
 
@@ -136,7 +134,7 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.actionbar_left_btn:
-                Intent intent = new Intent(this, SettingsActivity.class);
+                Intent intent = new Intent(this, SettingsMenuActivity.class);
                 startActivity(intent);
                 break;
             case R.id.actionbar_right_btn:
@@ -176,14 +174,14 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
             if (bOrderComplete)
                 if (User.current == null) {
                     trackBuildBentos();
-                    startActivity(new Intent(this, SignUpActivity.class));
+                    startActivity(new Intent(this, SignUpMenuActivity.class));
                 } else if (Order.location == null || Order.address == null) {
                     Intent intent = new Intent(this, DeliveryLocationActivity.class);
                     intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.COMPLETE_ORDER);
                     startActivity(intent);
                 } else {
                     trackBuildBentos();
-                    startActivity(new Intent(this, CompleteOrderActivity.class));
+                    startActivity(new Intent(this, CompleteOrderMenuActivity.class));
                 }
             else
                 WidgetsUtils.createShortToast("There are not enough dishes to build a bento, try again later");
@@ -238,7 +236,7 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
         if (aSideDish.isEmpty())
             WidgetsUtils.createShortToast("Empty Side Message");
         else {
-            Intent iSideFixActivity = new Intent(this, SelectSideFixActivity.class);
+            Intent iSideFixActivity = new Intent(this, SelectSideFixMenuActivity.class);
             iSideFixActivity.putExtra(Item.TAG, mDish);
             iSideFixActivity.putParcelableArrayListExtra(Item.TAG_LIST, aSideDish);
             startActivity(iSideFixActivity);

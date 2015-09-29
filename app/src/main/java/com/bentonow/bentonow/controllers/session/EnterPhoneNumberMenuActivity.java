@@ -16,10 +16,10 @@ import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
-import com.bentonow.bentonow.controllers.BaseActivity;
+import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
-import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
+import com.bentonow.bentonow.controllers.order.CompleteOrderMenuActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.User;
@@ -35,7 +35,7 @@ import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class EnterPhoneNumberActivity extends BaseActivity implements View.OnClickListener {
+public class EnterPhoneNumberMenuActivity extends BaseFragmentActivity implements View.OnClickListener {
 
     static final String TAG = "EnterPhoneNumber";
 
@@ -89,7 +89,7 @@ public class EnterPhoneNumberActivity extends BaseActivity implements View.OnCli
         actionbar_right_btn.setOnClickListener(this);
     }
 
-    void setTextWatcher () {
+    void setTextWatcher() {
         txt_phone.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (event != null) {
@@ -151,7 +151,7 @@ public class EnterPhoneNumberActivity extends BaseActivity implements View.OnCli
         });
     }
 
-    boolean isValid () {
+    boolean isValid() {
         return txt_phone.getText().length() == 16;
     }
 
@@ -161,7 +161,7 @@ public class EnterPhoneNumberActivity extends BaseActivity implements View.OnCli
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.actionbar_left_btn:
-                startActivity(new Intent(this, SignUpActivity.class));
+                startActivity(new Intent(this, SignUpMenuActivity.class));
                 finish();
                 break;
             case R.id.actionbar_right_btn:
@@ -172,19 +172,19 @@ public class EnterPhoneNumberActivity extends BaseActivity implements View.OnCli
         }
     }
 
-    public void onPrivacyPolicyPressed (View view) {
+    public void onPrivacyPolicyPressed(View view) {
         Intent intent = new Intent(this, HelpActivity.class);
         intent.putExtra("privacy", true);
         startActivity(intent);
     }
 
-    public void onTermAndConditionsPressed (View view) {
+    public void onTermAndConditionsPressed(View view) {
         Intent intent = new Intent(this, HelpActivity.class);
         intent.putExtra("tos", true);
         startActivity(intent);
     }
 
-    public void onDonePressed (View view) {
+    public void onDonePressed(View view) {
         if (!isValid()) return;
 
         user.phone = txt_phone.getText().toString().replace("(", "").replace(")", "").replace(" ", "");
@@ -198,7 +198,7 @@ public class EnterPhoneNumberActivity extends BaseActivity implements View.OnCli
                 try {
                     JSONObject json = new JSONObject(responseString);
 
-                    CustomDialog dialog = new CustomDialog(EnterPhoneNumberActivity.this,json.has("error") ? json.getString("error") : json.getString("Error"),"OK",null);
+                    CustomDialog dialog = new CustomDialog(EnterPhoneNumberMenuActivity.this, json.has("error") ? json.getString("error") : json.getString("Error"), "OK", null);
                     dialog.show();
                     return;
                 } catch (Exception ignore) {
@@ -206,7 +206,7 @@ public class EnterPhoneNumberActivity extends BaseActivity implements View.OnCli
                 }
 
                 CustomDialog dialog = new CustomDialog(
-                        EnterPhoneNumberActivity.this,
+                        EnterPhoneNumberMenuActivity.this,
                         "An error occurred, please contact us",
                         "OK",
                         null
@@ -223,11 +223,11 @@ public class EnterPhoneNumberActivity extends BaseActivity implements View.OnCli
                 if (getIntent().getBooleanExtra("settings", false)) {
                     onBackPressed();
                 } else if (Order.location == null) {
-                    Intent intent = new Intent(EnterPhoneNumberActivity.this, DeliveryLocationActivity.class);
+                    Intent intent = new Intent(EnterPhoneNumberMenuActivity.this, DeliveryLocationActivity.class);
                     intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.COMPLETE_ORDER);
                     startActivity(intent);
                 } else {
-                    startActivity(new Intent(EnterPhoneNumberActivity.this, CompleteOrderActivity.class));
+                    startActivity(new Intent(EnterPhoneNumberMenuActivity.this, CompleteOrderMenuActivity.class));
                 }
 
                 BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);
@@ -241,13 +241,13 @@ public class EnterPhoneNumberActivity extends BaseActivity implements View.OnCli
 
     //region UI
 
-    void updateUI () {
+    void updateUI() {
         btn_done.setBackgroundResource(isValid() ? R.drawable.bg_green_cornered : R.drawable.btn_dark_gray);
 
         if (!isValid()) {
             txt_phone.setTextColor(getResources().getColor(R.color.orange));
             img_phone.setImageResource(R.drawable.ic_signup_phone_error);
-        }else{
+        } else {
             txt_phone.setTextColor(getResources().getColor(R.color.gray));
             img_phone.setImageResource(R.drawable.ic_signup_phone);
         }

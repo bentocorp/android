@@ -20,10 +20,10 @@ import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SocialNetworksUtil;
-import com.bentonow.bentonow.controllers.BaseActivity;
+import com.bentonow.bentonow.controllers.BaseMenuActivity;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
-import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
+import com.bentonow.bentonow.controllers.order.CompleteOrderMenuActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.User;
@@ -46,7 +46,7 @@ import org.json.JSONObject;
 import java.util.Collections;
 
 
-public class SignInActivity extends BaseActivity implements View.OnClickListener, FacebookCallback<LoginResult>, GraphRequest.GraphJSONObjectCallback {
+public class SignInMenuActivity extends BaseMenuActivity implements View.OnClickListener, FacebookCallback<LoginResult>, GraphRequest.GraphJSONObjectCallback {
 
     static final String TAG = "SignInActivity";
 
@@ -168,11 +168,11 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
             if (getIntent().getBooleanExtra("settings", false)) {
                 onBackPressed();
             } else if (Order.location == null) {
-                Intent intent = new Intent(SignInActivity.this, DeliveryLocationActivity.class);
+                Intent intent = new Intent(SignInMenuActivity.this, DeliveryLocationActivity.class);
                 intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.COMPLETE_ORDER);
                 startActivity(intent);
             } else {
-                startActivity(new Intent(SignInActivity.this, CompleteOrderActivity.class));
+                startActivity(new Intent(SignInMenuActivity.this, CompleteOrderMenuActivity.class));
             }
 
             BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);
@@ -281,7 +281,7 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
     }
 
     public void onSignUpPressed(View view) {
-        Intent intent = new Intent(this, SignUpActivity.class);
+        Intent intent = new Intent(this, SignUpMenuActivity.class);
         intent.putExtra("settings", getIntent().getBooleanExtra("settings", false));
         startActivity(intent);
         finish();
@@ -310,7 +310,7 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
                 onBackPressed();
                 break;
             case R.id.btn_ok:
-                Intent intent = new Intent(this, SignUpActivity.class);
+                Intent intent = new Intent(this, SignUpMenuActivity.class);
                 intent.putExtra("email", txt_email.getText());
                 startActivity(intent);
                 finish();
@@ -369,7 +369,7 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
 
                     try {
                         String message = new JSONObject(responseString).getString("error");
-                        dialog = new CustomDialog(SignInActivity.this, message, null, "OK");
+                        dialog = new CustomDialog(SignInMenuActivity.this, message, null, "OK");
                         dialog.show();
                     } catch (Exception e) {
                         DebugUtils.logError(TAG, "onCompleted(): " + e.getLocalizedMessage());

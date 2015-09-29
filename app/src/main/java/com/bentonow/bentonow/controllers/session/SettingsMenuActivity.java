@@ -20,7 +20,7 @@ import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
-import com.bentonow.bentonow.controllers.BaseActivity;
+import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.EditPhoneDialog;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.listener.ListenerDialog;
@@ -39,7 +39,7 @@ import java.net.URLEncoder;
 import java.util.List;
 
 
-public class SettingsActivity extends BaseActivity implements View.OnClickListener {
+public class SettingsMenuActivity extends BaseFragmentActivity implements View.OnClickListener {
     static final String TAG = "SettingsActivity";
 
     String action = "";
@@ -200,7 +200,7 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
     }
 
     public void onSignInPressed(View v) {
-        Intent intent = new Intent(this, SignInActivity.class);
+        Intent intent = new Intent(this, SignInMenuActivity.class);
         intent.putExtra("settings", true);
         startActivity(intent);
     }

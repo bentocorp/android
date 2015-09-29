@@ -1,6 +1,5 @@
 package com.bentonow.bentonow.controllers.help;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.net.Uri;
@@ -14,11 +13,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bentonow.bentonow.R;
-import com.bentonow.bentonow.controllers.BentoApplication;
+import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.ui.CustomDialog;
 
-public class HelpActivity extends Activity implements View.OnClickListener {
+public class HelpActivity extends BaseFragmentActivity implements View.OnClickListener {
 
     private static final String TAG = "HelpActivity";
     private WebView mWebBrowser;
@@ -121,18 +120,6 @@ public class HelpActivity extends Activity implements View.OnClickListener {
                 onBackPressed();
                 break;
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        BentoApplication.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        BentoApplication.onPause();
     }
 
     private WebView getWebBrowser() {

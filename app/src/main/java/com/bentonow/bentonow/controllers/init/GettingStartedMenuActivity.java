@@ -6,13 +6,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.R;
-import com.bentonow.bentonow.controllers.BentoApplication;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
+import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.model.BackendText;
 
 
-public class GettingStartedActivity extends BaseActivity {
+public class GettingStartedMenuActivity extends BaseFragmentActivity {
 
     private static final String TAG = "GettingStartedActivity";
 
@@ -33,8 +33,7 @@ public class GettingStartedActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-        BentoApplication.status = "main";
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, "main");
     }
 
     public void onGettingStartedPressed(View view) {

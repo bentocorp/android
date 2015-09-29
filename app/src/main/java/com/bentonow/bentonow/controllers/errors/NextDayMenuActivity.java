@@ -1,6 +1,5 @@
 package com.bentonow.bentonow.controllers.errors;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +13,7 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
+import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.model.Item;
 import com.bentonow.bentonow.model.Menu;
@@ -27,7 +27,7 @@ import java.util.List;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
-public class NextDayMenuActivity extends Activity implements View.OnClickListener, AdapterView.OnItemClickListener {
+public class NextDayMenuActivity extends BaseFragmentActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
 
     static final String TAG = "NextDayMenuActivity";
 

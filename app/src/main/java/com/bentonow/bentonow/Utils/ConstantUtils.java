@@ -10,4 +10,5 @@ public class ConstantUtils {
     public enum optDeliveryAction {NONE, CHANGE, COMPLETE_ORDER}
 
     public enum optSaveSettings {ALL, USER, LOCATION, ADDRESS, BACKEND_TEXT}
+
 }

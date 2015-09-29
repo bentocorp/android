@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bgcolor"
-    tools:context="com.bentonow.bentonow.controllers.order.BuildBentoActivity">
+    tools:context="com.bentonow.bentonow.controllers.order.BuildBentoMenuActivity">
 
     <RelativeLayout
         android:id="@+id/ActionBarCont"

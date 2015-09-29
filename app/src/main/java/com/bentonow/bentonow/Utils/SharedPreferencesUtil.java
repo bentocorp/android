@@ -15,6 +15,7 @@ public class SharedPreferencesUtil {
     private static final String SHARED_PROJECT = "SharedPreferencesBento";
 
     public static final String APP_FIRST_RUN = "app_first_run"; //String
+    public static final String STORE_STATUS = "store_status"; //String
     public static final String USER = "user"; //String
     public static final String LOCATION = "location"; //String
     public static final String ADDRESS = "address"; //String

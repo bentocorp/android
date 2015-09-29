@@ -18,10 +18,10 @@ import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
-import com.bentonow.bentonow.controllers.BaseActivity;
+import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
-import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
+import com.bentonow.bentonow.controllers.order.CompleteOrderMenuActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.User;
@@ -44,7 +44,7 @@ import org.json.JSONObject;
 
 import java.util.Collections;
 
-public class SignUpActivity extends BaseActivity implements View.OnClickListener, FacebookCallback<LoginResult>, GraphRequest.GraphJSONObjectCallback {
+public class SignUpMenuActivity extends BaseFragmentActivity implements View.OnClickListener, FacebookCallback<LoginResult>, GraphRequest.GraphJSONObjectCallback {
 
     static final String TAG = "SignUpActivity";
 
@@ -228,11 +228,11 @@ public class SignUpActivity extends BaseActivity implements View.OnClickListener
             if (getIntent().getBooleanExtra("settings", false)) {
                 onBackPressed();
             } else if (Order.location == null) {
-                Intent intent = new Intent(SignUpActivity.this, DeliveryLocationActivity.class);
+                Intent intent = new Intent(SignUpMenuActivity.this, DeliveryLocationActivity.class);
                 intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.COMPLETE_ORDER);
                 startActivity(intent);
             } else {
-                startActivity(new Intent(SignUpActivity.this, CompleteOrderActivity.class));
+                startActivity(new Intent(SignUpMenuActivity.this, CompleteOrderMenuActivity.class));
             }
 
             finish();
@@ -360,8 +360,8 @@ public class SignUpActivity extends BaseActivity implements View.OnClickListener
                         updateUI();
                         break;
                     case 409:
-                        dialog = new CustomDialog(SignUpActivity.this, "This email is already registered.", "OK", "");
-                        dialog.setOnOkPressed(SignUpActivity.this);
+                        dialog = new CustomDialog(SignUpMenuActivity.this, "This email is already registered.", "OK", "");
+                        dialog.setOnOkPressed(SignUpMenuActivity.this);
                         break;
                 }
             }
@@ -376,7 +376,7 @@ public class SignUpActivity extends BaseActivity implements View.OnClickListener
     }
 
     public void onSignInPressed(View view) {
-        Intent intent = new Intent(this, SignInActivity.class);
+        Intent intent = new Intent(this, SignInMenuActivity.class);
         intent.putExtra("settings", getIntent().getBooleanExtra("settings", false));
         startActivity(intent);
         finish();
@@ -401,7 +401,7 @@ public class SignUpActivity extends BaseActivity implements View.OnClickListener
                 onBackPressed();
                 break;
             case R.id.btn_ok:
-                Intent intent = new Intent(this, SignInActivity.class);
+                Intent intent = new Intent(this, SignInMenuActivity.class);
                 intent.putExtra("email", txt_email.getText());
                 startActivity(intent);
                 finish();
@@ -458,7 +458,7 @@ public class SignUpActivity extends BaseActivity implements View.OnClickListener
 
                     Log.i(TAG, "fbLoginFailed: " + responseString + " statusCode: " + statusCode);
 
-                    Intent intent = new Intent(SignUpActivity.this, EnterPhoneNumberActivity.class);
+                    Intent intent = new Intent(SignUpMenuActivity.this, EnterPhoneNumberMenuActivity.class);
                     intent.putExtra("user", graphResponse.toString());
                     intent.putExtra("settings", getIntent().getBooleanExtra("settings", false));
                     startActivity(intent);

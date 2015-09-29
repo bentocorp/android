@@ -14,7 +14,6 @@ import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
-import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.Stock;
 import com.bentonow.bentonow.model.User;
@@ -124,7 +123,8 @@ public class BentoService extends Service {
             Stock.set(responseString);
             Settings.set(responseString);
 
-            if (!Settings.status.equals(BentoApplication.status) && !BentoApplication.status.equals("main")) {
+            if (!Settings.status.equals(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS)) &&
+                    !SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS).equals("main")) {
                 SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_STORE_CHANGIN, true);
                 switch (Settings.status) {
                     case "open":
