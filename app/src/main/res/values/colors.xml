@@ -13,6 +13,7 @@
     <color name="blue_20">#323b5998</color>
     <color name="actionbar_title_color">#4f5055</color>
     <color name="orange">#e97200</color>
+    <color name="thumbColor">#66aaaaaa</color>
 
     <color name="transparent">#00660066</color>
     <color name="divisor">#50909090</color>

@@ -2,9 +2,13 @@ package com.bentonow.bentonow.Utils;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
+import android.content.res.Resources;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+
+import com.bentonow.bentonow.controllers.BentoApplication;
 
 /**
  * Created by Jose Torres on 19/08/15.
@@ -15,6 +19,17 @@ public class AndroidUtil {
         view.requestFocus();
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(0, 0);
+    }
+
+
+    public static int dpToPx(float dp){
+        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, BentoApplication.instance.getResources().getDisplayMetrics());
+        return (int) px;
+    }
+
+    public static int dpToPx(float dp, Resources resources){
+        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, resources.getDisplayMetrics());
+        return (int) px;
     }
 
     public static void hideKeyboard(View view) {

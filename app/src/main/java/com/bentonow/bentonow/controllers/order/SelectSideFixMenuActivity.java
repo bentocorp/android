@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.ImageUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
+import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseMenuActivity;
 import com.bentonow.bentonow.controllers.adapter.DishFixGridListAdapter;
 import com.bentonow.bentonow.model.Item;
@@ -42,7 +43,11 @@ public class SelectSideFixMenuActivity extends BaseMenuActivity implements View.
         mDishMain = getIntent().getParcelableExtra(Item.TAG);
         aSideDish = getIntent().getParcelableArrayListExtra(Item.TAG_LIST);
 
-        initToolbar();
+        if (mDishMain == null || aSideDish == null) {
+            WidgetsUtils.createShortToast(R.string.error_loading_dishes);
+            finish();
+        } else
+            initToolbar();
 
         Menu menu = Menu.get();
 

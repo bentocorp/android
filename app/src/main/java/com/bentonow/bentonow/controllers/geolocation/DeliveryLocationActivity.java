@@ -242,7 +242,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         getBtnClear().setVisibility(View.INVISIBLE);
         getProgressBar().setVisibility(View.VISIBLE);
 
-        Geocoder geoCoder = new Geocoder(getApplicationContext());
+        Geocoder geoCoder = new Geocoder(DeliveryLocationActivity.this);
         List<Address> matches = null;
 
         try {
@@ -362,7 +362,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                 e.printStackTrace();
             }
 
-            Intent intent = new Intent(getApplicationContext(), BummerActivity.class);
+            Intent intent = new Intent(DeliveryLocationActivity.this, BummerActivity.class);
             intent.putExtra("invalid_address", sOrderAddress.toString());
             startActivity(intent);
         }
@@ -483,7 +483,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private void checkAddress(String str) {
         DebugUtils.logDebug(TAG, "checkAddress()");
 
-        Geocoder geoCoderClick = new Geocoder(getApplicationContext(), Locale.getDefault());
+        Geocoder geoCoderClick = new Geocoder(DeliveryLocationActivity.this, Locale.getDefault());
         try {
             List<Address> addresses = geoCoderClick.getFromLocationName(str, 5);
             if (addresses.size() > 0) {

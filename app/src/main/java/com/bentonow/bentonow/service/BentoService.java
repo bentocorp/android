@@ -2,10 +2,6 @@ package com.bentonow.bentonow.service;
 
 import android.app.Service;
 import android.content.Intent;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
@@ -16,8 +12,6 @@ import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.Stock;
-import com.bentonow.bentonow.model.User;
-import com.google.android.gms.maps.model.LatLng;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.apache.http.Header;
@@ -88,7 +82,6 @@ public class BentoService extends Service {
 
     void loadData() {
         Log.i(TAG, "loadData");
-        checkUserLocation();
 
         String currDate = BentoNowUtils.getTodayDate();
 
@@ -142,47 +135,4 @@ public class BentoService extends Service {
         }
     }
 
-    void checkUserLocation() {
-        if (User.location != null)
-            return;
-        Log.i(TAG, "checkUserLocation");
-
-        LocationManager mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        Location location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-        if (location == null) {
-            location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        } else {
-            User.location = new LatLng(location.getLatitude(), location.getLongitude());
-        }
-
-        if (location == null) {
-            final LocationListener mLocationListener = new LocationListener() {
-                @Override
-                public void onLocationChanged(final Location location) {
-                    User.location = new LatLng(location.getLatitude(), location.getLongitude());
-                    Log.i(TAG, "location: " + User.location.toString());
-                }
-
-                @Override
-                public void onStatusChanged(String provider, int status, Bundle extras) {
-
-                }
-
-                @Override
-                public void onProviderEnabled(String provider) {
-
-                }
-
-                @Override
-                public void onProviderDisabled(String provider) {
-                    Log.i(TAG, "location: disabled");
-                }
-            };
-            mLocationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, mLocationListener, null);
-        } else {
-            User.location = new LatLng(location.getLatitude(), location.getLongitude());
-            Log.i(TAG, "location: " + User.location.toString());
-        }
-    }
 }

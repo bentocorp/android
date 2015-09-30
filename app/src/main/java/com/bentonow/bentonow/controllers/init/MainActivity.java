@@ -31,8 +31,6 @@ import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.apache.http.Header;
 
-import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
-
 
 public class MainActivity extends BaseFragmentActivity {
 
@@ -51,12 +49,6 @@ public class MainActivity extends BaseFragmentActivity {
         Log.i(TAG, "onCreate");
 
         if (getCallingActivity() != null) Log.i(TAG, "callerActivity " + getCallingActivity());
-
-        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                        .setDefaultFontPath("fonts/OpenSans-Regular.ttf")
-                        .setFontAttrId(R.attr.fontPath)
-                        .build()
-        );
 
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_STORE_CHANGIN, false);
     }

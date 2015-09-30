@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bgcolor"
-    tools:context="com.bentonow.bentonow.controllers.errors.ErrorActivity">
+    tools:context="com.bentonow.bentonow.controllers.order.SelectSideFixMenuActivity">
 
     <FrameLayout
         android:id="@+id/ActionBarContainer"

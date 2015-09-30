@@ -3,9 +3,6 @@
     <string name="facebook_app_id_release">791688527544905</string>
     <string name="mixpanel_api_key">e0b4fc9fdf720bb40b6cbefddb9678f3</string>
 
-    <string name="error_closed_title">We\'re currently closed!</string>
-    <string name="error_closed_text">Bento opens at 5pm today! We\'re cookin\' up some delicious dinner. \n Get excited!</string>
-    <string name="error_closed_input_mail_hint">Enter email for \'We\'re Open\'! email</string>
     <string name="btn_submit_text">SUBMIT</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="TermsAndConditions"><![CDATA[Terms & Conditions]]></string>
@@ -96,4 +93,10 @@
 
     <string name="money_format">$ %.2f</string>
     <string name="tip_percentage">%.0f</string>
+
+    <string name="error_loading_dishes">There is a problem loading the dishes, please try again later</string>
+    <string name="error_send_order">There was a problem sending your order, please try again</string>
+    <string name="error_closed_title">We\'re currently closed!</string>
+    <string name="error_closed_text">Bento opens at 5pm today! We\'re cookin\' up some delicious dinner. \n Get excited!</string>
+    <string name="error_closed_input_mail_hint">Enter email for \'We\'re Open\'! email</string>
 </resources>

@@ -4,12 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bgcolor"
-    tools:context="com.bentonow.bentonow.controllers.errors.ErrorActivity">
+    tools:context="com.bentonow.bentonow.controllers.order.SelectSideMenuActivity">
 
     <RelativeLayout
         android:id="@+id/ActionBarContainer"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="?android:attr/actionBarSize"
         android:layout_alignParentTop="true">
 
         <include layout="@layout/actionbar_green_border" />
@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/ActionBarContainer"
         android:numColumns="2"
-        tools:listitem="@layout/inc_menu_item_side">
+        tools:listitem="@layout/list_item_add">
 
     </GridView>
 

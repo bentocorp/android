@@ -5,7 +5,7 @@
     tools:context="com.bentonow.bentonow.controllers.order.SelectMainMenuActivity"
     android:id="@+id/base_relative_layout"
     android:orientation="vertical"
-    android:background="@color/btn_green">
+    android:background="@color/bgcolor">
 
     <include layout="@layout/actionbar_green_border" />
 

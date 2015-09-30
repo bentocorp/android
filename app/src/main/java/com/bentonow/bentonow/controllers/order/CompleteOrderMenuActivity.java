@@ -390,7 +390,7 @@ public class CompleteOrderMenuActivity extends BaseMenuActivity implements View.
             @SuppressWarnings("deprecation")
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                String error = "";
+                String error;
                 JSONObject json;
 
                 Log.e(TAG, "Order: " + statusCode + " " + responseString);
@@ -408,10 +408,6 @@ public class CompleteOrderMenuActivity extends BaseMenuActivity implements View.
                 }
 
                 switch (statusCode) {
-                    case 401:
-                        error = "Your session has expired, please sign in";
-                        action = "sign_in";
-                        break;
                     case 402:
                         action = "credit_card";
                         dialog.dismiss();
@@ -419,7 +415,7 @@ public class CompleteOrderMenuActivity extends BaseMenuActivity implements View.
                     case 406:
                         if (responseString.contains("You cannot use a Stripe token more than once")) {
                             User.current.stripe_token = null;
-                            BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);
+                            BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.USER);
                             error = "";
                             onLetsEatPressed(null);
                         }
@@ -432,6 +428,9 @@ public class CompleteOrderMenuActivity extends BaseMenuActivity implements View.
                         break;
                     case 423:
                         action = "closed";
+                        break;
+                    default:
+                        error = getResources().getString(R.string.error_send_order);
                         break;
                 }
 

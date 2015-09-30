@@ -415,7 +415,7 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
                                 User.current.card = new com.bentonow.bentonow.model.user.Card();
                             User.current.card.last4 = txt_last4.getText().toString();
                             User.current.card.brand = CreditCard.getHolder(txt_number.getText().toString());
-                            BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);
+                            BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.USER);
                             dialog.dismiss();
                             onBackPressed();
                         }
