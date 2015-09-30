@@ -39,7 +39,7 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_error_invalid_address);
+        setContentView(R.layout.activity_error_bummer);
 
         initActionbar();
 

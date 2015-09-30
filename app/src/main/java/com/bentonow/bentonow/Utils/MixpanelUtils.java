@@ -47,7 +47,7 @@ public class MixpanelUtils {
         getInstance().getPeople().set("$email", User.current.email);
         getInstance().getPeople().set("$phone", User.current.phone);
         getInstance().getPeople().set("$created", BentoNowUtils.getMixpanelDate());
-        getInstance().getPeople().set("Last Login Address", LocationUtils.getFullAddress(Order.address));
+        getInstance().getPeople().set("Last Login Address", LocationUtils.getCustomAddress(Order.address));
         trackRevenue(0);
     }
 

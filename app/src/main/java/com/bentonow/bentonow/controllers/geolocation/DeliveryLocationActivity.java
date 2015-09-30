@@ -133,14 +133,32 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                         sOrderAddress = null;
                         mLastLocations = getGoogleMap().getCameraPosition().target;
                         mLastOrderLocation = mLastLocations;
-                        scanCurrentLocation(mLastLocations);
-                        updateUI();
+
+                        if (mLastLocations != null) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    scanLocation(mLastLocations);
+                                }
+                            });
+                        }
                         break;
                     default:
                         break;
                 }
             }
         });
+
+        if (mGoogleApiClient.isConnected() && optDelivery != ConstantUtils.optDeliveryAction.CHANGE)
+            startLocationUpdates();
+
+        setupMap();
+
+        if (mLastLocations != null)
+            markerLocation(mLastLocations);
+        else
+            updateUI();
+
     }
 
 
@@ -160,6 +178,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
     void updateUI() {
+
         getProgressBar().setVisibility(View.GONE);
 
         if (getCheckIAgree().isChecked() && sOrderAddress != null) {
@@ -179,10 +198,10 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private void setupMap() {
         if (getGoogleMap() != null) return;
 
-        Log.i(TAG, "get map fragment");
+        DebugUtils.logDebug(TAG, "get map fragment");
         if (getMapFragment() == null) return;
 
-        Log.i(TAG, "setup marker");
+        DebugUtils.logDebug(TAG, "setup marker");
         LatLng point = null;
         float zoom = 12f;
 
@@ -215,10 +234,10 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private void markerLocation(LatLng latLng) {
         mLastOrderLocation = latLng;
         getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, getGoogleMap().getCameraPosition().zoom > 11f ? getGoogleMap().getCameraPosition().zoom : 17f));
-        scanCurrentLocation(latLng);
+        scanLocation(latLng);
     }
 
-    private void scanCurrentLocation(LatLng location) {
+    private void scanLocation(LatLng location) {
         getTxtAddress().setText("", false);
         getBtnClear().setVisibility(View.INVISIBLE);
         getProgressBar().setVisibility(View.VISIBLE);
@@ -228,18 +247,17 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
         try {
             matches = geoCoder.getFromLocation(location.latitude, location.longitude, 1);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            DebugUtils.logError(TAG, "scanCurrentLocation() " + e);
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
         }
 
         if (matches != null && !matches.isEmpty()) {
             sOrderAddress = matches.get(0);
 
-            Log.i(TAG, "full address: " + LocationUtils.getFullAddress(sOrderAddress));
-            Log.i(TAG, "address: " + LocationUtils.getStreetAddress(sOrderAddress));
+            DebugUtils.logDebug(TAG, "full address: " + LocationUtils.getCustomAddress(sOrderAddress));
 
-            getTxtAddress().setText(LocationUtils.getFullAddress(sOrderAddress), false);
+            getTxtAddress().setText(LocationUtils.getCustomAddress(sOrderAddress), false);
         } else {
             getTxtAddress().setText("", false);
         }
@@ -262,8 +280,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         if (mLastLocations == null || getGoogleMap() == null)
             return;
         markerLocation(mLastLocations);
-        scanCurrentLocation(mLastLocations);
-        updateUI();
     }
 
     public void onAgreePressed(View view) {
@@ -306,11 +322,11 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         if (!isValidLocation())
             return;
 
-        Log.i(TAG, "onContinuePressed OK");
+        DebugUtils.logDebug(TAG, "onContinuePressed OK");
 
         boolean isInDeliveryArea = Settings.isInServiceArea(mLastOrderLocation);
 
-        Log.i(TAG, "onContinuePressed isInDeliveryArea " + (isInDeliveryArea ? "YES" : "NO"));
+        DebugUtils.logDebug(TAG, "onContinuePressed isInDeliveryArea " + (isInDeliveryArea ? "YES" : "NO"));
 
         if (isInDeliveryArea) {
             Order.location = mLastOrderLocation;
@@ -340,7 +356,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         } else {
             try {
                 JSONObject params = new JSONObject();
-                params.put("address", LocationUtils.getFullAddress(sOrderAddress));
+                params.put("address", LocationUtils.getCustomAddress(sOrderAddress));
                 MixpanelUtils.track("Selected address outside of service area", params);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -387,7 +403,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                     if (constraint != null) {
                         // Retrieve the autocomplete results.
                         resultList = autocomplete(constraint.toString());
-                        Log.i(TAG, "resultList: " + resultList);
+                        DebugUtils.logDebug(TAG, "resultList: " + resultList);
 
                         // Assign the data to the FilterResults
                         filterResults.values = resultList;
@@ -465,7 +481,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
     private void checkAddress(String str) {
-        Log.i(TAG, "checkAddress()");
+        DebugUtils.logDebug(TAG, "checkAddress()");
 
         Geocoder geoCoderClick = new Geocoder(getApplicationContext(), Locale.getDefault());
         try {
@@ -506,16 +522,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                 .addApi(LocationServices.API)
                 .build();
         mGoogleApiClient.connect();
-    }
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (mGoogleApiClient.isConnected() && optDelivery != ConstantUtils.optDeliveryAction.CHANGE) {
-            startLocationUpdates();
-        }
-        setupMap();
     }
 
     @Override

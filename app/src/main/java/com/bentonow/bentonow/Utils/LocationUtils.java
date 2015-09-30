@@ -11,18 +11,37 @@ public class LocationUtils {
         if (mAddress == null)
             return "";
 
-        String addrss = "";
+        String sAddress = "";
 
         for (int i = 0; i < mAddress.getMaxAddressLineIndex(); ++i) {
-            if (addrss.length() > 0) addrss += ", ";
-            addrss += mAddress.getAddressLine(i);
+            if (sAddress.length() > 0) sAddress += ", ";
+            sAddress += mAddress.getAddressLine(i);
         }
 
-        return addrss;
+        return sAddress;
     }
 
     public static String getStreetAddress(Address mAddress) {
         if (mAddress == null) return "";
         return mAddress.getThoroughfare() + ", " + mAddress.getSubThoroughfare();
+    }
+
+    public static String getCustomAddress(Address mAddress) {
+        if (mAddress == null)
+            return "";
+
+        String sAddress = "";
+
+        for (int i = 0; i < mAddress.getMaxAddressLineIndex(); ++i) {
+            if (sAddress.length() > 0)
+                sAddress += ", ";
+
+            if (i == 0)
+                sAddress += mAddress.getSubThoroughfare() + " " + mAddress.getThoroughfare();
+            else
+                sAddress += mAddress.getAddressLine(i);
+        }
+
+        return sAddress;
     }
 }
