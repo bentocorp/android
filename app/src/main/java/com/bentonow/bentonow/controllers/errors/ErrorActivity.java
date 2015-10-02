@@ -15,13 +15,13 @@ import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
+import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
-import com.bentonow.bentonow.controllers.session.SettingsMenuActivity;
+import com.bentonow.bentonow.controllers.session.SettingsActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
-import com.bentonow.bentonow.ui.CustomDialog;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.apache.http.Header;
@@ -50,10 +50,10 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
         setContentView(R.layout.activity_error);
 
         getMenuItemInfo().setImageResource(R.drawable.ic_ab_help);
-        getMenuItemInfo().setOnClickListener(this);
+        getMenuItemInfo().setOnClickListener(ErrorActivity.this);
 
         getMenuItemProfile().setImageResource(R.drawable.ic_signup_profile);
-        getMenuItemProfile().setOnClickListener(this);
+        getMenuItemProfile().setOnClickListener(ErrorActivity.this);
 
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
 
@@ -128,12 +128,12 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.actionbar_right_btn:
-                Intent intent = new Intent(this, HelpActivity.class);
+                Intent intent = new Intent(ErrorActivity.this, HelpActivity.class);
                 intent.putExtra("faq", true);
                 startActivity(intent);
                 break;
             case R.id.actionbar_left_btn:
-                Intent iSettingsActivity = new Intent(this, SettingsMenuActivity.class);
+                Intent iSettingsActivity = new Intent(ErrorActivity.this, SettingsActivity.class);
                 startActivity(iSettingsActivity);
                 break;
         }
@@ -154,38 +154,35 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
 
     @Override
     public void onBackPressed() {
-        BentoNowUtils.goToDashboard(this);
+        BentoNowUtils.goToDashboard(ErrorActivity.this);
     }
 
     public void onSubmitPressed(View view) {
         if (!Email.isValid(getEditTxtEmail().getText().toString())) {
-            CustomDialog dialog = new CustomDialog(this, "Invalid email address.", null, "OK");
-            dialog.show();
+            ConfirmationDialog mDialog = new ConfirmationDialog(ErrorActivity.this, "Error", "Invalid email address.");
+            mDialog.addAcceptButton("OK", null);
+            mDialog.show();
         } else {
             User.requestCoupon(getEditTxtEmail().getText().toString(), Settings.status, new TextHttpResponseHandler() {
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                     Log.e(TAG, responseString);
-                    CustomDialog dialog = new CustomDialog(ErrorActivity.this, "We having issues connecting to the server, please try later.", null, "OK");
-                    dialog.show();
+                    ConfirmationDialog mDialog = new ConfirmationDialog(ErrorActivity.this, "Error", "We having issues connecting to the server, please try later.");
+                    mDialog.addAcceptButton("OK", null);
+                    mDialog.show();
                 }
 
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    String message = Settings.status.equals("sold out") ?
-                            BackendText.get("sold-out-confirmation-text") :
-                            BackendText.get("closed-confirmation-text");
+                    String message = Settings.status.equals("sold out") ? BackendText.get("sold-out-confirmation-text") : BackendText.get("closed-confirmation-text");
                     Log.i(TAG, responseString);
                     getEditTxtEmail().setText("");
-                    CustomDialog dialog = new CustomDialog(
-                            ErrorActivity.this,
-                            message,
-                            null,
-                            "OK"
-                    );
-                    dialog.show();
+
+                    ConfirmationDialog mDialog = new ConfirmationDialog(ErrorActivity.this, null, message);
+                    mDialog.addAcceptButton("OK", null);
+                    mDialog.show();
                 }
             });
         }
@@ -195,19 +192,19 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
         if (Menu.getNext() == null)
             return;
 
-        Intent intent = new Intent(this, NextDayMenuActivity.class);
+        Intent intent = new Intent(ErrorActivity.this, NextDayMenuActivity.class);
         intent.putExtra("title", getBtnNextDayMenu().getText().toString());
         startActivity(intent);
     }
 
     public void onPrivacyPolicyPressed(View view) {
-        Intent intent = new Intent(this, HelpActivity.class);
+        Intent intent = new Intent(ErrorActivity.this, HelpActivity.class);
         intent.putExtra("privacy", true);
         startActivity(intent);
     }
 
     public void onTermAndConditionsPressed(View view) {
-        Intent intent = new Intent(this, HelpActivity.class);
+        Intent intent = new Intent(ErrorActivity.this, HelpActivity.class);
         intent.putExtra("tos", true);
         startActivity(intent);
     }

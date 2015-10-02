@@ -10,18 +10,18 @@ import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.ImageUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
-import com.bentonow.bentonow.controllers.BaseMenuActivity;
+import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.adapter.DishFixGridListAdapter;
+import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.model.Item;
 import com.bentonow.bentonow.model.Menu;
-import com.bentonow.bentonow.ui.CustomDialog;
 import com.bentonow.bentonow.ui.GridViewHeader;
 import com.bentonow.bentonow.ui.HeaderSideFixBento;
 
 import java.util.ArrayList;
 
 
-public class SelectSideFixMenuActivity extends BaseMenuActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
+public class SelectSideFixActivity extends BaseActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
 
     static final String TAG = "SelectSideFixActivity";
 
@@ -30,7 +30,6 @@ public class SelectSideFixMenuActivity extends BaseMenuActivity implements View.
     private TextView txtToolbarTitle;
 
     private DishFixGridListAdapter mGridDishAdapter;
-    private CustomDialog dialog;
 
     private ArrayList<Item> aSideDish = new ArrayList<>();
     private Item mDishMain;
@@ -52,9 +51,9 @@ public class SelectSideFixMenuActivity extends BaseMenuActivity implements View.
         Menu menu = Menu.get();
 
         if (menu == null) {
-            dialog = new CustomDialog(this, "There is no current menu to show", "OK", null);
-            dialog.setOnOkPressed(this);
-            dialog.show();
+            ConfirmationDialog mDialog = new ConfirmationDialog(SelectSideFixActivity.this, "Error", "There is no current menu to show");
+            mDialog.addAcceptButton("OK", SelectSideFixActivity.this);
+            mDialog.show();
         } else {
             getSideHeader().getTxtTitle().setText(mDishMain.name);
             getSideHeader().getTxtDescription().setText(mDishMain.description);
@@ -99,6 +98,9 @@ public class SelectSideFixMenuActivity extends BaseMenuActivity implements View.
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.actionbar_left_btn:
+                onBackPressed();
+                break;
+            case R.id.button_accept:
                 onBackPressed();
                 break;
         }

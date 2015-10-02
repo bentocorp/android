@@ -23,7 +23,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.AndroidUtil;
@@ -34,17 +33,17 @@ import com.bentonow.bentonow.Utils.LocationUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
+import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.errors.BummerActivity;
 import com.bentonow.bentonow.controllers.fragment.MySupportMapFragment;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
-import com.bentonow.bentonow.controllers.order.CompleteOrderMenuActivity;
+import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
 import com.bentonow.bentonow.listener.OnCustomDragListener;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.ui.BackendTextView;
-import com.bentonow.bentonow.ui.CustomDialog;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -86,8 +85,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private ImageButton btn_clear;
     private ImageButton btn_current_location;
     private ProgressBar progressBar;
-
-    private CustomDialog dialog;
 
     private boolean mRequestingLocationUpdates;
     private GoogleApiClient mGoogleApiClient;
@@ -149,7 +146,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             }
         });
 
-        if (mGoogleApiClient.isConnected() && optDelivery != ConstantUtils.optDeliveryAction.CHANGE)
+        if (mGoogleApiClient.isConnected() && optDelivery == ConstantUtils.optDeliveryAction.NONE)
             startLocationUpdates();
 
         setupMap();
@@ -166,7 +163,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         TextView actionbar_title = (TextView) findViewById(R.id.actionbar_title);
         actionbar_title.setText(getResources().getString(R.string.delivery_location_actionbar_title));
 
-        if (optDelivery == ConstantUtils.optDeliveryAction.CHANGE) {
+        if (optDelivery != ConstantUtils.optDeliveryAction.NONE) {
             ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
             actionbar_left_btn.setImageResource(R.drawable.ic_ab_back);
             actionbar_left_btn.setOnClickListener(this);
@@ -196,6 +193,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     //****
 
     private void setupMap() {
+        DebugUtils.logDebug(TAG, "setupMap()");
         if (getGoogleMap() != null) return;
 
         DebugUtils.logDebug(TAG, "get map fragment");
@@ -224,6 +222,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
     @Override
     public void onMapLoaded() {
+        DebugUtils.logDebug(TAG, "onMapLoaded()");
         if (mLastOrderLocation != null) {
             markerLocation(mLastOrderLocation);
         } else if (mLastLocations != null) {
@@ -237,26 +236,14 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         scanLocation(latLng);
     }
 
-    private void scanLocation(LatLng location) {
+    private void scanLocation(LatLng mLocation) {
         getTxtAddress().setText("", false);
         getBtnClear().setVisibility(View.INVISIBLE);
         getProgressBar().setVisibility(View.VISIBLE);
 
-        Geocoder geoCoder = new Geocoder(DeliveryLocationActivity.this);
-        List<Address> matches = null;
+        sOrderAddress = LocationUtils.getAddressFromLocation(mLocation);
 
-        try {
-            matches = geoCoder.getFromLocation(location.latitude, location.longitude, 1);
-        } catch (Exception e) {
-            DebugUtils.logError(TAG, "scanCurrentLocation() " + e);
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
-        }
-
-        if (matches != null && !matches.isEmpty()) {
-            sOrderAddress = matches.get(0);
-
-            DebugUtils.logDebug(TAG, "full address: " + LocationUtils.getCustomAddress(sOrderAddress));
-
+        if (sOrderAddress != null) {
             getTxtAddress().setText(LocationUtils.getCustomAddress(sOrderAddress), false);
         } else {
             getTxtAddress().setText("", false);
@@ -287,14 +274,10 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
     public void onHelpPressed(View view) {
-        dialog = new CustomDialog(
-                this,
-                BackendText.get("delivery-agree-message"),
-                BackendText.get("delivery-agree-confirmation-2"),
-                BackendText.get("delivery-agree-confirmation-1")
-        );
-        dialog.setOnOkPressed(this);
-        dialog.show();
+        ConfirmationDialog mDialog = new ConfirmationDialog(DeliveryLocationActivity.this, null, BackendText.get("delivery-agree-message"));
+        mDialog.addAcceptButton(BackendText.get("delivery-agree-confirmation-2"), DeliveryLocationActivity.this);
+        mDialog.addCancelButton(BackendText.get("delivery-agree-confirmation-1"), DeliveryLocationActivity.this);
+        mDialog.show();
     }
 
     private boolean isValidLocation() {
@@ -330,7 +313,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
         if (isInDeliveryArea) {
             Order.location = mLastOrderLocation;
-            User.location = mLastLocations;
+            User.location = mLastOrderLocation;
             Order.address = sOrderAddress;
 
             switch (optDelivery) {
@@ -339,7 +322,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                     break;
                 case COMPLETE_ORDER:
                     if (User.current != null)
-                        startActivity(new Intent(this, CompleteOrderMenuActivity.class));
+                        startActivity(new Intent(this, CompleteOrderActivity.class));
                     else if (User.current == null) {
                         BentoNowUtils.openBuildBentoActivity(this);
                     } else {
@@ -490,7 +473,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                 markerLocation(new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude()));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            DebugUtils.logError(TAG, e);
         }
     }
 
@@ -540,9 +523,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             case R.id.actionbar_right_btn:
                 startActivity(new Intent(DeliveryLocationActivity.this, HelpActivity.class));
                 break;
-            case R.id.btn_ok:
+            case R.id.button_accept:
                 getCheckIAgree().setChecked(true);
-                dialog.dismiss();
                 updateUI();
                 break;
         }
@@ -584,7 +566,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     public void onConnected(Bundle bundle) {
         DebugUtils.logDebug("buildGoogleApiClient", "onConnected:");
 
-        if (optDelivery != ConstantUtils.optDeliveryAction.CHANGE) {
+        if (optDelivery == ConstantUtils.optDeliveryAction.NONE) {
             mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             if (mCurrentLocation != null) {
                 mLastLocations = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());

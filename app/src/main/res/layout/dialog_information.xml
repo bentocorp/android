@@ -20,8 +20,8 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
             android:text="Title"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#000" />
+            android:textColor="#000"
+            android:textSize="20sp" />
 
         <ScrollView
             android:id="@+id/message_scrollView"
@@ -43,7 +43,7 @@
                     android:layout_height="wrap_content"
                     android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam"
                     android:textColor="#000"
-                    android:textSize="18sp" />
+                    android:textSize="16sp" />
             </LinearLayout>
         </ScrollView>
 
@@ -60,13 +60,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="#000000"
-                android:text="Cancel" />
+                android:text="Cancel"
+                android:visibility="gone" />
 
             <com.bentonow.bentonow.ui.material.ButtonFlat
                 android:id="@+id/button_accept"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#1E88E5"
+                android:background="@color/primary"
                 android:text="Accept" />
         </LinearLayout>
     </RelativeLayout>

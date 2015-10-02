@@ -21,12 +21,12 @@ import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
+import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.dialog.EditPhoneDialog;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.listener.ListenerDialog;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.User;
-import com.bentonow.bentonow.ui.CustomDialog;
 import com.bentonow.bentonow.ui.FontAwesomeButton;
 import com.google.gson.Gson;
 import com.loopj.android.http.RequestParams;
@@ -39,7 +39,7 @@ import java.net.URLEncoder;
 import java.util.List;
 
 
-public class SettingsMenuActivity extends BaseFragmentActivity implements View.OnClickListener {
+public class SettingsActivity extends BaseFragmentActivity implements View.OnClickListener {
     static final String TAG = "SettingsActivity";
 
     String action = "";
@@ -131,7 +131,7 @@ public class SettingsMenuActivity extends BaseFragmentActivity implements View.O
             case R.id.actionbar_left_btn:
                 onBackPressed();
                 break;
-            case R.id.btn_ok:
+            case R.id.button_accept:
                 if (action.equals("phone")) {
                     Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:4153001332"));
                     startActivity(intent);
@@ -194,13 +194,14 @@ public class SettingsMenuActivity extends BaseFragmentActivity implements View.O
     public void onLogoutPressed(View v) {
         Log.i(TAG, "onLogoutPressed");
         action = "logout";
-        CustomDialog dialog = new CustomDialog(this, "Confirmation\nAre you sure you want to log out?", "YES", "NO");
-        dialog.setOnOkPressed(this);
-        dialog.show();
+        ConfirmationDialog mDialog = new ConfirmationDialog(SettingsActivity.this, "Confirmation", "Are you sure you want to log out ?");
+        mDialog.addAcceptButton("YES", SettingsActivity.this);
+        mDialog.addCancelButton("NO", SettingsActivity.this);
+        mDialog.show();
     }
 
     public void onSignInPressed(View v) {
-        Intent intent = new Intent(this, SignInMenuActivity.class);
+        Intent intent = new Intent(this, SignInActivity.class);
         intent.putExtra("settings", true);
         startActivity(intent);
     }
@@ -227,9 +228,10 @@ public class SettingsMenuActivity extends BaseFragmentActivity implements View.O
 
     public void onPhoneSupportPressed(View v) {
         action = "phone";
-        CustomDialog dialog = new CustomDialog(this, "415.300.1332", "Call", "Cancel");
-        dialog.show();
-        dialog.setOnOkPressed(this);
+        ConfirmationDialog mDialog = new ConfirmationDialog(SettingsActivity.this, "Call Us", "415.300.1332");
+        mDialog.addAcceptButton("Call", SettingsActivity.this);
+        mDialog.addCancelButton("Cancel", null);
+        mDialog.show();
     }
 
     public void onFacebookPressed(View v) {

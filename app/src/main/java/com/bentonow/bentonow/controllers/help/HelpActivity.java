@@ -14,8 +14,8 @@ import android.widget.Toast;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
+import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.model.BackendText;
-import com.bentonow.bentonow.ui.CustomDialog;
 
 public class HelpActivity extends BaseFragmentActivity implements View.OnClickListener {
 
@@ -23,8 +23,6 @@ public class HelpActivity extends BaseFragmentActivity implements View.OnClickLi
     private WebView mWebBrowser;
     private TextView info_email;
     private TextView info_phone;
-
-    CustomDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,12 +105,12 @@ public class HelpActivity extends BaseFragmentActivity implements View.OnClickLi
                 }
                 break;
             case R.id.info_phone:
-                dialog = new CustomDialog(this, "415.300.1332", "Call", "Cancel");
-                dialog.show();
-                dialog.setOnOkPressed(this);
+                ConfirmationDialog mDialog = new ConfirmationDialog(HelpActivity.this, "Call Us", "415.300.1332");
+                mDialog.addAcceptButton("Call", HelpActivity.this);
+                mDialog.addCancelButton("Cancel", null);
+                mDialog.show();
                 break;
-            case R.id.btn_ok:
-                dialog.dismiss();
+            case R.id.button_accept:
                 Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:4153001332"));
                 startActivity(intent);
                 break;

@@ -12,7 +12,7 @@ import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.model.BackendText;
 
 
-public class GettingStartedMenuActivity extends BaseFragmentActivity {
+public class GettingStartedActivity extends BaseFragmentActivity {
 
     private static final String TAG = "GettingStartedActivity";
 

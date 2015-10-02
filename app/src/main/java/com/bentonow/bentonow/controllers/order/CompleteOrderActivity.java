@@ -24,11 +24,13 @@ import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
-import com.bentonow.bentonow.controllers.BaseMenuActivity;
+import com.bentonow.bentonow.controllers.BaseActivity;
+import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
+import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.payment.EnterCreditCardActivity;
-import com.bentonow.bentonow.controllers.session.SignInMenuActivity;
-import com.bentonow.bentonow.controllers.session.SignUpMenuActivity;
+import com.bentonow.bentonow.controllers.session.SignInActivity;
+import com.bentonow.bentonow.controllers.session.SignUpActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Stock;
@@ -46,7 +48,7 @@ import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class CompleteOrderMenuActivity extends BaseMenuActivity implements View.OnClickListener, LazyListAdapterInterface, OnItemClickListener {
+public class CompleteOrderActivity extends BaseActivity implements View.OnClickListener, LazyListAdapterInterface, OnItemClickListener {
     private static final String TAG = "CompleteOrderActivity";
 
     TextView txt_address;
@@ -62,6 +64,9 @@ public class CompleteOrderMenuActivity extends BaseMenuActivity implements View.
     View container_discount;
 
     BackendButton btn_delete;
+    private CustomDialog dialog;
+    private ConfirmationDialog mDialog;
+    private ProgressDialog mProgressDialog;
 
     LayoutInflater inflater;
 
@@ -69,7 +74,6 @@ public class CompleteOrderMenuActivity extends BaseMenuActivity implements View.
     int selected = -1;
     LazyListAdapter adapter;
     String action = "";
-    CustomDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,7 +138,7 @@ public class CompleteOrderMenuActivity extends BaseMenuActivity implements View.
         super.onResume();
 
         if (User.current == null) {
-            startActivity(new Intent(this, SignUpMenuActivity.class));
+            startActivity(new Intent(this, SignUpActivity.class));
             finish();
         } else if (Order.location == null || Order.address == null) {
             Intent intent = new Intent(this, DeliveryLocationActivity.class);
@@ -179,11 +183,12 @@ public class CompleteOrderMenuActivity extends BaseMenuActivity implements View.
     void requestPromoCode(final String code) {
         Log.i(TAG, "requestPromoCode " + code);
         if (code == null || code.isEmpty()) {
-            dialog = new CustomDialog(this, "Invalid coupon code", null, "OK");
-            dialog.show();
+            mDialog = new ConfirmationDialog(CompleteOrderActivity.this, "Error", "Invalid coupon code");
+            mDialog.addAcceptButton("OK", null);
+            mDialog.show();
         } else {
-            dialog = new CustomDialog(this, "Processing...", true);
-            dialog.show();
+            mProgressDialog = new ProgressDialog(CompleteOrderActivity.this, R.string.processing_label);
+            mProgressDialog.show();
 
             RequestParams params = new RequestParams();
             params.put("api_token", User.current.api_token);
@@ -191,7 +196,7 @@ public class CompleteOrderMenuActivity extends BaseMenuActivity implements View.
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    dialog.dismiss();
+                    dismissDialog();
 
                     Log.i(TAG, "requestPromoCode failed " + responseString);
                     String sError;
@@ -203,14 +208,16 @@ public class CompleteOrderMenuActivity extends BaseMenuActivity implements View.
                         DebugUtils.logError(TAG, "requestPromoCode(): " + e.getLocalizedMessage());
                     }
 
-                    new CustomDialog(CompleteOrderMenuActivity.this, sError, null, "OK");
+                    mDialog = new ConfirmationDialog(CompleteOrderActivity.this, "Error", sError);
+                    mDialog.addAcceptButton("OK", null);
+                    mDialog.show();
                 }
 
 
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    dialog.dismiss();
+                    dismissDialog();
 
                     Log.i(TAG, "requestPromoCode success " + responseString);
 
@@ -246,14 +253,10 @@ public class CompleteOrderMenuActivity extends BaseMenuActivity implements View.
             case R.id.btn_remove:
                 if (Order.current.OrderItems.size() == 1) {
                     action = "delete";
-                    CustomDialog dialog = new CustomDialog(
-                            this,
-                            BackendText.get("complete-remove-all-text"),
-                            BackendText.get("complete-remove-all-confirmation-2"),
-                            BackendText.get("complete-remove-all-confirmation-1")
-                    );
-                    dialog.show();
-                    dialog.setOnOkPressed(this);
+                    mDialog = new ConfirmationDialog(CompleteOrderActivity.this, null, BackendText.get("complete-remove-all-text"));
+                    mDialog.addAcceptButton(BackendText.get("delivery-agree-confirmation-2"), CompleteOrderActivity.this);
+                    mDialog.addCancelButton(BackendText.get("delivery-agree-confirmation-1"), CompleteOrderActivity.this);
+                    mDialog.show();
                 } else {
                     deleteBento();
                 }
@@ -269,7 +272,7 @@ public class CompleteOrderMenuActivity extends BaseMenuActivity implements View.
 
                 adapter.notifyDataSetChanged();
                 break;
-            case R.id.btn_ok:
+            case R.id.button_accept:
                 switch (action) {
                     case "delete":
                         deleteBento();
@@ -282,7 +285,7 @@ public class CompleteOrderMenuActivity extends BaseMenuActivity implements View.
                         startActivity(new Intent(this, EnterCreditCardActivity.class));
                         break;
                     case "sign_in":
-                        startActivity(new Intent(this, SignInMenuActivity.class));
+                        startActivity(new Intent(this, SignInActivity.class));
                         finish();
                         break;
                     case "promo_code":
@@ -364,8 +367,8 @@ public class CompleteOrderMenuActivity extends BaseMenuActivity implements View.
     }
 
     public void onLetsEatPressed(View v) {
-        dialog = new CustomDialog(this, "Processing...", true);
-        dialog.show();
+        mProgressDialog = new ProgressDialog(CompleteOrderActivity.this, R.string.processing_label);
+        mProgressDialog.show();
 
         Order.current.Stripe.stripeToken = User.current.stripe_token;
         Order.current.IdempotentToken = BentoNowUtils.getUUIDBento();
@@ -410,7 +413,7 @@ public class CompleteOrderMenuActivity extends BaseMenuActivity implements View.
                 switch (statusCode) {
                     case 402:
                         action = "credit_card";
-                        dialog.dismiss();
+                        dismissDialog();
                         break;
                     case 406:
                         if (responseString.contains("You cannot use a Stripe token more than once")) {
@@ -434,13 +437,14 @@ public class CompleteOrderMenuActivity extends BaseMenuActivity implements View.
                         break;
                 }
 
-                dialog.dismiss();
+                dismissDialog();
+
                 track(error);
 
                 if (!error.equals("")) {
-                    dialog = new CustomDialog(CompleteOrderMenuActivity.this, error, "Ok", null);
-                    dialog.show();
-                    dialog.setOnOkPressed(CompleteOrderMenuActivity.this);
+                    mDialog = new ConfirmationDialog(CompleteOrderActivity.this, null, error);
+                    mDialog.addAcceptButton("OK", null);
+                    mDialog.show();
                 }
             }
 
@@ -457,9 +461,9 @@ public class CompleteOrderMenuActivity extends BaseMenuActivity implements View.
                 SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.UUID_BENTO, "");
                 BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);
 
-                dialog.dismiss();
+                dismissDialog();
 
-                startActivity(new Intent(CompleteOrderMenuActivity.this, OrderConfirmedMenuActivity.class));
+                startActivity(new Intent(CompleteOrderActivity.this, OrderConfirmedActivity.class));
                 Order.cleanUp();
                 finish();
             }
@@ -591,7 +595,14 @@ public class CompleteOrderMenuActivity extends BaseMenuActivity implements View.
         return convertView;
     }
 
-    //endregion
+    private void dismissDialog() {
+        if (dialog != null)
+            dialog.dismiss();
+        if (mDialog != null)
+            mDialog.dismiss();
+        if (mProgressDialog != null)
+            mProgressDialog.dismiss();
+    }
 
 
     public TextView getTxtDeliveryPrice() {

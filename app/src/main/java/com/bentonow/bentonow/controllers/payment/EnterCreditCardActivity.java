@@ -19,10 +19,11 @@ import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.CreditCard;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
+import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
+import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.ui.BackendButton;
-import com.bentonow.bentonow.ui.CustomDialog;
 import com.stripe.android.Stripe;
 import com.stripe.android.TokenCallback;
 import com.stripe.android.model.Card;
@@ -45,7 +46,8 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
 
     BackendButton btn_save;
 
-    CustomDialog dialog;
+    private ConfirmationDialog mDialog;
+    private ProgressDialog mProgressDialog;
 
     int focused = R.id.txt_number;
 
@@ -382,28 +384,32 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
         );
 
         if (!card.validateNumber()) {
-            dialog = new CustomDialog(this, "Please enter a valid credit card number", null, "OK");
-            dialog.show();
+            mDialog = new ConfirmationDialog(EnterCreditCardActivity.this, "Error", "Please enter a valid credit card number");
+            mDialog.addAcceptButton("OK", null);
+            mDialog.show();
             focused = R.id.txt_number;
             updateUI();
         } else if (!card.validateExpiryDate()) {
-            dialog = new CustomDialog(this, "Please enter a valid expiration date", null, "OK");
-            dialog.show();
+            mDialog = new ConfirmationDialog(EnterCreditCardActivity.this, "Error", "Please enter a valid expiration date");
+            mDialog.addAcceptButton("OK", null);
+            mDialog.show();
             focused = R.id.txt_date;
             updateUI();
         } else if (!card.validateCVC()) {
-            dialog = new CustomDialog(this, "Please enter a valid CVC code", null, "OK");
-            dialog.show();
+            mDialog = new ConfirmationDialog(EnterCreditCardActivity.this, "Error", "Please enter a valid CVC code");
+            mDialog.addAcceptButton("OK", null);
+            mDialog.show();
             focused = R.id.txt_cvc;
             updateUI();
         } else if (!card.validateCard()) {
-            dialog = new CustomDialog(this, "Please enter a valid credit card details", null, "OK");
-            dialog.show();
+            mDialog = new ConfirmationDialog(EnterCreditCardActivity.this, "Error", "Please enter a valid credit card details");
+            mDialog.addAcceptButton("OK", null);
+            mDialog.show();
             focused = R.id.txt_number;
             updateUI();
         } else {
-            dialog = new CustomDialog(this, "Processing...", true);
-            dialog.show();
+            mProgressDialog = new ProgressDialog(EnterCreditCardActivity.this, R.string.processing_label);
+            mProgressDialog.show();
 
             new Stripe().createToken(
                     card,
@@ -416,19 +422,15 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
                             User.current.card.last4 = txt_last4.getText().toString();
                             User.current.card.brand = CreditCard.getHolder(txt_number.getText().toString());
                             BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.USER);
-                            dialog.dismiss();
+                            dismissDialog();
                             onBackPressed();
                         }
 
                         public void onError(Exception error) {
-                            dialog.dismiss();
-                            dialog = new CustomDialog(
-                                    EnterCreditCardActivity.this,
-                                    error.getLocalizedMessage(),
-                                    null,
-                                    "OK"
-                            );
-                            dialog.show();
+                            dismissDialog();
+                            mDialog = new ConfirmationDialog(EnterCreditCardActivity.this, "Error", error.getLocalizedMessage());
+                            mDialog.addAcceptButton("OK", null);
+                            mDialog.show();
                         }
                     });
         }
@@ -459,4 +461,11 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
     }
 
     //endregion
+
+    private void dismissDialog() {
+        if (mDialog != null)
+            mDialog.dismiss();
+        if (mProgressDialog != null)
+            mProgressDialog.dismiss();
+    }
 }

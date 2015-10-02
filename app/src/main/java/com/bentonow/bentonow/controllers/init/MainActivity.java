@@ -14,6 +14,7 @@ import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
+import com.bentonow.bentonow.Utils.GoogleLocationUtil;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
@@ -51,6 +52,8 @@ public class MainActivity extends BaseFragmentActivity {
         if (getCallingActivity() != null) Log.i(TAG, "callerActivity " + getCallingActivity());
 
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_STORE_CHANGIN, false);
+
+        GoogleLocationUtil.getGoogleApiClient();
     }
 
     @Override
@@ -84,6 +87,7 @@ public class MainActivity extends BaseFragmentActivity {
     @Override
     protected void onStop() {
         bIsOpen = false;
+        GoogleLocationUtil.stopLocationUpdates();
         super.onStop();
     }
 
@@ -130,7 +134,7 @@ public class MainActivity extends BaseFragmentActivity {
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
             } else {
-                Intent intent = new Intent(this, GettingStartedMenuActivity.class);
+                Intent intent = new Intent(this, GettingStartedActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
             }
@@ -160,9 +164,9 @@ public class MainActivity extends BaseFragmentActivity {
     }
 
     void waitForUserLocation() {
-        Log.i(TAG, "waitForUserLocation");
-        Log.i(TAG, "location " + User.location);
-        if (User.location == null && Order.location == null) {
+        if (User.location == null) {
+            GoogleLocationUtil.startLocationUpdates();
+
             final TextView message = (TextView) findViewById(R.id.txt_message);
             message.setVisibility(View.VISIBLE);
             message.setText("Searching for your location...");
@@ -201,7 +205,7 @@ public class MainActivity extends BaseFragmentActivity {
             Log.i(TAG, "goNext ErrorActivity");
             BentoNowUtils.openErrorActivity(this);
             finish();
-        } else if (Settings.isInServiceArea(User.location) || Settings.isInServiceArea(Order.location)) {
+        } else if (Settings.isInServiceArea(User.location)) {
             BentoNowUtils.openBuildBentoActivity(this);
         } else {
             Log.i(TAG, "goNext DeliveryLocationActivity");

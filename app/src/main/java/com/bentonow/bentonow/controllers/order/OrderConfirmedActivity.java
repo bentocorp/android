@@ -7,10 +7,10 @@ import android.widget.ImageView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
-import com.bentonow.bentonow.controllers.BaseMenuActivity;
+import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 
-public class OrderConfirmedMenuActivity extends BaseMenuActivity implements View.OnClickListener {
+public class OrderConfirmedActivity extends BaseActivity implements View.OnClickListener {
 
     private static final String TAG = "OrderConfirmedActivity";
 

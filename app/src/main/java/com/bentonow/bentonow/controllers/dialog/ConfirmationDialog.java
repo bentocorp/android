@@ -1,6 +1,5 @@
-package com.bentonow.bentonow.ui;
+package com.bentonow.bentonow.controllers.dialog;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -17,7 +16,7 @@ import com.bentonow.bentonow.ui.material.ButtonFlat;
 /**
  * Created by Jose Torres on 9/30/15.
  */
-public class MaterialDialog extends android.app.Dialog {
+public class ConfirmationDialog extends android.app.Dialog {
 
     Context context;
     View view;
@@ -31,20 +30,17 @@ public class MaterialDialog extends android.app.Dialog {
     ButtonFlat buttonCancel;
 
     String buttonCancelText;
+    String buttonAcceptText;
 
     View.OnClickListener onAcceptButtonClickListener;
     View.OnClickListener onCancelButtonClickListener;
 
 
-    public MaterialDialog(Context context, String title, String message) {
+    public ConfirmationDialog(Context context, String title, String message) {
         super(context, android.R.style.Theme_Translucent);
         this.context = context;// init Context
         this.message = message;
         this.title = title;
-    }
-
-    public void addCancelButton(String buttonCancelText) {
-        this.buttonCancelText = buttonCancelText;
     }
 
     public void addCancelButton(String buttonCancelText, View.OnClickListener onCancelButtonClickListener) {
@@ -52,11 +48,17 @@ public class MaterialDialog extends android.app.Dialog {
         this.onCancelButtonClickListener = onCancelButtonClickListener;
     }
 
+
+    public void addAcceptButton(String buttonAcceptText, View.OnClickListener onAcceptButtonClickListener) {
+        this.buttonAcceptText = buttonAcceptText;
+        this.onAcceptButtonClickListener = onAcceptButtonClickListener;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.dialog_material);
+        setContentView(R.layout.dialog_information);
 
         view = (RelativeLayout) findViewById(R.id.contentDialog);
         backView = (RelativeLayout) findViewById(R.id.dialog_rootView);
@@ -75,12 +77,17 @@ public class MaterialDialog extends android.app.Dialog {
         });
 
         this.titleTextView = (TextView) findViewById(R.id.title);
-        setTitle(title);
+
+        if (title == null) {
+            this.titleTextView.setVisibility(View.GONE);
+        } else
+            setTitle(title);
 
         this.messageTextView = (TextView) findViewById(R.id.message);
         setMessage(message);
 
         this.buttonAccept = (ButtonFlat) findViewById(R.id.button_accept);
+        this.buttonAccept.setText(buttonAcceptText);
         buttonAccept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -172,15 +179,13 @@ public class MaterialDialog extends android.app.Dialog {
         this.buttonCancel = buttonCancel;
     }
 
-    public void setOnAcceptButtonClickListener(
-            View.OnClickListener onAcceptButtonClickListener) {
+    public void setOnAcceptButtonClickListener(View.OnClickListener onAcceptButtonClickListener) {
         this.onAcceptButtonClickListener = onAcceptButtonClickListener;
         if (buttonAccept != null)
             buttonAccept.setOnClickListener(onAcceptButtonClickListener);
     }
 
-    public void setOnCancelButtonClickListener(
-            View.OnClickListener onCancelButtonClickListener) {
+    public void setOnCancelButtonClickListener(View.OnClickListener onCancelButtonClickListener) {
         this.onCancelButtonClickListener = onCancelButtonClickListener;
         if (buttonCancel != null)
             buttonCancel.setOnClickListener(onCancelButtonClickListener);
@@ -189,7 +194,7 @@ public class MaterialDialog extends android.app.Dialog {
     @Override
     public void dismiss() {
         Animation anim = AnimationUtils.loadAnimation(context, R.anim.dialog_main_hide_amination);
-        anim.setAnimationListener(new AnimationListener() {
+        anim.setAnimationListener(new Animation.AnimationListener() {
 
             @Override
             public void onAnimationStart(Animation animation) {
@@ -204,7 +209,7 @@ public class MaterialDialog extends android.app.Dialog {
                 view.post(new Runnable() {
                     @Override
                     public void run() {
-                        Dialog.super.dismiss();
+                        ConfirmationDialog.super.dismiss();
                     }
                 });
 
@@ -215,5 +220,6 @@ public class MaterialDialog extends android.app.Dialog {
         view.startAnimation(anim);
         backView.startAnimation(backAnim);
     }
+
 
 }

@@ -2,18 +2,19 @@ package com.bentonow.bentonow.controllers.order;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
-import com.bentonow.bentonow.controllers.BaseMenuActivity;
-import com.bentonow.bentonow.ui.CustomDialog;
+import com.bentonow.bentonow.controllers.BaseActivity;
+import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.model.Item;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
@@ -25,21 +26,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class SelectMainMenuActivity extends BaseMenuActivity implements View.OnClickListener, AdapterView.OnItemClickListener, LazyListAdapterInterface {
+public class SelectSideActivity extends BaseActivity implements View.OnClickListener, AdapterView.OnItemClickListener, LazyListAdapterInterface {
 
-    static final String TAG = "SelectMainActivity";
+    static final String TAG = "SelectSideActivity";
 
     List<Item> data = new ArrayList<>();
     LayoutInflater inflater;
     int orderIndex;
+    int itemIndex;
     Item currentAddedItem;
     Item currentSelectedItem;
     LazyListAdapter adapter;
-    CustomDialog dialog;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_select_main);
+        setContentView(R.layout.activity_select_side);
 
         inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -48,21 +49,21 @@ public class SelectMainMenuActivity extends BaseMenuActivity implements View.OnC
         Menu menu = Menu.get();
 
         if (menu == null) {
-            dialog = new CustomDialog(this, "There is no current menu to show", "OK", null);
-            dialog.setOnOkPressed(this);
-            dialog.show();
+            ConfirmationDialog mDialog = new ConfirmationDialog(SelectSideActivity.this, null, "There is no current menu to show");
+            mDialog.addAcceptButton("OK", SelectSideActivity.this);
+            mDialog.show();
         } else {
             orderIndex = Order.current.currentOrderItem;
-            currentSelectedItem = Order.current.OrderItems.get(orderIndex).items.get(0);
-            currentAddedItem = Order.current.OrderItems.get(orderIndex).items.get(0);
+            itemIndex = getIntent().getIntExtra("itemIndex", 0);
+            currentSelectedItem = currentAddedItem = Order.current.OrderItems.get(orderIndex).items.get(itemIndex);
 
             for (Item item : menu.items) {
-                if (!item.type.equals("main")) continue;
+                if (!item.type.equals("side")) continue;
                 data.add(item);
             }
 
             adapter = new LazyListAdapter(this);
-            ListView list = (ListView) findViewById(R.id.list);
+            GridView list = (GridView) findViewById(R.id.list);
             list.setAdapter(adapter);
             list.setOnItemClickListener(this);
         }
@@ -84,24 +85,14 @@ public class SelectMainMenuActivity extends BaseMenuActivity implements View.OnC
                 onBackPressed();
                 break;
             case R.id.btn_add_to_bento:
-                if (currentSelectedItem.isSoldOut(true))
-                    return;
-
-                Order.current.OrderItems.get(orderIndex).items.set(0, currentSelectedItem);
-
+                if (currentSelectedItem.isSoldOut(true)) return;
+                Item item = currentSelectedItem.clone();
+                item.type += itemIndex;
+                Order.current.OrderItems.get(orderIndex).items.set(itemIndex, item);
+                Log.i(TAG, "added " + item.type);
                 onBackPressed();
                 break;
-            case R.id.btn_added:
-
-                //if (currentSelectedItem.itemId == Order.current.OrderItems.get(orderIndex).items.get(0).itemId)
-                Order.current.OrderItems.get(orderIndex).items.set(0, null);
-                currentAddedItem = null;
-
-                adapter.notifyDataSetChanged();
-                //onBackPressed();
-                break;
-            case R.id.btn_ok:
-                dialog.dismiss();
+            case R.id.button_accept:
                 onBackPressed();
                 break;
         }
@@ -142,7 +133,6 @@ public class SelectMainMenuActivity extends BaseMenuActivity implements View.OnC
             );
 
             holder.btn_add_to_bento.setOnClickListener(this);
-            holder.btn_added.setOnClickListener(this);
 
             convertView.setTag(holder);
         } else {

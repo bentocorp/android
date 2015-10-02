@@ -14,11 +14,12 @@ import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
-import com.bentonow.bentonow.controllers.BaseMenuActivity;
+import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.adapter.BuildBentoFixListAdapter;
+import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
-import com.bentonow.bentonow.controllers.session.SettingsMenuActivity;
-import com.bentonow.bentonow.controllers.session.SignUpMenuActivity;
+import com.bentonow.bentonow.controllers.session.SettingsActivity;
+import com.bentonow.bentonow.controllers.session.SignUpActivity;
 import com.bentonow.bentonow.listener.ListenerMainDishFix;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Item;
@@ -28,13 +29,12 @@ import com.bentonow.bentonow.model.Stock;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.order.OrderItem;
 import com.bentonow.bentonow.ui.BackendButton;
-import com.bentonow.bentonow.ui.CustomDialog;
 
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class BuildFixedBentoMenuActivity extends BaseMenuActivity implements View.OnClickListener, ListenerMainDishFix {
+public class BuildFixedBentoActivity extends BaseActivity implements View.OnClickListener, ListenerMainDishFix {
 
     static final String TAG = "BuildFixedBentoActivity";
 
@@ -44,7 +44,6 @@ public class BuildFixedBentoMenuActivity extends BaseMenuActivity implements Vie
     private TextView txtToolbarBadge;
     private BackendButton btnComplete;
     private ListView mListBento;
-    private CustomDialog dialog;
 
     private BuildBentoFixListAdapter aListBento;
 
@@ -77,9 +76,9 @@ public class BuildFixedBentoMenuActivity extends BaseMenuActivity implements Vie
         mMenu = Menu.get();
 
         if (mMenu == null) {
-            dialog = new CustomDialog(this, "There is no current menu to show", "OK", null);
-            dialog.setOnOkPressed(this);
-            dialog.show();
+            ConfirmationDialog mDialog = new ConfirmationDialog(BuildFixedBentoActivity.this, null, "There is no current menu to show");
+            mDialog.addAcceptButton("OK", BuildFixedBentoActivity.this);
+            mDialog.show();
         } else {
             getAdapterListBento().clear();
             for (Item item : mMenu.items) {
@@ -134,22 +133,20 @@ public class BuildFixedBentoMenuActivity extends BaseMenuActivity implements Vie
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.actionbar_left_btn:
-                Intent intent = new Intent(this, SettingsMenuActivity.class);
+                Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
                 break;
             case R.id.actionbar_right_btn:
                 if (!Order.current.OrderItems.isEmpty()) {
                     onContinueOrderPressed();
                 } else {
-                    dialog = new CustomDialog(this, BackendText.get("build-not-complete-text"),
-                            BackendText.get("build-not-complete-confirmation-2"), BackendText.get("build-not-complete-confirmation-1"));
-                    dialog.setOnOkPressed(this);
-                    dialog.setOnCancelPressed(this);
-                    dialog.show();
+                    ConfirmationDialog mDialog = new ConfirmationDialog(BuildFixedBentoActivity.this, null, BackendText.get("build-not-complete-text"));
+                    mDialog.addAcceptButton(BackendText.get("build-not-complete-confirmation-2"), BuildFixedBentoActivity.this);
+                    mDialog.addAcceptButton(BackendText.get("build-not-complete-confirmation-1"), BuildFixedBentoActivity.this);
+                    mDialog.show();
                 }
                 break;
-            case R.id.btn_ok:
-                dialog.dismiss();
+            case R.id.button_accept:
                 autocompleteBento(null);
 
                 onContinueOrderPressed();
@@ -174,14 +171,14 @@ public class BuildFixedBentoMenuActivity extends BaseMenuActivity implements Vie
             if (bOrderComplete)
                 if (User.current == null) {
                     trackBuildBentos();
-                    startActivity(new Intent(this, SignUpMenuActivity.class));
+                    startActivity(new Intent(this, SignUpActivity.class));
                 } else if (Order.location == null || Order.address == null) {
                     Intent intent = new Intent(this, DeliveryLocationActivity.class);
                     intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.COMPLETE_ORDER);
                     startActivity(intent);
                 } else {
                     trackBuildBentos();
-                    startActivity(new Intent(this, CompleteOrderMenuActivity.class));
+                    startActivity(new Intent(this, CompleteOrderActivity.class));
                 }
             else
                 WidgetsUtils.createShortToast("There are not enough dishes to build a bento, try again later");
@@ -236,7 +233,7 @@ public class BuildFixedBentoMenuActivity extends BaseMenuActivity implements Vie
         if (aSideDish.isEmpty())
             WidgetsUtils.createShortToast("Empty Side Message");
         else {
-            Intent iSideFixActivity = new Intent(this, SelectSideFixMenuActivity.class);
+            Intent iSideFixActivity = new Intent(this, SelectSideFixActivity.class);
             iSideFixActivity.putExtra(Item.TAG, mDish);
             iSideFixActivity.putParcelableArrayListExtra(Item.TAG_LIST, aSideDish);
             startActivity(iSideFixActivity);

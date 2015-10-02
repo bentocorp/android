@@ -35,6 +35,7 @@
     <string name="edit_hint_confirm_phone">Confirm your phone number</string>
     <string name="alert_error_enter_valid_number">Please enter a valid phone number.</string>
     <string name="alert_error_mismatch">Phone numbers entered must match.</string>
+    <string name="processing_label">Processing...</string>
 
     <string name="error_web_request">There is an error, please try again later</string>
     <string name="error_sold_out_items">There are sold out items, please change them before continue \n%s</string>
@@ -99,4 +100,5 @@
     <string name="error_closed_title">We\'re currently closed!</string>
     <string name="error_closed_text">Bento opens at 5pm today! We\'re cookin\' up some delicious dinner. \n Get excited!</string>
     <string name="error_closed_input_mail_hint">Enter email for \'We\'re Open\'! email</string>
+    <string name="error_no_valid_delivery_address">Please enter a valid delivery address.</string>
 </resources>

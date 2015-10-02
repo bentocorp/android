@@ -39,16 +39,16 @@
             android:launchMode="singleInstance"
             android:screenOrientation="portrait"></activity>
         <activity
-            android:name=".controllers.init.GettingStartedMenuActivity"
+            android:name=".controllers.init.GettingStartedActivity"
             android:screenOrientation="portrait"></activity>
         <activity
             android:name=".controllers.help.HelpActivity"
             android:screenOrientation="portrait"></activity>
         <activity
-            android:name=".controllers.order.BuildBentoMenuActivity"
+            android:name=".controllers.order.BuildBentoActivity"
             android:screenOrientation="portrait"></activity>
         <activity
-            android:name=".controllers.order.BuildFixedBentoMenuActivity"
+            android:name=".controllers.order.BuildFixedBentoActivity"
             android:screenOrientation="portrait"></activity>
         <activity
             android:name=".controllers.geolocation.DeliveryLocationActivity"
@@ -57,28 +57,28 @@
             android:name=".controllers.errors.BummerActivity"
             android:screenOrientation="portrait"></activity>
         <activity
-            android:name=".controllers.order.SelectMainMenuActivity"
+            android:name=".controllers.order.SelectMainActivity"
             android:screenOrientation="portrait"></activity>
         <activity
-            android:name=".controllers.order.SelectSideMenuActivity"
+            android:name=".controllers.order.SelectSideActivity"
             android:screenOrientation="portrait"></activity>
         <activity
-            android:name=".controllers.order.SelectSideFixMenuActivity"
+            android:name=".controllers.order.SelectSideFixActivity"
             android:screenOrientation="portrait"></activity>
         <activity
-            android:name=".controllers.session.SignUpMenuActivity"
+            android:name=".controllers.session.SignUpActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden"></activity>
         <activity
-            android:name=".controllers.session.SignInMenuActivity"
+            android:name=".controllers.session.SignInActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden"></activity>
         <activity
-            android:name=".controllers.order.CompleteOrderMenuActivity"
+            android:name=".controllers.order.CompleteOrderActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden"></activity>
         <activity
-            android:name=".controllers.order.OrderConfirmedMenuActivity"
+            android:name=".controllers.order.OrderConfirmedActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden"></activity>
         <activity
@@ -90,10 +90,10 @@
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
-            android:name=".controllers.session.EnterPhoneNumberMenuActivity"
+            android:name=".controllers.session.EnterPhoneNumberActivity"
             android:screenOrientation="portrait"></activity>
         <activity
-            android:name=".controllers.session.SettingsMenuActivity"
+            android:name=".controllers.session.SettingsActivity"
             android:screenOrientation="portrait"></activity>
         <activity
             android:name=".controllers.errors.NextDayMenuActivity"

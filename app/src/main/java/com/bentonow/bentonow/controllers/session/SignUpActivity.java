@@ -19,13 +19,14 @@ import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
+import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
+import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
-import com.bentonow.bentonow.controllers.order.CompleteOrderMenuActivity;
+import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.User;
-import com.bentonow.bentonow.ui.CustomDialog;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -44,7 +45,7 @@ import org.json.JSONObject;
 
 import java.util.Collections;
 
-public class SignUpMenuActivity extends BaseFragmentActivity implements View.OnClickListener, FacebookCallback<LoginResult>, GraphRequest.GraphJSONObjectCallback {
+public class SignUpActivity extends BaseFragmentActivity implements View.OnClickListener, FacebookCallback<LoginResult>, GraphRequest.GraphJSONObjectCallback {
 
     static final String TAG = "SignUpActivity";
 
@@ -64,8 +65,10 @@ public class SignUpMenuActivity extends BaseFragmentActivity implements View.OnC
 
     Button btn_signup;
 
+    private ConfirmationDialog mDialog;
+    private ProgressDialog mProgressDialog;
+
     CallbackManager callbackManager;
-    CustomDialog dialog;
 
     String error = "";
 
@@ -207,7 +210,7 @@ public class SignUpMenuActivity extends BaseFragmentActivity implements View.OnC
     }
 
     void onSignUpSuccess(String responseString) {
-        dialog.dismiss();
+        dismissDialog();
 
         try {
             Log.i(TAG, "onSignUpSuccess: " + responseString);
@@ -228,11 +231,11 @@ public class SignUpMenuActivity extends BaseFragmentActivity implements View.OnC
             if (getIntent().getBooleanExtra("settings", false)) {
                 onBackPressed();
             } else if (Order.location == null) {
-                Intent intent = new Intent(SignUpMenuActivity.this, DeliveryLocationActivity.class);
+                Intent intent = new Intent(SignUpActivity.this, DeliveryLocationActivity.class);
                 intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.COMPLETE_ORDER);
                 startActivity(intent);
             } else {
-                startActivity(new Intent(SignUpMenuActivity.this, CompleteOrderMenuActivity.class));
+                startActivity(new Intent(SignUpActivity.this, CompleteOrderActivity.class));
             }
 
             finish();
@@ -333,8 +336,8 @@ public class SignUpMenuActivity extends BaseFragmentActivity implements View.OnC
         registerUser.phone = BentoNowUtils.getPhoneFromNumber(txt_phone.getText().toString());
         registerUser.password = txt_password.getText().toString();
 
-        dialog = new CustomDialog(this, BackendText.get("sign-up-sign-in-link"), true);
-        dialog.show();
+        mProgressDialog = new ProgressDialog(SignUpActivity.this, BackendText.get("sign-in-sign-up-link"));
+        mProgressDialog.show();
 
         registerUser.register(new TextHttpResponseHandler() {
             @SuppressWarnings("deprecation")
@@ -342,7 +345,7 @@ public class SignUpMenuActivity extends BaseFragmentActivity implements View.OnC
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 Log.i(TAG, "onRegisterPressedOnFailure statusCode:" + statusCode + " responseString: " + responseString);
 
-                dialog.dismiss();
+                dismissDialog();
 
                 switch (statusCode) {
                     case 400:
@@ -360,8 +363,9 @@ public class SignUpMenuActivity extends BaseFragmentActivity implements View.OnC
                         updateUI();
                         break;
                     case 409:
-                        dialog = new CustomDialog(SignUpMenuActivity.this, "This email is already registered.", "OK", "");
-                        dialog.setOnOkPressed(SignUpMenuActivity.this);
+                        mDialog = new ConfirmationDialog(SignUpActivity.this, "Error", "This email is already registered.");
+                        mDialog.addAcceptButton("OK", SignUpActivity.this);
+                        mDialog.show();
                         break;
                 }
             }
@@ -376,7 +380,7 @@ public class SignUpMenuActivity extends BaseFragmentActivity implements View.OnC
     }
 
     public void onSignInPressed(View view) {
-        Intent intent = new Intent(this, SignInMenuActivity.class);
+        Intent intent = new Intent(this, SignInActivity.class);
         intent.putExtra("settings", getIntent().getBooleanExtra("settings", false));
         startActivity(intent);
         finish();
@@ -401,7 +405,7 @@ public class SignUpMenuActivity extends BaseFragmentActivity implements View.OnC
                 onBackPressed();
                 break;
             case R.id.btn_ok:
-                Intent intent = new Intent(this, SignInMenuActivity.class);
+                Intent intent = new Intent(this, SignInActivity.class);
                 intent.putExtra("email", txt_email.getText());
                 startActivity(intent);
                 finish();
@@ -432,16 +436,18 @@ public class SignUpMenuActivity extends BaseFragmentActivity implements View.OnC
 
     @Override
     public void onError(FacebookException e) {
-        new CustomDialog(this, "An error occur while trying to register with Facebook", null, "OK").show();
-        e.printStackTrace();
+        mDialog = new ConfirmationDialog(SignUpActivity.this, "Error", "An error occur while trying to sign in with Facebook");
+        mDialog.addAcceptButton("OK", null);
+        mDialog.show();
+        DebugUtils.logError("FacebookException", e);
     }
 
     @Override
     public void onCompleted(JSONObject jsonObject, final GraphResponse graphResponse) {
         final JSONObject user = graphResponse.getJSONObject();
 
-        dialog = new CustomDialog(this, BackendText.get("sign-in-sign-up-link"), true);
-        dialog.show();
+        mProgressDialog = new ProgressDialog(SignUpActivity.this, BackendText.get("sign-in-sign-up-link"));
+        mProgressDialog.show();
 
         try {
             Log.i(TAG, "graphResponse:" + graphResponse.toString());
@@ -454,11 +460,11 @@ public class SignUpMenuActivity extends BaseFragmentActivity implements View.OnC
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    dialog.dismiss();
+                    dismissDialog();
 
                     Log.i(TAG, "fbLoginFailed: " + responseString + " statusCode: " + statusCode);
 
-                    Intent intent = new Intent(SignUpMenuActivity.this, EnterPhoneNumberMenuActivity.class);
+                    Intent intent = new Intent(SignUpActivity.this, EnterPhoneNumberActivity.class);
                     intent.putExtra("user", graphResponse.toString());
                     intent.putExtra("settings", getIntent().getBooleanExtra("settings", false));
                     startActivity(intent);
@@ -476,5 +482,11 @@ public class SignUpMenuActivity extends BaseFragmentActivity implements View.OnC
         }
     }
 
-    //endregion
+    private void dismissDialog() {
+        if (mDialog != null)
+            mDialog.dismiss();
+
+        if (mProgressDialog != null)
+            mProgressDialog.dismiss();
+    }
 }

@@ -17,14 +17,14 @@ import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
+import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
-import com.bentonow.bentonow.controllers.order.CompleteOrderMenuActivity;
+import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.ui.BackendButton;
-import com.bentonow.bentonow.ui.CustomDialog;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.AccessToken;
 import com.google.gson.Gson;
@@ -35,7 +35,7 @@ import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class EnterPhoneNumberMenuActivity extends BaseFragmentActivity implements View.OnClickListener {
+public class EnterPhoneNumberActivity extends BaseFragmentActivity implements View.OnClickListener {
 
     static final String TAG = "EnterPhoneNumber";
 
@@ -161,7 +161,7 @@ public class EnterPhoneNumberMenuActivity extends BaseFragmentActivity implement
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.actionbar_left_btn:
-                startActivity(new Intent(this, SignUpMenuActivity.class));
+                startActivity(new Intent(this, SignUpActivity.class));
                 finish();
                 break;
             case R.id.actionbar_right_btn:
@@ -198,20 +198,17 @@ public class EnterPhoneNumberMenuActivity extends BaseFragmentActivity implement
                 try {
                     JSONObject json = new JSONObject(responseString);
 
-                    CustomDialog dialog = new CustomDialog(EnterPhoneNumberMenuActivity.this, json.has("error") ? json.getString("error") : json.getString("Error"), "OK", null);
-                    dialog.show();
+                    ConfirmationDialog mDialog = new ConfirmationDialog(EnterPhoneNumberActivity.this, "Error", json.has("error") ? json.getString("error") : json.getString("Error"));
+                    mDialog.addAcceptButton("OK", null);
+                    mDialog.show();
                     return;
                 } catch (Exception ignore) {
                     Crashlytics.log(1, TAG, responseString);
                 }
 
-                CustomDialog dialog = new CustomDialog(
-                        EnterPhoneNumberMenuActivity.this,
-                        "An error occurred, please contact us",
-                        "OK",
-                        null
-                );
-                dialog.show();
+                ConfirmationDialog mDialog = new ConfirmationDialog(EnterPhoneNumberActivity.this, "Error", "An error occurred, please contact us");
+                mDialog.addAcceptButton("OK", null);
+                mDialog.show();
             }
 
             @SuppressWarnings("deprecation")
@@ -223,11 +220,11 @@ public class EnterPhoneNumberMenuActivity extends BaseFragmentActivity implement
                 if (getIntent().getBooleanExtra("settings", false)) {
                     onBackPressed();
                 } else if (Order.location == null) {
-                    Intent intent = new Intent(EnterPhoneNumberMenuActivity.this, DeliveryLocationActivity.class);
+                    Intent intent = new Intent(EnterPhoneNumberActivity.this, DeliveryLocationActivity.class);
                     intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.COMPLETE_ORDER);
                     startActivity(intent);
                 } else {
-                    startActivity(new Intent(EnterPhoneNumberMenuActivity.this, CompleteOrderMenuActivity.class));
+                    startActivity(new Intent(EnterPhoneNumberActivity.this, CompleteOrderActivity.class));
                 }
 
                 BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);

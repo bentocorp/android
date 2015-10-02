@@ -20,14 +20,15 @@ import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SocialNetworksUtil;
-import com.bentonow.bentonow.controllers.BaseMenuActivity;
+import com.bentonow.bentonow.controllers.BaseActivity;
+import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
+import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
-import com.bentonow.bentonow.controllers.order.CompleteOrderMenuActivity;
+import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.User;
-import com.bentonow.bentonow.ui.CustomDialog;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -46,7 +47,7 @@ import org.json.JSONObject;
 import java.util.Collections;
 
 
-public class SignInMenuActivity extends BaseMenuActivity implements View.OnClickListener, FacebookCallback<LoginResult>, GraphRequest.GraphJSONObjectCallback {
+public class SignInActivity extends BaseActivity implements View.OnClickListener, FacebookCallback<LoginResult>, GraphRequest.GraphJSONObjectCallback {
 
     static final String TAG = "SignInActivity";
 
@@ -63,7 +64,8 @@ public class SignInMenuActivity extends BaseMenuActivity implements View.OnClick
     Button btn_signin;
 
     CallbackManager callbackManager;
-    CustomDialog dialog;
+    private ConfirmationDialog mDialog;
+    private ProgressDialog mProgressDialog;
 
     String error = "";
     //endregion
@@ -157,7 +159,7 @@ public class SignInMenuActivity extends BaseMenuActivity implements View.OnClick
     }
 
     void onSignInSuccess(String responseString) {
-        dialog.dismiss();
+        dismissDialog();
 
         try {
             Log.i(TAG, "onSignInSuccess: " + responseString);
@@ -168,11 +170,11 @@ public class SignInMenuActivity extends BaseMenuActivity implements View.OnClick
             if (getIntent().getBooleanExtra("settings", false)) {
                 onBackPressed();
             } else if (Order.location == null) {
-                Intent intent = new Intent(SignInMenuActivity.this, DeliveryLocationActivity.class);
+                Intent intent = new Intent(SignInActivity.this, DeliveryLocationActivity.class);
                 intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.COMPLETE_ORDER);
                 startActivity(intent);
             } else {
-                startActivity(new Intent(SignInMenuActivity.this, CompleteOrderMenuActivity.class));
+                startActivity(new Intent(SignInActivity.this, CompleteOrderActivity.class));
             }
 
             BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);
@@ -250,8 +252,8 @@ public class SignInMenuActivity extends BaseMenuActivity implements View.OnClick
         loginUser.email = txt_email.getText().toString();
         loginUser.password = txt_password.getText().toString();
 
-        dialog = new CustomDialog(this, BackendText.get("sign-up-sign-in-link"), true);
-        dialog.show();
+        mProgressDialog = new ProgressDialog(SignInActivity.this, BackendText.get("sign-up-sign-in-link"));
+        mProgressDialog.show();
 
         loginUser.login(new TextHttpResponseHandler() {
             @SuppressWarnings("deprecation")
@@ -259,7 +261,7 @@ public class SignInMenuActivity extends BaseMenuActivity implements View.OnClick
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 Log.i(TAG, "onSignInPressedOnFailure statusCode:" + statusCode + " responseString: " + responseString);
 
-                dialog.dismiss();
+                dismissDialog();
 
                 try {
                     error = new JSONObject(responseString).getString("error");
@@ -281,7 +283,7 @@ public class SignInMenuActivity extends BaseMenuActivity implements View.OnClick
     }
 
     public void onSignUpPressed(View view) {
-        Intent intent = new Intent(this, SignUpMenuActivity.class);
+        Intent intent = new Intent(this, SignUpActivity.class);
         intent.putExtra("settings", getIntent().getBooleanExtra("settings", false));
         startActivity(intent);
         finish();
@@ -310,7 +312,7 @@ public class SignInMenuActivity extends BaseMenuActivity implements View.OnClick
                 onBackPressed();
                 break;
             case R.id.btn_ok:
-                Intent intent = new Intent(this, SignUpMenuActivity.class);
+                Intent intent = new Intent(this, SignUpActivity.class);
                 intent.putExtra("email", txt_email.getText());
                 startActivity(intent);
                 finish();
@@ -341,16 +343,18 @@ public class SignInMenuActivity extends BaseMenuActivity implements View.OnClick
 
     @Override
     public void onError(FacebookException e) {
-        new CustomDialog(this, "An error occur while trying to sign in with Facebook", null, "OK").show();
-        e.printStackTrace();
+        mDialog = new ConfirmationDialog(SignInActivity.this, "Error", "An error occur while trying to sign in with Facebook");
+        mDialog.addAcceptButton("OK", null);
+        mDialog.show();
+        DebugUtils.logError("FacebookException", e);
     }
 
     @Override
     public void onCompleted(JSONObject jsonObject, final GraphResponse graphResponse) {
         final JSONObject user = graphResponse.getJSONObject();
 
-        dialog = new CustomDialog(this, BackendText.get("sign-up-sign-in-link"), true);
-        dialog.show();
+        mProgressDialog = new ProgressDialog(SignInActivity.this, BackendText.get("sign-up-sign-in-link"));
+        mProgressDialog.show();
 
         try {
             Log.i(TAG, "graphResponse:" + graphResponse.toString());
@@ -363,14 +367,15 @@ public class SignInMenuActivity extends BaseMenuActivity implements View.OnClick
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    dialog.dismiss();
+                    dismissDialog();
 
                     Log.i(TAG, "fbLoginFailed: " + responseString + " statusCode: " + statusCode);
 
                     try {
                         String message = new JSONObject(responseString).getString("error");
-                        dialog = new CustomDialog(SignInMenuActivity.this, message, null, "OK");
-                        dialog.show();
+                        mDialog = new ConfirmationDialog(SignInActivity.this, "Error", message);
+                        mDialog.addAcceptButton("OK", null);
+                        mDialog.show();
                     } catch (Exception e) {
                         DebugUtils.logError(TAG, "onCompleted(): " + e.getLocalizedMessage());
                     }
@@ -387,6 +392,12 @@ public class SignInMenuActivity extends BaseMenuActivity implements View.OnClick
         }
     }
 
-    //endregion
+    private void dismissDialog() {
+        if (mDialog != null)
+            mDialog.dismiss();
+
+        if (mProgressDialog != null)
+            mProgressDialog.dismiss();
+    }
 
 }

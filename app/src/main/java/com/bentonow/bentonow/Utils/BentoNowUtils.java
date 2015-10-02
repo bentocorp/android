@@ -6,8 +6,8 @@ import android.content.Intent;
 import com.bentonow.bentonow.BuildConfig;
 import com.bentonow.bentonow.controllers.errors.ErrorActivity;
 import com.bentonow.bentonow.controllers.init.MainActivity;
-import com.bentonow.bentonow.controllers.order.BuildBentoMenuActivity;
-import com.bentonow.bentonow.controllers.order.BuildFixedBentoMenuActivity;
+import com.bentonow.bentonow.controllers.order.BuildBentoActivity;
+import com.bentonow.bentonow.controllers.order.BuildFixedBentoActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Item;
 import com.bentonow.bentonow.model.Menu;
@@ -33,8 +33,8 @@ public class BentoNowUtils {
 
     public static int getCurrentTime() {
         if (BuildConfig.DEBUG)
-            //return 183000;
-            return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
+            return 183000;
+           // return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
         else
             return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
     }
@@ -77,13 +77,13 @@ public class BentoNowUtils {
         Intent iBuildBento;
 
         if (mCurrentMenu.menu_type.equals(ConstantUtils.sFixed))
-            iBuildBento = new Intent(mContext, BuildFixedBentoMenuActivity.class);
+            iBuildBento = new Intent(mContext, BuildFixedBentoActivity.class);
         else
-            iBuildBento = new Intent(mContext, BuildBentoMenuActivity.class);
+            iBuildBento = new Intent(mContext, BuildBentoActivity.class);
 
         iBuildBento.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        if (!BuildBentoMenuActivity.bIsOpen)
+        if (!BuildBentoActivity.bIsOpen)
             mContext.startActivity(iBuildBento);
     }
 

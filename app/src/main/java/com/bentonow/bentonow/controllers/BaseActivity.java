@@ -5,7 +5,7 @@ import android.os.Bundle;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.model.Menu;
 
-public class BaseMenuActivity extends BaseFragmentActivity {
+public class BaseActivity extends BaseFragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -11,8 +11,7 @@ import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
-import com.bentonow.bentonow.controllers.BentoApplication;
-import com.bentonow.bentonow.ui.CustomDialog;
+import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
@@ -62,16 +61,18 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
 
     public void onSubmitPressed(View view) {
         if (!Email.isValid(txt_email.getText().toString())) {
-            CustomDialog dialog = new CustomDialog(this, "Invalid email address.", null, "OK");
-            dialog.show();
+            ConfirmationDialog mDialog = new ConfirmationDialog(BummerActivity.this, "Error", "Invalid email address.");
+            mDialog.addAcceptButton("OK", null);
+            mDialog.show();
         } else {
             User.requestCoupon(txt_email.getText().toString(), "outside of delivery zone", new TextHttpResponseHandler() {
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                     Log.e(TAG, responseString);
-                    CustomDialog dialog = new CustomDialog(BentoApplication.instance, "We having issues connecting to the server, please try later.", null, "OK");
-                    dialog.show();
+                    ConfirmationDialog mDialog = new ConfirmationDialog(BummerActivity.this, "Error", "We having issues connecting to the server, please try later.");
+                    mDialog.addAcceptButton("OK", null);
+                    mDialog.show();
                 }
 
                 @SuppressWarnings("deprecation")
@@ -79,8 +80,9 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
                     Log.i(TAG, responseString);
                     txt_email.setText("");
-                    CustomDialog dialog = new CustomDialog(BentoApplication.instance, "Thanks! We'll let you know when we're in your area.", null, "OK");
-                    dialog.show();
+                    ConfirmationDialog mDialog = new ConfirmationDialog(BummerActivity.this, null, "Thanks! We'll let you know when we're in your area.");
+                    mDialog.addAcceptButton("OK", null);
+                    mDialog.show();
                 }
             });
         }
@@ -97,7 +99,7 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
         //
         ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
         actionbar_left_btn.setImageResource(R.drawable.ic_ab_back);
-        actionbar_left_btn.setOnClickListener(this);
+        actionbar_left_btn.setOnClickListener(BummerActivity.this);
     }
 
     @Override
