@@ -35,6 +35,29 @@
         android:text="@string/btn_continue_text"
         android:textColor="@color/white"
         app:key="build-button-1" />
+
+    <RelativeLayout
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/include">
+
+
+        <TextView
+            android:id="@+id/txt_promo_name"
+            style="@style/TxtBentoPromo"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="-40dp"
+            android:layout_marginRight="-40dp"
+            android:background="@drawable/square_banner_green_bento"
+            android:gravity="center"
+            android:visibility="gone" />
+
+
+    </RelativeLayout>
+
 </RelativeLayout>
 
 

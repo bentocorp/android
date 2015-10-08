@@ -1,6 +1,5 @@
 package com.bentonow.bentonow.model;
 
-import android.content.SharedPreferences;
 import android.location.Address;
 import android.util.Log;
 
@@ -20,7 +19,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class Settings {
-    static String TAG = "model.Settings";
+    static String TAG = "Settings";
 
     public class Meal {
         public int order;
@@ -39,8 +38,6 @@ public class Settings {
     static public int min_version;
     static public Meal lunch;
     static public Meal dinner;
-    static public String prefs_name = "BentoPrefs";
-    static public SharedPreferences prefs;
 
     static public void set(String data) {
         try {
@@ -108,6 +105,7 @@ public class Settings {
 
             return dinnerTime >= currentTime ? "lunch" : "dinner";
         } catch (Exception ignore) {
+            DebugUtils.logError(ignore);
         }
 
         return "";

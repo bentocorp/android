@@ -54,6 +54,12 @@ public class MainActivity extends BaseFragmentActivity {
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_STORE_CHANGIN, false);
 
         GoogleLocationUtil.getGoogleApiClient();
+
+        if (BentoNowUtils.B_APPIUM_TESTING) {
+            GoogleLocationUtil.setAppiumLocation(true);
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.APP_FIRST_RUN, true);
+
+        }
     }
 
     @Override
@@ -165,7 +171,7 @@ public class MainActivity extends BaseFragmentActivity {
 
     void waitForUserLocation() {
         if (User.location == null) {
-            GoogleLocationUtil.startLocationUpdates();
+            GoogleLocationUtil.getGoogleApiClient();
 
             final TextView message = (TextView) findViewById(R.id.txt_message);
             message.setVisibility(View.VISIBLE);

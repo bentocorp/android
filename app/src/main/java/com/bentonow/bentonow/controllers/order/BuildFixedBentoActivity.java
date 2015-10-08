@@ -9,6 +9,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
@@ -29,6 +30,8 @@ import com.bentonow.bentonow.model.Stock;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.order.OrderItem;
 import com.bentonow.bentonow.ui.BackendButton;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
+import com.mixpanel.android.mpmetrics.Tweak;
 
 import org.json.JSONObject;
 
@@ -44,12 +47,15 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
     private TextView txtToolbarBadge;
     private BackendButton btnComplete;
     private ListView mListBento;
+    private TextView txtPromoName;
 
     private BuildBentoFixListAdapter aListBento;
 
     private ArrayList<Item> aSideDish = new ArrayList<>();
 
     public static boolean bIsOpen = false;
+    private static Tweak<Boolean> showBanner = MixpanelAPI.booleanTweak("Show Fix Banner", false);
+
 
     private Menu mMenu;
 
@@ -127,34 +133,6 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
         Order.current.OrderItems.add(orderItem);
 
         updateUI();
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.actionbar_left_btn:
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
-                break;
-            case R.id.actionbar_right_btn:
-                if (!Order.current.OrderItems.isEmpty()) {
-                    onContinueOrderPressed();
-                } else {
-                    ConfirmationDialog mDialog = new ConfirmationDialog(BuildFixedBentoActivity.this, null, BackendText.get("build-not-complete-text"));
-                    mDialog.addAcceptButton(BackendText.get("build-not-complete-confirmation-2"), BuildFixedBentoActivity.this);
-                    mDialog.addAcceptButton(BackendText.get("build-not-complete-confirmation-1"), BuildFixedBentoActivity.this);
-                    mDialog.show();
-                }
-                break;
-            case R.id.button_accept:
-                autocompleteBento(null);
-
-                onContinueOrderPressed();
-                break;
-            case R.id.btn_continue:
-                onContinueOrderPressed();
-                break;
-        }
     }
 
 
@@ -240,6 +218,67 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
         }
     }
 
+    private void updateBanner() {
+        if (showBanner.get()) {
+            DebugUtils.logDebug(TAG, "Show Banner");
+
+            double dPrice;
+            double dSalePrice;
+
+            try {
+                dPrice = Double.parseDouble(BackendText.get("price"));
+                dSalePrice = Double.parseDouble(BackendText.get("sale_price"));
+
+                if (dSalePrice <= dPrice) {
+                    getTxtPromoName().setBackground(getResources().getDrawable(R.drawable.square_banner_green_bento));
+                    getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), dPrice));
+                } else {
+                    getTxtPromoName().setBackground(getResources().getDrawable(R.drawable.square_banner_orange_bento));
+                    getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), dSalePrice));
+                }
+
+                getTxtPromoName().setVisibility(View.VISIBLE);
+                BentoNowUtils.rotateBanner(getTxtPromoName());
+
+            } catch (Exception ex) {
+                DebugUtils.logDebug(TAG, "updateBanner(): " + ex);
+                getTxtPromoName().setVisibility(View.GONE);
+            }
+        } else {
+            DebugUtils.logDebug(TAG, "Hide Banner");
+            getTxtPromoName().setVisibility(View.GONE);
+        }
+
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.actionbar_left_btn:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.actionbar_right_btn:
+                if (!Order.current.OrderItems.isEmpty()) {
+                    onContinueOrderPressed();
+                } else {
+                    ConfirmationDialog mDialog = new ConfirmationDialog(BuildFixedBentoActivity.this, null, BackendText.get("build-not-complete-text"));
+                    mDialog.addAcceptButton(BackendText.get("build-not-complete-confirmation-2"), BuildFixedBentoActivity.this);
+                    mDialog.addAcceptButton(BackendText.get("build-not-complete-confirmation-1"), BuildFixedBentoActivity.this);
+                    mDialog.show();
+                }
+                break;
+            case R.id.button_accept:
+                autocompleteBento(null);
+
+                onContinueOrderPressed();
+                break;
+            case R.id.btn_continue:
+                onContinueOrderPressed();
+                break;
+        }
+    }
 
     @Override
     public void onDishClick(final int iDishPosition) {
@@ -255,10 +294,7 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
 
     @Override
     protected void onResume() {
-        super.onResume();
         bIsOpen = true;
-
-
         if (Order.current == null) {
             Order.current = new Order();
 
@@ -267,6 +303,10 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
 
         addMainDishes();
         updateUI();
+
+        updateBanner();
+
+        super.onResume();
     }
 
     @Override
@@ -326,5 +366,10 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
         return btnComplete;
     }
 
+    private TextView getTxtPromoName() {
+        if (txtPromoName == null)
+            txtPromoName = (TextView) findViewById(R.id.txt_promo_name);
+        return txtPromoName;
+    }
 
 }

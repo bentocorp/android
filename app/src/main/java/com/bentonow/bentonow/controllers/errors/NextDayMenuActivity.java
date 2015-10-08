@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.BentoApplication;
@@ -188,5 +189,10 @@ public class NextDayMenuActivity extends BaseFragmentActivity implements View.On
 
             return convertView;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        BentoNowUtils.openErrorActivity(NextDayMenuActivity.this);
     }
 }

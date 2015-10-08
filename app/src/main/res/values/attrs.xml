@@ -3,4 +3,8 @@
     <declare-styleable name="BackendTextView">
         <attr name="key" format="string" />
     </declare-styleable>
+
+    <declare-styleable name="RotateLayout_Layout">
+        <attr name="layout_angle" format="integer" />
+    </declare-styleable>
 </resources>

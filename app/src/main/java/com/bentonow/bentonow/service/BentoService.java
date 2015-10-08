@@ -92,7 +92,7 @@ public class BentoService extends Service {
         }
 
         //noinspection deprecation
-        BentoRestClient.get("/init/all", null, new TextHttpResponseHandler() {
+        BentoRestClient.get("/init/" + BentoNowUtils.getTodayDate(), null, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 Log.e(TAG, "cannot loadData");
@@ -110,7 +110,7 @@ public class BentoService extends Service {
     }
 
     void set(String responseString) {
-        Log.i(TAG, "set");
+        Log.i(TAG, "set: " + Settings.status);
 
         try {
             Stock.set(responseString);
@@ -128,7 +128,6 @@ public class BentoService extends Service {
                         BentoNowUtils.openErrorActivity(this);
                         break;
                 }
-
             }
         } catch (Exception ex) {
             DebugUtils.logError(TAG, ex);

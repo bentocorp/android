@@ -18,6 +18,8 @@ import com.google.android.gms.maps.model.LatLng;
  */
 public class GoogleLocationUtil {
 
+    public static final String TAG = "GoogleLocationUtil";
+
     private static LocationRequest mLocationRequest;
     private static GoogleApiClient mGoogleApiClient;
 
@@ -28,19 +30,19 @@ public class GoogleLocationUtil {
                     .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
                         @Override
                         public void onConnected(Bundle bundle) {
-                            DebugUtils.logDebug("buildGoogleApiClient", "onConnected:");
+                            DebugUtils.logDebug(TAG, "buildGoogleApiClient() onConnected:");
                             startLocationUpdates();
                         }
 
                         @Override
                         public void onConnectionSuspended(int i) {
-                            DebugUtils.logDebug("buildGoogleApiClient", "onConnectionSuspended: " + i);
+                            DebugUtils.logDebug(TAG, "buildGoogleApiClient() onConnectionSuspended: " + i);
                         }
                     })
                     .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
                         @Override
                         public void onConnectionFailed(ConnectionResult connectionResult) {
-                            DebugUtils.logDebug("buildGoogleApiClient", connectionResult.toString());
+                            DebugUtils.logDebug(TAG, "buildGoogleApiClient() " + connectionResult.toString());
                         }
                     })
                     .addApi(LocationServices.API)
@@ -55,8 +57,10 @@ public class GoogleLocationUtil {
             LocationServices.FusedLocationApi.requestLocationUpdates(getGoogleApiClient(), getLocationRequest(), new LocationListener() {
                 @Override
                 public void onLocationChanged(Location mLocation) {
-                    DebugUtils.logDebug("startLocationUpdates", "onLocationChanged: " + mLocation.toString());
+                    DebugUtils.logDebug(TAG, "startLocationUpdates", "onLocationChanged() " + mLocation.toString());
+
                     User.location = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
+
                     Order.address = LocationUtils.getAddressFromLocation(mLocation);
                 }
             });
@@ -67,7 +71,7 @@ public class GoogleLocationUtil {
             LocationServices.FusedLocationApi.removeLocationUpdates(getGoogleApiClient(), new LocationListener() {
                 @Override
                 public void onLocationChanged(Location mLocation) {
-                    DebugUtils.logDebug("stopLocationUpdates", "onLocationChanged: " + mLocation.toString());
+                    DebugUtils.logDebug(TAG, "stopLocationUpdates() onLocationChanged: " + mLocation.toString());
                 }
             });
     }
@@ -92,4 +96,13 @@ public class GoogleLocationUtil {
         return mCurrentLocation;
     }
 
+    public static void setAppiumLocation(boolean bLunch) {
+        if (bLunch)
+            User.location = new LatLng(37.784741, -122.402802);
+        else
+            User.location = new LatLng(37.767780, -122.414818);
+
+        Order.address = LocationUtils.getAddressFromLocation(User.location);
+
+    }
 }

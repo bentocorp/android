@@ -2,6 +2,9 @@ package com.bentonow.bentonow.Utils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 
 import com.bentonow.bentonow.BuildConfig;
 import com.bentonow.bentonow.controllers.errors.ErrorActivity;
@@ -29,12 +32,13 @@ import java.util.UUID;
 public class BentoNowUtils {
 
     public static final SimpleDateFormat sdfBento = new SimpleDateFormat("yyyyMMdd");
+    public static final boolean B_APPIUM_TESTING = false;
 
 
     public static int getCurrentTime() {
         if (BuildConfig.DEBUG)
             return 183000;
-           // return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
+            // return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
         else
             return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
     }
@@ -249,5 +253,13 @@ public class BentoNowUtils {
         }
 
         return bIsSoldOut;
+    }
+
+    public static void rotateBanner(View mView) {
+        Animation an = new RotateAnimation(0.0f, 45.0f, Animation.RELATIVE_TO_SELF, 0.75f, Animation.RELATIVE_TO_SELF, 0.75f);
+        an.setDuration(0);
+        an.setRepeatCount(0);
+        an.setFillAfter(true);
+        mView.setAnimation(an);
     }
 }

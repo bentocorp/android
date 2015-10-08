@@ -30,6 +30,8 @@ import com.bentonow.bentonow.model.order.OrderItem;
 import com.bentonow.bentonow.ui.BackendButton;
 import com.bentonow.bentonow.ui.ItemHolder;
 import com.google.gson.Gson;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
+import com.mixpanel.android.mpmetrics.Tweak;
 
 import org.json.JSONObject;
 
@@ -48,10 +50,12 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
     ItemHolder side2Holder;
     ItemHolder side3Holder;
     ItemHolder side4Holder;
+    private TextView txtPromoName;
 
     ConfirmationDialog mDialog;
 
     public static boolean bIsOpen = false;
+    private static Tweak<Boolean> showBanner = MixpanelAPI.booleanTweak("Show Banner", false);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +77,6 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
 
     @Override
     protected void onResume() {
-        super.onResume();
         bIsOpen = true;
 
         if (Order.current == null) {
@@ -91,6 +94,11 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
         }
 
         updateUI();
+
+        if (showBanner.get())
+            updateBanner();
+
+        super.onResume();
     }
 
     private void initActionbar() {
@@ -222,9 +230,33 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
         updateUI();
     }
 
-    //****
-    // Click
-    //****
+    private void updateBanner() {
+        DebugUtils.logDebug(TAG, "Show Banner");
+
+        double dPrice;
+        double dSalePrice;
+
+        try {
+            dPrice = Double.parseDouble(BackendText.get("price"));
+            dSalePrice = Double.parseDouble(BackendText.get("sale_price"));
+
+            if (dSalePrice <= dPrice) {
+                getTxtPromoName().setBackground(getResources().getDrawable(R.drawable.square_banner_green_bento));
+                getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), dPrice));
+            } else {
+                getTxtPromoName().setBackground(getResources().getDrawable(R.drawable.square_banner_orange_bento));
+                getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), dSalePrice));
+            }
+
+            getTxtPromoName().setVisibility(View.VISIBLE);
+            BentoNowUtils.rotateBanner(getTxtPromoName());
+
+        } catch (Exception ex) {
+            DebugUtils.logDebug(TAG, "updateBanner(): " + ex);
+            getTxtPromoName().setVisibility(View.GONE);
+        }
+
+    }
 
     @Override
     public void onClick(View v) {
@@ -384,5 +416,11 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
     protected void onStop() {
         super.onStop();
         bIsOpen = false;
+    }
+
+    private TextView getTxtPromoName() {
+        if (txtPromoName == null)
+            txtPromoName = (TextView) findViewById(R.id.txt_promo_name);
+        return txtPromoName;
     }
 }

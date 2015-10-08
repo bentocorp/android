@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -94,6 +95,7 @@ public class Menu {
 
         }
 
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.CURRENT_MEAL_TIME, "");
         return null;
     }
 

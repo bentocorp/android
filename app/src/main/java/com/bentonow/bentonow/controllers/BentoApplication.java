@@ -16,12 +16,6 @@ import com.bentonow.bentonow.service.BentoService;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
 
-import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -62,8 +56,8 @@ public class BentoApplication extends Application {
             Fabric.with(this, new Crashlytics());
             BentoService.init();
             BentoRestClient.init();
-        } catch (KeyStoreException | KeyManagementException | UnrecoverableKeyException | IOException | NoSuchAlgorithmException | CertificateException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            DebugUtils.logError(TAG, e);
         }
     }
 
