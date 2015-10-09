@@ -10,6 +10,7 @@ import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.model.BackendText;
+import com.bentonow.bentonow.model.Settings;
 
 
 public class GettingStartedActivity extends BaseFragmentActivity {
@@ -21,7 +22,7 @@ public class GettingStartedActivity extends BaseFragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_getting_started);
 
-        String price = BackendText.get("price");
+        String price = String.valueOf(Settings.tax_percent);
         String title = BackendText.get("about-item-0").replace("$X", "$" + price + "!");
 
         Log.i(TAG, "price: " + price);

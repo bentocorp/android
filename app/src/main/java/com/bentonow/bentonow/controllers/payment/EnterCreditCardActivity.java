@@ -22,6 +22,7 @@ import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
 import com.bentonow.bentonow.model.BackendText;
+import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.ui.BackendButton;
 import com.stripe.android.Stripe;
@@ -43,6 +44,8 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
     TextView txt_last4;
     EditText txt_date;
     EditText txt_cvc;
+
+    private TextView txtBentoPrice;
 
     BackendButton btn_save;
 
@@ -86,6 +89,8 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
 
     void updateUI() {
         btn_save.setBackgroundResource(isValid() ? R.drawable.bg_green_cornered : R.drawable.btn_dark_gray);
+
+        getTxtBentoPrice().setText(String.valueOf(Settings.price));
 
         txt_number.setVisibility(focused == R.id.txt_number ? View.VISIBLE : View.GONE);
         txt_last4.setVisibility(focused == R.id.txt_number ? View.GONE : View.VISIBLE);
@@ -467,5 +472,11 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
             mDialog.dismiss();
         if (mProgressDialog != null)
             mProgressDialog.dismiss();
+    }
+
+    private TextView getTxtBentoPrice() {
+        if (txtBentoPrice == null)
+            txtBentoPrice = (TextView) findViewById(R.id.txt_bento_price);
+        return txtBentoPrice;
     }
 }

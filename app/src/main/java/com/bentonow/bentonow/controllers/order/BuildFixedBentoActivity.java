@@ -26,6 +26,7 @@ import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Item;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
+import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.Stock;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.order.OrderItem;
@@ -226,8 +227,8 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
             double dSalePrice;
 
             try {
-                dPrice = Double.parseDouble(BackendText.get("price"));
-                dSalePrice = Double.parseDouble(BackendText.get("sale_price"));
+                dPrice = (double) Settings.price;
+                dSalePrice = (double) Settings.sale_price;
 
                 if (dSalePrice <= dPrice) {
                     getTxtPromoName().setBackground(getResources().getDrawable(R.drawable.square_banner_green_bento));
@@ -265,7 +266,7 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
                 } else {
                     ConfirmationDialog mDialog = new ConfirmationDialog(BuildFixedBentoActivity.this, null, BackendText.get("build-not-complete-text"));
                     mDialog.addAcceptButton(BackendText.get("build-not-complete-confirmation-2"), BuildFixedBentoActivity.this);
-                    mDialog.addAcceptButton(BackendText.get("build-not-complete-confirmation-1"), BuildFixedBentoActivity.this);
+                    mDialog.addCancelButton(BackendText.get("build-not-complete-confirmation-1"), BuildFixedBentoActivity.this);
                     mDialog.show();
                 }
                 break;

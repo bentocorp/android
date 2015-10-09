@@ -34,6 +34,10 @@ public class Settings {
     static public String serviceArea_lunch;
     static public String serviceArea_lunch_map;
     static public String status = "";
+    static public long delivery_price;
+    static public long price;
+    static public long sale_price;
+    static public long tax_percent;
     static public String tzName;
     static public int min_version;
     static public Meal lunch;
@@ -49,6 +53,10 @@ public class Settings {
             serviceArea_dinner_map = settings.getString("serviceArea_dinner_map");
             serviceArea_lunch = settings.getString("serviceArea_lunch");
             serviceArea_lunch_map = settings.getString("serviceArea_lunch_map");
+            delivery_price = settings.getLong("delivery_price");
+            price = settings.getLong("price");
+            sale_price = settings.getLong("sale_price");
+            tax_percent = settings.getLong("tax_percent");
             status = settings.getString("status");
             tzName = settings.getString("tzName");
             min_version = new JSONObject(data).getInt("android_min_version");

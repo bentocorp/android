@@ -1,43 +1,39 @@
 <LinearLayout
-    android:id="@+id/base_relative_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/base_relative_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_alignParentBottom="true"
     android:background="@color/bgcolor"
     android:orientation="vertical"
-    tools:context="com.bentonow.bentonow.controllers.payment.EnterCreditCardActivity"
-    >
+    tools:context="com.bentonow.bentonow.controllers.payment.EnterCreditCardActivity">
 
     <!-- bento_toolbar -->
-    <include layout="@layout/bento_toolbar"/>
+    <include layout="@layout/bento_toolbar" />
 
     <com.bentonow.bentonow.ui.BackendTextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="25sp"
         android:gravity="center"
-        app:key="credit-card-text"
-        />
+        app:key="credit-card-text" />
 
     <com.bentonow.bentonow.ui.BackendTextView
+        android:id="@+id/txt_bento_price"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="25sp"
         android:gravity="center"
-        android:textAppearance="@style/H1Gray"
-        app:key="price"
-        />
+        android:textAppearance="@style/H1Gray"/>
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="50sp"
         android:background="@color/white"
         android:gravity="center_vertical"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/img_credit_card"
@@ -47,7 +43,7 @@
             android:contentDescription="@null"
             android:paddingEnd="15dp"
             android:paddingStart="15dp"
-            android:src="@drawable/card_empty"/>
+            android:src="@drawable/card_empty" />
 
         <EditText
             android:id="@+id/txt_number"
@@ -61,7 +57,7 @@
             android:singleLine="true"
             android:textColor="@color/gray"
             android:textCursorDrawable="@null"
-            android:textSize="@dimen/text_small"/>
+            android:textSize="@dimen/text_small" />
 
         <Button
             android:id="@+id/txt_last4"
@@ -72,13 +68,12 @@
             android:gravity="center"
             android:hint="@string/hash"
             android:maxLength="4"
+            android:onClick="onLast4Pressed"
             android:padding="7dp"
             android:singleLine="true"
             android:textColor="@color/gray"
             android:textCursorDrawable="@null"
-            android:textSize="@dimen/text_small"
-            android:onClick="onLast4Pressed"
-            />
+            android:textSize="@dimen/text_small" />
 
         <EditText
             android:id="@+id/txt_date"
@@ -98,8 +93,7 @@
             android:text=""
             android:textColor="@color/gray"
             android:textCursorDrawable="@null"
-            android:textSize="@dimen/text_small"
-            />
+            android:textSize="@dimen/text_small" />
 
         <EditText
             android:id="@+id/txt_cvc"
@@ -116,17 +110,16 @@
             android:singleLine="true"
             android:textColor="@color/gray"
             android:textCursorDrawable="@null"
-            android:textSize="@dimen/text_small"
-            />
+            android:textSize="@dimen/text_small" />
 
         <ImageButton
-            android:background="@null"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:padding="7sp"
+            android:background="@null"
             android:contentDescription="@null"
-            android:src="@drawable/x_reset_input"
-            android:onClick="onClearPressed" />
+            android:onClick="onClearPressed"
+            android:padding="7sp"
+            android:src="@drawable/x_reset_input" />
 
     </LinearLayout>
     <!--<Button android:id="@+id/save" style="@style/Save"/>-->
@@ -139,5 +132,5 @@
         android:gravity="center"
         android:onClick="onSavePressed"
         android:textColor="@color/white"
-        app:key="credit-card-button"/>
+        app:key="credit-card-button" />
 </LinearLayout>

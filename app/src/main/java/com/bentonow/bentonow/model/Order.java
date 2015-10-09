@@ -96,9 +96,9 @@ public class Order {
         int tip;
         long total;
 
-        double tax_percent = Double.parseDouble(BackendText.get("tax_percent"));
-        current.OrderDetails.delivery_price = BackendText.get("delivery_price");
-        long delivery_percent = (new Double(Double.parseDouble(current.OrderDetails.delivery_price) * 100).longValue());
+        double tax_percent = Settings.tax_percent;
+        current.OrderDetails.delivery_price = Settings.delivery_price;
+        long delivery_percent = (current.OrderDetails.delivery_price * 100);
 
         for (OrderItem item : current.OrderItems) {
             bento_total += item.unit_price * 100;
@@ -114,7 +114,7 @@ public class Order {
         tip = bento_total * current.OrderDetails.tip_percentage / 100;
         current.OrderDetails.tip_cents = tip;
 
-        tax = Math.round( subtotal_taxed * (tax_percent / 100));
+        tax = Math.round(subtotal_taxed * (tax_percent / 100));
 
         current.OrderDetails.tax_cents = tax;
 

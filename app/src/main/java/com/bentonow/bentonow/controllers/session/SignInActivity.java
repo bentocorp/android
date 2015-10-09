@@ -164,6 +164,7 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
         try {
             Log.i(TAG, "onSignInSuccess: " + responseString);
             User.current = new Gson().fromJson(responseString, User.class);
+            Log.i(TAG, "After Gson: " + User.current.api_token);
 
             MixpanelUtils.logInUser();
 
