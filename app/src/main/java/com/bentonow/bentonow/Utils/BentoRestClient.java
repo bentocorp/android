@@ -89,7 +89,7 @@ public class BentoRestClient {
     public static void postFace(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
         Log.i(TAG, "[POST] https://api2.bentonow.com" + url);
         Log.i(TAG, "[params] " + (params != null ? params.toString() : "null"));
-        client.post("https://api2.bentonow.com" + url, params, responseHandler);
+        client.post(getAbsoluteUrl(url) + url, params, responseHandler);
     }
 
     private static String getAbsoluteUrl(String relativeUrl) {

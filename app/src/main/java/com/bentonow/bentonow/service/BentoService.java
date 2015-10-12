@@ -6,10 +6,15 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
+import com.bentonow.bentonow.Utils.WidgetsUtils;
+import com.bentonow.bentonow.model.BackendText;
+import com.bentonow.bentonow.model.Menu;
+import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.Stock;
 import com.loopj.android.http.TextHttpResponseHandler;
@@ -81,11 +86,8 @@ public class BentoService extends Service {
     }
 
     void loadData() {
-        Log.i(TAG, "loadData");
-
         String currDate = BentoNowUtils.getTodayDate();
-
-        Log.i(TAG, "date: " + date + " current date: " + currDate);
+        Log.i(TAG, "loadData" + " current date: " + currDate);
 
         if (!date.equals(currDate)) {
             BentoNowUtils.openMainActivity(this);
@@ -101,7 +103,6 @@ public class BentoService extends Service {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                Log.i(TAG, responseString != null ? responseString : "null");
                 set(responseString);
             }
         });
@@ -114,7 +115,11 @@ public class BentoService extends Service {
 
         try {
             Stock.set(responseString);
+            BackendText.set(responseString);
             Settings.set(responseString);
+            Menu.set(responseString);
+
+            Menu mMenu = Menu.get();
 
             if (!Settings.status.equals(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS)) &&
                     !SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS).equals("main")) {
@@ -128,7 +133,16 @@ public class BentoService extends Service {
                         BentoNowUtils.openErrorActivity(this);
                         break;
                 }
+            } else {
+                if (Order.current != null)
+                    if (!Order.current.MealName.equals(mMenu.meal_name) || !Order.current.MenuType.equals(mMenu.menu_type)) {
+                        DebugUtils.logDebug(TAG, "New Menu: " + mMenu.meal_name + "||" + mMenu.menu_type);
+                        WidgetsUtils.createShortToast(R.string.error_new_menu_type);
+                        Order.cleanUp();
+                        BentoNowUtils.openBuildBentoActivity(this);
+                    }
             }
+
         } catch (Exception ex) {
             DebugUtils.logError(TAG, ex);
         }

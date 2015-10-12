@@ -52,8 +52,7 @@ public class Order {
     }
 
     public static void cleanUp() {
-
-        current = new Order();
+        current = null;
     }
 
     public static String getFullAddress() {
@@ -148,6 +147,8 @@ public class Order {
     public String CouponCode = null;
     public String IdempotentToken = null;
     public String Platform = null;
+    public String MenuType = "";
+    public String MealName = "";
 
 
     public static void clearIncomplete() {

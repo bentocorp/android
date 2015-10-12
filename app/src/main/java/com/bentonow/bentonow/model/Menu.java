@@ -1,10 +1,7 @@
 package com.bentonow.bentonow.model;
 
-import android.util.Log;
-
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
-import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -33,21 +30,20 @@ public class Menu {
         try {
             json = new JSONObject(data);
             setMenuWithString(json.getString("/menu/{date}"));
-            Log.i(TAG, "menus: " + list.size());
+            DebugUtils.logDebug(TAG, "menus: " + list.size());
         } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-            e.printStackTrace();
+            DebugUtils.logError(TAG, "/menu/{date}" + e.getMessage());
         }
 
         try {
             if (json != null) {
                 setMenuWithString(json.getString("/menu/next/{date}"));
-                Log.i(TAG, "menus next: " + list.size());
+                DebugUtils.logDebug(TAG, "menus next: " + list.size());
             }
         } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-            e.printStackTrace();
+            DebugUtils.logError(TAG, "/menu/next/{date}" + e.getMessage());
         }
+
     }
 
     static void setMenuWithString(String data) {
@@ -70,8 +66,7 @@ public class Menu {
                 list.add(row);
             }
         } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-            e.printStackTrace();
+            DebugUtils.logError(TAG, "setMenuWithString():" + e.getMessage());
         }
 
     }
@@ -81,21 +76,22 @@ public class Menu {
             if (BentoNowUtils.getCurrentTime() >= 0 && BentoNowUtils.getCurrentTime() < 163000) {
                 // Try to get the lunch menu
                 for (Menu menu : list) {
-                    if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()) && menu.meal_name.equals("lunch"))
+                    if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()) && menu.meal_name.equals("lunch")) {
                         return menu;
+                    }
                 }
 
             } else if (163000 <= BentoNowUtils.getCurrentTime() && 240000 > BentoNowUtils.getCurrentTime()) {
                 // Try to get the dinner menu
                 for (Menu menu : list) {
-                    if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()) && menu.meal_name.equals("dinner"))
+                    if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()) && menu.meal_name.equals("dinner")) {
                         return menu;
+                    }
                 }
             }
 
         }
 
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.CURRENT_MEAL_TIME, "");
         return null;
     }
 

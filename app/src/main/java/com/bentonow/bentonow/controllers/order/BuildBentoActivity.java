@@ -29,7 +29,6 @@ import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.order.OrderItem;
 import com.bentonow.bentonow.ui.BackendButton;
 import com.bentonow.bentonow.ui.ItemHolder;
-import com.google.gson.Gson;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.mixpanel.android.mpmetrics.Tweak;
 
@@ -54,6 +53,8 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
 
     ConfirmationDialog mDialog;
 
+    private Menu mMenu;
+
     public static boolean bIsOpen = false;
     private static Tweak<Boolean> showBanner = MixpanelAPI.booleanTweak("Show Banner", false);
 
@@ -71,16 +72,21 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
         initActionbar();
         initOrder();
 
-        DebugUtils.logDebug(TAG, new Gson().toJson(Menu.list));
+        //DebugUtils.logDebug(TAG, new Gson().toJson(Menu.list));
 
     }
 
     @Override
     protected void onResume() {
+        super.onResume();
         bIsOpen = true;
 
-        if (Order.current == null) {
+        mMenu = Menu.get();
+
+        if (Order.current == null ) {
             Order.current = new Order();
+            Order.current.MealName = mMenu.meal_name;
+            Order.current.MenuType = mMenu.menu_type;
 
             MixpanelUtils.track("Began Building A Bento");
         }
@@ -94,11 +100,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
         }
 
         updateUI();
-
-        if (showBanner.get())
-            updateBanner();
-
-        super.onResume();
+        updateBanner();
     }
 
     private void initActionbar() {
@@ -231,28 +233,31 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
     }
 
     private void updateBanner() {
-        DebugUtils.logDebug(TAG, "Show Banner");
+        if (showBanner.get()) {
+            DebugUtils.logDebug(TAG, "Show Banner");
+            double dPrice;
+            double dSalePrice;
 
-        double dPrice;
-        double dSalePrice;
+            try {
+                dPrice = (double) Settings.tax_percent;
+                dSalePrice = (double) Settings.sale_price;
 
-        try {
-            dPrice = (double) Settings.tax_percent;
-            dSalePrice = (double) Settings.sale_price;
+                if (dSalePrice <= dPrice) {
+                    getTxtPromoName().setBackground(getResources().getDrawable(R.drawable.square_banner_green_bento));
+                    getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), dPrice));
+                } else {
+                    getTxtPromoName().setBackground(getResources().getDrawable(R.drawable.square_banner_orange_bento));
+                    getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), dSalePrice));
+                }
 
-            if (dSalePrice <= dPrice) {
-                getTxtPromoName().setBackground(getResources().getDrawable(R.drawable.square_banner_green_bento));
-                getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), dPrice));
-            } else {
-                getTxtPromoName().setBackground(getResources().getDrawable(R.drawable.square_banner_orange_bento));
-                getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), dSalePrice));
+                getTxtPromoName().setVisibility(View.VISIBLE);
+                BentoNowUtils.rotateBanner(getTxtPromoName());
+
+            } catch (Exception ex) {
+                DebugUtils.logDebug(TAG, "updateBanner(): " + ex);
+                getTxtPromoName().setVisibility(View.GONE);
             }
-
-            getTxtPromoName().setVisibility(View.VISIBLE);
-            BentoNowUtils.rotateBanner(getTxtPromoName());
-
-        } catch (Exception ex) {
-            DebugUtils.logDebug(TAG, "updateBanner(): " + ex);
+        } else {
             getTxtPromoName().setVisibility(View.GONE);
         }
 

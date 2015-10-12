@@ -80,8 +80,6 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
     }
 
     private void addMainDishes() {
-        mMenu = Menu.get();
-
         if (mMenu == null) {
             ConfirmationDialog mDialog = new ConfirmationDialog(BuildFixedBentoActivity.this, null, "There is no current menu to show");
             mDialog.addAcceptButton("OK", BuildFixedBentoActivity.this);
@@ -295,19 +293,22 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
 
     @Override
     protected void onResume() {
+        super.onResume();
         bIsOpen = true;
+
+        mMenu = Menu.get();
+
         if (Order.current == null) {
             Order.current = new Order();
+            Order.current.MealName = mMenu.meal_name;
+            Order.current.MenuType = mMenu.menu_type;
 
             MixpanelUtils.track("Began Building A Bento");
         }
 
         addMainDishes();
         updateUI();
-
         updateBanner();
-
-        super.onResume();
     }
 
     @Override

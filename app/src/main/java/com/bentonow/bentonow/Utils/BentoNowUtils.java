@@ -79,16 +79,20 @@ public class BentoNowUtils {
         Menu mCurrentMenu = Menu.get();
 
         Intent iBuildBento;
-
-        if (mCurrentMenu.menu_type.equals(ConstantUtils.sFixed))
-            iBuildBento = new Intent(mContext, BuildFixedBentoActivity.class);
+        if (mCurrentMenu != null)
+            if (mCurrentMenu.menu_type.equals(ConstantUtils.sFixed)) {
+                iBuildBento = new Intent(mContext, BuildFixedBentoActivity.class);
+                iBuildBento.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                if (!BuildFixedBentoActivity.bIsOpen)
+                    mContext.startActivity(iBuildBento);
+            } else {
+                iBuildBento = new Intent(mContext, BuildBentoActivity.class);
+                iBuildBento.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                if (!BuildBentoActivity.bIsOpen)
+                    mContext.startActivity(iBuildBento);
+            }
         else
-            iBuildBento = new Intent(mContext, BuildBentoActivity.class);
-
-        iBuildBento.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        if (!BuildBentoActivity.bIsOpen)
-            mContext.startActivity(iBuildBento);
+            openErrorActivity(mContext);
     }
 
     public static void openErrorActivity(Context mContext) {

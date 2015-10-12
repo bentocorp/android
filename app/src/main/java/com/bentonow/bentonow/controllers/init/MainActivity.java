@@ -60,6 +60,8 @@ public class MainActivity extends BaseFragmentActivity {
             SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.APP_FIRST_RUN, true);
 
         }
+
+        Order.cleanUp();
     }
 
     @Override
@@ -67,8 +69,6 @@ public class MainActivity extends BaseFragmentActivity {
         bIsOpen = true;
 
         Log.i(TAG, "onResume");
-
-        Order.cleanUp();
 
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
         if (resultCode == ConnectionResult.SUCCESS) {
@@ -161,9 +161,9 @@ public class MainActivity extends BaseFragmentActivity {
         } else if (!Settings.status.equals("open")) {
             BentoNowUtils.openErrorActivity(this);
             finish();
-        } else if (Order.pendingOrders()) {
+       /* } else if (Order.pendingOrders()) {
             BentoNowUtils.openBuildBentoActivity(this);
-            finish();
+            finish();*/
         } else {
             waitForUserLocation();
         }
