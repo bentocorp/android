@@ -2,21 +2,25 @@ package com.bentonow.bentonow.Utils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 
 import com.bentonow.bentonow.BuildConfig;
 import com.bentonow.bentonow.controllers.errors.ErrorActivity;
+import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.controllers.init.MainActivity;
 import com.bentonow.bentonow.controllers.order.BuildBentoActivity;
 import com.bentonow.bentonow.controllers.order.BuildFixedBentoActivity;
+import com.bentonow.bentonow.controllers.session.EnterPhoneNumberActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Item;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.order.OrderItem;
+import com.facebook.GraphResponse;
 import com.google.gson.Gson;
 
 import java.text.DateFormat;
@@ -266,4 +270,32 @@ public class BentoNowUtils {
         an.setFillAfter(true);
         mView.setAnimation(an);
     }
+
+    public static void openEnterPhoneNumberActivity(FragmentActivity mActivity, GraphResponse graphResponse) {
+        Intent iPhoneNumber = new Intent(mActivity, EnterPhoneNumberActivity.class);
+        iPhoneNumber.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        iPhoneNumber.putExtra(EnterPhoneNumberActivity.TAG_FB_USER, graphResponse.getJSONObject().toString());
+        mActivity.startActivity(iPhoneNumber);
+        mActivity.finish();
+    }
+
+
+    public static void openPolicyActivity(FragmentActivity mActivity) {
+        Intent intent = new Intent(mActivity, HelpActivity.class);
+        intent.putExtra("privacy", true);
+        mActivity.startActivity(intent);
+    }
+
+    public static void openTermAndConditionsActivity(FragmentActivity mActivity) {
+        Intent intent = new Intent(mActivity, HelpActivity.class);
+        intent.putExtra("tos", true);
+        mActivity.startActivity(intent);
+    }
+
+    public static void openFaqActivity(FragmentActivity mActivity) {
+        Intent intent = new Intent(mActivity, HelpActivity.class);
+        intent.putExtra("faq", true);
+        mActivity.startActivity(intent);
+    }
+
 }

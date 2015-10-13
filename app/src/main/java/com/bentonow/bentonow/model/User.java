@@ -2,7 +2,6 @@ package com.bentonow.bentonow.model;
 
 import android.util.Log;
 
-import com.bentonow.bentonow.BuildConfig;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.model.user.Card;
 import com.bentonow.bentonow.model.user.CouponRequest;
@@ -65,10 +64,7 @@ public class User {
 
         Log.i(TAG, "login data: " + data);
 
-        if (password != null || !BuildConfig.DEBUG)
-            BentoRestClient.post(endpoint, params, responseHandler);
-        else
-            BentoRestClient.postFace(endpoint, params, responseHandler);
+        BentoRestClient.post(endpoint, params, responseHandler);
     }
 
     public void register(TextHttpResponseHandler responseHandler) {

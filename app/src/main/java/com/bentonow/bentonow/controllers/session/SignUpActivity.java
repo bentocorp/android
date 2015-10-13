@@ -225,7 +225,7 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
 
             MixpanelUtils.signUpUser();
 
-            BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);
+            BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.USER);
 
 
             if (getIntent().getBooleanExtra("settings", false)) {
@@ -461,14 +461,17 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                     dismissDialog();
-
                     Log.i(TAG, "fbLoginFailed: " + responseString + " statusCode: " + statusCode);
 
-                    Intent intent = new Intent(SignUpActivity.this, EnterPhoneNumberActivity.class);
-                    intent.putExtra("user", graphResponse.toString());
-                    intent.putExtra("settings", getIntent().getBooleanExtra("settings", false));
-                    startActivity(intent);
-                    finish();
+                    switch (statusCode) {
+                        case 404:
+                            DebugUtils.logError(TAG, "onCompleted(): facebook email not found");
+                            BentoNowUtils.openEnterPhoneNumberActivity(SignUpActivity.this, graphResponse);
+                            break;
+                        case 403:
+                            DebugUtils.logError(TAG, "onCompleted(): facebook bad fb_token");
+                            break;
+                    }
                 }
 
                 @SuppressWarnings("deprecation")

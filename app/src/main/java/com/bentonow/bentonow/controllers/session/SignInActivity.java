@@ -41,7 +41,6 @@ import com.google.gson.Gson;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.apache.http.Header;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Collections;
@@ -352,12 +351,11 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
 
     @Override
     public void onCompleted(JSONObject jsonObject, final GraphResponse graphResponse) {
-        final JSONObject user = graphResponse.getJSONObject();
-
         mProgressDialog = new ProgressDialog(SignInActivity.this, BackendText.get("sign-up-sign-in-link"));
         mProgressDialog.show();
 
         try {
+            final JSONObject user = graphResponse.getJSONObject();
             Log.i(TAG, "graphResponse:" + graphResponse.toString());
 
             User loginUser = new User();
@@ -370,16 +368,25 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                     dismissDialog();
 
-                    Log.i(TAG, "fbLoginFailed: " + responseString + " statusCode: " + statusCode);
+                    DebugUtils.logError(TAG, "fbLoginFailed: " + responseString + " statusCode: " + statusCode);
 
-                    try {
-                        String message = new JSONObject(responseString).getString("error");
-                        mDialog = new ConfirmationDialog(SignInActivity.this, "Error", message);
-                        mDialog.addAcceptButton("OK", null);
-                        mDialog.show();
-                    } catch (Exception e) {
-                        DebugUtils.logError(TAG, "onCompleted(): " + e.getLocalizedMessage());
+                    switch (statusCode) {
+                        case 404:
+                            DebugUtils.logError(TAG, "onCompleted(): facebook email not found");
+                            BentoNowUtils.openEnterPhoneNumberActivity(SignInActivity.this, graphResponse);
+                            break;
+                        default:
+                            try {
+                                String message = new JSONObject(responseString).getString("error");
+                                mDialog = new ConfirmationDialog(SignInActivity.this, "Error", message);
+                                mDialog.addAcceptButton("OK", null);
+                                mDialog.show();
+                            } catch (Exception e) {
+                                DebugUtils.logError(TAG, "onCompleted(): " + e.getLocalizedMessage());
+                            }
+                            break;
                     }
+
                 }
 
                 @SuppressWarnings("deprecation")
@@ -388,8 +395,9 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
                     onSignInSuccess(responseString);
                 }
             });
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            dismissDialog();
+            DebugUtils.logError(TAG, e.toString());
         }
     }
 

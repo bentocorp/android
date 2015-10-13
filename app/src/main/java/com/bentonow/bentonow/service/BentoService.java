@@ -81,7 +81,7 @@ public class BentoService extends Service {
             }
         };
         handler = new Handler();
-        handler.postDelayed(task, 1000 * 30);
+        handler.postDelayed(task, 1000 * 90);
         Log.i(TAG, "startTask");
     }
 

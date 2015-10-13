@@ -1,7 +1,6 @@
 package com.bentonow.bentonow.controllers.session;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -15,14 +14,11 @@ import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.ConstantUtils;
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
-import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
-import com.bentonow.bentonow.controllers.help.HelpActivity;
-import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
 import com.bentonow.bentonow.model.BackendText;
-import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.ui.BackendButton;
 import com.crashlytics.android.Crashlytics;
@@ -39,10 +35,14 @@ public class EnterPhoneNumberActivity extends BaseFragmentActivity implements Vi
 
     static final String TAG = "EnterPhoneNumber";
 
+    public static final String TAG_FB_USER = "Facebook_User";
+
     User user;
     BackendButton btn_done;
     EditText txt_phone;
     ImageView img_phone;
+    private TextView textPrivacyPolicy;
+    private TextView textConfirmationTerms;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,25 +51,28 @@ public class EnterPhoneNumberActivity extends BaseFragmentActivity implements Vi
         user = new User();
 
         try {
-            JSONObject fbuser = new JSONObject(getIntent().getStringExtra("user"));
+            JSONObject fbUser = new JSONObject(getIntent().getStringExtra(TAG_FB_USER));
 
-            user.firstname = fbuser.getString("first_name");
-            user.lastname = fbuser.getString("last_name");
-            user.email = fbuser.getString("email");
-
-            user.fb_id = fbuser.getString("id");
-            user.fb_gender = fbuser.getString("gender");
-            user.fb_profile_pic = "https://graph.facebook.com/" + user.fb_id + "/picture?width=400";
+            user.firstname = fbUser.getString("first_name");
+            user.lastname = fbUser.getString("last_name");
+            user.email = fbUser.getString("email");
             user.fb_token = AccessToken.getCurrentAccessToken().getToken();
+            user.fb_id = fbUser.getString("id");
+            user.fb_gender = fbUser.getString("gender");
+            user.fb_profile_pic = "https://graph.facebook.com/" + user.fb_id + "/picture?width=400";
             user.fb_age_range = "";
 
+
         } catch (JSONException ignore) {
-            onBackPressed();
+            DebugUtils.logError(TAG, ignore);
         }
 
         btn_done = (BackendButton) findViewById(R.id.btn_done);
         txt_phone = (EditText) findViewById(R.id.txt_phone);
         img_phone = (ImageView) findViewById(R.id.img_phone);
+
+        getTextPrivacyPolicy().setOnClickListener(this);
+        getTextConfirmationTerms().setOnClickListener(this);
 
         initActionbar();
         updateUI();
@@ -161,40 +164,35 @@ public class EnterPhoneNumberActivity extends BaseFragmentActivity implements Vi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.actionbar_left_btn:
-                startActivity(new Intent(this, SignUpActivity.class));
-                finish();
+                onBackPressed();
                 break;
             case R.id.actionbar_right_btn:
-                Intent intent = new Intent(this, HelpActivity.class);
-                intent.putExtra("faq", true);
-                startActivity(intent);
+                BentoNowUtils.openFaqActivity(EnterPhoneNumberActivity.this);
+                break;
+            case R.id.text_privacy_policy:
+                BentoNowUtils.openPolicyActivity(EnterPhoneNumberActivity.this);
+                break;
+            case R.id.text_confirmation_terms:
+                BentoNowUtils.openTermAndConditionsActivity(EnterPhoneNumberActivity.this);
                 break;
         }
     }
 
-    public void onPrivacyPolicyPressed(View view) {
-        Intent intent = new Intent(this, HelpActivity.class);
-        intent.putExtra("privacy", true);
-        startActivity(intent);
-    }
-
-    public void onTermAndConditionsPressed(View view) {
-        Intent intent = new Intent(this, HelpActivity.class);
-        intent.putExtra("tos", true);
-        startActivity(intent);
-    }
-
     public void onDonePressed(View view) {
-        if (!isValid()) return;
+        if (!isValid())
+            return;
 
-        user.phone = txt_phone.getText().toString().replace("(", "").replace(")", "").replace(" ", "");
+        user.phone = BentoNowUtils.getNumberFromPhone(txt_phone.getText().toString());
 
         RequestParams params = new RequestParams();
         params.put("data", new Gson().toJson(user));
+
         BentoRestClient.post("/user/fbsignup", params, new TextHttpResponseHandler() {
             @SuppressWarnings("deprecation")
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                DebugUtils.logError(TAG, "fbLoginFailed: " + responseString + " statusCode: " + statusCode);
+
                 try {
                     JSONObject json = new JSONObject(responseString);
 
@@ -203,12 +201,13 @@ public class EnterPhoneNumberActivity extends BaseFragmentActivity implements Vi
                     mDialog.show();
                     return;
                 } catch (Exception ignore) {
+                    ConfirmationDialog mDialog = new ConfirmationDialog(EnterPhoneNumberActivity.this, "Error", "An error occurred, please contact us");
+                    mDialog.addAcceptButton("OK", null);
+                    mDialog.show();
+                    DebugUtils.logError(TAG, responseString);
                     Crashlytics.log(1, TAG, responseString);
                 }
 
-                ConfirmationDialog mDialog = new ConfirmationDialog(EnterPhoneNumberActivity.this, "Error", "An error occurred, please contact us");
-                mDialog.addAcceptButton("OK", null);
-                mDialog.show();
             }
 
             @SuppressWarnings("deprecation")
@@ -217,26 +216,13 @@ public class EnterPhoneNumberActivity extends BaseFragmentActivity implements Vi
                 User.current = new Gson().fromJson(responseString, User.class);
                 MixpanelUtils.track("Completed Registration");
 
-                if (getIntent().getBooleanExtra("settings", false)) {
-                    onBackPressed();
-                } else if (Order.location == null) {
-                    Intent intent = new Intent(EnterPhoneNumberActivity.this, DeliveryLocationActivity.class);
-                    intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.COMPLETE_ORDER);
-                    startActivity(intent);
-                } else {
-                    startActivity(new Intent(EnterPhoneNumberActivity.this, CompleteOrderActivity.class));
-                }
+                onBackPressed();
 
-                BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);
+                BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.USER);
 
-                finish();
             }
         });
     }
-
-    //endregion
-
-    //region UI
 
     void updateUI() {
         btn_done.setBackgroundResource(isValid() ? R.drawable.bg_green_cornered : R.drawable.btn_dark_gray);
@@ -250,5 +236,15 @@ public class EnterPhoneNumberActivity extends BaseFragmentActivity implements Vi
         }
     }
 
-    //endregion
+    private TextView getTextPrivacyPolicy() {
+        if (textPrivacyPolicy == null)
+            textPrivacyPolicy = (TextView) findViewById(R.id.text_privacy_policy);
+        return textPrivacyPolicy;
+    }
+
+    private TextView getTextConfirmationTerms() {
+        if (textConfirmationTerms == null)
+            textConfirmationTerms = (TextView) findViewById(R.id.text_confirmation_terms);
+        return textConfirmationTerms;
+    }
 }
