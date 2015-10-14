@@ -12,7 +12,7 @@ public class MixpanelUtils {
 
     public static MixpanelAPI mMixpanel;
 
-    public static MixpanelAPI getInstance() {
+    public static MixpanelAPI getMixpanelApi() {
         if (mMixpanel == null)
             mMixpanel = MixpanelAPI.getInstance(BentoApplication.instance, BentoApplication.instance.getString(R.string.mixpanel_api_key));
 
@@ -20,34 +20,36 @@ public class MixpanelUtils {
     }
 
     public static void track(String event) {
-        getInstance().track(event);
+        getMixpanelApi().track(event);
     }
 
     public static void track(String event, JSONObject params) {
-        getInstance().track(event, params);
+        getMixpanelApi().track(event, params);
     }
 
     public static void signUpUser() {
         if (User.current != null) {
-            getInstance().alias(User.current.email, User.current.email);
+            getMixpanelApi().alias(User.current.email, User.current.email);
             setProfileProperties();
         }
     }
 
     public static void logInUser() {
         if (User.current != null) {
-            getInstance().identify(User.current.email);
+            MixpanelAPI.People people = getMixpanelApi().getPeople();
+            people.identify(User.current.email);
+            people.initPushHandling(BentoApplication.instance.getString(R.string.google_project_key));
             setProfileProperties();
         }
     }
 
     public static void setProfileProperties() {
-        getInstance().getPeople().identify(User.current.email);
-        getInstance().getPeople().set("$name", User.current.firstname + " " + User.current.lastname);
-        getInstance().getPeople().set("$email", User.current.email);
-        getInstance().getPeople().set("$phone", User.current.phone);
-        getInstance().getPeople().set("$created", BentoNowUtils.getMixpanelDate());
-        getInstance().getPeople().set("Last Login Address", LocationUtils.getCustomAddress(Order.address));
+        getMixpanelApi().getPeople().identify(User.current.email);
+        getMixpanelApi().getPeople().set("$name", User.current.firstname + " " + User.current.lastname);
+        getMixpanelApi().getPeople().set("$email", User.current.email);
+        getMixpanelApi().getPeople().set("$phone", User.current.phone);
+        getMixpanelApi().getPeople().set("$created", BentoNowUtils.getMixpanelDate());
+        getMixpanelApi().getPeople().set("Last Login Address", LocationUtils.getCustomAddress(Order.address));
         trackRevenue(0);
     }
 
@@ -55,15 +57,15 @@ public class MixpanelUtils {
         JSONObject properties = new JSONObject();
         try {
             properties.put("$time", BentoNowUtils.getMixpanelDate());
-            getInstance().getPeople().identify(User.current.email);
-            getInstance().getPeople().trackCharge(iRevenue, properties);
+            getMixpanelApi().getPeople().identify(User.current.email);
+            getMixpanelApi().getPeople().trackCharge(iRevenue, properties);
         } catch (Exception ex) {
             DebugUtils.logError("trackRevenue()", ex);
         }
     }
 
     public static void clearPreferences() {
-        getInstance().reset();
-        getInstance().clearSuperProperties();
+        getMixpanelApi().reset();
+        getMixpanelApi().clearSuperProperties();
     }
 }

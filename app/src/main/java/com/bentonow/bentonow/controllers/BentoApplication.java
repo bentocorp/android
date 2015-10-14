@@ -34,13 +34,9 @@ public class BentoApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
         instance = this;
 
-        Log.i(TAG, "onCreate");
-
-        MixpanelUtils.getInstance();
-
+        MixpanelUtils.getMixpanelApi();
 
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
                         .setDefaultFontPath("fonts/OpenSans-Regular.ttf")
@@ -48,10 +44,10 @@ public class BentoApplication extends Application {
                         .build()
         );
 
-
         Settings.load();
 
         try {
+            MixpanelUtils.logInUser();
             FacebookSdk.sdkInitialize(this);
             Fabric.with(this, new Crashlytics());
             BentoService.init();

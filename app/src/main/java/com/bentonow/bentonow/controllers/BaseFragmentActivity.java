@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.facebook.appevents.AppEventsLogger;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
@@ -34,6 +35,12 @@ public class BaseFragmentActivity extends FragmentActivity {
         BentoApplication.onResume();
         AppEventsLogger.activateApp(this);
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        MixpanelUtils.getMixpanelApi().flush();
     }
 
     @Override

@@ -16,6 +16,7 @@ import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
+import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.model.BackendText;
@@ -213,12 +214,21 @@ public class EnterPhoneNumberActivity extends BaseFragmentActivity implements Vi
             @SuppressWarnings("deprecation")
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                User.current = new Gson().fromJson(responseString, User.class);
-                MixpanelUtils.track("Completed Registration");
+
+                try {
+                    User mNewUser = new Gson().fromJson(responseString, User.class);
+                    user.api_token = mNewUser.api_token;
+                    User.current = user;
+
+                    MixpanelUtils.track("Completed Registration");
+
+                    BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.USER);
+                } catch (Exception ex) {
+                    WidgetsUtils.createShortToast(R.string.error_sign_up_user);
+                }
 
                 onBackPressed();
 
-                BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.USER);
 
             }
         });

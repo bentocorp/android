@@ -98,6 +98,7 @@
 
     <string name="error_loading_dishes">There is a problem loading the dishes, please try again later</string>
     <string name="error_send_order">There was a problem sending your order, please try again</string>
+    <string name="error_sign_up_user">There was a problem, please try again</string>
     <string name="error_closed_title">We\'re currently closed!</string>
     <string name="error_closed_text">Bento opens at 5pm today! We\'re cookin\' up some delicious dinner. \n Get excited!</string>
     <string name="error_closed_input_mail_hint">Enter email for \'We\'re Open\'! email</string>

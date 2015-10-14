@@ -46,7 +46,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
     private String message = null;
     private String url = "https://goo.gl/5pA0iE";
 
-    private LinearLayout layoutCcontainerPhone;
+    private LinearLayout layoutContainerPhone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -335,9 +335,9 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
     }
 
     private LinearLayout getLayoutContainerPhone() {
-        if (layoutCcontainerPhone == null)
-            layoutCcontainerPhone = (LinearLayout) findViewById(R.id.layout_container_phone);
+        if (layoutContainerPhone == null)
+            layoutContainerPhone = (LinearLayout) findViewById(R.id.layout_container_phone);
 
-        return layoutCcontainerPhone;
+        return layoutContainerPhone;
     }
 }
