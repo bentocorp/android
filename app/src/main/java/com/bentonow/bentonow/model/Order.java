@@ -88,16 +88,19 @@ public class Order {
     }
 
     public static void calculate() {
-        int bento_total = 0;
-        long subtotal;
-        long subtotal_taxed;
-        long tax;
-        int tip;
-        long total;
+        double bento_total = 0;
+        double subtotal;
+        double subtotal_taxed;
+        double tax;
+        double delivery_percent;
+        double tip;
+        double total;
 
         double tax_percent = Settings.tax_percent;
+
         current.OrderDetails.delivery_price = Settings.delivery_price;
-        long delivery_percent = (current.OrderDetails.delivery_price * 100);
+
+        delivery_percent = (current.OrderDetails.delivery_price * 100);
 
         for (OrderItem item : current.OrderItems) {
             bento_total += item.unit_price * 100;
@@ -110,7 +113,7 @@ public class Order {
         else
             subtotal_taxed = subtotal - current.OrderDetails.coupon_discount_cents;
 
-        tip = bento_total * current.OrderDetails.tip_percentage / 100;
+        tip = Math.round(bento_total * current.OrderDetails.tip_percentage / 100);
         current.OrderDetails.tip_cents = tip;
 
         tax = Math.round(subtotal_taxed * (tax_percent / 100));
@@ -130,10 +133,12 @@ public class Order {
         DebugUtils.logDebug(TAG, "Subtotal: " + subtotal);
         DebugUtils.logDebug(TAG, "Subtotal Taxed: " + subtotal_taxed);
         DebugUtils.logDebug(TAG, "Tax: " + tax);
+        DebugUtils.logDebug(TAG, "Tax double: " + Settings.tax_percent);
         DebugUtils.logDebug(TAG, "Tip: " + tip);
         DebugUtils.logDebug(TAG, "Total: " + total);
+        DebugUtils.logDebug(TAG, "Delivery Price: " + Settings.delivery_price);
 
-        current.OrderDetails.total_cents = total;
+        current.OrderDetails.total_cents = Math.round(total);
     }
 
     //****

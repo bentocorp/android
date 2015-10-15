@@ -72,7 +72,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
         initActionbar();
         initOrder();
 
-        //DebugUtils.logDebug(TAG, new Gson().toJson(Menu.list));
+        BentoNowUtils.rotateBanner(getTxtPromoName());
 
     }
 
@@ -83,7 +83,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
 
         mMenu = Menu.get();
 
-        if (Order.current == null ) {
+        if (Order.current == null) {
             Order.current = new Order();
             Order.current.MealName = mMenu.meal_name;
             Order.current.MenuType = mMenu.menu_type;
@@ -100,6 +100,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
         }
 
         updateUI();
+
         updateBanner();
     }
 
@@ -233,6 +234,37 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
     }
 
     private void updateBanner() {
+/*
+        ViewTreeObserver viewTreeObserver = getTxtPromoName().getViewTreeObserver();
+        viewTreeObserver
+                .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                int w = getTxtPromoName().getWidth();
+                                int h = getTxtPromoName().getHeight();
+
+                                getTxtPromoName().setRotation(45.0f);
+                                getTxtPromoName().setTranslationX(w / 2);
+                                getTxtPromoName().setTranslationY(h / 2);
+
+                                ViewGroup.LayoutParams lp = getTxtPromoName().getLayoutParams();
+                                lp.height = w;
+                                lp.width = h;
+                                getTxtPromoName().requestLayout();
+
+                            }
+                        });
+
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
+                            getTxtPromoName().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        else
+                            getTxtPromoName().getViewTreeObserver().removeGlobalOnLayoutListener(this);
+
+                    }
+                });*/
         if (showBanner.get()) {
             DebugUtils.logDebug(TAG, "Show Banner");
             double dPrice;
@@ -251,7 +283,6 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
                 }
 
                 getTxtPromoName().setVisibility(View.VISIBLE);
-                BentoNowUtils.rotateBanner(getTxtPromoName());
 
             } catch (Exception ex) {
                 DebugUtils.logDebug(TAG, "updateBanner(): " + ex);

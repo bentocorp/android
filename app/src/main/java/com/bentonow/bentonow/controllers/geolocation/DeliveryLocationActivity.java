@@ -124,12 +124,15 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             public void onDrag(MotionEvent motionEvent) {
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
+                        DebugUtils.logDebug(TAG, "Map action down");
                         break;
                     case MotionEvent.ACTION_UP:
                         getTxtAddress().setText("", false);
                         sOrderAddress = null;
                         mLastLocations = getGoogleMap().getCameraPosition().target;
                         mLastOrderLocation = mLastLocations;
+
+                        DebugUtils.logDebug(TAG, "Map action up");
 
                         if (mLastLocations != null) {
                             runOnUiThread(new Runnable() {
@@ -236,20 +239,33 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         scanLocation(latLng);
     }
 
-    private void scanLocation(LatLng mLocation) {
+    private void scanLocation(final LatLng mLocation) {
         getTxtAddress().setText("", false);
         getBtnClear().setVisibility(View.INVISIBLE);
         getProgressBar().setVisibility(View.VISIBLE);
 
-        sOrderAddress = LocationUtils.getAddressFromLocation(mLocation);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                sOrderAddress = LocationUtils.getAddressFromLocation(mLocation);
+                final String sCustomAddress = LocationUtils.getCustomAddress(sOrderAddress);
 
-        if (sOrderAddress != null) {
-            getTxtAddress().setText(LocationUtils.getCustomAddress(sOrderAddress), false);
-        } else {
-            getTxtAddress().setText("", false);
-        }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (sOrderAddress != null) {
+                            getTxtAddress().setText(sCustomAddress, false);
+                        } else {
+                            getTxtAddress().setText("", false);
+                        }
 
-        updateUI();
+                        updateUI();
+                    }
+                });
+
+            }
+        }).start();
+
     }
 
     public void onClearPressed(View view) {

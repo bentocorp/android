@@ -122,15 +122,17 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
     }
 
     void deleteBento() {
-        Order.current.OrderItems.remove(selected);
-        selected = -1;
-        adapter.notifyDataSetChanged();
+        if (Order.current.OrderItems.size() > 1) {
+            Order.current.OrderItems.remove(selected);
+            selected = -1;
+            adapter.notifyDataSetChanged();
 
-        if (Order.current.OrderItems.size() == 0) {
+            updateUI();
+        } else {
             Order.cleanUp();
+            onBackPressed();
         }
 
-        updateUI();
     }
 
     @Override
@@ -254,8 +256,8 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                 if (Order.current.OrderItems.size() == 1) {
                     action = "delete";
                     mDialog = new ConfirmationDialog(CompleteOrderActivity.this, null, BackendText.get("complete-remove-all-text"));
-                    mDialog.addAcceptButton(BackendText.get("delivery-agree-confirmation-2"), CompleteOrderActivity.this);
-                    mDialog.addCancelButton(BackendText.get("delivery-agree-confirmation-1"), CompleteOrderActivity.this);
+                    mDialog.addAcceptButton(BackendText.get("complete-remove-all-confirmation-2"), CompleteOrderActivity.this);
+                    mDialog.addCancelButton(BackendText.get("complete-remove-all-confirmation-1"), CompleteOrderActivity.this);
                     mDialog.show();
                 } else {
                     deleteBento();
@@ -276,7 +278,6 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                 switch (action) {
                     case "delete":
                         deleteBento();
-                        onBackPressed();
                         break;
                     case "closed":
                         BentoNowUtils.openErrorActivity(this);
@@ -458,6 +459,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                 Log.i(TAG, "Order: " + responseString);
 
                 User.current.stripe_token = null;
+
                 SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.UUID_BENTO, "");
                 BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);
 
@@ -483,11 +485,11 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         txt_address.setText(Order.getStreetAddress());
         txt_credit_card.setText(User.current.card.last4);
 
-        getTxtDeliveryPrice().setText("$ " + Order.current.OrderDetails.delivery_price);
+        getTxtDeliveryPrice().setText(String.format(getString(R.string.money_format), (double) Order.current.OrderDetails.delivery_price));
         txt_discount.setText(String.format(getString(R.string.money_format), (double) Order.current.OrderDetails.coupon_discount_cents / 100));
-        txt_tax.setText(String.format(getString(R.string.money_format), (double) Order.current.OrderDetails.tax_cents / 100));
+        txt_tax.setText(String.format(getString(R.string.money_format),  Order.current.OrderDetails.tax_cents / 100));
         txt_tip.setText(String.format(getString(R.string.tip_percentage), (double) Order.current.OrderDetails.tip_percentage) + " %");
-        txt_total.setText(String.format(getString(R.string.money_format), (double) Order.current.OrderDetails.total_cents / 100));
+        txt_total.setText(String.format(getString(R.string.money_format), Order.current.OrderDetails.total_cents / 100));
 
 
         int card;
@@ -550,7 +552,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
             txt_price.setTextColor(item.bIsSoldoOut ? getResources().getColor(R.color.orange) : getResources().getColor(R.color.btn_green));
 
             txt_name.setText(item.items.get(0).name);
-            txt_price.setText("$ " + item.unit_price);
+            txt_price.setText("$" + item.unit_price);
 
             btn_remove.setVisibility(selected == position ? View.VISIBLE : View.GONE);
             btn_edit.setVisibility(edit ? View.VISIBLE : View.GONE);

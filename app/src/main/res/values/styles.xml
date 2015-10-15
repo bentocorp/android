@@ -118,7 +118,7 @@
     </style>
 
     <style name="TxtBentoPromo">
-        <item name="android:textSize">17sp</item>
+        <item name="android:textSize">15sp</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textStyle">bold</item>
         <item name="fontPath">fonts/OpenSans-Regular.ttf</item>

@@ -77,6 +77,8 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
 
         getListBento().setAdapter(getAdapterListBento());
 
+        BentoNowUtils.rotateBanner(getTxtPromoName());
+
     }
 
     private void addMainDishes() {
@@ -237,8 +239,6 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
                 }
 
                 getTxtPromoName().setVisibility(View.VISIBLE);
-                BentoNowUtils.rotateBanner(getTxtPromoName());
-
             } catch (Exception ex) {
                 DebugUtils.logDebug(TAG, "updateBanner(): " + ex);
                 getTxtPromoName().setVisibility(View.GONE);
@@ -308,6 +308,7 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
 
         addMainDishes();
         updateUI();
+
         updateBanner();
     }
 

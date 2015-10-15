@@ -93,7 +93,7 @@
     <string name="fa_question_circle">&#xf059;</string>
     <string name="fa_phone">&#xf095;</string>
 
-    <string name="money_format">$ %.2f</string>
+    <string name="money_format">$%.2f</string>
     <string name="tip_percentage">%.0f</string>
 
     <string name="error_loading_dishes">There is a problem loading the dishes, please try again later</string>

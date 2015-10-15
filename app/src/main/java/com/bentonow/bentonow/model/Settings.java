@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class Settings {
-    static String TAG = "Settings";
+    static String TAG = "Settings Model";
 
     public class Meal {
         public int order;
@@ -34,10 +34,10 @@ public class Settings {
     static public String serviceArea_lunch;
     static public String serviceArea_lunch_map;
     static public String status = "";
-    static public long delivery_price;
-    static public long price;
-    static public long sale_price;
-    static public long tax_percent;
+    static public double delivery_price;
+    static public double price;
+    static public double sale_price;
+    static public double tax_percent;
     static public String tzName;
     static public int min_version;
     static public Meal lunch;
@@ -45,21 +45,23 @@ public class Settings {
 
     static public void set(String data) {
         try {
-            JSONObject settings = new JSONObject(data).getJSONObject("settings");
+            JSONObject jsonSettings = new JSONObject(data).getJSONObject("settings");
 
-            buffer_minutes = settings.getInt("buffer_minutes");
-            geofence_order_radius_meters = settings.getInt("geofence_order_radius_meters");
-            serviceArea_dinner = settings.getString("serviceArea_dinner");
-            serviceArea_dinner_map = settings.getString("serviceArea_dinner_map");
-            serviceArea_lunch = settings.getString("serviceArea_lunch");
-            serviceArea_lunch_map = settings.getString("serviceArea_lunch_map");
-            delivery_price = settings.getLong("delivery_price");
-            price = settings.getLong("price");
-            sale_price = settings.getLong("sale_price");
-            tax_percent = settings.getLong("tax_percent");
-            status = settings.getString("status");
-            tzName = settings.getString("tzName");
+            buffer_minutes = jsonSettings.getInt("buffer_minutes");
+            geofence_order_radius_meters = jsonSettings.getInt("geofence_order_radius_meters");
+            serviceArea_dinner = jsonSettings.getString("serviceArea_dinner");
+            serviceArea_dinner_map = jsonSettings.getString("serviceArea_dinner_map");
+            serviceArea_lunch = jsonSettings.getString("serviceArea_lunch");
+            serviceArea_lunch_map = jsonSettings.getString("serviceArea_lunch_map");
+            delivery_price = jsonSettings.getDouble("delivery_price");
+            price = jsonSettings.getDouble("price");
+            sale_price = jsonSettings.getDouble("sale_price");
+            tax_percent = jsonSettings.getDouble("tax_percent");
+            status = jsonSettings.getString("status");
+            tzName = jsonSettings.getString("tzName");
             min_version = new JSONObject(data).getInt("android_min_version");
+
+            DebugUtils.logDebug(TAG, "Settings: " + jsonSettings);
 
             JSONObject meal = new JSONObject(data).getJSONObject("meals");
             Gson gson = new Gson();
@@ -67,8 +69,7 @@ public class Settings {
             lunch = gson.fromJson(meal.getString("2"), Meal.class);
             dinner = gson.fromJson(meal.getString("3"), Meal.class);
         } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-            e.printStackTrace();
+            DebugUtils.logError(TAG, "Set: " + e);
         }
     }
 
