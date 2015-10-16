@@ -36,9 +36,8 @@ public class ImageUtils {
 
     public static ImageLoader initImageLoader() {
         if (imageLoader == null) {
-            ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(BentoApplication.instance).threadPriority(3)
-                    .tasksProcessingOrder(QueueProcessingType.FIFO)
-                    .diskCacheExtraOptions(800, 800, null)
+            ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(BentoApplication.instance)
+                    .threadPriority(10)
                     .memoryCache(new LruMemoryCache(2 * 1024 * 1024))
                     .memoryCacheSize(2 * 1024 * 1024)
                     .diskCacheSize(50 * 1024 * 1024)
@@ -64,7 +63,7 @@ public class ImageUtils {
 
     public static DisplayImageOptions dishMainImageOptions() {
         return new DisplayImageOptions.Builder()
-                .showImageOnLoading(R.drawable.menu_placeholder)
+                .showImageOnLoading(R.drawable.img_placeholder_loading)
                 .showImageForEmptyUri(R.drawable.menu_placeholder)
                 .showImageOnFail(R.drawable.menu_placeholder)
                 .cacheInMemory(true).cacheOnDisk(true)
@@ -74,7 +73,7 @@ public class ImageUtils {
 
     public static DisplayImageOptions dishSideImageOptions() {
         return new DisplayImageOptions.Builder()
-                .showImageOnLoading(R.drawable.menu_placeholder_side)
+                .showImageOnLoading(R.drawable.img_placeholder_loading)
                 .showImageForEmptyUri(R.drawable.menu_placeholder_side)
                 .showImageOnFail(R.drawable.menu_placeholder_side)
                 .cacheInMemory(true).cacheOnDisk(true)

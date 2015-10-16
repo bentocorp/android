@@ -271,10 +271,10 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
             double dSalePrice;
 
             try {
-                dPrice = (double) Settings.tax_percent;
-                dSalePrice = (double) Settings.sale_price;
+                dPrice = Settings.tax_percent;
+                dSalePrice = Settings.sale_price;
 
-                if (dSalePrice <= dPrice) {
+                if (dSalePrice < dPrice) {
                     getTxtPromoName().setBackground(getResources().getDrawable(R.drawable.square_banner_green_bento));
                     getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), dPrice));
                 } else {

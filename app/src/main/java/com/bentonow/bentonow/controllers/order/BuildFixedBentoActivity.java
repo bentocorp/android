@@ -227,10 +227,10 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
             double dSalePrice;
 
             try {
-                dPrice = (double) Settings.price;
-                dSalePrice = (double) Settings.sale_price;
+                dPrice =  Settings.price;
+                dSalePrice =  Settings.sale_price;
 
-                if (dSalePrice <= dPrice) {
+                if (dSalePrice < dPrice) {
                     getTxtPromoName().setBackground(getResources().getDrawable(R.drawable.square_banner_green_bento));
                     getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), dPrice));
                 } else {
