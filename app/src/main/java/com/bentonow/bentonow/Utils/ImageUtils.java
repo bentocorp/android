@@ -63,7 +63,7 @@ public class ImageUtils {
 
     public static DisplayImageOptions dishMainImageOptions() {
         return new DisplayImageOptions.Builder()
-                .showImageOnLoading(R.drawable.img_placeholder_loading)
+                .showImageOnLoading(R.drawable.menu_placeholder)
                 .showImageForEmptyUri(R.drawable.menu_placeholder)
                 .showImageOnFail(R.drawable.menu_placeholder)
                 .cacheInMemory(true).cacheOnDisk(true)
@@ -73,7 +73,7 @@ public class ImageUtils {
 
     public static DisplayImageOptions dishSideImageOptions() {
         return new DisplayImageOptions.Builder()
-                .showImageOnLoading(R.drawable.img_placeholder_loading)
+                .showImageOnLoading(R.drawable.menu_placeholder_side)
                 .showImageForEmptyUri(R.drawable.menu_placeholder_side)
                 .showImageOnFail(R.drawable.menu_placeholder_side)
                 .cacheInMemory(true).cacheOnDisk(true)

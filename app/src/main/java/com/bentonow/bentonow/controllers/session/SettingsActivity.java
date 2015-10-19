@@ -19,6 +19,7 @@ import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
+import com.bentonow.bentonow.Utils.SocialNetworksUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
@@ -26,6 +27,7 @@ import com.bentonow.bentonow.controllers.dialog.EditPhoneDialog;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.listener.ListenerDialog;
 import com.bentonow.bentonow.model.BackendText;
+import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.ui.FontAwesomeButton;
 import com.google.gson.Gson;
@@ -235,13 +237,17 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
     }
 
     public void onFacebookPressed(View v) {
+
+        //SocialNetworksUtil.postStatusFacebook(SettingsActivity.this, message, url);
+
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_SUBJECT, "Use my Bento promo code");
         intent.putExtra(Intent.EXTRA_TEXT, message + url);
 
+
         try {
-            startActivity(Intent.createChooser(intent, "Share..."));
+             startActivity(Intent.createChooser(intent, "Share..."));
         } catch (android.content.ActivityNotFoundException ex) {
             Toast.makeText(getApplicationContext(), "There is no email client installed.", Toast.LENGTH_SHORT).show();
         }

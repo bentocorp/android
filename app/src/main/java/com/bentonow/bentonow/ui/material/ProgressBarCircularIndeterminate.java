@@ -20,8 +20,12 @@ public class ProgressBarCircularIndeterminate extends CustomView {
 
     final static String ANDROIDXML = "http://schemas.android.com/apk/res/android";
 
-    int backgroundColor = Color.parseColor("#447a29");
+    float radius1 = 0;
+    float radius2 = 0;
+    int cont = 1;
+    boolean firstAnimationOver = true;
 
+    int backgroundColor = Color.parseColor("#447a29");
 
     public ProgressBarCircularIndeterminate(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -80,11 +84,6 @@ public class ProgressBarCircularIndeterminate extends CustomView {
         invalidate();
 
     }
-
-    float radius1 = 0;
-    float radius2 = 0;
-    int cont = 0;
-    boolean firstAnimationOver = false;
 
     /**
      * Draw first animation of view

@@ -8,10 +8,15 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.pm.Signature;
 import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Base64;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.controllers.BentoApplication;
+import com.facebook.share.model.ShareContent;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareDialog;
 
 import java.security.MessageDigest;
 import java.util.List;
@@ -68,40 +73,19 @@ public class SocialNetworksUtil {
         act.startActivity(pageIntent);
     }
 
-//	public static void postStatusFacebook(String message) {
-//		Bundle postParams = new Bundle();
-//		postParams.putString("name", "Swipe Messenger");
-//		postParams.putString("message", message);
-//		postParams.putString("link", "https://play.google.com/store/apps/details?id=com.gameloft.android.ANMP.GloftSIHM");
-////		postParams.putString("picture", urlImage);
-//		Request.Callback callback = new Request.Callback() {
-//			public void onCompleted(Response response) {
-//				DebugUtils.logDebug(response.toString());
-//				FacebookRequestError error = response.getError();
-//				if (error != null) {
-//					DebugUtils.logError(error.getErrorMessage());
-//					WidgetsUtils.createShortToast(R.string.error_facebook_post);
-//				} else {
-//					WidgetsUtils.createShortToast(R.string.succes_facebook_post);
-//					JSONObject graphResponse = response.getGraphObject().getInnerJSONObject();
-//					String postId = null;
-//					try {
-//						postId = graphResponse.getString("id");
-//						DebugUtils.logDebug(postId);
-//					} catch (Exception e) {
-//						DebugUtils.logError(e);
-//					}
-//
-//				}
-//
-//			}
-//		};
-//
-//		Request request = new Request(Session.getActiveSession(), "me/feed", postParams, HttpMethod.POST, callback);
-//
-//		RequestAsyncTask task = new RequestAsyncTask(request);
-//		task.execute();
-//	}
+    public static void postStatusFacebook(FragmentActivity mActivity, String message, String sUrl) {
+        ShareDialog shareDialog = new ShareDialog(mActivity);
+        if (ShareDialog.canShow(ShareLinkContent.class)) {
+
+            ShareLinkContent linkContent = new ShareLinkContent.Builder()
+                    .setContentTitle("Bento")
+                    .setContentDescription(message)
+                    .setContentUrl(Uri.parse(sUrl))
+                    .build();
+
+            shareDialog.show(linkContent);
+        }
+    }
 
     public static void openTwitterUser(Activity act, String userId) {
         final String urlTwitter = "twitter://user?user_id=" + userId;

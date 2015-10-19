@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.v4.content.IntentCompat;
 import android.util.Log;
 import android.view.View;
@@ -44,6 +45,8 @@ public class MainActivity extends BaseFragmentActivity {
 
     public static boolean bIsOpen = false;
 
+    private boolean bOpenNextScreen = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +67,7 @@ public class MainActivity extends BaseFragmentActivity {
 
         Order.cleanUp();
 
-        SocialNetworksUtil.generateKeyHash();
+        //SocialNetworksUtil.generateKeyHash();
     }
 
     @Override
@@ -123,8 +126,9 @@ public class MainActivity extends BaseFragmentActivity {
 
     }
 
-    void set(String responseString) {
+    void set(final String responseString) {
         Log.i(TAG, "set");
+
         BackendText.set(responseString);
         Menu.set(responseString);
         Stock.set(responseString);
@@ -174,7 +178,12 @@ public class MainActivity extends BaseFragmentActivity {
 
     void waitForUserLocation() {
         if (User.location == null) {
-            GoogleLocationUtil.getGoogleApiClient();
+            new Handler().post(new Runnable() {
+                @Override
+                public void run() {
+                    GoogleLocationUtil.getGoogleApiClient();
+                }
+            });
 
             final TextView message = (TextView) findViewById(R.id.txt_message);
             message.setVisibility(View.VISIBLE);
@@ -213,7 +222,7 @@ public class MainActivity extends BaseFragmentActivity {
         if (mCurrentMenu == null || !Settings.status.equals("open")) {
             Log.i(TAG, "goNext ErrorActivity");
             BentoNowUtils.openErrorActivity(this);
-            finish();
+
         } else if (Settings.isInServiceArea(User.location)) {
             BentoNowUtils.openBuildBentoActivity(this);
         } else {
@@ -223,7 +232,12 @@ public class MainActivity extends BaseFragmentActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
         }
+        finish();
 
+    }
+
+    private void openNextScreen(Intent iNextScreen) {
+        startActivity(iNextScreen);
         finish();
     }
 
