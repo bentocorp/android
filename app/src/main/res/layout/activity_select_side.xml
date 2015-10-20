@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bgcolor"
-    tools:context="com.bentonow.bentonow.controllers.order.SelectSideActivity">
+    tools:context="com.bentonow.bentonow.controllers.order.SelectSideCustomActivity">
 
     <RelativeLayout
         android:id="@+id/ActionBarContainer"
@@ -16,7 +16,7 @@
     </RelativeLayout>
 
     <GridView
-        android:id="@+id/list"
+        android:id="@+id/grid_side_custom"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/ActionBarContainer"

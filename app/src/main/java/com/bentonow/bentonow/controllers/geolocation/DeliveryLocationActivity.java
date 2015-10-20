@@ -124,15 +124,12 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             public void onDrag(MotionEvent motionEvent) {
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        DebugUtils.logDebug(TAG, "Map action down");
                         break;
                     case MotionEvent.ACTION_UP:
                         getTxtAddress().setText("", false);
                         sOrderAddress = null;
                         mLastLocations = getGoogleMap().getCameraPosition().target;
                         mLastOrderLocation = mLastLocations;
-
-                        DebugUtils.logDebug(TAG, "Map action up");
 
                         if (mLastLocations != null) {
                             runOnUiThread(new Runnable() {
@@ -237,6 +234,13 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         mLastOrderLocation = latLng;
         getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, getGoogleMap().getCameraPosition().zoom > 11f ? getGoogleMap().getCameraPosition().zoom : 17f));
         scanLocation(latLng);
+    }
+
+    private void moveMapToCenter(LatLng latLng, String sAddress) {
+        mLastOrderLocation = latLng;
+        getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, getGoogleMap().getCameraPosition().zoom > 11f ? getGoogleMap().getCameraPosition().zoom : 17f));
+        getTxtAddress().setText(sAddress, false);
+        updateUI();
     }
 
     private void scanLocation(final LatLng mLocation) {
@@ -402,7 +406,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                     if (constraint != null) {
                         // Retrieve the autocomplete results.
                         resultList = autocomplete(constraint.toString());
-                        DebugUtils.logDebug(TAG, "resultList: " + resultList);
 
                         // Assign the data to the FilterResults
                         filterResults.values = resultList;
@@ -440,6 +443,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         StringBuilder jsonResults = new StringBuilder();
         try {
             URL url = new URL("https://maps.googleapis.com/maps/api/place/autocomplete/json?key=" + getResources().getString(R.string.google_server_key) + "&input=" + URLEncoder.encode(input, "utf8"));
+
+            DebugUtils.logDebug(TAG, "AutoComplete: " + url.toString());
 
             conn = (HttpURLConnection) url.openConnection();
             InputStreamReader in = new InputStreamReader(conn.getInputStream());
@@ -480,13 +485,13 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
     private void checkAddress(String str) {
-        DebugUtils.logDebug(TAG, "checkAddress()");
+       // DebugUtils.logDebug(TAG, "checkAddress(): " + str);
 
         Geocoder geoCoderClick = new Geocoder(DeliveryLocationActivity.this, Locale.getDefault());
         try {
             List<Address> addresses = geoCoderClick.getFromLocationName(str, 5);
             if (addresses.size() > 0) {
-                markerLocation(new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude()));
+                moveMapToCenter(new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude()), str);
             }
         } catch (IOException e) {
             DebugUtils.logError(TAG, e);

@@ -90,7 +90,7 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
     void updateUI() {
         btn_save.setBackgroundResource(isValid() ? R.drawable.bg_green_cornered : R.drawable.btn_dark_gray);
 
-        getTxtBentoPrice().setText(String.valueOf(Settings.price));
+        getTxtBentoPrice().setText(BentoNowUtils.getNumberFromPrice(Settings.price));
 
         txt_number.setVisibility(focused == R.id.txt_number ? View.VISIBLE : View.GONE);
         txt_last4.setVisibility(focused == R.id.txt_number ? View.GONE : View.VISIBLE);

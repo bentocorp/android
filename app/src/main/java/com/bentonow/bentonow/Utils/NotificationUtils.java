@@ -38,7 +38,7 @@ public class NotificationUtils {
 
             cIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 
-            mNotifyBuilder.setSmallIcon(R.mipmap.ic_bento);
+            mNotifyBuilder.setSmallIcon(R.drawable.ic_notification);
             mNotifyBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
 
             mNotifyBuilder.setContentTitle(BentoApplication.instance.getString(R.string.app_name));

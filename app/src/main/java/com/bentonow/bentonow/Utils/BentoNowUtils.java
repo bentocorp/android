@@ -18,12 +18,14 @@ import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Item;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
+import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.order.OrderItem;
 import com.facebook.GraphResponse;
 import com.google.gson.Gson;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -297,5 +299,20 @@ public class BentoNowUtils {
         intent.putExtra("faq", true);
         mActivity.startActivity(intent);
     }
+
+    public static String getNumberFromPrice(double dPrice) {
+        DecimalFormat df = new DecimalFormat("###.#");
+        String sPrice;
+
+        try {
+            sPrice = df.format(dPrice);
+        } catch (Exception ex) {
+            DebugUtils.logError("getNumberFromPrice()", ex);
+            sPrice = String.valueOf(Settings.price);
+        }
+
+        return sPrice;
+    }
+
 
 }

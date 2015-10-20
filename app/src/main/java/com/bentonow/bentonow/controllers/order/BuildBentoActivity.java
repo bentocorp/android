@@ -330,34 +330,34 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
     }
 
     public void onAddMainPressed(View view) {
-        Intent intent = new Intent(this, SelectMainActivity.class);
+        Intent intent = new Intent(this, SelectMainCustomActivity.class);
         intent.putExtra("orderIndex", orderIndex);
         startActivity(intent);
     }
 
     public void onAddSide1Pressed(View view) {
-        Intent intent = new Intent(this, SelectSideActivity.class);
+        Intent intent = new Intent(this, SelectSideCustomActivity.class);
         intent.putExtra("orderIndex", orderIndex);
         intent.putExtra("itemIndex", 1);
         startActivity(intent);
     }
 
     public void onAddSide2Pressed(View view) {
-        Intent intent = new Intent(this, SelectSideActivity.class);
+        Intent intent = new Intent(this, SelectSideCustomActivity.class);
         intent.putExtra("orderIndex", orderIndex);
         intent.putExtra("itemIndex", 2);
         startActivity(intent);
     }
 
     public void onAddSide3Pressed(View view) {
-        Intent intent = new Intent(this, SelectSideActivity.class);
+        Intent intent = new Intent(this, SelectSideCustomActivity.class);
         intent.putExtra("orderIndex", orderIndex);
         intent.putExtra("itemIndex", 3);
         startActivity(intent);
     }
 
     public void onAddSide4Pressed(View view) {
-        Intent intent = new Intent(this, SelectSideActivity.class);
+        Intent intent = new Intent(this, SelectSideCustomActivity.class);
         intent.putExtra("orderIndex", orderIndex);
         intent.putExtra("itemIndex", 4);
         startActivity(intent);
@@ -375,24 +375,24 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
     public void onContinueOrderPressed(View view) {
         if (!Order.current.OrderItems.get(orderIndex).isComplete()) {
             if (Order.current.OrderItems.get(orderIndex).items.get(0) == null) {
-                startActivity(new Intent(this, SelectMainActivity.class));
+                startActivity(new Intent(this, SelectMainCustomActivity.class));
             } else if (Order.current.OrderItems.get(orderIndex).items.get(1) == null) {
-                Intent intent = new Intent(this, SelectSideActivity.class);
+                Intent intent = new Intent(this, SelectSideCustomActivity.class);
                 intent.putExtra("orderIndex", orderIndex);
                 intent.putExtra("itemIndex", 1);
                 startActivity(intent);
             } else if (Order.current.OrderItems.get(orderIndex).items.get(2) == null) {
-                Intent intent = new Intent(this, SelectSideActivity.class);
+                Intent intent = new Intent(this, SelectSideCustomActivity.class);
                 intent.putExtra("orderIndex", orderIndex);
                 intent.putExtra("itemIndex", 2);
                 startActivity(intent);
             } else if (Order.current.OrderItems.get(orderIndex).items.get(3) == null) {
-                Intent intent = new Intent(this, SelectSideActivity.class);
+                Intent intent = new Intent(this, SelectSideCustomActivity.class);
                 intent.putExtra("orderIndex", orderIndex);
                 intent.putExtra("itemIndex", 3);
                 startActivity(intent);
             } else if (Order.current.OrderItems.get(orderIndex).items.get(4) == null) {
-                Intent intent = new Intent(this, SelectSideActivity.class);
+                Intent intent = new Intent(this, SelectSideCustomActivity.class);
                 intent.putExtra("orderIndex", orderIndex);
                 intent.putExtra("itemIndex", 4);
                 startActivity(intent);

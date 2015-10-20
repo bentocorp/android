@@ -6,7 +6,7 @@ import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Stock;
 
 /**
- * Created by joseguadalupetorresfuentes on 27/09/15.
+ * Created by Jose Torres on 27/09/15.
  */
 public class DishDao {
     static final String TAG = "DishModel";

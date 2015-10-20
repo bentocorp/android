@@ -1,7 +1,7 @@
 package com.bentonow.bentonow.listener;
 
 /**
- * Created by joseguadalupetorresfuentes on 20/09/15.
+ * Created by Jose Torres on 20/09/15.
  */
 public interface ListenerDialog {
 

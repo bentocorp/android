@@ -17,14 +17,11 @@ import android.media.ThumbnailUtils;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.controllers.BentoApplication;
-import com.nostra13.universalimageloader.cache.disc.impl.BaseDiskCache;
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
-import com.nostra13.universalimageloader.utils.L;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 
 import java.io.File;
@@ -32,16 +29,16 @@ import java.io.File;
 public class ImageUtils {
 
     private static ImageLoader imageLoader;
+    private static DisplayImageOptions optImages;
     private static File cacheDir;
 
     public static ImageLoader initImageLoader() {
         if (imageLoader == null) {
             ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(BentoApplication.instance)
-                    .threadPriority(10)
+                    .threadPriority(Thread.MAX_PRIORITY)
                     .memoryCache(new LruMemoryCache(2 * 1024 * 1024))
                     .memoryCacheSize(2 * 1024 * 1024)
                     .diskCacheSize(50 * 1024 * 1024)
-                    .diskCacheFileCount(40)
                     .build();
             imageLoader = ImageLoader.getInstance();
             imageLoader.init(config);
@@ -62,13 +59,15 @@ public class ImageUtils {
     }
 
     public static DisplayImageOptions dishMainImageOptions() {
-        return new DisplayImageOptions.Builder()
-                .showImageOnLoading(R.drawable.menu_placeholder)
-                .showImageForEmptyUri(R.drawable.menu_placeholder)
-                .showImageOnFail(R.drawable.menu_placeholder)
-                .cacheInMemory(true).cacheOnDisk(true)
-                .bitmapConfig(Config.ARGB_8888)
-                .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2).build();
+        if (optImages == null)
+            optImages = new DisplayImageOptions.Builder()
+                    .showImageOnLoading(R.drawable.menu_placeholder_side)
+                    .showImageForEmptyUri(R.drawable.menu_placeholder_side)
+                    .showImageOnFail(R.drawable.menu_placeholder_side)
+                    .cacheInMemory(true).cacheOnDisk(true)
+                    .bitmapConfig(Config.ARGB_8888)
+                    .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2).build();
+        return optImages;
     }
 
     public static DisplayImageOptions dishSideImageOptions() {

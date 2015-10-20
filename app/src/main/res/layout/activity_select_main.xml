@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.bentonow.bentonow.controllers.order.SelectMainActivity"
+    tools:context="com.bentonow.bentonow.controllers.order.SelectMainCustomActivity"
     android:id="@+id/base_relative_layout"
     android:orientation="vertical"
     android:background="@color/bgcolor">
@@ -11,7 +11,7 @@
 
 
     <ListView
-        android:id="@+id/list"
+        android:id="@+id/list_select_main"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         tools:listitem="@layout/list_item_add">
