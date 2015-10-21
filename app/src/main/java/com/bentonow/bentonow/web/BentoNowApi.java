@@ -41,5 +41,10 @@ public class BentoNowApi {
         return sUrl;
     }
 
+    public static String getPlaceDetailUrl(String sPlaceId) {
+        String sUrl = "https://maps.googleapis.com/maps/api/place/details/json?placeid=" + sPlaceId + "&key=" + BentoApplication.instance.getResources().getString(R.string.google_server_key);
+        return sUrl;
+    }
+
 
 }

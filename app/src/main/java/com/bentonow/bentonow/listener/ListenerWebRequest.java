@@ -8,7 +8,7 @@ public abstract class ListenerWebRequest {
         onComplete();
     }
 
-    public void onResponse(String sResponse, int statusCode) {
+    public void onResponse(Object oResponse, int statusCode) {
         onComplete();
     }
 

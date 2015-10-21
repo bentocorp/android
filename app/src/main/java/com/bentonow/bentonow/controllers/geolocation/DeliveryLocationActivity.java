@@ -33,17 +33,21 @@ import com.bentonow.bentonow.Utils.LocationUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
+import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.errors.BummerActivity;
 import com.bentonow.bentonow.controllers.fragment.MySupportMapFragment;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
+import com.bentonow.bentonow.listener.ListenerWebRequest;
 import com.bentonow.bentonow.listener.OnCustomDragListener;
+import com.bentonow.bentonow.model.AutoCompleteModel;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.ui.BackendTextView;
+import com.bentonow.bentonow.web.request.RequestGetPlaceDetail;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -95,6 +99,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private Address sOrderAddress;
 
     private ConstantUtils.optDeliveryAction optDelivery;
+
+    private ArrayList<AutoCompleteModel> resultList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -377,7 +383,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     //***
 
     class GooglePlacesAutocompleteAdapter extends ArrayAdapter<String> implements Filterable {
-        private ArrayList<String> resultList;
+
 
         public GooglePlacesAutocompleteAdapter(Context context, int textViewResourceId) {
             super(context, textViewResourceId);
@@ -391,7 +397,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         @Override
         public String getItem(int index) {
             try {
-                return resultList.get(index);
+                return resultList.get(index).getAddress();
             } catch (IndexOutOfBoundsException ignore) {
                 return "";
             }
@@ -436,15 +442,13 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
 
-    public ArrayList<String> autocomplete(String input) {
-        ArrayList<String> resultList = null;
+    public ArrayList<AutoCompleteModel> autocomplete(String input) {
+        ArrayList<AutoCompleteModel> resultList = null;
 
         HttpURLConnection conn = null;
         StringBuilder jsonResults = new StringBuilder();
         try {
             URL url = new URL("https://maps.googleapis.com/maps/api/place/autocomplete/json?key=" + getResources().getString(R.string.google_server_key) + "&input=" + URLEncoder.encode(input, "utf8"));
-
-            DebugUtils.logDebug(TAG, "AutoComplete: " + url.toString());
 
             conn = (HttpURLConnection) url.openConnection();
             InputStreamReader in = new InputStreamReader(conn.getInputStream());
@@ -475,7 +479,10 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             // Extract the Place descriptions from the results
             resultList = new ArrayList<>(list.length());
             for (int i = 0; i < list.length(); i++) {
-                resultList.add(list.getJSONObject(i).getString("description"));
+                AutoCompleteModel mAutocomplete = new AutoCompleteModel();
+                mAutocomplete.setAddress(list.getJSONObject(i).getString("description"));
+                mAutocomplete.setPlaceId(list.getJSONObject(i).getString("place_id"));
+                resultList.add(mAutocomplete);
             }
         } catch (JSONException e) {
             Log.e(TAG, "Cannot process JSON results", e);
@@ -484,14 +491,40 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         return resultList;
     }
 
-    private void checkAddress(String str) {
-       // DebugUtils.logDebug(TAG, "checkAddress(): " + str);
+    private void getExactLocationByPlaceId(final String sAddress, final String sPlaceId) {
+        BentoApplication.instance.webRequest(new RequestGetPlaceDetail(sPlaceId, new ListenerWebRequest() {
+            @Override
+            public void onError(String sError, int statusCode) {
+                checkAddress(sAddress);
+            }
 
+            @Override
+            public void onResponse(final Object oResponse, int statusCode) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    
+                    public void run() {
+                        moveMapToCenter((LatLng) oResponse, sAddress);
+                    }
+                });
+            }
+
+
+            @Override
+            public void onComplete() {
+
+            }
+        }));
+
+    }
+
+    private void checkAddress(String sAddress) {
+        // DebugUtils.logDebug(TAG, "checkAddress(): " + str);
         Geocoder geoCoderClick = new Geocoder(DeliveryLocationActivity.this, Locale.getDefault());
         try {
-            List<Address> addresses = geoCoderClick.getFromLocationName(str, 5);
+            List<Address> addresses = geoCoderClick.getFromLocationName(sAddress, 5);
             if (addresses.size() > 0) {
-                moveMapToCenter(new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude()), str);
+                moveMapToCenter(new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude()), sAddress);
             }
         } catch (IOException e) {
             DebugUtils.logError(TAG, e);
@@ -552,13 +585,10 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+    public void onItemClick(AdapterView<?> adapterView, View view, final int position, long id) {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getTxtAddress().getWindowToken(), 0);
-        String str = (String) adapterView.getItemAtPosition(position);
-        if (str != null) {
-            checkAddress(str);
-        }
+        getExactLocationByPlaceId(resultList.get(position).getAddress(), resultList.get(position).getPlaceId());
     }
 
     @Override

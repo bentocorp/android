@@ -86,6 +86,12 @@ public class BentoRestClient {
         client.post(getAbsoluteUrl(url), params, responseHandler);
     }
 
+    public static void getCustom(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
+        Log.i(TAG, "[GET] " + url);
+        Log.i(TAG, "[params] " + (params != null ? params.toString() : "null"));
+        client.get(url, params, responseHandler);
+    }
+
     private static String getAbsoluteUrl(String relativeUrl) {
         return BASE_URL + relativeUrl;
     }
