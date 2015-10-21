@@ -502,7 +502,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             public void onResponse(final Object oResponse, int statusCode) {
                 runOnUiThread(new Runnable() {
                     @Override
-                    
+
                     public void run() {
                         moveMapToCenter((LatLng) oResponse, sAddress);
                     }

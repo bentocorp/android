@@ -19,7 +19,6 @@ import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
-import com.bentonow.bentonow.Utils.SocialNetworksUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
@@ -27,7 +26,6 @@ import com.bentonow.bentonow.controllers.dialog.EditPhoneDialog;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.listener.ListenerDialog;
 import com.bentonow.bentonow.model.BackendText;
-import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.ui.FontAwesomeButton;
 import com.google.gson.Gson;
@@ -46,7 +44,6 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
 
     String action = "";
     private String message = null;
-    private String url = "https://goo.gl/5pA0iE";
 
     private LinearLayout layoutContainerPhone;
 
@@ -112,7 +109,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
 
 
         if (User.current != null && User.current.coupon_code != null && !User.current.coupon_code.isEmpty()) {
-            message = BackendText.get("share-precomposed-message").replace("%@", User.current.coupon_code).replace("http://apple.co/1FPEbWY", "");
+            message = BackendText.get("share-precomposed-message").replace("%@", User.current.coupon_code).replace("http://apple.co/1FPEbWY", "https://bnc.lt/referrallink");
         }
     }
 
@@ -243,7 +240,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_SUBJECT, "Use my Bento promo code");
-        intent.putExtra(Intent.EXTRA_TEXT, message + url);
+        intent.putExtra(Intent.EXTRA_TEXT, message);
 
 
         try {
@@ -254,8 +251,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
     }
 
     public void onTwitterPressed(View v) {
-        String tweetUrl =
-                String.format("https://twitter.com/intent/tweet?text=%s&url=%s", urlEncode(message), urlEncode(url));
+        String tweetUrl = String.format("https://twitter.com/intent/tweet?text=%s", urlEncode(message));
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(tweetUrl));
 
         // Narrow down to official Twitter app, if available:
@@ -278,7 +274,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
 
             intent = new Intent(Intent.ACTION_SEND);
             intent.setType("text/plain");
-            intent.putExtra(Intent.EXTRA_TEXT, message + url);
+            intent.putExtra(Intent.EXTRA_TEXT, message);
 
             if (defaultSmsPackageName != null)//Can be null in case that there is no default, then the user would be able to choose any app that support this intent.
             {
@@ -288,7 +284,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
         } else { //For early versions, do what worked for you before.
             intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse("sms:"));
-            intent.putExtra("sms_body", message + url);
+            intent.putExtra("sms_body", message);
         }
 
         startActivity(intent);
@@ -298,7 +294,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_SUBJECT, "Use my Bento promo code");
-        intent.putExtra(Intent.EXTRA_TEXT, message + url);
+        intent.putExtra(Intent.EXTRA_TEXT, message);
 
         try {
             startActivity(Intent.createChooser(intent, "Send mail..."));
