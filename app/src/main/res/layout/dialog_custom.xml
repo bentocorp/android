@@ -1,70 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@null"
     android:baselineAligned="false"
-    android:padding="@dimen/general_padding"
-    android:gravity="center">
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:padding="@dimen/general_padding">
+
     <LinearLayout
         android:id="@+id/container_alert"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:background="@drawable/overlay_message"
-        >
+        android:orientation="vertical">
+
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:minHeight="54sp">
+            android:minHeight="54sp"
+            android:orientation="horizontal">
+
             <ProgressBar
+                android:id="@+id/progressBar"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:id="@+id/progressBar"
-                android:layout_weight="0.4"/>
+                android:layout_weight="0.4" />
+
             <TextView
                 android:id="@+id/txt_message"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:minHeight="54sp"
                 android:layout_weight="1"
-                android:paddingTop="15dp"
-                android:paddingBottom="15dp"
-                android:text="@string/message"
                 android:gravity="center"
+                android:minHeight="54sp"
                 android:padding="@dimen/btn_padding"
-                />
+                android:paddingBottom="15dp"
+                android:paddingTop="15dp"
+                android:text="@string/message" />
 
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
+
             <Button
                 android:id="@+id/btn_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="@dimen/btn_padding"
                 android:layout_weight="1"
-                android:textColor="@color/white"
                 android:background="@drawable/bg_green_corner_left_bottom"
                 android:gravity="center"
+                android:padding="@dimen/btn_padding"
                 android:text="@string/btn_cancel_text"
-                />
+                android:textColor="@color/white" />
 
             <Button
-                android:id="@+id/btn_ok"
+                android:id="@+id/button_accept"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="@dimen/btn_padding"
                 android:layout_weight="1"
-                android:textColor="@color/white"
                 android:background="@drawable/bg_green_corner_right_bottom"
                 android:gravity="center"
+                android:padding="@dimen/btn_padding"
                 android:text="@string/btn_ok_text"
-                />
+                android:textColor="@color/white" />
 
         </LinearLayout>
     </LinearLayout>

@@ -15,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.bentonow.bentonow.BuildConfig;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
@@ -26,18 +25,19 @@ import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
+import com.bentonow.bentonow.controllers.dialog.CouponDialog;
 import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.payment.EnterCreditCardActivity;
 import com.bentonow.bentonow.controllers.session.SignInActivity;
 import com.bentonow.bentonow.controllers.session.SignUpActivity;
+import com.bentonow.bentonow.listener.ListenerDialog;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Stock;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.order.OrderItem;
 import com.bentonow.bentonow.ui.BackendButton;
-import com.bentonow.bentonow.ui.CustomDialog;
 import com.crashlytics.android.Crashlytics;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
@@ -64,7 +64,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
     View container_discount;
 
     BackendButton btn_delete;
-    private CustomDialog dialog;
+    private CouponDialog mDialogCoupon;
     private ConfirmationDialog mDialog;
     private ProgressDialog mProgressDialog;
 
@@ -289,9 +289,6 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                         startActivity(new Intent(this, SignInActivity.class));
                         finish();
                         break;
-                    case "promo_code":
-                        requestPromoCode(dialog.getText());
-                        break;
                     case "no_items":
                         WidgetsUtils.createShortToast("There was a problem please try again");
                         onBackPressed();
@@ -307,6 +304,9 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                         break;
                 }
                 action = "";
+                break;
+            default:
+                DebugUtils.logError(TAG, "View Id wasnt found: " + v.getId());
                 break;
         }
     }
@@ -339,17 +339,6 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         updateUI();
     }
 
-    public void onAddPromoCodePressed(View v) {
-        dialog = new CustomDialog(this, true);
-        dialog.show();
-        dialog.setOnOkPressed(this);
-        dialog.setOnCancelPressed(this);
-        action = "promo_code";
-
-        if (BuildConfig.DEBUG) {
-            dialog.setText("1121113370998kkk7");
-        }
-    }
 
     public void onMinusTipPressed(View v) {
         if (Order.current.OrderDetails.tip_percentage > 0) {
@@ -487,7 +476,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
         getTxtDeliveryPrice().setText(String.format(getString(R.string.money_format), (double) Order.current.OrderDetails.delivery_price));
         txt_discount.setText(String.format(getString(R.string.money_format), (double) Order.current.OrderDetails.coupon_discount_cents / 100));
-        txt_tax.setText(String.format(getString(R.string.money_format),  Order.current.OrderDetails.tax_cents / 100));
+        txt_tax.setText(String.format(getString(R.string.money_format), Order.current.OrderDetails.tax_cents / 100));
         txt_tip.setText(String.format(getString(R.string.tip_percentage), (double) Order.current.OrderDetails.tip_percentage) + " %");
         txt_total.setText(String.format(getString(R.string.money_format), Order.current.OrderDetails.total_cents / 100));
 
@@ -597,20 +586,48 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         return convertView;
     }
 
+    public void showAddPromoCodeDialog(View v) {
+        mDialogCoupon = new CouponDialog(this);
+        mDialogCoupon.setmDialogListener(new ListenerDialog() {
+            @Override
+            public void btnOkClick(final String sPromoCode) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        requestPromoCode(sPromoCode);
+                    }
+                });
+            }
+
+            @Override
+            public void btnOnCancel() {
+
+            }
+        });
+
+        mDialogCoupon.show();
+    }
+
     private void dismissDialog() {
-        if (dialog != null)
-            dialog.dismiss();
+        if (mDialogCoupon != null)
+            mDialogCoupon.dismiss();
         if (mDialog != null)
             mDialog.dismiss();
         if (mProgressDialog != null)
             mProgressDialog.dismiss();
+
+        mDialog = null;
+        mDialogCoupon = null;
+        mProgressDialog = null;
     }
 
 
-    public TextView getTxtDeliveryPrice() {
+    private TextView getTxtDeliveryPrice() {
         if (txt_delivery_price == null)
             txt_delivery_price = (TextView) findViewById(R.id.txt_delivery_price);
 
         return txt_delivery_price;
     }
+
+
 }

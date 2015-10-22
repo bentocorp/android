@@ -132,7 +132,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                     case MotionEvent.ACTION_DOWN:
                         break;
                     case MotionEvent.ACTION_UP:
-                        getTxtAddress().setText("", false);
                         sOrderAddress = null;
                         mLastLocations = getGoogleMap().getCameraPosition().target;
                         mLastOrderLocation = mLastLocations;
@@ -250,7 +249,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
     private void scanLocation(final LatLng mLocation) {
-        getTxtAddress().setText("", false);
         getBtnClear().setVisibility(View.INVISIBLE);
         getProgressBar().setVisibility(View.VISIBLE);
 

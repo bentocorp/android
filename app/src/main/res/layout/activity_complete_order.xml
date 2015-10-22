@@ -373,7 +373,7 @@
                     android:layout_height="fill_parent"
                     android:background="@null"
                     android:gravity="center_vertical"
-                    android:onClick="onAddPromoCodePressed"
+                    android:onClick="showAddPromoCodeDialog"
                     android:padding="@dimen/btn_padding"
                     android:textColor="@color/btn_green"
                     android:textSize="@dimen/text_very_very_small"

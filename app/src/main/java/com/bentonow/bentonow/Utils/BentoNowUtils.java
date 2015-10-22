@@ -80,7 +80,7 @@ public class BentoNowUtils {
     public static void openMainActivity(Context mContext) {
         if (!MainActivity.bIsOpen) {
             Intent intent = new Intent(mContext, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(intent);
         }
     }
@@ -92,12 +92,12 @@ public class BentoNowUtils {
         if (mCurrentMenu != null)
             if (mCurrentMenu.menu_type.equals(ConstantUtils.sFixed)) {
                 iBuildBento = new Intent(mContext, BuildFixedBentoActivity.class);
-                iBuildBento.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                iBuildBento.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 if (!BuildFixedBentoActivity.bIsOpen)
                     mContext.startActivity(iBuildBento);
             } else {
                 iBuildBento = new Intent(mContext, BuildBentoActivity.class);
-                iBuildBento.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                iBuildBento.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 if (!BuildBentoActivity.bIsOpen)
                     mContext.startActivity(iBuildBento);
             }
@@ -108,7 +108,7 @@ public class BentoNowUtils {
     public static void openErrorActivity(Context mContext) {
         if (!ErrorActivity.bIsOpen) {
             Intent intent = new Intent(mContext, ErrorActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(intent);
         }
     }
