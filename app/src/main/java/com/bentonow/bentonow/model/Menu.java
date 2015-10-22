@@ -105,17 +105,17 @@ public class Menu {
                 return null;
 
             if (Settings.status.equals("sold out")) {
-                if (BentoNowUtils.getCurrentTime() >= 0 && BentoNowUtils.getCurrentTime() < 163000) {
+                if (BentoNowUtils.getCurrentTime() < 163000) {
                     // Try to get the lunch menu
                     for (Menu menu : list) {
-                        if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()) && menu.meal_name.equals("lunch"))
+                        if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()))
                             return menu;
                     }
 
-                } else if (163000 <= BentoNowUtils.getCurrentTime() && 240000 > BentoNowUtils.getCurrentTime()) {
+                } else if (163000 <= BentoNowUtils.getCurrentTime()) {
                     // Try to get the dinner menu
                     for (Menu menu : list) {
-                        if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()) && menu.meal_name.equals("dinner"))
+                        if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()) && menu.meal_name.equals(sMenuType))
                             return menu;
                     }
                 }
@@ -124,14 +124,14 @@ public class Menu {
                 if ((lunchTime + Settings.buffer_minutes * 100) >= BentoNowUtils.getCurrentTime()) {
                     // Try to get the lunch menu
                     for (Menu menu : list) {
-                        if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()) && menu.meal_name.equals(sMenuType))
+                        if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()))
                             return menu;
                     }
 
                 } else if ((dinnerTime + Settings.buffer_minutes * 100) >= BentoNowUtils.getCurrentTime()) {
                     // Try to get the dinner menu
                     for (Menu menu : list) {
-                        if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()) && menu.meal_name.equals("dinner")) {
+                        if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()) && menu.meal_name.equals(sMenuType)) {
                             return menu;
                         }
                     }

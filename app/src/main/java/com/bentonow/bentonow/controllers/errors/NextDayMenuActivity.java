@@ -194,5 +194,6 @@ public class NextDayMenuActivity extends BaseFragmentActivity implements View.On
     @Override
     public void onBackPressed() {
         BentoNowUtils.openErrorActivity(NextDayMenuActivity.this);
+        finish();
     }
 }

@@ -54,12 +54,15 @@ public class BentoService extends Service {
 
     @Override
     public void onDestroy() {
-        Log.i(TAG, "onDestroy()");
-        if (handler != null && task != null) {
-            handler.removeCallbacks(task);
-        }
         super.onDestroy();
+        Log.i(TAG, "onDestroy()");
+
+        if (handler != null && task != null)
+            handler.removeCallbacks(task);
+
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_BENTO_SERVICE_RUNNING, false);
+
+        BentoNowUtils.runBentoService(BentoService.this);
     }
 
     @Override
@@ -111,7 +114,6 @@ public class BentoService extends Service {
     }
 
     void set(String responseString) {
-        Log.i(TAG, "set: " + Settings.status);
 
         try {
             Stock.set(responseString);
@@ -119,11 +121,13 @@ public class BentoService extends Service {
             Settings.set(responseString);
             Menu.set(responseString);
 
+            DebugUtils.logDebug(TAG, "set To Current Status: " + Settings.status);
+
             Menu mMenu = Menu.get();
 
-            if (!Settings.status.equals(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS)) &&
-                    !SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS).equals("main")) {
+            if (!Settings.status.equals(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS))) {
                 SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_STORE_CHANGIN, true);
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
                 switch (Settings.status) {
                     case "open":
                         BentoNowUtils.openMainActivity(this);

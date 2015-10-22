@@ -18,7 +18,6 @@ import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.GoogleLocationUtil;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
-import com.bentonow.bentonow.Utils.SocialNetworksUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.errors.ErrorVersionActivity;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
@@ -87,8 +86,6 @@ public class MainActivity extends BaseFragmentActivity {
             Dialog dialog = GooglePlayServicesUtil.getErrorDialog(resultCode, this, 1);
             dialog.show();
         }
-
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, "main");
 
         if (BuildConfig.DEBUG)
             getTxtVersion().setText(AndroidUtil.getAppVersionName(this));

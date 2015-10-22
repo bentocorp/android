@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
@@ -89,14 +90,7 @@ public class BentoApplication extends Application {
             timer = null;
         }
 
-        if (!BentoService.isRunning()) {
-            Log.i(TAG, "starting service");
-            try {
-                instance.startService(new Intent(instance, BentoService.class));
-            } catch (Exception e) {
-                DebugUtils.logError("BentoService: ", e);
-            }
-        }
+        BentoNowUtils.runBentoService(instance);
     }
 
 

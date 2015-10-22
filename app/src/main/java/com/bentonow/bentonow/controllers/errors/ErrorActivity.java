@@ -55,8 +55,6 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
         getMenuItemProfile().setImageResource(R.drawable.ic_signup_profile);
         getMenuItemProfile().setOnClickListener(ErrorActivity.this);
 
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
-
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_STORE_CHANGIN, false);
     }
 

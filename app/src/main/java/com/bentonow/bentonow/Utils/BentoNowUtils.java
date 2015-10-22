@@ -3,6 +3,7 @@ package com.bentonow.bentonow.Utils;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
@@ -21,6 +22,7 @@ import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.order.OrderItem;
+import com.bentonow.bentonow.service.BentoService;
 import com.facebook.GraphResponse;
 import com.google.gson.Gson;
 
@@ -36,6 +38,8 @@ import java.util.UUID;
  * Created by Jose Torres on 8/17/15.
  */
 public class BentoNowUtils {
+
+    private static final String TAG = "BentoNowUtils";
 
     public static final SimpleDateFormat sdfBento = new SimpleDateFormat("yyyyMMdd");
     public static final boolean B_APPIUM_TESTING = false;
@@ -76,7 +80,7 @@ public class BentoNowUtils {
     public static void openMainActivity(Context mContext) {
         if (!MainActivity.bIsOpen) {
             Intent intent = new Intent(mContext, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             mContext.startActivity(intent);
         }
     }
@@ -88,12 +92,12 @@ public class BentoNowUtils {
         if (mCurrentMenu != null)
             if (mCurrentMenu.menu_type.equals(ConstantUtils.sFixed)) {
                 iBuildBento = new Intent(mContext, BuildFixedBentoActivity.class);
-                iBuildBento.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                iBuildBento.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 if (!BuildFixedBentoActivity.bIsOpen)
                     mContext.startActivity(iBuildBento);
             } else {
                 iBuildBento = new Intent(mContext, BuildBentoActivity.class);
-                iBuildBento.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                iBuildBento.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 if (!BuildBentoActivity.bIsOpen)
                     mContext.startActivity(iBuildBento);
             }
@@ -104,7 +108,7 @@ public class BentoNowUtils {
     public static void openErrorActivity(Context mContext) {
         if (!ErrorActivity.bIsOpen) {
             Intent intent = new Intent(mContext, ErrorActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             mContext.startActivity(intent);
         }
     }
@@ -203,7 +207,7 @@ public class BentoNowUtils {
                 SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.LOCATION, location);
                 SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ADDRESS, address);
 
-                if (BackendText.list.size() > 0)
+                if (BackendText.list != null && BackendText.list.size() > 0)
                     SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.BACKENDTEXT, backendText);
                 break;
             case USER:
@@ -216,7 +220,7 @@ public class BentoNowUtils {
                 SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ADDRESS, address);
                 break;
             case BACKEND_TEXT:
-                if (BackendText.list.size() > 0)
+                if (BackendText.list != null && BackendText.list.size() > 0)
                     SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.BACKENDTEXT, backendText);
                 break;
         }
@@ -312,6 +316,17 @@ public class BentoNowUtils {
         }
 
         return sPrice;
+    }
+
+    public static void runBentoService(Context ctx) {
+        if (!BentoService.isRunning()) {
+            Log.i(TAG, "starting service");
+            try {
+                ctx.startService(new Intent(ctx, BentoService.class));
+            } catch (Exception e) {
+                DebugUtils.logError("BentoService: ", e);
+            }
+        }
     }
 
 

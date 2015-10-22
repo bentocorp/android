@@ -68,6 +68,7 @@ public class Settings {
 
             lunch = gson.fromJson(meal.getString("2"), Meal.class);
             dinner = gson.fromJson(meal.getString("3"), Meal.class);
+
         } catch (Exception e) {
             DebugUtils.logError(TAG, "Set: " + e);
         }
