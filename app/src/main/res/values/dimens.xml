@@ -17,6 +17,8 @@
     <dimen name="text_very_very_small">10sp</dimen>
     <dimen name="bento_corner">3dp</dimen>
     <dimen name="main_menu_item_height">180sp</dimen>
+    <dimen name="dish_main_custom_item_height">200dp</dimen>
+    <dimen name="dish_side_custom_item_height">180dp</dimen>
     <dimen name="actionbar_btns_padding">10dp</dimen>
     <dimen name="actionbar_height" >55dp</dimen>
     <dimen name="red_rounded">25dp</dimen>

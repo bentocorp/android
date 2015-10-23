@@ -50,11 +50,12 @@ public class MainActivity extends BaseFragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.i(TAG, "onCreate");
 
-        if (getCallingActivity() != null) Log.i(TAG, "callerActivity " + getCallingActivity());
+        if (getCallingActivity() != null)
+            Log.i(TAG, "callerActivity " + getCallingActivity());
 
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_STORE_CHANGIN, false);
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, "open");
 
         GoogleLocationUtil.getGoogleApiClient();
 
@@ -63,6 +64,7 @@ public class MainActivity extends BaseFragmentActivity {
             SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.APP_FIRST_RUN, true);
 
         }
+
 
         Order.cleanUp();
 

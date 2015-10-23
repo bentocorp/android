@@ -30,7 +30,6 @@ import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.payment.EnterCreditCardActivity;
 import com.bentonow.bentonow.controllers.session.SignInActivity;
-import com.bentonow.bentonow.controllers.session.SignUpActivity;
 import com.bentonow.bentonow.listener.ListenerDialog;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
@@ -140,7 +139,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         super.onResume();
 
         if (User.current == null) {
-            startActivity(new Intent(this, SignUpActivity.class));
+            startActivity(new Intent(this, SignInActivity.class));
             finish();
         } else if (Order.location == null || Order.address == null) {
             Intent intent = new Intent(this, DeliveryLocationActivity.class);
@@ -171,7 +170,10 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                 params.put("quantity", 0);
             else
                 params.put("quantity", Order.current.OrderItems.size());
-            params.put("payment method", User.current.card.brand);
+
+            if (User.current != null)
+                params.put("payment method", User.current.card.brand);
+
             params.put("total price", Order.current.OrderDetails.total_cents / 100);
             params.put("status", error == null ? "success" : "failure");
             params.put("status_error", error);
@@ -367,6 +369,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         RequestParams params = new RequestParams();
         params.put("data", Order.current.toString());
         params.put("api_token", User.current.api_token);
+        //params.put("api_token", "bad token to force 401");
 
         if (Order.current.OrderItems == null || Order.current.OrderItems.isEmpty()) {
             action = "no_items";
@@ -401,6 +404,13 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                 }
 
                 switch (statusCode) {
+                    case 401:
+                        DebugUtils.logError(TAG, "Invalid Api Token");
+                        WidgetsUtils.createShortToast("You session is expired, please LogIn again");
+                        User.current = null;
+                        BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.USER);
+                        startActivity(new Intent(CompleteOrderActivity.this, SignInActivity.class));
+                        break;
                     case 402:
                         action = "credit_card";
                         dismissDialog();

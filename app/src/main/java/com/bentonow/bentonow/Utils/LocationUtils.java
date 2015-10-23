@@ -40,14 +40,19 @@ public class LocationUtils {
         String sAddress = "";
 
         for (int i = 0; i < mAddress.getMaxAddressLineIndex(); ++i) {
+            String sLine;
             if (sAddress.length() > 0)
                 sAddress += ", ";
 
             if (i == 0)
-                sAddress += mAddress.getSubThoroughfare() + " " + mAddress.getThoroughfare();
+                sLine = mAddress.getSubThoroughfare() + " " + mAddress.getThoroughfare();
             else
-                sAddress += mAddress.getAddressLine(i);
+                sLine = mAddress.getAddressLine(i);
+
+            if (sLine != null && !sLine.equals("null"))
+                sAddress += sLine;
         }
+
         DebugUtils.logDebug("getCustomAddress()", sAddress);
 
         return sAddress;

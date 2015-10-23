@@ -18,7 +18,7 @@ import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.session.SettingsActivity;
-import com.bentonow.bentonow.controllers.session.SignUpActivity;
+import com.bentonow.bentonow.controllers.session.SignInActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Item;
 import com.bentonow.bentonow.model.Menu;
@@ -399,7 +399,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
             }
         } else if (User.current == null) {
             track();
-            startActivity(new Intent(this, SignUpActivity.class));
+            startActivity(new Intent(this, SignInActivity.class));
         } else if (User.location == null || !Settings.isInServiceArea(User.location) || Order.address == null) {
             WidgetsUtils.createShortToast(getString(R.string.error_no_valid_delivery_address));
 

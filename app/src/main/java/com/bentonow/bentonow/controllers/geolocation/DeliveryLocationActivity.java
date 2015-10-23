@@ -33,13 +33,11 @@ import com.bentonow.bentonow.Utils.LocationUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
-import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.errors.BummerActivity;
 import com.bentonow.bentonow.controllers.fragment.MySupportMapFragment;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
-import com.bentonow.bentonow.listener.ListenerWebRequest;
 import com.bentonow.bentonow.listener.OnCustomDragListener;
 import com.bentonow.bentonow.model.AutoCompleteModel;
 import com.bentonow.bentonow.model.BackendText;
@@ -47,7 +45,6 @@ import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.ui.BackendTextView;
-import com.bentonow.bentonow.web.request.RequestGetPlaceDetail;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -241,10 +238,11 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         scanLocation(latLng);
     }
 
-    private void moveMapToCenter(LatLng latLng, String sAddress) {
-        mLastOrderLocation = latLng;
-        getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, getGoogleMap().getCameraPosition().zoom > 11f ? getGoogleMap().getCameraPosition().zoom : 17f));
+    private void moveMapToCenter(LatLng mLocation, String sAddress) {
+        mLastOrderLocation = mLocation;
+        getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(mLocation, getGoogleMap().getCameraPosition().zoom > 11f ? getGoogleMap().getCameraPosition().zoom : 17f));
         getTxtAddress().setText(sAddress, false);
+        sOrderAddress = LocationUtils.getAddressFromLocation(mLocation);
         updateUI();
     }
 
@@ -275,6 +273,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         }).start();
 
     }
+
 
     public void onClearPressed(View view) {
         getTxtAddress().setText("");
@@ -490,7 +489,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
     private void getExactLocationByPlaceId(final String sAddress, final String sPlaceId) {
-        BentoApplication.instance.webRequest(new RequestGetPlaceDetail(sPlaceId, new ListenerWebRequest() {
+        checkAddress(sAddress);
+       /* BentoApplication.instance.webRequest(new RequestGetPlaceDetail(sPlaceId, new ListenerWebRequest() {
             @Override
             public void onError(String sError, int statusCode) {
                 checkAddress(sAddress);
@@ -512,7 +512,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             public void onComplete() {
 
             }
-        }));
+        }));*/
 
     }
 

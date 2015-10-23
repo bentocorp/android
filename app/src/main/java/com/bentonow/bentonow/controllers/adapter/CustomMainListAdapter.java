@@ -40,7 +40,7 @@ public class CustomMainListAdapter extends ArrayAdapter<Item> {
         final Item mDish = getItem(position);
 
         if (convertView == null) {
-            convertView = mActivity.getLayoutInflater().inflate(R.layout.list_item_add, parent, false);
+            convertView = mActivity.getLayoutInflater().inflate(R.layout.list_item_dish_main_custom, parent, false);
             viewHolder = new ItemHolder(mActivity, convertView, R.id.img, R.id.txt_title, R.id.txt_description, R.id.img_sold_out, R.id.img_gradient, R.id.btn_add_to_bento, R.id.btn_added);
             convertView.setTag(viewHolder);
         } else
