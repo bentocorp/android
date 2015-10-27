@@ -53,9 +53,9 @@ public class Stock {
         Menu menu = Menu.get();
 
         if (menu != null) {
-            for (Item item : menu.items) {
-                if (!item.type.equals(type)) continue;
-                if (isSold(item.itemId, true)) ++sold;
+            for (DishModel dishModel : menu.dishModels) {
+                if (!dishModel.type.equals(type)) continue;
+                if (isSold(dishModel.itemId, true)) ++sold;
                 ++qty;
             }
         }

@@ -21,9 +21,10 @@ import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.session.SettingsActivity;
 import com.bentonow.bentonow.controllers.session.SignUpActivity;
+import com.bentonow.bentonow.dao.DishDao;
 import com.bentonow.bentonow.listener.ListenerMainDishFix;
 import com.bentonow.bentonow.model.BackendText;
-import com.bentonow.bentonow.model.Item;
+import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
@@ -52,7 +53,7 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
 
     private BuildBentoFixListAdapter aListBento;
 
-    private ArrayList<Item> aSideDish = new ArrayList<>();
+    private ArrayList<DishModel> aSideDish = new ArrayList<>();
 
     public static boolean bIsOpen = false;
     private static Tweak<Boolean> showBanner = MixpanelAPI.booleanTweak("Show Fix Banner", false);
@@ -88,9 +89,9 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
             mDialog.show();
         } else {
             getAdapterListBento().clear();
-            for (Item item : mMenu.items) {
-                if (item.type.equals("main"))
-                    getAdapterListBento().add(item);
+            for (DishModel dishModel : mMenu.dishModels) {
+                if (dishModel.type.equals("main"))
+                    getAdapterListBento().add(dishModel);
             }
 
             setSideDishList();
@@ -117,12 +118,12 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
         });
     }
 
-    private void autocompleteBento(Item mDish) {
+    private void autocompleteBento(DishModel mDish) {
         OrderItem orderItem = new OrderItem();
 
         if (orderItem.items.get(0) == null) {
             if (mDish == null)
-                orderItem.items.set(0, Item.getFirstAvailable("main", null));
+                orderItem.items.set(0, DishDao.getFirstAvailable("main", null));
             else
                 orderItem.items.set(0, mDish);
         }
@@ -191,30 +192,30 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
 
         if (aSideDish.isEmpty()) {
             int[] ids = new int[4];
-            Item item;
+            DishModel dishModel;
 
             for (int i = 1; i < 5; ++i) {
-                item = Item.getFirstAvailable("side", ids);
+                dishModel = DishDao.getFirstAvailable("side", ids);
 
-                if (item == null)
+                if (dishModel == null)
                     continue;
 
-                ids[i - 1] = item.itemId;
+                ids[i - 1] = dishModel.itemId;
 
-                item = item.clone();
-                item.type += i;
-                aSideDish.add(item);
+                dishModel = DishDao.clone(dishModel);
+                dishModel.type += i;
+                aSideDish.add(dishModel);
             }
         }
     }
 
-    private void openSideFixActivity(Item mDish) {
+    private void openSideFixActivity(DishModel mDish) {
         if (aSideDish.isEmpty())
             WidgetsUtils.createShortToast("Empty Side Message");
         else {
             Intent iSideFixActivity = new Intent(this, SelectSideFixActivity.class);
-            iSideFixActivity.putExtra(Item.TAG, mDish);
-            iSideFixActivity.putParcelableArrayListExtra(Item.TAG_LIST, aSideDish);
+            iSideFixActivity.putExtra(DishModel.TAG, mDish);
+            iSideFixActivity.putParcelableArrayListExtra(DishModel.TAG_LIST, aSideDish);
             startActivity(iSideFixActivity);
         }
     }
@@ -227,8 +228,8 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
             double dSalePrice;
 
             try {
-                dPrice =  Settings.price;
-                dSalePrice =  Settings.sale_price;
+                dPrice = Settings.price;
+                dSalePrice = Settings.sale_price;
 
                 if (dSalePrice < dPrice) {
                     getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), dPrice));

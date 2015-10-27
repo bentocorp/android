@@ -12,14 +12,15 @@ import android.widget.ArrayAdapter;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.ImageUtils;
+import com.bentonow.bentonow.dao.DishDao;
 import com.bentonow.bentonow.listener.ListenerMainDishFix;
-import com.bentonow.bentonow.model.Item;
+import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.ui.wrapper.ItemBentoFixWrapper;
 
 /**
  * @author José Torres Fuentes
  */
-public class BuildBentoFixListAdapter extends ArrayAdapter<Item> {
+public class BuildBentoFixListAdapter extends ArrayAdapter<DishModel> {
 
     private Activity mActivity;
     private ListenerMainDishFix mListener;
@@ -37,7 +38,7 @@ public class BuildBentoFixListAdapter extends ArrayAdapter<Item> {
     public View getView(final int position, View convertView, ViewGroup parent) {
 
         final ItemBentoFixWrapper viewHolder;
-        final Item mDish = getItem(position);
+        final DishModel mDish = getItem(position);
 
         if (convertView == null) {
             LayoutInflater mInflater = mActivity.getLayoutInflater();
@@ -62,7 +63,7 @@ public class BuildBentoFixListAdapter extends ArrayAdapter<Item> {
             }
         });
 
-        if (mDish.isSoldOut(true)) {
+        if (DishDao.isSoldOut(mDish, true)) {
             viewHolder.getImageSoldOut().setVisibility(View.VISIBLE);
             viewHolder.getBtnAddToBento().setOnClickListener(null);
             viewHolder.getBtnAddToBento().setBackground(getContext().getResources().getDrawable(R.drawable.btn_border_lineal_white));

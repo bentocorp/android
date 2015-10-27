@@ -84,8 +84,14 @@ public class BentoService extends Service {
             }
         };
         handler = new Handler();
-        handler.postDelayed(task, 1000 * 90);
-        Log.i(TAG, "startTask");
+
+        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_APP_IN_FRONT)) {
+            handler.postDelayed(task, 1000 * 90);
+            DebugUtils.logDebug(TAG, "startTask");
+        } else {
+            DebugUtils.logError(TAG, "Task Stop: " + "appIsNotInFront");
+        }
+
     }
 
     void loadData() {

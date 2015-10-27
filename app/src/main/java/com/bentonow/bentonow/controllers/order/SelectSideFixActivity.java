@@ -13,7 +13,8 @@ import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.adapter.DishFixGridListAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
-import com.bentonow.bentonow.model.Item;
+import com.bentonow.bentonow.dao.DishDao;
+import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.ui.GridViewHeader;
 import com.bentonow.bentonow.ui.HeaderSideFixBento;
@@ -31,16 +32,16 @@ public class SelectSideFixActivity extends BaseActivity implements View.OnClickL
 
     private DishFixGridListAdapter mGridDishAdapter;
 
-    private ArrayList<Item> aSideDish = new ArrayList<>();
-    private Item mDishMain;
+    private ArrayList<DishModel> aSideDish = new ArrayList<>();
+    private DishModel mDishMain;
     private HeaderSideFixBento mHeader;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_side_fix);
 
-        mDishMain = getIntent().getParcelableExtra(Item.TAG);
-        aSideDish = getIntent().getParcelableArrayListExtra(Item.TAG_LIST);
+        mDishMain = getIntent().getParcelableExtra(DishModel.TAG);
+        aSideDish = getIntent().getParcelableArrayListExtra(DishModel.TAG_LIST);
 
         if (mDishMain == null || aSideDish == null) {
             WidgetsUtils.createShortToast(R.string.error_loading_dishes);
@@ -57,7 +58,7 @@ public class SelectSideFixActivity extends BaseActivity implements View.OnClickL
         } else {
             getSideHeader().getTxtTitle().setText(mDishMain.name);
             getSideHeader().getTxtDescription().setText(mDishMain.description);
-            getSideHeader().getImgIsSoldOut().setVisibility(mDishMain.isSoldOut(true) ? View.VISIBLE : View.GONE);
+            getSideHeader().getImgIsSoldOut().setVisibility(DishDao.isSoldOut(mDishMain, true) ? View.VISIBLE : View.GONE);
 
             ImageUtils.initImageLoader().displayImage(mDishMain.image1, getSideHeader().getImgMainSide(), ImageUtils.dishSideImageOptions());
             getSideHeader().getImgMainSide().setOnClickListener(new View.OnClickListener() {

@@ -30,6 +30,7 @@ import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.payment.EnterCreditCardActivity;
 import com.bentonow.bentonow.controllers.session.SignInActivity;
+import com.bentonow.bentonow.dao.OrderDao;
 import com.bentonow.bentonow.listener.ListenerDialog;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
@@ -546,12 +547,13 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
             btn_remove = (ImageButton) view.findViewById(R.id.btn_remove);
         }
 
-        public void set(OrderItem item, int position) {
-            txt_name.setTextColor(item.bIsSoldoOut ? getResources().getColor(R.color.orange) : getResources().getColor(R.color.btn_green));
-            txt_price.setTextColor(item.bIsSoldoOut ? getResources().getColor(R.color.orange) : getResources().getColor(R.color.btn_green));
+        public void set(OrderItem mItem, int position) {
+            txt_name.setTextColor(mItem.bIsSoldoOut ? getResources().getColor(R.color.orange) : getResources().getColor(R.color.btn_green));
+            txt_price.setTextColor(mItem.bIsSoldoOut ? getResources().getColor(R.color.orange) : getResources().getColor(R.color.btn_green));
 
-            txt_name.setText(item.items.get(0).name);
-            txt_price.setText("$" + item.unit_price);
+            txt_name.setText(mItem.items.get(0).name);
+
+            txt_price.setText("$" + OrderDao.getPriceByOrder(mItem));
 
             btn_remove.setVisibility(selected == position ? View.VISIBLE : View.GONE);
             btn_edit.setVisibility(edit ? View.VISIBLE : View.GONE);

@@ -85,6 +85,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private Button btn_continue;
     private ImageButton btn_clear;
     private ImageButton btn_current_location;
+    private ImageView actionbar_right_btn;
     private ProgressBar progressBar;
 
     private boolean mRequestingLocationUpdates;
@@ -171,9 +172,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             actionbar_left_btn.setOnClickListener(this);
         }
 
-        ImageView actionbar_right_btn = (ImageView) findViewById(R.id.actionbar_right_btn);
-        actionbar_right_btn.setImageResource(R.drawable.ic_ab_help);
-        actionbar_right_btn.setOnClickListener(this);
+        getHelpMark().setImageResource(R.drawable.ic_ab_help);
+        getHelpMark().setOnClickListener(this);
     }
 
     void updateUI() {
@@ -573,7 +573,9 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                 onBackPressed();
                 break;
             case R.id.actionbar_right_btn:
-                startActivity(new Intent(DeliveryLocationActivity.this, HelpActivity.class));
+                Intent intent = new Intent(DeliveryLocationActivity.this, HelpActivity.class);
+                intent.putExtra("faq", true);
+                startActivity(intent);
                 break;
             case R.id.button_accept:
                 getCheckIAgree().setChecked(true);
@@ -695,6 +697,12 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         if (btn_continue == null)
             btn_continue = (Button) findViewById(R.id.btn_continue);
         return btn_continue;
+    }
+
+    private ImageView getHelpMark() {
+        if (actionbar_right_btn == null)
+            actionbar_right_btn = (ImageView) findViewById(R.id.actionbar_right_btn);
+        return actionbar_right_btn;
     }
 
     private ImageButton getBtnClear() {

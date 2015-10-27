@@ -13,11 +13,11 @@ import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.adapter.CustomSideListAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
+import com.bentonow.bentonow.dao.DishDao;
 import com.bentonow.bentonow.listener.ListenerCustomDish;
-import com.bentonow.bentonow.model.Item;
+import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
-import com.bentonow.bentonow.ui.ItemHolder;
 
 
 public class SelectSideCustomActivity extends BaseActivity implements View.OnClickListener, AdapterView.OnItemClickListener, ListenerCustomDish {
@@ -53,10 +53,10 @@ public class SelectSideCustomActivity extends BaseActivity implements View.OnCli
             getListAdapter().setCurrentSelected(Order.current.OrderItems.get(orderIndex).items.get(itemIndex));
             getListAdapter().setCurrentAdded(Order.current.OrderItems.get(orderIndex).items.get(itemIndex));
 
-            for (Item item : menu.items) {
-                if (!item.type.equals("side"))
+            for (DishModel dishModel : menu.dishModels) {
+                if (!dishModel.type.equals("side"))
                     continue;
-                getListAdapter().add(item);
+                getListAdapter().add(dishModel);
             }
 
         }
@@ -90,19 +90,19 @@ public class SelectSideCustomActivity extends BaseActivity implements View.OnCli
 
     @Override
     public void onAddToBentoClick(int iDishPosition) {
-        if (getListAdapter().getCurrentSelected().isSoldOut(true))
+        if (DishDao.isSoldOut(getListAdapter().getCurrentSelected(), true) || !DishDao.canBeAdded(getListAdapter().getCurrentSelected()))
             return;
-        Item item = getListAdapter().getCurrentSelected().clone();
-        item.type += itemIndex;
-        Order.current.OrderItems.get(orderIndex).items.set(itemIndex, item);
-        Log.i(TAG, "added " + item.type);
+        DishModel dishModel = DishDao.clone(getListAdapter().getCurrentSelected());
+        dishModel.type += itemIndex;
+        Order.current.OrderItems.get(orderIndex).items.set(itemIndex, dishModel);
+        Log.i(TAG, "added " + dishModel.type);
 
         onBackPressed();
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        getListAdapter().setCurrentSelected(((ItemHolder) view.getTag()).item);
+        getListAdapter().setCurrentSelected(getListAdapter().getItem(position));
         getListAdapter().notifyDataSetChanged();
     }
 

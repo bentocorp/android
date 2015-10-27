@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentActivity;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.facebook.appevents.AppEventsLogger;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
@@ -31,10 +32,11 @@ public class BaseFragmentActivity extends FragmentActivity {
 
     @Override
     protected void onResume() {
-        super.onResume();
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_APP_IN_FRONT, true);
         BentoApplication.onResume();
         AppEventsLogger.activateApp(this);
 
+        super.onResume();
     }
 
     @Override
@@ -45,8 +47,10 @@ public class BaseFragmentActivity extends FragmentActivity {
 
     @Override
     protected void onPause() {
-        super.onPause();
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_APP_IN_FRONT, false);
         BentoApplication.onPause();
         AppEventsLogger.deactivateApp(this);
+
+        super.onPause();
     }
 }

@@ -3,6 +3,7 @@ package com.bentonow.bentonow.Utils;
 import android.location.Location;
 import android.os.Bundle;
 
+import com.bentonow.bentonow.BuildConfig;
 import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.User;
@@ -59,9 +60,14 @@ public class GoogleLocationUtil {
                 public void onLocationChanged(Location mLocation) {
                     DebugUtils.logDebug(TAG, "startLocationUpdates", "onLocationChanged() " + mLocation.toString());
 
-                    User.location = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
+                    if (BuildConfig.DEBUG) {
+                        User.location = new LatLng(37.76573527907957, -122.41834457963704);
+                    } else {
+                        User.location = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
+                    }
 
                     Order.address = LocationUtils.getAddressFromLocation(mLocation);
+
                 }
             });
     }

@@ -12,7 +12,7 @@
         android:layout_height="@dimen/dish_main_custom_item_height">
 
         <ImageView
-            android:id="@+id/img"
+            android:id="@+id/img_dish_main_custom"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:adjustViewBounds="true"
@@ -41,7 +41,7 @@
             android:orientation="vertical">
 
 
-            <me.grantland.widget.AutofitTextView
+            <com.bentonow.bentonow.ui.AutoFitTxtView
                 android:id="@+id/txt_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
                 android:textAppearance="@style/BentoBuilderBoxMainName"
                 autofit:minTextSize="8sp" />
 
-            <me.grantland.widget.AutofitTextView
+            <com.bentonow.bentonow.ui.AutoFitTxtView
                 android:id="@+id/txt_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -71,42 +71,93 @@
                 android:textAppearance="@style/BentoBuilderBoxDesc"
                 autofit:minTextSize="8sp" />
 
-            <FrameLayout
+            <RelativeLayout
                 android:id="@+id/layout_wrapper_buttons"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_marginBottom="5dp"
                 android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp">
+                android:layout_marginRight="20dp"
+                android:gravity="center">
 
-                <com.bentonow.bentonow.ui.BackendAutoFitTextView
-                    android:id="@+id/btn_add_to_bento"
+                <LinearLayout
+                    android:id="@+id/wrapper_add_price"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/btn_border_lineal_white"
+                    android:orientation="horizontal"
+                    android:weightSum="200">
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="140">
+
+                        <com.bentonow.bentonow.ui.AutoFitTxtView
+                            android:id="@+id/btn_add_to_bento"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:padding="@dimen/btn_padding"
+                            android:singleLine="true"
+                            android:text="@string/add_to_bento"
+                            android:textAppearance="@style/BtnAddToBento"
+                            android:visibility="gone" />
+
+                        <com.bentonow.bentonow.ui.AutoFitTxtView
+                            android:id="@+id/btn_added"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:padding="@dimen/btn_padding"
+                            android:singleLine="true"
+                            android:text="@string/added_to_bento"
+                            android:textAppearance="@style/BtnAddToBento"
+                            android:textSize="@dimen/main_dish_custom_price"
+                            app:key="build-main-add-button-2" />
+                    </FrameLayout>
+
+
+                    <View
+                        android:id="@+id/view_line_divider"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="7dp"
+                        android:layout_marginTop="7dp"
+                        android:layout_weight="1"
+                        android:background="@color/white" />
+
+                    <com.bentonow.bentonow.ui.AutoFitTxtView
+                        android:id="@+id/btn_add_price"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="59"
+                        android:gravity="center"
+                        android:padding="@dimen/btn_padding"
+                        android:singleLine="true"
+                        android:text="$ 8.25"
+                        android:textAppearance="@style/BtnAddToBento" />
+
+
+                </LinearLayout>
+
+                <com.bentonow.bentonow.ui.AutoFitTxtView
+                    android:id="@+id/btn_dish_price"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
                     android:background="@drawable/btn_border_lineal_white"
                     android:gravity="center"
                     android:padding="@dimen/btn_padding"
                     android:singleLine="true"
-                    android:text="@string/add_to_bento"
+                    android:text="8.25"
                     android:textAppearance="@style/BtnMenuItem"
                     android:textColor="@color/white"
-                    android:textSize="15sp" />
+                    android:textSize="@dimen/main_dish_custom_price"
+                    android:visibility="gone" />
 
-                <com.bentonow.bentonow.ui.BackendAutoFitTextView
-                    android:id="@+id/btn_added"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/btn_gray"
-                    android:gravity="center"
-                    android:padding="@dimen/btn_padding"
-                    android:singleLine="true"
-                    android:text="@string/added_to_bento"
-                    android:textAppearance="@style/BtnMenuItem"
-                    android:textColor="@color/btn_green"
-                    android:textSize="15sp"
-                    app:key="build-main-add-button-2" />
-            </FrameLayout>
+
+            </RelativeLayout>
         </LinearLayout>
 
         <ImageView

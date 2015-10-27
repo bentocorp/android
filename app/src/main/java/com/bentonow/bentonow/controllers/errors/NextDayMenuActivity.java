@@ -16,7 +16,7 @@ import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.BentoApplication;
-import com.bentonow.bentonow.model.Item;
+import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.ui.ItemHolder;
 import com.wsdcamp.list.LazyListAdapter;
@@ -32,7 +32,7 @@ public class NextDayMenuActivity extends BaseFragmentActivity implements View.On
 
     static final String TAG = "NextDayMenuActivity";
 
-    public Item currentSelectedItem = null;
+    public DishModel currentSelectedDishModel = null;
 
     LazyListAdapter mainAdapter;
     LazyListAdapter sideAdapter;
@@ -51,14 +51,14 @@ public class NextDayMenuActivity extends BaseFragmentActivity implements View.On
         if (menu == null) {
             onBackPressed();
         } else {
-            List<Item> data_main = new ArrayList<>();
-            List<Item> data_side = new ArrayList<>();
+            List<DishModel> data_main = new ArrayList<>();
+            List<DishModel> data_side = new ArrayList<>();
 
-            for (Item item : menu.items) {
-                if (item.type.equals("main")) {
-                    data_main.add(item);
+            for (DishModel dishModel : menu.dishModels) {
+                if (dishModel.type.equals("main")) {
+                    data_main.add(dishModel);
                 } else {
-                    data_side.add(item);
+                    data_side.add(dishModel);
                 }
             }
 
@@ -109,10 +109,10 @@ public class NextDayMenuActivity extends BaseFragmentActivity implements View.On
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        currentSelectedItem = ((ItemHolder) view.getTag()).item;
+        currentSelectedDishModel = ((ItemHolder) view.getTag()).dishModel;
 
-        if (currentSelectedItem != null) {
-            Log.i(TAG, "currentSelectedItem: " + currentSelectedItem.name);
+        if (currentSelectedDishModel != null) {
+            Log.i(TAG, "currentSelectedItem: " + currentSelectedDishModel.name);
         } else {
             Log.i(TAG, "currentSelectedItem: null");
         }
@@ -127,11 +127,11 @@ public class NextDayMenuActivity extends BaseFragmentActivity implements View.On
     }
 
     class MenuListAdapter implements LazyListAdapterInterface {
-        List<Item> data = new ArrayList<>();
+        List<DishModel> data = new ArrayList<>();
         NextDayMenuActivity context;
         LayoutInflater inflater;
 
-        public MenuListAdapter(NextDayMenuActivity context, List<Item> data) {
+        public MenuListAdapter(NextDayMenuActivity context, List<DishModel> data) {
             this.context = context;
             this.data = data;
             inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -178,8 +178,8 @@ public class NextDayMenuActivity extends BaseFragmentActivity implements View.On
 
             holder.setData(data.get(position), false);
 
-            if (context.currentSelectedItem != null && holder.item != null) {
-                holder.selected = context.currentSelectedItem.itemId == holder.item.itemId;
+            if (context.currentSelectedDishModel != null && holder.dishModel != null) {
+                holder.selected = context.currentSelectedDishModel.itemId == holder.dishModel.itemId;
             }
 
             holder.updateUI(false);

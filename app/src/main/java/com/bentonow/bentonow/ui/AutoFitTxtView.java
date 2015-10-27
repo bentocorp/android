@@ -7,21 +7,21 @@ import android.widget.TextView;
 
 import me.grantland.widget.AutofitHelper;
 
-public class AutoFitTextView extends TextView implements AutofitHelper.OnTextSizeChangeListener {
+public class AutoFitTxtView extends TextView implements AutofitHelper.OnTextSizeChangeListener {
 
     private AutofitHelper mHelper;
 
-    public AutoFitTextView(Context context) {
+    public AutoFitTxtView(Context context) {
         super(context);
         init(context, null, 0);
     }
 
-    public AutoFitTextView(Context context, AttributeSet attrs) {
+    public AutoFitTxtView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs, 0);
     }
 
-    public AutoFitTextView(Context context, AttributeSet attrs, int defStyle) {
+    public AutoFitTxtView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init(context, attrs, defStyle);
     }

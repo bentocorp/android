@@ -24,6 +24,7 @@ public class SharedPreferencesUtil {
     public static final String IS_BENTO_SERVICE_RUNNING = "IS_BENTO_SERVICE_RUNNING"; //boolean
     public static final String IS_STORE_CHANGIN = "IS_STORE_CHANGIN"; //boolean
     public static final String IS_ORDER_SOLD_OUT = "IS_ORDER_SOLD_OUT"; //boolean
+    public static final String IS_APP_IN_FRONT = "IS_THE_APP_IN_FRONT"; //boolean
 
 
     /**

@@ -1,23 +1,17 @@
 package com.bentonow.bentonow.model.order;
 
-import com.bentonow.bentonow.model.Item;
-import com.bentonow.bentonow.model.Settings;
+import com.bentonow.bentonow.model.DishModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class OrderItem {
     public String item_type = "CustomerBentoBox";
-    public int unit_price = 0;
     public boolean bIsSoldoOut = false;
-    public List<Item> items = new ArrayList<>();
+    public double unit_price = 0;
+    public List<DishModel> items = new ArrayList<>();
 
     public OrderItem() {
-        try {
-            unit_price = (int) Settings.price;
-        } catch (Exception ignore) {
-        }
-
         items.add(null);
         items.add(null);
         items.add(null);

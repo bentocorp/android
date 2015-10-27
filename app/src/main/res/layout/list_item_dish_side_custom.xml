@@ -12,7 +12,7 @@
         android:layout_height="@dimen/dish_side_custom_item_height">
 
         <ImageView
-            android:id="@+id/img"
+            android:id="@+id/img_dish_main_custom"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:adjustViewBounds="true"

@@ -9,15 +9,14 @@ import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.model.BackendText;
-import com.bentonow.bentonow.model.Settings;
-import com.bentonow.bentonow.ui.AutoFitTextView;
+import com.bentonow.bentonow.ui.AutoFitTxtView;
 
 
 public class GettingStartedActivity extends BaseFragmentActivity {
 
     private static final String TAG = "GettingStartedActivity";
 
-    private AutoFitTextView txtTitle;
+    private AutoFitTxtView txtTitle;
 
     private String sPrice = "";
 
@@ -27,13 +26,7 @@ public class GettingStartedActivity extends BaseFragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_getting_started);
 
-        double bPrice = Settings.price;
-        double bSalePrice = Settings.sale_price;
-
-        if (bSalePrice < bPrice)
-            sPrice = BentoNowUtils.getNumberFromPrice(bPrice);
-        else
-            sPrice = BentoNowUtils.getNumberFromPrice(bSalePrice);
+        sPrice = BentoNowUtils.getDefaultPriceBento(0);
 
         String title = BackendText.get("about-item-0").replace("$X", "$" + sPrice + "!");
 
@@ -53,9 +46,9 @@ public class GettingStartedActivity extends BaseFragmentActivity {
         finish();
     }
 
-    private AutoFitTextView getTxtTitle() {
+    private AutoFitTxtView getTxtTitle() {
         if (txtTitle == null)
-            txtTitle = (AutoFitTextView) findViewById(R.id.txt_title);
+            txtTitle = (AutoFitTxtView) findViewById(R.id.txt_title);
         return txtTitle;
     }
 }

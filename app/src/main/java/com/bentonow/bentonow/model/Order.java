@@ -3,6 +3,7 @@ package com.bentonow.bentonow.model;
 import android.location.Address;
 
 import com.bentonow.bentonow.Utils.DebugUtils;
+import com.bentonow.bentonow.dao.OrderDao;
 import com.bentonow.bentonow.model.order.OrderDetails;
 import com.bentonow.bentonow.model.order.OrderItem;
 import com.bentonow.bentonow.model.order.OrderStripe;
@@ -24,12 +25,23 @@ public class Order {
     public static LatLng location;
     public static Address address;
 
+    public transient int currentOrderItem = 0;
+    public List<OrderItem> OrderItems = new ArrayList<>();
+    public OrderDetails OrderDetails = new OrderDetails();
+    public OrderStripe Stripe = new OrderStripe();
+    public String CouponCode = null;
+    public String IdempotentToken = null;
+    public String Platform = null;
+    public String MenuType = "";
+    public String MealName = "";
+
+
     public static int countItemsById(int itemId) {
         int count = 0;
         if (current != null) {
             for (OrderItem orderItem : current.OrderItems) {
-                for (Item item : orderItem.items) {
-                    if (item != null && item.itemId == itemId) ++count;
+                for (DishModel dishModel : orderItem.items) {
+                    if (dishModel != null && dishModel.itemId == itemId) ++count;
                 }
             }
         }
@@ -102,9 +114,9 @@ public class Order {
 
         delivery_percent = (current.OrderDetails.delivery_price * 100);
 
-        for (OrderItem item : current.OrderItems) {
-            bento_total += item.unit_price * 100;
-        }
+        for (OrderItem mItem : current.OrderItems)
+            bento_total += OrderDao.getPriceByOrder(mItem) * 100;
+
 
         subtotal = bento_total + delivery_percent;
 
@@ -140,21 +152,6 @@ public class Order {
 
         current.OrderDetails.total_cents = Math.round(total);
     }
-
-    //****
-    // Instance members
-    //****
-
-    public transient int currentOrderItem = 0;
-    public List<OrderItem> OrderItems = new ArrayList<>();
-    public OrderDetails OrderDetails = new OrderDetails();
-    public OrderStripe Stripe = new OrderStripe();
-    public String CouponCode = null;
-    public String IdempotentToken = null;
-    public String Platform = null;
-    public String MenuType = "";
-    public String MealName = "";
-
 
     public static void clearIncomplete() {
         ArrayList<Integer> ids = new ArrayList<>();

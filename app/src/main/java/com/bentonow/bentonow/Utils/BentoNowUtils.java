@@ -15,8 +15,9 @@ import com.bentonow.bentonow.controllers.init.MainActivity;
 import com.bentonow.bentonow.controllers.order.BuildBentoActivity;
 import com.bentonow.bentonow.controllers.order.BuildFixedBentoActivity;
 import com.bentonow.bentonow.controllers.session.EnterPhoneNumberActivity;
+import com.bentonow.bentonow.dao.DishDao;
 import com.bentonow.bentonow.model.BackendText;
-import com.bentonow.bentonow.model.Item;
+import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
@@ -47,8 +48,8 @@ public class BentoNowUtils {
 
     public static int getCurrentTime() {
         if (BuildConfig.DEBUG)
-            // return 183000;
-            return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
+             return 183000;
+           // return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
         else
             return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
     }
@@ -243,12 +244,12 @@ public class BentoNowUtils {
 
         for (int a = 0; a < Order.current.OrderItems.size(); a++) {
             boolean bIsSoldOut = false;
-            for (Item mItem : Order.current.OrderItems.get(a).items) {
-                if (mItem.isSoldOut(true)) {
+            for (DishModel mDishModel : Order.current.OrderItems.get(a).items) {
+                if (DishDao.isSoldOut(mDishModel, false)) {
                     bIsSoldOut = true;
-                    if (!sSoldOutItems.contains(mItem.name))
-                        sSoldOutItems += "\n- " + mItem.name;
-                    DebugUtils.logDebug("calculateSoldOutItems:", mItem.name);
+                    if (!sSoldOutItems.contains(mDishModel.name))
+                        sSoldOutItems += "\n- " + mDishModel.name;
+                    DebugUtils.logDebug("calculateSoldOutItems:", mDishModel.name);
                 }
             }
 
@@ -259,10 +260,10 @@ public class BentoNowUtils {
 
     public static boolean isSoldOutOrder(OrderItem mOrder) {
         boolean bIsSoldOut = false;
-        for (Item mItem : mOrder.items) {
-            if (mItem.isSoldOut(true)) {
+        for (DishModel mDishModel : mOrder.items) {
+            if (DishDao.isSoldOut(mDishModel, false)) {
                 bIsSoldOut = true;
-                DebugUtils.logDebug("calculateSoldOutItems:", mItem.name);
+                DebugUtils.logDebug("calculateSoldOutItems:", mDishModel.name);
             }
         }
 
@@ -316,6 +317,13 @@ public class BentoNowUtils {
         }
 
         return sPrice;
+    }
+
+    public static String getDefaultPriceBento(double dPrice) {
+        if (dPrice <= 0)
+            return getNumberFromPrice(Settings.price);
+        else
+            return getNumberFromPrice(dPrice);
     }
 
     public static void runBentoService(Context ctx) {

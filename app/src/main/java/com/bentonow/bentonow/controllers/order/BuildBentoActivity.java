@@ -10,7 +10,6 @@ import android.widget.TextView;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
-import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
@@ -19,14 +18,16 @@ import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.session.SettingsActivity;
 import com.bentonow.bentonow.controllers.session.SignInActivity;
+import com.bentonow.bentonow.dao.DishDao;
 import com.bentonow.bentonow.model.BackendText;
-import com.bentonow.bentonow.model.Item;
+import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.Stock;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.order.OrderItem;
+import com.bentonow.bentonow.ui.AutoFitTxtView;
 import com.bentonow.bentonow.ui.BackendButton;
 import com.bentonow.bentonow.ui.ItemHolder;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
@@ -49,7 +50,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
     ItemHolder side2Holder;
     ItemHolder side3Holder;
     ItemHolder side4Holder;
-    private TextView txtPromoName;
+    private AutoFitTxtView txtPromoName;
 
     ConfirmationDialog mDialog;
 
@@ -72,7 +73,10 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
         initActionbar();
         initOrder();
 
+        getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), DishDao.getLowestMainPrice()));
+
         BentoNowUtils.rotateBanner(getTxtPromoName());
+
 
     }
 
@@ -101,7 +105,6 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
 
         updateUI();
 
-        updateBanner();
     }
 
     private void initActionbar() {
@@ -199,99 +202,38 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
 
         OrderItem item = Order.current.OrderItems.get(orderIndex);
 
-        mainHolder.setData(item.items.get(0), true);
-        side1Holder.setData(item.items.get(1), true);
-        side2Holder.setData(item.items.get(2), true);
-        side3Holder.setData(item.items.get(3), true);
-        side4Holder.setData(item.items.get(4), true);
+        mainHolder.setData(item.items.get(0), false);
+        side1Holder.setData(item.items.get(1), false);
+        side2Holder.setData(item.items.get(2), false);
+        side3Holder.setData(item.items.get(3), false);
+        side4Holder.setData(item.items.get(4), false);
     }
 
     void autocomplete() {
         OrderItem orderItem = Order.current.OrderItems.get(orderIndex);
-        Item item;
+        DishModel dishModel;
 
         if (orderItem.items.get(0) == null) {
-            orderItem.items.set(0, Item.getFirstAvailable("main", null));
+            orderItem.items.set(0, DishDao.getFirstAvailable("main", null));
         }
 
         int[] ids = new int[4];
 
         for (int i = 1; i < 5; ++i) {
             if (orderItem.items.get(i) == null) {
-                item = Item.getFirstAvailable("side", ids);
+                dishModel = DishDao.getFirstAvailable("side", ids);
 
-                if (item == null) continue;
+                if (dishModel == null) continue;
 
-                ids[i - 1] = item.itemId;
+                ids[i - 1] = dishModel.itemId;
 
-                item = item.clone();
-                item.type += i;
-                orderItem.items.set(i, item);
+                dishModel = DishDao.clone(dishModel);
+                dishModel.type += i;
+                orderItem.items.set(i, dishModel);
             }
         }
 
         updateUI();
-    }
-
-    private void updateBanner() {
-/*
-        ViewTreeObserver viewTreeObserver = getTxtPromoName().getViewTreeObserver();
-        viewTreeObserver
-                .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                int w = getTxtPromoName().getWidth();
-                                int h = getTxtPromoName().getHeight();
-
-                                getTxtPromoName().setRotation(45.0f);
-                                getTxtPromoName().setTranslationX(w / 2);
-                                getTxtPromoName().setTranslationY(h / 2);
-
-                                ViewGroup.LayoutParams lp = getTxtPromoName().getLayoutParams();
-                                lp.height = w;
-                                lp.width = h;
-                                getTxtPromoName().requestLayout();
-
-                            }
-                        });
-
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
-                            getTxtPromoName().getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        else
-                            getTxtPromoName().getViewTreeObserver().removeGlobalOnLayoutListener(this);
-
-                    }
-                });*/
-        if (showBanner.get()) {
-            DebugUtils.logDebug(TAG, "Show Banner");
-            double dPrice;
-            double dSalePrice;
-
-            try {
-                dPrice = Settings.tax_percent;
-                dSalePrice = Settings.sale_price;
-
-                if (dSalePrice < dPrice) {
-                    getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), dPrice));
-                    getTxtPromoName().setBackground(getResources().getDrawable(R.drawable.square_banner_orange_bento));
-                } else {
-                    getTxtPromoName().setBackground(getResources().getDrawable(R.drawable.square_banner_green_bento));
-                    getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), dSalePrice));
-                }
-
-                getTxtPromoName().setVisibility(View.VISIBLE);
-
-            } catch (Exception ex) {
-                DebugUtils.logDebug(TAG, "updateBanner(): " + ex);
-                getTxtPromoName().setVisibility(View.GONE);
-            }
-        } else {
-            getTxtPromoName().setVisibility(View.GONE);
-        }
-
     }
 
     @Override
@@ -409,6 +351,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
         } else {
             String sSoldOutItems = BentoNowUtils.calculateSoldOutItems();
             if (sSoldOutItems.isEmpty()) {
+
                 Order.current.OrderItems.get(orderIndex).bIsSoldoOut = false;
                 track();
                 startActivity(new Intent(this, CompleteOrderActivity.class));
@@ -454,9 +397,9 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
         bIsOpen = false;
     }
 
-    private TextView getTxtPromoName() {
+    private AutoFitTxtView getTxtPromoName() {
         if (txtPromoName == null)
-            txtPromoName = (TextView) findViewById(R.id.txt_promo_name);
+            txtPromoName = (AutoFitTxtView) findViewById(R.id.txt_promo_name);
         return txtPromoName;
     }
 }

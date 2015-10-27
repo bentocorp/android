@@ -21,7 +21,7 @@ public class Menu {
     public String meal_name;
     public String meal_order;
     public String day_text;
-    public List<Item> items;
+    public List<DishModel> dishModels;
 
     static public void set(String data) {
         list = new ArrayList<>();
@@ -54,14 +54,14 @@ public class Menu {
 
             if (menu.has("lunch")) {
                 row = gson.fromJson(menu.getJSONObject("lunch").getString("Menu"), Menu.class);
-                row.items = gson.fromJson(menu.getJSONObject("lunch").getString("MenuItems"), new TypeToken<List<Item>>() {
+                row.dishModels = gson.fromJson(menu.getJSONObject("lunch").getString("MenuItems"), new TypeToken<List<DishModel>>() {
                 }.getType());
                 list.add(row);
             }
 
             if (menu.has("dinner")) {
                 row = gson.fromJson(menu.getJSONObject("dinner").getString("Menu"), Menu.class);
-                row.items = gson.fromJson(menu.getJSONObject("dinner").getString("MenuItems"), new TypeToken<List<Item>>() {
+                row.dishModels = gson.fromJson(menu.getJSONObject("dinner").getString("MenuItems"), new TypeToken<List<DishModel>>() {
                 }.getType());
                 list.add(row);
             }
