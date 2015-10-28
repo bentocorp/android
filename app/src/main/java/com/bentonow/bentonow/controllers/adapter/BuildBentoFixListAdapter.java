@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.ImageUtils;
 import com.bentonow.bentonow.dao.DishDao;
@@ -20,6 +21,7 @@ import com.bentonow.bentonow.ui.wrapper.ItemBentoFixWrapper;
 /**
  * @author José Torres Fuentes
  */
+
 public class BuildBentoFixListAdapter extends ArrayAdapter<DishModel> {
 
     private Activity mActivity;
@@ -49,6 +51,7 @@ public class BuildBentoFixListAdapter extends ArrayAdapter<DishModel> {
             viewHolder = (ItemBentoFixWrapper) convertView.getTag();
 
         viewHolder.getTxtTitle().setText(mDish.name);
+        viewHolder.getTxtAddPrice().setText(String.format(mActivity.getString(R.string.money_main_format), BentoNowUtils.getDefaultPriceBento(mDish.price)));
 
         if (viewHolder.getImageDish().getTag() == null || !viewHolder.getImageDish().getTag().equals(mDish.image1)) {
             ImageUtils.initImageLoader().displayImage(mDish.image1, viewHolder.getImageDish(), ImageUtils.dishMainImageOptions());
@@ -63,13 +66,14 @@ public class BuildBentoFixListAdapter extends ArrayAdapter<DishModel> {
             }
         });
 
+
         if (DishDao.isSoldOut(mDish, true)) {
             viewHolder.getImageSoldOut().setVisibility(View.VISIBLE);
             viewHolder.getBtnAddToBento().setOnClickListener(null);
-            viewHolder.getBtnAddToBento().setBackground(getContext().getResources().getDrawable(R.drawable.btn_border_lineal_white));
+            viewHolder.getWrapperAddPrice().setBackground(getContext().getResources().getDrawable(R.drawable.btn_dark_gray));
         } else {
             viewHolder.getImageSoldOut().setVisibility(View.INVISIBLE);
-            viewHolder.getBtnAddToBento().setBackground(getContext().getResources().getDrawable(R.drawable.btn_rounded_green));
+            viewHolder.getWrapperAddPrice().setBackground(getContext().getResources().getDrawable(R.drawable.btn_rounded_green));
             viewHolder.getBtnAddToBento().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

@@ -16,7 +16,7 @@
     <string name="delivery_alert_no_address">Please enter your delivery address.</string>
     <string name="title_activity_error_invalid_address">ErrorInvalidAddressActivity</string>
     <string name="title_activity_bento_select_main">BentoSelectMainActivity</string>
-    <string name="build_bento_price">Starting at $%.0f</string>
+    <string name="build_bento_price">Starting at $%s</string>
 
     <string name="bento_builder_actionbar_title">Build Your Bento</string>
     <string name="delivery_location_actionbar_title">Delivery Location</string>
@@ -63,7 +63,7 @@
     <string name="add_another_bento">ADD ANOTHER BENTO</string>
     <string name="add_main_dish">+ MAIN DISH</string>
     <string name="add_side">+ SIDE</string>
-    <string name="added_to_bento">ADDED TO BENTO</string>
+    <string name="added_to_bento">IN YOUR BENTO</string>
     <string name="add_to_bento">ADD TO BENTO</string>
     <string name="add_bento_to_cart">ADD BENTO TO CART</string>
     <string name="added_to_cart">Added To Cart</string>
@@ -94,7 +94,7 @@
     <string name="fa_phone">&#xf095;</string>
 
     <string name="money_format">$%.2f</string>
-    <string name="money_main_format"> $ %s </string>
+    <string name="money_main_format"> $%s </string>
     <string name="tip_percentage">%.0f</string>
 
     <string name="error_loading_dishes">There is a problem loading the dishes, please try again later</string>

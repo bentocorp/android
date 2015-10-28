@@ -39,17 +39,17 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
 
     static final String TAG = "BuildBentoActivity";
 
-    ImageView actionbar_right_btn;
-    BackendButton btn_continue;
-    BackendButton btn_add_another_bento;
-    TextView actionbar_right_badge;
+    private ImageView actionbar_right_btn;
+    private BackendButton btn_continue;
+    private BackendButton btn_add_another_bento;
+    private TextView actionbar_right_badge;
 
-    int orderIndex;
-    ItemHolder mainHolder;
-    ItemHolder side1Holder;
-    ItemHolder side2Holder;
-    ItemHolder side3Holder;
-    ItemHolder side4Holder;
+    private int orderIndex;
+    private ItemHolder mainHolder;
+    private ItemHolder side1Holder;
+    private ItemHolder side2Holder;
+    private ItemHolder side3Holder;
+    private ItemHolder side4Holder;
     private AutoFitTxtView txtPromoName;
 
     ConfirmationDialog mDialog;
@@ -73,7 +73,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
         initActionbar();
         initOrder();
 
-        getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), DishDao.getLowestMainPrice()));
+        getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), BentoNowUtils.getNumberFromPrice(DishDao.getLowestMainPrice())));
 
         BentoNowUtils.rotateBanner(getTxtPromoName());
 

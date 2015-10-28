@@ -48,8 +48,8 @@ public class BentoNowUtils {
 
     public static int getCurrentTime() {
         if (BuildConfig.DEBUG)
-             return 183000;
-           // return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
+            return 183000;
+            // return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
         else
             return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
     }
@@ -306,11 +306,12 @@ public class BentoNowUtils {
     }
 
     public static String getNumberFromPrice(double dPrice) {
-        DecimalFormat df = new DecimalFormat("###.#");
+        DecimalFormat df = new DecimalFormat("###.##");
         String sPrice;
 
         try {
             sPrice = df.format(dPrice);
+            sPrice = sPrice.replace(".00", "");
         } catch (Exception ex) {
             DebugUtils.logError("getNumberFromPrice()", ex);
             sPrice = String.valueOf(Settings.price);

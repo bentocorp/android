@@ -43,7 +43,7 @@
         android:layout_below="@+id/include">
 
 
-        <TextView
+        <com.bentonow.bentonow.ui.AutoFitTxtView
             android:id="@+id/txt_promo_name"
             style="@style/TxtBentoPromo"
             android:layout_width="match_parent"

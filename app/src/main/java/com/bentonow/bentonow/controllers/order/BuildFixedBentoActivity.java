@@ -1,6 +1,5 @@
 package com.bentonow.bentonow.controllers.order;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -27,10 +26,10 @@ import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
-import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.Stock;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.order.OrderItem;
+import com.bentonow.bentonow.ui.AutoFitTxtView;
 import com.bentonow.bentonow.ui.BackendButton;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.mixpanel.android.mpmetrics.Tweak;
@@ -38,6 +37,10 @@ import com.mixpanel.android.mpmetrics.Tweak;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+
+/**
+ * @author José Torres Fuentes
+ */
 
 public class BuildFixedBentoActivity extends BaseActivity implements View.OnClickListener, ListenerMainDishFix {
 
@@ -49,7 +52,7 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
     private TextView txtToolbarBadge;
     private BackendButton btnComplete;
     private ListView mListBento;
-    private TextView txtPromoName;
+    private AutoFitTxtView txtPromoName;
 
     private BuildBentoFixListAdapter aListBento;
 
@@ -57,7 +60,6 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
 
     public static boolean bIsOpen = false;
     private static Tweak<Boolean> showBanner = MixpanelAPI.booleanTweak("Show Fix Banner", false);
-
 
     private Menu mMenu;
 
@@ -78,6 +80,8 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
 
         getListBento().setAdapter(getAdapterListBento());
 
+        getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), BentoNowUtils.getNumberFromPrice(DishDao.getLowestMainPrice())));
+
         BentoNowUtils.rotateBanner(getTxtPromoName());
 
     }
@@ -89,10 +93,9 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
             mDialog.show();
         } else {
             getAdapterListBento().clear();
-            for (DishModel dishModel : mMenu.dishModels) {
+            for (DishModel dishModel : mMenu.dishModels)
                 if (dishModel.type.equals("main"))
                     getAdapterListBento().add(dishModel);
-            }
 
             setSideDishList();
         }
@@ -220,38 +223,6 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
         }
     }
 
-    private void updateBanner() {
-        if (showBanner.get()) {
-            DebugUtils.logDebug(TAG, "Show Banner");
-
-            double dPrice;
-            double dSalePrice;
-
-            try {
-                dPrice = Settings.price;
-                dSalePrice = Settings.sale_price;
-
-                if (dSalePrice < dPrice) {
-                    getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), dPrice));
-                    getTxtPromoName().setBackground(getResources().getDrawable(R.drawable.square_banner_orange_bento));
-                } else {
-                    getTxtPromoName().setBackground(getResources().getDrawable(R.drawable.square_banner_green_bento));
-                    getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), dSalePrice));
-                }
-
-                getTxtPromoName().setVisibility(View.VISIBLE);
-            } catch (Exception ex) {
-                DebugUtils.logDebug(TAG, "updateBanner(): " + ex);
-                getTxtPromoName().setVisibility(View.GONE);
-            }
-        } else {
-            DebugUtils.logDebug(TAG, "Hide Banner");
-            getTxtPromoName().setVisibility(View.GONE);
-        }
-
-    }
-
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -309,8 +280,6 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
 
         addMainDishes();
         updateUI();
-
-        updateBanner();
     }
 
     @Override
@@ -370,9 +339,9 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
         return btnComplete;
     }
 
-    private TextView getTxtPromoName() {
+    private AutoFitTxtView getTxtPromoName() {
         if (txtPromoName == null)
-            txtPromoName = (TextView) findViewById(R.id.txt_promo_name);
+            txtPromoName = (AutoFitTxtView) findViewById(R.id.txt_promo_name);
         return txtPromoName;
     }
 

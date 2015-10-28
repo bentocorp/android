@@ -71,18 +71,25 @@ public class CustomMainListAdapter extends ArrayAdapter<DishModel> {
         }
 
         viewHolder.getTxtTitle().setText(mDish.name);
-        viewHolder.getImgGradient().setVisibility(selected ? View.VISIBLE : View.GONE);
-        viewHolder.getBtnAdded().setVisibility(selected && added ? View.VISIBLE : View.GONE);
 
-        viewHolder.getTxtDishPrice().setText(String.format(mActivity.getString(R.string.money_main_format), BentoNowUtils.getDefaultPriceBento(mDish.price)));
+        viewHolder.getImgGradient().setVisibility(selected ? View.VISIBLE : View.GONE);
+
+        viewHolder.getBtnAdded().setVisibility(added ? View.VISIBLE : View.GONE);
+
+        viewHolder.getTxtDishPrice().setText(String.format(mActivity.getString(R.string.money_main_format),  BentoNowUtils.getDefaultPriceBento(mDish.price)));
         viewHolder.getTxtDishPrice().setVisibility(selected ? View.GONE : View.VISIBLE);
 
         viewHolder.getTxtDescription().setText(selected ? mDish.description : "");
-       // viewHolder.getTxtDescription().setVisibility(selected ? View.VISIBLE : View.INVISIBLE);
 
         viewHolder.getTxtAddPrice().setText(String.format(mActivity.getString(R.string.money_main_format), BentoNowUtils.getDefaultPriceBento(mDish.price)));
+        viewHolder.getTxtAddPrice().setTextColor(added ? mActivity.getResources().getColor(R.color.black) : mActivity.getResources().getColor(R.color.white));
 
-        viewHolder.getWrapperAddPrice().setVisibility(selected && !added ? View.VISIBLE : View.GONE);
+        viewHolder.getWrapperAddPrice().setVisibility(selected ? View.VISIBLE : View.GONE);
+        viewHolder.getWrapperAddPrice().setBackground(!added ? mActivity.getResources().getDrawable(R.drawable.btn_border_lineal_white) : mActivity.getResources().getDrawable(R.drawable.btn_white));
+
+        viewHolder.getViewLineDivider().setBackgroundColor(added ? mActivity.getResources().getColor(R.color.black) : mActivity.getResources().getColor(R.color.white));
+
+        viewHolder.getBtnAddToBento().setVisibility(!added ? View.VISIBLE : View.GONE);
 
         viewHolder.getBtnAddToBento().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,6 +98,7 @@ public class CustomMainListAdapter extends ArrayAdapter<DishModel> {
                 DebugUtils.logDebug("onAddToBentoClick()", position);
             }
         });
+
         viewHolder.getBtnAdded().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

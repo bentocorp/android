@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#7a8591"/>
+    <solid android:color="#7a8591" />
 
     <stroke
-        android:color="#7a8591"
         android:width="1dp"
-        />
+        android:color="#7a8591" />
 
-    <padding android:left="@dimen/btn_padding"
-        android:top="@dimen/btn_padding"
-        android:right="@dimen/btn_padding"
-        android:bottom="@dimen/btn_padding"
-        />
+    <padding
+        android:bottom="1dp"
+        android:left="1dp"
+        android:right="1dp"
+        android:top="1dp" />
 
     <corners
-        android:topLeftRadius="@dimen/bento_corner" android:topRightRadius="@dimen/bento_corner"
-        android:bottomLeftRadius="@dimen/bento_corner" android:bottomRightRadius="@dimen/bento_corner"
-        />
+        android:bottomLeftRadius="@dimen/bento_corner"
+        android:bottomRightRadius="@dimen/bento_corner"
+        android:topLeftRadius="@dimen/bento_corner"
+        android:topRightRadius="@dimen/bento_corner" />
 </shape>
