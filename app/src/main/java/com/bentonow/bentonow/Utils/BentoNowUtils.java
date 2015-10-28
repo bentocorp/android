@@ -245,7 +245,7 @@ public class BentoNowUtils {
         for (int a = 0; a < Order.current.OrderItems.size(); a++) {
             boolean bIsSoldOut = false;
             for (DishModel mDishModel : Order.current.OrderItems.get(a).items) {
-                if (DishDao.isSoldOut(mDishModel, false)) {
+                if (DishDao.isSoldOut(mDishModel, true) || !DishDao.canBeAdded(mDishModel)) {
                     bIsSoldOut = true;
                     if (!sSoldOutItems.contains(mDishModel.name))
                         sSoldOutItems += "\n- " + mDishModel.name;

@@ -1,7 +1,6 @@
 package com.bentonow.bentonow.dao;
 
-import android.util.Log;
-
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
@@ -23,15 +22,21 @@ public class DishDao {
 
 
     public static boolean isSoldOut(DishModel mDishModel, boolean countCurrent) {
-        boolean value = Stock.isSold(mDishModel.itemId, countCurrent);
-        Log.i(TAG, "isSoldOut " + mDishModel.name + " " + (value ? "YES" : "NO"));
-        return value;
+        boolean bSoldOut = Stock.isSold(mDishModel.itemId, countCurrent);
+
+        if (!bSoldOut)
+            DebugUtils.logDebug(TAG, "SoldOut " + mDishModel.name);
+
+        return bSoldOut;
     }
 
     public static boolean canBeAdded(DishModel mDishModel) {
-        boolean value = mDishModel.max_per_order > Order.countItemsById(mDishModel.itemId);
-        Log.i(TAG, "canBeAdded " + mDishModel.name + " " + (value ? "YES" : "NO"));
-        return value;
+        boolean bCanBeAdded = mDishModel.max_per_order > Order.countItemsById(mDishModel.itemId);
+
+        if (!bCanBeAdded)
+            DebugUtils.logDebug(TAG, "canNotBeAdded " + mDishModel.name);
+
+        return bCanBeAdded;
     }
 
     public static DishModel getFirstAvailable(String type, int[] tryExcludeIds) {
