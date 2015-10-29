@@ -64,7 +64,7 @@
                         <ImageView
                             android:layout_width="fill_parent"
                             android:layout_height="fill_parent"
-                            android:src="@drawable/menu_gradient" />
+                            android:src="@drawable/item_gradient" />
 
                         <me.grantland.widget.AutofitTextView
                             android:id="@+id/txt_main_title"
@@ -145,7 +145,7 @@
                             <ImageView
                                 android:layout_width="fill_parent"
                                 android:layout_height="fill_parent"
-                                android:src="@drawable/menu_gradient" />
+                                android:src="@drawable/item_gradient" />
 
                             <me.grantland.widget.AutofitTextView
                                 android:id="@+id/txt_side1_title"
@@ -219,7 +219,7 @@
                             <ImageView
                                 android:layout_width="fill_parent"
                                 android:layout_height="fill_parent"
-                                android:src="@drawable/menu_gradient" />
+                                android:src="@drawable/item_gradient" />
 
                             <me.grantland.widget.AutofitTextView
                                 android:id="@+id/txt_side2_title"
@@ -302,7 +302,7 @@
                             <ImageView
                                 android:layout_width="fill_parent"
                                 android:layout_height="fill_parent"
-                                android:src="@drawable/menu_gradient" />
+                                android:src="@drawable/item_gradient" />
 
                             <me.grantland.widget.AutofitTextView
                                 android:id="@+id/txt_side3_title"
@@ -376,7 +376,7 @@
                             <ImageView
                                 android:layout_width="fill_parent"
                                 android:layout_height="fill_parent"
-                                android:src="@drawable/menu_gradient" />
+                                android:src="@drawable/item_gradient" />
 
                             <me.grantland.widget.AutofitTextView
                                 android:id="@+id/txt_side4_title"

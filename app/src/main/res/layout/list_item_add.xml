@@ -25,14 +25,14 @@
             android:layout_height="fill_parent"
             android:contentDescription="@null"
             android:scaleType="centerCrop"
-            android:src="@drawable/menu_gradient" />
+            android:src="@drawable/item_gradient" />
 
         <ImageView
             android:id="@+id/img_gradient"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:contentDescription="@null"
-            android:src="@drawable/menu_gradient" />
+            android:src="@drawable/item_gradient" />
 
         <LinearLayout
             android:layout_width="fill_parent"
