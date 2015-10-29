@@ -8,7 +8,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="160dp">
+        android:layout_height="@dimen/dish_side_custom_item_height">
 
         <ImageView
             android:id="@+id/img_dish_side_fix"
@@ -29,16 +29,17 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:orientation="vertical"
-            android:paddingLeft="20sp"
-            android:paddingRight="20sp">
+            android:orientation="vertical">
 
             <me.grantland.widget.AutofitTextView
                 android:id="@+id/txt_title"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:gravity="center"
-                android:padding="10dp"
+                android:paddingBottom="10dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:paddingTop="10dp"
                 android:singleLine="true"
                 android:text="@string/app_name"
                 android:textAppearance="@style/BentoBuilderBoxMainName"
@@ -50,7 +51,9 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:maxLines="4"
-                android:padding="5dp"
+                android:paddingBottom="10dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
                 android:text="@string/app_name"
                 android:textAppearance="@style/BentoBuilderBoxDesc"
                 autofit:minTextSize="8sp" />

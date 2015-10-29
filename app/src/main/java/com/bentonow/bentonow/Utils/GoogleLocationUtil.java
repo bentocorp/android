@@ -60,7 +60,7 @@ public class GoogleLocationUtil {
                 public void onLocationChanged(Location mLocation) {
                     DebugUtils.logDebug(TAG, "startLocationUpdates", "onLocationChanged() " + mLocation.toString());
 
-                    if (BuildConfig.DEBUG) {
+                    if (BuildConfig.DEBUG && BentoNowUtils.B_KOKUSHO_TESTING) {
                         User.location = new LatLng(37.76573527907957, -122.41834457963704);
                     } else {
                         User.location = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());

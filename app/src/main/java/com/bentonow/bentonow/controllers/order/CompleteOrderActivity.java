@@ -553,7 +553,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
             txt_name.setText(mItem.items.get(0).name);
 
-            txt_price.setText("$" + OrderDao.getPriceByOrder(mItem));
+            txt_price.setText("$" + BentoNowUtils.getNumberFromPrice(OrderDao.getPriceByOrder(mItem)));
 
             btn_remove.setVisibility(selected == position ? View.VISIBLE : View.GONE);
             btn_edit.setVisibility(edit ? View.VISIBLE : View.GONE);
