@@ -87,23 +87,28 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
 
         mMenu = Menu.get();
 
-        if (Order.current == null) {
-            Order.current = new Order();
-            Order.current.MealName = mMenu.meal_name;
-            Order.current.MenuType = mMenu.menu_type;
+        if (mMenu == null) {
+            BentoNowUtils.openErrorActivity(BuildBentoActivity.this);
+        } else {
+            if (Order.current == null) {
+                Order.current = new Order();
+                Order.current.MealName = mMenu.meal_name;
+                Order.current.MenuType = mMenu.menu_type;
 
-            MixpanelUtils.track("Began Building A Bento");
+                MixpanelUtils.track("Began Building A Bento");
+            }
+
+            orderIndex = Order.current.currentOrderItem;
+
+            if (Order.current.OrderItems.size() == 0) {
+                Order.current.OrderItems.add(new OrderItem());
+            } else if (Order.current.OrderItems.size() <= orderIndex) {
+                orderIndex = Order.current.OrderItems.size() - 1;
+            }
+
+            updateUI();
         }
 
-        orderIndex = Order.current.currentOrderItem;
-
-        if (Order.current.OrderItems.size() == 0) {
-            Order.current.OrderItems.add(new OrderItem());
-        } else if (Order.current.OrderItems.size() <= orderIndex) {
-            orderIndex = Order.current.OrderItems.size() - 1;
-        }
-
-        updateUI();
 
     }
 

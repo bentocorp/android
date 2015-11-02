@@ -270,16 +270,21 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
 
         mMenu = Menu.get();
 
-        if (Order.current == null) {
-            Order.current = new Order();
-            Order.current.MealName = mMenu.meal_name;
-            Order.current.MenuType = mMenu.menu_type;
+        if (mMenu == null) {
+            BentoNowUtils.openErrorActivity(BuildFixedBentoActivity.this);
+        } else {
+            if (Order.current == null) {
+                Order.current = new Order();
+                Order.current.MealName = mMenu.meal_name;
+                Order.current.MenuType = mMenu.menu_type;
 
-            MixpanelUtils.track("Began Building A Bento");
+                MixpanelUtils.track("Began Building A Bento");
+            }
+
+            addMainDishes();
+            updateUI();
         }
 
-        addMainDishes();
-        updateUI();
     }
 
     @Override

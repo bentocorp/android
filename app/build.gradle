@@ -34,14 +34,12 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.main_title'), 'proguard-rules.pro'
             debuggable false
-            multiDexEnabled = true
             signingConfig signingConfigs.Bento
         }
         debug {
             debuggable true
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.main_title'), 'proguard-rules.pro'
-            multiDexEnabled = true
         }
     }
 
@@ -49,16 +47,17 @@ android {
         applicationId "com.bentonow.bentonow"
         minSdkVersion 17
         targetSdkVersion 22
-        versionCode 21
+        versionCode 22
+        multiDexEnabled true
     }
     productFlavors {
         production {
             applicationId "com.bentonow.bentonow"
-            versionName '1.9-rc2'
+            versionName '1.9-rc3'
         }
         stage {
             applicationId "com.bentonow.bentonow.stage"
-            versionName '1.9-rc2-dev'
+            versionName '1.9-rc3-dev'
         }
     }
 
@@ -83,4 +82,5 @@ dependencies {
     compile 'com.mixpanel.android:mixpanel-android:4.6.4'
     compile 'com.loopj.android:android-async-http:1.4.8'
     compile 'com.google.code.gson:gson:2.3.1'
+    compile 'com.android.support:multidex:1.0.1'
 }

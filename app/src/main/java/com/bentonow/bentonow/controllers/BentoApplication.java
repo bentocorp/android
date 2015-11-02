@@ -1,8 +1,10 @@
 package com.bentonow.bentonow.controllers;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
+import android.support.multidex.MultiDex;
 import android.util.Log;
 
 import com.bentonow.bentonow.R;
@@ -92,6 +94,13 @@ public class BentoApplication extends Application {
 
         BentoNowUtils.runBentoService(instance);
     }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }
+
 
 
     public void doInBackground(Runnable runnable) {
