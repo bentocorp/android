@@ -73,7 +73,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
         initActionbar();
         initOrder();
 
-        getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), BentoNowUtils.getNumberFromPrice(DishDao.getLowestMainPrice())));
+        getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), BentoNowUtils.getDefaultPriceBento(DishDao.getLowestMainPrice())));
 
         BentoNowUtils.rotateBanner(getTxtPromoName());
 

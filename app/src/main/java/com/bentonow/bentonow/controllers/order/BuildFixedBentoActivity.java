@@ -80,7 +80,7 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
 
         getListBento().setAdapter(getAdapterListBento());
 
-        getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), BentoNowUtils.getNumberFromPrice(DishDao.getLowestMainPrice())));
+        getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), BentoNowUtils.getDefaultPriceBento(DishDao.getLowestMainPrice())));
 
         BentoNowUtils.rotateBanner(getTxtPromoName());
 
