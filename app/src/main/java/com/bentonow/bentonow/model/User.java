@@ -1,14 +1,7 @@
 package com.bentonow.bentonow.model;
 
-import android.util.Log;
-
-import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.model.user.Card;
-import com.bentonow.bentonow.model.user.CouponRequest;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.gson.Gson;
-import com.loopj.android.http.RequestParams;
-import com.loopj.android.http.TextHttpResponseHandler;
 
 public class User {
     //region STATIC VARIABLES
@@ -18,13 +11,13 @@ public class User {
     //endregion
 
     //region VARIABLES
-    public String firstname = null;
-    public String lastname = null;
-    public String email = null;
-    public String phone = null;
-    public String coupon_code = null;
-    public String api_token = null;
-    public String stripe_token = null;
+    public String firstname = "";
+    public String lastname = "";
+    public String email = "";
+    public String phone = "";
+    public String coupon_code = "";
+    public String api_token = "";
+    public String stripe_token = "";
 
     public String fb_token = "";
     public String fb_id = "";
@@ -32,52 +25,28 @@ public class User {
     public String fb_age_range = "";
     public String fb_gender = "";
 
-    public String password = null;
+    public String password = "";
 
     public Card card = new Card();
     //endregion
 
-    public static void requestCoupon(String email, String reason, TextHttpResponseHandler response) {
-        CouponRequest couponRequest = new CouponRequest();
-        couponRequest.email = email;
-        couponRequest.reason = reason;
-        couponRequest.api_token = current != null ? current.api_token : null;
 
-        String data = new Gson().toJson(couponRequest);
-
-        RequestParams params = new RequestParams();
-        params.put("data", data);
-
-        Log.i(TAG, "requestCoupon data: " + data);
-
-        BentoRestClient.post("/coupon/request", params, response);
-    }
-
-    public void login(TextHttpResponseHandler responseHandler) {
-        card = null;
-
-        String endpoint = password != null ? "/user/login" : "/user/fblogin";
-        String data = new Gson().toJson(this);
-
-        RequestParams params = new RequestParams();
-        params.put("data", data);
-
-        Log.i(TAG, "login data: " + data);
-
-        BentoRestClient.post(endpoint, params, responseHandler);
-    }
-
-    public void register(TextHttpResponseHandler responseHandler) {
-        card = null;
-
-        String endpoint = password != null ? "/user/signup" : "/user/fbsignup";
-        String data = new Gson().toJson(this).replace("\"firstname\":", "\"name\":");
-
-        RequestParams params = new RequestParams();
-        params.put("data", data);
-
-        Log.i(TAG, "register data: " + data);
-
-        BentoRestClient.post(endpoint, params, responseHandler);
+    @Override
+    public String toString() {
+        return "DataObject [firstname=" + firstname +
+                ", lastname=" + lastname +
+                ", email=" + email +
+                ", phone=" + phone +
+                ", fb_id=" + fb_id +
+                ", fb_token=" + fb_token +
+                ", fb_profile_pic=" + fb_profile_pic +
+                ", fb_age_range=" + fb_age_range +
+                ", fb_gender=" + fb_gender +
+                ", password=" + password +
+                ", coupon_code=" + coupon_code +
+                ", api_token=" + api_token +
+                ", stripe_token=" + stripe_token +
+                ", card=" + card +
+                "]";
     }
 }

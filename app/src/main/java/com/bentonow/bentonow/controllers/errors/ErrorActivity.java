@@ -18,6 +18,7 @@ import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.controllers.session.SettingsActivity;
+import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Settings;
@@ -161,7 +162,7 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
             mDialog.addAcceptButton("OK", null);
             mDialog.show();
         } else {
-            User.requestCoupon(getEditTxtEmail().getText().toString(), Settings.status, new TextHttpResponseHandler() {
+            UserDao.requestCoupon(User.current, getEditTxtEmail().getText().toString(), Settings.status, new TextHttpResponseHandler() {
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {

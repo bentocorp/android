@@ -117,6 +117,7 @@ public class BentoNowUtils {
             Intent intent = new Intent(mContext, ErrorActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(intent);
+            Order.cleanUp();
         }
     }
 

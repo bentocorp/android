@@ -12,6 +12,7 @@ import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
+import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
@@ -65,7 +66,7 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
             mDialog.addAcceptButton("OK", null);
             mDialog.show();
         } else {
-            User.requestCoupon(txt_email.getText().toString(), "outside of delivery zone", new TextHttpResponseHandler() {
+            UserDao.requestCoupon(User.current, txt_email.getText().toString(), "outside of delivery zone", new TextHttpResponseHandler() {
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
