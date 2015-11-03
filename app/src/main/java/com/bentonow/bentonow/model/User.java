@@ -26,11 +26,11 @@ public class User {
     public String api_token = null;
     public String stripe_token = null;
 
-    public String fb_token = null;
-    public String fb_id = null;
-    public String fb_profile_pic = null;
-    public String fb_age_range = null;
-    public String fb_gender = null;
+    public String fb_token = "";
+    public String fb_id = "";
+    public String fb_profile_pic = "";
+    public String fb_age_range = "";
+    public String fb_gender = "";
 
     public String password = null;
 

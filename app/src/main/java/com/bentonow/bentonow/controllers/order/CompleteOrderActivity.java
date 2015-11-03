@@ -138,19 +138,11 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
     @Override
     protected void onResume() {
         super.onResume();
-
-        if (User.current == null) {
-            startActivity(new Intent(this, SignInActivity.class));
-            finish();
-        } else if (Order.location == null || Order.address == null) {
-            Intent intent = new Intent(this, DeliveryLocationActivity.class);
-            intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.COMPLETE_ORDER);
-            startActivity(intent);
-            finish();
-        } else if (User.current.card == null || User.current.card.last4 == null || User.current.card.last4.isEmpty()) {
-            startActivity(new Intent(this, EnterCreditCardActivity.class));
-        } else if (Order.current.OrderItems == null || Order.current.OrderItems.isEmpty()) {
-            emptyOrders();
+        if (User.current == null || Order.location == null || Order.address == null) {
+            if (Order.current == null || Order.current.OrderItems == null || Order.current.OrderItems.isEmpty())
+                emptyOrders();
+            else
+                finish();
         } else {
             updateUI();
         }
@@ -472,11 +464,6 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         });
     }
 
-
-    //endregion
-
-    //region UI
-
     void updateUI() {
         Order.calculate();
 
@@ -530,9 +517,6 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         }
     }
 
-    //endregion
-
-    //region List
 
     private class ItemHolder {
         public TextView txt_name;
