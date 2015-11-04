@@ -26,7 +26,7 @@ public class FacebookUtil {
         getAppEventLogger().logPurchase(BigDecimal.valueOf(iRevenue), Currency.getInstance("USD"));
     }
 
-    public static void trackEvent(String sEvent) {      
+    public static void trackEvent(String sEvent) {
         getAppEventLogger().logEvent(sEvent);
     }
 
