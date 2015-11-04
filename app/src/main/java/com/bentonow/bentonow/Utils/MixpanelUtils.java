@@ -20,6 +20,7 @@ public class MixpanelUtils {
     }
 
     public static void track(String event) {
+        FacebookUtil.trackEvent(event);
         getMixpanelApi().track(event);
     }
 
@@ -56,6 +57,7 @@ public class MixpanelUtils {
     public static void trackRevenue(double iRevenue) {
         JSONObject properties = new JSONObject();
         try {
+            FacebookUtil.trackRevenue(iRevenue);
             properties.put("$time", BentoNowUtils.getMixpanelDate());
             getMixpanelApi().getPeople().identify(User.current.email);
             getMixpanelApi().getPeople().trackCharge(iRevenue, properties);
