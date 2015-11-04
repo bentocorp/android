@@ -15,7 +15,6 @@ import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
-import com.bentonow.bentonow.controllers.session.SettingsActivity;
 import com.bentonow.bentonow.dao.DishDao;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.DishModel;
@@ -241,8 +240,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.actionbar_left_btn:
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
+                BentoNowUtils.openSettingsActivity(BuildBentoActivity.this);
                 break;
             case R.id.actionbar_right_btn:
                 if (Order.current.OrderItems.get(orderIndex).isComplete()) {

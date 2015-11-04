@@ -17,7 +17,6 @@ import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
-import com.bentonow.bentonow.controllers.session.SettingsActivity;
 import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Menu;
@@ -89,7 +88,6 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
     @Override
     protected void onPause() {
         super.onPause();
-        bIsOpen = false;
 
         if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_STORE_CHANGIN))
             finish();
@@ -132,8 +130,7 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
                 startActivity(intent);
                 break;
             case R.id.actionbar_left_btn:
-                Intent iSettingsActivity = new Intent(ErrorActivity.this, SettingsActivity.class);
-                startActivity(iSettingsActivity);
+                BentoNowUtils.openSettingsActivity(ErrorActivity.this);
                 break;
         }
     }

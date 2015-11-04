@@ -19,6 +19,7 @@ import com.bentonow.bentonow.controllers.order.BuildFixedBentoActivity;
 import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
 import com.bentonow.bentonow.controllers.payment.EnterCreditCardActivity;
 import com.bentonow.bentonow.controllers.session.EnterPhoneNumberActivity;
+import com.bentonow.bentonow.controllers.session.SettingsActivity;
 import com.bentonow.bentonow.controllers.session.SignInActivity;
 import com.bentonow.bentonow.dao.DishDao;
 import com.bentonow.bentonow.model.BackendText;
@@ -49,7 +50,7 @@ public class BentoNowUtils {
 
     public static final SimpleDateFormat sdfBento = new SimpleDateFormat("yyyyMMdd");
     public static final boolean B_APPIUM_TESTING = false;
-    public static final boolean B_KOKUSHO_TESTING = false;
+    public static final boolean B_KOKUSHO_TESTING = true;
 
 
     public static int getCurrentTime() {
@@ -125,6 +126,13 @@ public class BentoNowUtils {
         Intent intent = new Intent(mContext, CompleteOrderActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(intent);
+    }
+
+    public static void openSettingsActivity(FragmentActivity mContext) {
+        Intent intent = new Intent(mContext, SettingsActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(intent);
+        mContext.overridePendingTransition(R.anim.left_slide_in, R.anim.right_slide_out);
     }
 
     public static void goToDashboard(Context mContext) {

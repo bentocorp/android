@@ -38,7 +38,6 @@ import com.bentonow.bentonow.controllers.errors.BummerActivity;
 import com.bentonow.bentonow.controllers.fragment.MySupportMapFragment;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
-import com.bentonow.bentonow.controllers.session.SettingsActivity;
 import com.bentonow.bentonow.listener.OnCustomDragListener;
 import com.bentonow.bentonow.model.AutoCompleteModel;
 import com.bentonow.bentonow.model.BackendText;
@@ -576,8 +575,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.actionbar_left_btn:
-                Intent iSettings = new Intent(this, SettingsActivity.class);
-                startActivity(iSettings);
+                BentoNowUtils.openSettingsActivity(DeliveryLocationActivity.this);
                 break;
             case R.id.actionbar_right_btn:
                 Intent iHelp = new Intent(DeliveryLocationActivity.this, HelpActivity.class);
