@@ -86,7 +86,7 @@ public class BentoNowUtils {
     }
 
     public static void openMainActivity(Context mContext) {
-        if (!MainActivity.bIsOpen) {
+        if (!MainActivity.bIsOpen && SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_APP_IN_FRONT)) {
             Intent intent = new Intent(mContext, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(intent);
@@ -114,7 +114,7 @@ public class BentoNowUtils {
     }
 
     public static void openErrorActivity(Context mContext) {
-        if (!ErrorActivity.bIsOpen) {
+        if (!ErrorActivity.bIsOpen && SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_APP_IN_FRONT)) {
             Intent intent = new Intent(mContext, ErrorActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(intent);

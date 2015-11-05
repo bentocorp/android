@@ -27,7 +27,7 @@ public class BentoService extends Service {
     private static Handler handler;
     private static Runnable task;
 
-    public static String date = "";
+    public static boolean bSendRequest = false;
 
     public static boolean isRunning() {
         if (task == null || handler == null)
@@ -47,6 +47,7 @@ public class BentoService extends Service {
     public void onCreate() {
         Log.i(TAG, "onCreate()");
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_BENTO_SERVICE_RUNNING, true);
+        bSendRequest = true;
 
         loadData();
     }
@@ -60,6 +61,9 @@ public class BentoService extends Service {
         if (handler != null && task != null)
             handler.removeCallbacks(task);
 
+        handler = null;
+        task = null;
+
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_BENTO_SERVICE_RUNNING, false);
 
         BentoNowUtils.runBentoService(BentoService.this);
@@ -72,54 +76,44 @@ public class BentoService extends Service {
         return (START_NOT_STICKY);
     }
 
-    public static void init() {
-        date = BentoNowUtils.getTodayDate();
-        Log.i(TAG, "init");
+    private void startTask() {
+        getHandler().postDelayed(getLoadingTask(), 1000 * 60);
     }
 
-    void startTask() {
-        task = new Runnable() {
-            public void run() {
-                loadData();
-            }
-        };
-        handler = new Handler();
+    private void loadData() {
+        if (bSendRequest) {
+            bSendRequest = false;
 
-        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_APP_IN_FRONT)) {
-            handler.postDelayed(task, 1000 * 90);
-            DebugUtils.logDebug(TAG, "startTask");
-        } else {
-            DebugUtils.logError(TAG, "Task Stop: " + "appIsNotInFront");
+            BentoRestClient.get("/init/" + BentoNowUtils.getTodayDate(), null, new TextHttpResponseHandler() {
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    Log.e(TAG, "cannot loadData");
+                    onFinish();
+                }
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                    if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_APP_IN_FRONT)) {
+                        set(responseString);
+                    } else {
+                        DebugUtils.logError(TAG, "Task Stop: " + "appIsNotInFront");
+                    }
+
+                    onFinish();
+                }
+
+                @Override
+                public void onFinish() {
+                    bSendRequest = true;
+                    startTask();
+                    super.onFinish();
+                }
+            });
+
         }
-
     }
 
-    void loadData() {
-        String currDate = BentoNowUtils.getTodayDate();
-        Log.i(TAG, "loadData" + " current date: " + currDate);
-
-        if (!date.equals(currDate)) {
-            BentoNowUtils.openMainActivity(this);
-        }
-
-        //noinspection deprecation
-        BentoRestClient.get("/init/" + BentoNowUtils.getTodayDate(), null, new TextHttpResponseHandler() {
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Log.e(TAG, "cannot loadData");
-                onDestroy();
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                set(responseString);
-            }
-        });
-        startTask();
-
-    }
-
-    void set(String responseString) {
+    private void set(String responseString) {
 
         try {
             Stock.set(responseString);
@@ -127,35 +121,59 @@ public class BentoService extends Service {
             Settings.set(responseString);
             Menu.set(responseString);
 
-            DebugUtils.logDebug(TAG, "set To Current Status: " + Settings.status);
 
             Menu mMenu = Menu.get();
 
-            if (!Settings.status.equals(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS))) {
+            if (mMenu == null) {
                 SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_STORE_CHANGIN, true);
-                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
-                switch (Settings.status) {
-                    case "open":
-                        BentoNowUtils.openMainActivity(this);
-                        break;
-                    case "sold out":
-                    case "closed":
-                        BentoNowUtils.openErrorActivity(this);
-                        break;
-                }
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, "closed");
+                BentoNowUtils.openErrorActivity(this);
             } else {
-                if (Order.current != null)
-                    if (!Order.current.MealName.equals(mMenu.meal_name) || !Order.current.MenuType.equals(mMenu.menu_type)) {
-                        DebugUtils.logDebug(TAG, "New Menu: " + mMenu.meal_name + "||" + mMenu.menu_type);
-                        WidgetsUtils.createShortToast(R.string.error_new_menu_type);
-                        Order.cleanUp();
-                        BentoNowUtils.openBuildBentoActivity(this);
+                if (!Settings.status.equals(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS))) {
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_STORE_CHANGIN, true);
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+                    switch (Settings.status) {
+                        case "open":
+                            BentoNowUtils.openMainActivity(this);
+                            break;
+                        case "sold out":
+                        case "closed":
+                            BentoNowUtils.openErrorActivity(this);
+                            break;
                     }
+                    DebugUtils.logDebug(TAG, "set To Current Status: " + Settings.status);
+                } else {
+                    if (Order.current != null && mMenu != null)
+                        if (!Order.current.MealName.equals(mMenu.meal_name) || !Order.current.MenuType.equals(mMenu.menu_type)) {
+                            DebugUtils.logDebug(TAG, "New Menu: " + mMenu.meal_name + "||" + mMenu.menu_type);
+                            WidgetsUtils.createShortToast(R.string.error_new_menu_type);
+                            Order.cleanUp();
+                            BentoNowUtils.openBuildBentoActivity(this);
+                        }
+                }
             }
-
         } catch (Exception ex) {
             DebugUtils.logError(TAG, ex);
         }
     }
 
+    private Runnable getLoadingTask() {
+        if (task == null) {
+            task = new Runnable() {
+                public void run() {
+                    loadData();
+                    DebugUtils.logDebug(TAG, "Task Start");
+                }
+            };
+        }
+        return task;
+    }
+
+    private Handler getHandler() {
+        if (handler == null)
+            handler = new Handler();
+
+        handler.removeCallbacks(getLoadingTask());
+        return handler;
+    }
 }

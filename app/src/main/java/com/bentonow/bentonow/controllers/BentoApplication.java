@@ -53,7 +53,6 @@ public class BentoApplication extends Application {
             MixpanelUtils.logInUser();
             FacebookSdk.sdkInitialize(this);
             Fabric.with(this, new Crashlytics());
-            BentoService.init();
             BentoRestClient.init();
         } catch (Exception e) {
             DebugUtils.logError(TAG, e);
@@ -100,7 +99,6 @@ public class BentoApplication extends Application {
         super.attachBaseContext(base);
         MultiDex.install(this);
     }
-
 
 
     public void doInBackground(Runnable runnable) {
