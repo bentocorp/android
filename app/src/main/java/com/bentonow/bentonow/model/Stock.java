@@ -40,8 +40,9 @@ public class Stock {
     public static boolean isSold(int itemId, boolean countCurrent) {
         int min = countCurrent ? 0 : -1;
         for (Stock stock : list) {
-            if (stock.itemId == itemId && stock.qty > 0 && (stock.qty - Order.countItemsById(itemId)) > min)
-                return false;
+            if (stock.itemId == itemId && stock.qty > 0)
+                if (stock.qty - Order.countItemsById(itemId) > min)
+                    return false;
         }
 
         return true;

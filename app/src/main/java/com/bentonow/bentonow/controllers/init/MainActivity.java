@@ -16,6 +16,7 @@ import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.GoogleLocationUtil;
+import com.bentonow.bentonow.Utils.ImageUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
@@ -64,6 +65,7 @@ public class MainActivity extends BaseFragmentActivity {
         }
 
         Order.cleanUp();
+        ImageUtils.clearCacheFromImages();
     }
 
     @Override
