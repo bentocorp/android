@@ -47,7 +47,7 @@ public class BentoNowUtils {
 
     public static final SimpleDateFormat sdfBento = new SimpleDateFormat("yyyyMMdd");
     public static final boolean B_APPIUM_TESTING = false;
-    public static final boolean B_KOKUSHO_TESTING = true;
+    public static final boolean B_KOKUSHO_TESTING = false;
 
 
     public static int getCurrentTime() {

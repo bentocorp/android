@@ -2,7 +2,8 @@ package com.bentonow.bentonow.Utils;
 
 import android.util.Log;
 
-import com.bentonow.bentonow.BuildConfig;
+import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.controllers.BentoApplication;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -57,7 +58,8 @@ public class BentoRestClient {
     }
 
     static final String TAG = "BentoRestClient";
-    static final String BASE_URL = BuildConfig.DEBUG ? "https://api2.dev.bentonow.com" : "https://api2.bentonow.com";
+    //static final String BASE_URL = BuildConfig.DEBUG ? "https://api2.dev.bentonow.com" : "https://api2.bentonow.com";
+    static final String BASE_URL = BentoApplication.instance.getString(R.string.server_api_url);
 
     static AsyncHttpClient client = new AsyncHttpClient();
 
