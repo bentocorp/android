@@ -13,6 +13,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
@@ -64,6 +65,10 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
     View container_discount;
 
     BackendButton btn_delete;
+    TextView btn_add_promo_code;
+    TextView txtPromoTotal;
+
+    private RelativeLayout layoutWrapperDiscount;
     private CouponDialog mDialogCoupon;
     private ConfirmationDialog mDialog;
     private ProgressDialog mProgressDialog;
@@ -467,7 +472,18 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
     void updateUI() {
         Order.calculate();
 
-        container_discount.setVisibility(Order.current.OrderDetails.coupon_discount_cents <= 0 ? View.GONE : View.VISIBLE);
+        if (Order.current.OrderDetails.coupon_discount_cents > 0) {
+            getBtnAddPromoCode().setTextColor(getResources().getColor(R.color.orange));
+            getBtnAddPromoCode().setText("REMOVE PROMO");
+            getTxtPromoTotal().setText(String.format(getString(R.string.money_format), (Order.current.OrderDetails.coupon_discount_cents + Order.current.OrderDetails.total_cents) / 100));
+            getLayoutWrapperDiscount().setVisibility(View.VISIBLE);
+            container_discount.setVisibility(View.VISIBLE);
+        } else {
+            getBtnAddPromoCode().setText(BackendText.get("complete-add-promo"));
+            getBtnAddPromoCode().setTextColor(getResources().getColor(R.color.btn_green));
+            getLayoutWrapperDiscount().setVisibility(View.GONE);
+            container_discount.setVisibility(View.GONE);
+        }
 
         txt_address.setText(Order.getStreetAddress());
         txt_credit_card.setText(User.current.card.last4);
@@ -583,25 +599,30 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
     }
 
     public void showAddPromoCodeDialog(View v) {
-        mDialogCoupon = new CouponDialog(this);
-        mDialogCoupon.setmDialogListener(new ListenerDialog() {
-            @Override
-            public void btnOkClick(final String sPromoCode) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        requestPromoCode(sPromoCode);
-                    }
-                });
-            }
+        if (Order.current.OrderDetails.coupon_discount_cents > 0) {
+            Order.current.OrderDetails.coupon_discount_cents = 0;
+            updateUI();
+        } else {
+            mDialogCoupon = new CouponDialog(this);
+            mDialogCoupon.setmDialogListener(new ListenerDialog() {
+                @Override
+                public void btnOkClick(final String sPromoCode) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            requestPromoCode(sPromoCode);
+                        }
+                    });
+                }
 
-            @Override
-            public void btnOnCancel() {
+                @Override
+                public void btnOnCancel() {
 
-            }
-        });
+                }
+            });
 
-        mDialogCoupon.show();
+            mDialogCoupon.show();
+        }
     }
 
     private void dismissDialog() {
@@ -623,6 +644,24 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
             txt_delivery_price = (TextView) findViewById(R.id.txt_delivery_price);
 
         return txt_delivery_price;
+    }
+
+    private TextView getBtnAddPromoCode() {
+        if (btn_add_promo_code == null)
+            btn_add_promo_code = (TextView) findViewById(R.id.btn_add_promo_code);
+        return btn_add_promo_code;
+    }
+
+    private RelativeLayout getLayoutWrapperDiscount() {
+        if (layoutWrapperDiscount == null)
+            layoutWrapperDiscount = (RelativeLayout) findViewById(R.id.layout_wrapper_discount);
+        return layoutWrapperDiscount;
+    }
+
+    private TextView getTxtPromoTotal() {
+        if (txtPromoTotal == null)
+            txtPromoTotal = (TextView) findViewById(R.id.txt_promo_total);
+        return txtPromoTotal;
     }
 
 

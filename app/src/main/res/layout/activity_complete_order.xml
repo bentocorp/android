@@ -196,8 +196,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:padding="@dimen/btn_padding"
-                    android:textColor="@color/dark_gray"
-                    android:text="Delivery Fee"/>
+                    android:text="Delivery Fee"
+                    android:textColor="@color/dark_gray" />
 
                 <TextView
                     android:id="@+id/txt_delivery_price"
@@ -273,7 +273,6 @@
                 android:layout_width="fill_parent"
                 android:layout_height="1px"
                 android:background="@color/divisor" />
-
 
 
             <!-- ORDER ITEMS / ITEM -->
@@ -352,47 +351,76 @@
                 android:layout_height="1px"
                 android:background="@color/divisor" />
             <!-- ORDER ITEMS / ITEM -->
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/row_total"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:baselineAligned="false"
-                android:orientation="horizontal">
+                android:background="@color/white">
 
                 <com.bentonow.bentonow.ui.BackendTextView
+                    android:id="@+id/view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
                     android:padding="@dimen/btn_padding"
                     android:textColor="@color/dark_gray"
                     app:key="complete-total" />
 
-                <com.bentonow.bentonow.ui.BackendButton
+                <TextView
+                    android:id="@+id/btn_add_promo_code"
                     style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/view"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@+id/view"
                     android:background="@null"
                     android:gravity="center_vertical"
                     android:onClick="showAddPromoCodeDialog"
                     android:padding="@dimen/btn_padding"
                     android:textColor="@color/btn_green"
                     android:textSize="@dimen/text_very_very_small"
-                    android:textStyle="bold"
-                    app:key="complete-add-promo" />
+                    android:textStyle="bold" />
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="fill_parent"
-                    android:layout_weight="1"></LinearLayout>
+
+                <RelativeLayout
+                    android:id="@+id/layout_wrapper_discount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toStartOf="@+id/txt_total">
+
+                    <TextView
+                        android:id="@+id/txt_promo_total"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/btn_padding"
+                        android:text="@string/zero_dollar"
+                        android:textColor="@color/orange" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="1dp"
+                        android:layout_alignLeft="@+id/txt_promo_total"
+                        android:layout_alignRight="@+id/txt_promo_total"
+                        android:layout_centerInParent="true"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:src="@color/orange" />
+                </RelativeLayout>
+
 
                 <TextView
                     android:id="@+id/txt_total"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
                     android:padding="@dimen/btn_padding"
                     android:text="@string/zero_dollar"
                     android:textColor="@color/dark_gray" />
-            </LinearLayout>
+            </RelativeLayout>
 
         </LinearLayout>
 
