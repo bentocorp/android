@@ -15,6 +15,7 @@ import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.GoogleLocationUtil;
 import com.bentonow.bentonow.Utils.ImageUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
@@ -33,6 +34,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.apache.http.Header;
+import org.json.JSONObject;
 
 
 public class MainActivity extends BaseFragmentActivity {
@@ -213,6 +215,7 @@ public class MainActivity extends BaseFragmentActivity {
     }
 
     void goNext() {
+        trackAppOpen();
         Menu mCurrentMenu = Menu.get();
 
         if (mCurrentMenu == null || !Settings.status.equals("open")) {
@@ -232,9 +235,14 @@ public class MainActivity extends BaseFragmentActivity {
 
     }
 
-    private void openNextScreen(Intent iNextScreen) {
-        startActivity(iNextScreen);
-        finish();
+    private void trackAppOpen() {
+        try {
+            JSONObject params = new JSONObject();
+            params.put("coordinates", User.location == null ? "0.0,0.0" : User.location.latitude + "," + User.location.longitude);
+            MixpanelUtils.track("App Launched", params);
+        } catch (Exception e) {
+            DebugUtils.logError(TAG, "track(): " + e.toString());
+        }
     }
 
     private TextView getTxtVersion() {
