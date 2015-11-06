@@ -420,7 +420,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                         action = "sold_out";
                         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_ORDER_SOLD_OUT, true);
                         Stock.set(responseString);
-                        error += BentoNowUtils.calculateSoldOutItems();
+                        error += OrderDao.calculateSoldOutItems();
                         break;
                     case 423:
                         action = "closed";

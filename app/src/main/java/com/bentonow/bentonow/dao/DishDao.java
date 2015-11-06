@@ -22,19 +22,14 @@ public class DishDao {
 
 
     public static boolean isSoldOut(DishModel mDishModel, boolean countCurrent) {
-        boolean bSoldOut = Stock.isSold(mDishModel.itemId, countCurrent);
-
-        if (!bSoldOut)
-            DebugUtils.logDebug(TAG, "SoldOut " + mDishModel.name);
-
-        return bSoldOut;
+        return Stock.isSold(mDishModel.itemId, countCurrent);
     }
 
     public static boolean canBeAdded(DishModel mDishModel) {
         boolean bCanBeAdded = mDishModel.max_per_order > Order.countItemsById(mDishModel.itemId);
 
         if (!bCanBeAdded)
-            DebugUtils.logDebug(TAG, "canNotBeAdded " + mDishModel.name);
+            DebugUtils.logDebug(TAG, "canNotBeAdded " + mDishModel.name + " : Max Per Order:" + mDishModel.max_per_order);
 
         return bCanBeAdded;
     }
@@ -55,13 +50,13 @@ public class DishDao {
                 String ids = Arrays.toString(tryExcludeIds);
 
                 for (DishModel dishModel : aDishes) {
-                    if (dishModel.type.equals(type) && !DishDao.isSoldOut(dishModel, true) && DishDao.canBeAdded(dishModel) && !ids.contains("" + dishModel.itemId))
+                    if (dishModel.type.equals(type) && !isSoldOut(dishModel, true) && canBeAdded(dishModel) && !ids.contains("" + dishModel.itemId))
                         return dishModel;
                 }
             }
 
             for (DishModel dishModel : aDishes) {
-                if (dishModel.type.equals(type) && !DishDao.isSoldOut(dishModel, true) && DishDao.canBeAdded(dishModel))
+                if (dishModel.type.equals(type) && !isSoldOut(dishModel, true) && canBeAdded(dishModel))
                     return dishModel;
             }
         }

@@ -21,14 +21,11 @@ import com.bentonow.bentonow.controllers.payment.EnterCreditCardActivity;
 import com.bentonow.bentonow.controllers.session.EnterPhoneNumberActivity;
 import com.bentonow.bentonow.controllers.session.SettingsActivity;
 import com.bentonow.bentonow.controllers.session.SignInActivity;
-import com.bentonow.bentonow.dao.DishDao;
 import com.bentonow.bentonow.model.BackendText;
-import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
-import com.bentonow.bentonow.model.order.OrderItem;
 import com.bentonow.bentonow.service.BentoService;
 import com.facebook.GraphResponse;
 import com.google.gson.Gson;
@@ -260,36 +257,6 @@ public class BentoNowUtils {
         }
     }
 
-    public static String calculateSoldOutItems() {
-        String sSoldOutItems = "";
-
-        for (int a = 0; a < Order.current.OrderItems.size(); a++) {
-            boolean bIsSoldOut = false;
-            for (DishModel mDishModel : Order.current.OrderItems.get(a).items) {
-                if (DishDao.isSoldOut(mDishModel, true)) {
-                    bIsSoldOut = true;
-                    if (!sSoldOutItems.contains(mDishModel.name))
-                        sSoldOutItems += "\n- " + mDishModel.name;
-                    DebugUtils.logDebug("calculateSoldOutItems:", mDishModel.name);
-                }
-            }
-
-            Order.current.OrderItems.get(a).bIsSoldoOut = bIsSoldOut;
-        }
-        return sSoldOutItems;
-    }
-
-    public static boolean isSoldOutOrder(OrderItem mOrder) {
-        boolean bIsSoldOut = false;
-        for (DishModel mDishModel : mOrder.items) {
-            if (DishDao.isSoldOut(mDishModel, false)) {
-                bIsSoldOut = true;
-                DebugUtils.logDebug("calculateSoldOutItems:", mDishModel.name);
-            }
-        }
-
-        return bIsSoldOut;
-    }
 
     public static void rotateBanner(View mView) {
         Animation an = new RotateAnimation(0.0f, 45.0f, Animation.RELATIVE_TO_SELF, 0.75f, Animation.RELATIVE_TO_SELF, 0.75f);

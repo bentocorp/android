@@ -16,6 +16,7 @@ import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.dao.DishDao;
+import com.bentonow.bentonow.dao.OrderDao;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
@@ -339,7 +340,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
                 startActivity(intent);
             }
         } else if (BentoNowUtils.isValidCompleteOrder(BuildBentoActivity.this)) {
-            String sSoldOutItems = BentoNowUtils.calculateSoldOutItems();
+            String sSoldOutItems = OrderDao.calculateSoldOutItems();
             if (sSoldOutItems.isEmpty()) {
                 Order.current.OrderItems.get(orderIndex).bIsSoldoOut = false;
                 track();

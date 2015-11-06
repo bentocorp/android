@@ -2,6 +2,7 @@ package com.bentonow.bentonow.model;
 
 import android.util.Log;
 
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -38,15 +39,21 @@ public class Stock {
     }
 
     public static boolean isSold(int itemId, boolean countCurrent) {
-        int min = countCurrent ? 0 : -1;
-        for (Stock stock : list) {
-            if (stock.itemId == itemId && stock.qty > 0)
-                if (stock.qty - Order.countItemsById(itemId) > min)
-                    return false;
-        }
+        int iCurrent = countCurrent ? 1 : 0;
 
-        return true;
+        for (Stock stock : list) {
+            if (stock.itemId == itemId) {
+                int iCurrentStock = stock.qty - (Order.countItemsById(itemId) + iCurrent);
+                if (iCurrentStock < 0) {
+                    DebugUtils.logDebug(TAG, "isSold: " + itemId + ": " + " QTY:" + stock.qty + " Stock:" + iCurrentStock);
+                    return true;
+                } else
+                    return false;
+            }
+        }
+        return false;
     }
+
 
     public static boolean isSold(String type) {
         int sold = 0;
