@@ -35,7 +35,7 @@ public class UserDao {
     public static void login(User mUser, TextHttpResponseHandler responseHandler) {
         mUser.card = null;
 
-        String endpoint = mUser.password != null ? "/user/login" : "/user/fblogin";
+        String endpoint = mUser.password != null && !mUser.password.isEmpty() ? "/user/login" : "/user/fblogin";
         String data = new Gson().toJson(mUser);
 
         RequestParams params = new RequestParams();
@@ -49,7 +49,7 @@ public class UserDao {
     public static void register(User mUser, TextHttpResponseHandler responseHandler) {
         mUser.card = null;
 
-        String endpoint = mUser.password != null ? "/user/signup" : "/user/fbsignup";
+        String endpoint = mUser.password != null && !mUser.password.isEmpty() ? "/user/signup" : "/user/fbsignup";
         String data = new Gson().toJson(mUser).replace("\"firstname\":", "\"name\":");
 
         RequestParams params = new RequestParams();

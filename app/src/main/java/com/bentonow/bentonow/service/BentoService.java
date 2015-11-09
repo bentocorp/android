@@ -125,9 +125,11 @@ public class BentoService extends Service {
             Menu mMenu = Menu.get();
 
             if (mMenu == null) {
-                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_STORE_CHANGIN, true);
-                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, "closed");
-                BentoNowUtils.openErrorActivity(this);
+                if (!SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS).equals("closed")) {
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_STORE_CHANGIN, true);
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, "closed");
+                    BentoNowUtils.openErrorActivity(this);
+                }
             } else {
                 if (!Settings.status.equals(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS))) {
                     SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_STORE_CHANGIN, true);
