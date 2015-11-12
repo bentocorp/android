@@ -4,13 +4,7 @@ import com.bentonow.bentonow.model.user.Card;
 import com.google.android.gms.maps.model.LatLng;
 
 public class User {
-    //region STATIC VARIABLES
-    static final String TAG = "model.User";
-    public static User current = null;
-    public static LatLng location;
-    //endregion
-
-    //region VARIABLES
+    public static final String TAG = "UserModel";
     public String firstname = "";
     public String lastname = "";
     public String email = "";
@@ -28,8 +22,6 @@ public class User {
     public String password = "";
 
     public Card card = new Card();
-    //endregion
-
 
     @Override
     public String toString() {

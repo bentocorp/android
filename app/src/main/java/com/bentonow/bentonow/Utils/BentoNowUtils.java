@@ -21,6 +21,7 @@ import com.bentonow.bentonow.controllers.payment.EnterCreditCardActivity;
 import com.bentonow.bentonow.controllers.session.EnterPhoneNumberActivity;
 import com.bentonow.bentonow.controllers.session.SettingsActivity;
 import com.bentonow.bentonow.controllers.session.SignInActivity;
+import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
@@ -28,6 +29,7 @@ import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.service.BentoService;
 import com.facebook.GraphResponse;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 
 import java.text.DateFormat;
@@ -48,7 +50,6 @@ public class BentoNowUtils {
     public static final SimpleDateFormat sdfBento = new SimpleDateFormat("yyyyMMdd");
     public static final boolean B_APPIUM_TESTING = false;
     public static final boolean B_KOKUSHO_TESTING = false;
-
 
     public static int getCurrentTime() {
         if (BuildConfig.DEBUG && BentoNowUtils.B_KOKUSHO_TESTING)
@@ -84,6 +85,7 @@ public class BentoNowUtils {
 
     public static void openMainActivity(Context mContext) {
         if (!MainActivity.bIsOpen && SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_APP_IN_FRONT)) {
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_STORE_CHANGIN, true);
             Intent intent = new Intent(mContext, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(intent);
@@ -112,8 +114,9 @@ public class BentoNowUtils {
 
     public static void openErrorActivity(Context mContext) {
         if (!ErrorActivity.bIsOpen && SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_APP_IN_FRONT)) {
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_STORE_CHANGIN, true);
             Intent intent = new Intent(mContext, ErrorActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             mContext.startActivity(intent);
             Order.cleanUp();
         }
@@ -208,13 +211,10 @@ public class BentoNowUtils {
 
     public static void saveSettings(ConstantUtils.optSaveSettings optSave) {
         Gson gson = new Gson();
-        String user = "";
         String location = "";
         String address = "";
         String backendText = gson.toJson(BackendText.list);
 
-        if (User.current != null)
-            user = gson.toJson(User.current);
         if (Order.location != null)
             location = gson.toJson(Order.location);
         if (Order.address != null)
@@ -222,15 +222,11 @@ public class BentoNowUtils {
 
         switch (optSave) {
             case ALL:
-                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.USER, user);
                 SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.LOCATION, location);
                 SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ADDRESS, address);
 
                 if (BackendText.list != null && BackendText.list.size() > 0)
                     SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.BACKENDTEXT, backendText);
-                break;
-            case USER:
-                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.USER, user);
                 break;
             case LOCATION:
                 SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.LOCATION, location);
@@ -245,18 +241,6 @@ public class BentoNowUtils {
         }
 
     }
-
-    public static void updateUser(User mUserInfo) {
-        Gson gson = new Gson();
-        String user;
-
-        if (User.current != null) {
-            User.current.coupon_code = mUserInfo.coupon_code;
-            user = gson.toJson(User.current);
-            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.USER, user);
-        }
-    }
-
 
     public static void rotateBanner(View mView) {
         Animation an = new RotateAnimation(0.0f, 45.0f, Animation.RELATIVE_TO_SELF, 0.75f, Animation.RELATIVE_TO_SELF, 0.75f);
@@ -329,22 +313,29 @@ public class BentoNowUtils {
     public static boolean isValidCompleteOrder(Context mContext) {
         boolean bIsValid = true;
 
-        if (User.current == null) {
+        UserDao userDao = new UserDao();
+        User mUser = userDao.getCurrentUser();
+
+        if (mUser == null) {
             mContext.startActivity(new Intent(mContext, SignInActivity.class));
             bIsValid = false;
-        } else if (User.location == null || !Settings.isInServiceArea(User.location) || Order.address == null) {
+        } else if (LocationUtils.mCurrentLocation == null || !Settings.isInServiceArea(LocationUtils.mCurrentLocation) || Order.address == null) {
             WidgetsUtils.createShortToast(mContext.getString(R.string.error_no_valid_delivery_address));
 
             Intent intent = new Intent(mContext, DeliveryLocationActivity.class);
             intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.COMPLETE_ORDER);
             mContext.startActivity(intent);
             bIsValid = false;
-        } else if (User.current.card == null || User.current.card.last4 == null || User.current.card.last4.isEmpty()) {
+        } else if (!userDao.isCreditCardValid(mUser)) {
             mContext.startActivity(new Intent(mContext, EnterCreditCardActivity.class));
             bIsValid = false;
         }
 
         return bIsValid;
+    }
+
+    public static void openFirstScreen(){
+
     }
 
 }

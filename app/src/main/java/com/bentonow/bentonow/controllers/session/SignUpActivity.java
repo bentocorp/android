@@ -28,6 +28,7 @@ import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.User;
+import com.bentonow.bentonow.web.request.UserRequest;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -50,7 +51,6 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
 
     static final String TAG = "SignUpActivity";
 
-    //region Variables
     View container_alert;
     TextView txt_message;
 
@@ -71,11 +71,12 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
 
     CallbackManager callbackManager;
 
+    private UserDao userDao = new UserDao();
+
     String error = "";
 
     boolean beganRegistration = false;
     private User registerUser;
-    //endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -219,15 +220,13 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
             if (registerUser != null) {
                 User mUser = new Gson().fromJson(responseString, User.class);
                 registerUser.api_token = mUser.api_token;
-                User.current = registerUser;
             } else {
-                User.current = new Gson().fromJson(responseString, User.class);
+                registerUser = new Gson().fromJson(responseString, User.class);
             }
 
-            MixpanelUtils.signUpUser();
+            userDao.insertUser(registerUser);
 
-            BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.USER);
-
+            MixpanelUtils.signUpUser(registerUser);
 
             if (getIntent().getBooleanExtra("settings", false)) {
                 onBackPressed();
@@ -340,7 +339,7 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
         mProgressDialog = new ProgressDialog(SignUpActivity.this, BackendText.get("sign-in-sign-up-link"));
         mProgressDialog.show();
 
-        UserDao.register(registerUser, new TextHttpResponseHandler() {
+        UserRequest.register(registerUser, new TextHttpResponseHandler() {
             @SuppressWarnings("deprecation")
             @Override
             public void onFailure(int statusCode, Header[] headers, String
@@ -458,7 +457,7 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
             loginUser.email = user.getString("email");
             loginUser.fb_token = AccessToken.getCurrentAccessToken().getToken();
 
-            UserDao.login(loginUser, new TextHttpResponseHandler() {
+            UserRequest.login(loginUser, new TextHttpResponseHandler() {
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {

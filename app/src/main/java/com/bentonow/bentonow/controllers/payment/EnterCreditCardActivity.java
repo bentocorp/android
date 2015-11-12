@@ -21,6 +21,7 @@ import com.bentonow.bentonow.Utils.CreditCard;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
+import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
@@ -52,6 +53,9 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
     private ConfirmationDialog mDialog;
     private ProgressDialog mProgressDialog;
 
+    private UserDao userDao = new UserDao();
+    private User mCurrentUser;
+
     int focused = R.id.txt_number;
 
     @Override
@@ -59,6 +63,8 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_enter_credit_card);
+
+        mCurrentUser = userDao.getCurrentUser();
 
         img_credit_card = (ImageView) findViewById(R.id.img_credit_card);
 
@@ -416,29 +422,26 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
             mProgressDialog = new ProgressDialog(EnterCreditCardActivity.this, R.string.processing_label);
             mProgressDialog.show();
 
-            new Stripe().createToken(
-                    card,
-                    getResources().getString(R.string.stripe_key),
-                    new TokenCallback() {
-                        public void onSuccess(Token token) {
-                            User.current.stripe_token = token.getId();
-                            if (User.current.card == null)
-                                User.current.card = new com.bentonow.bentonow.model.user.Card();
-                            User.current.card.last4 = txt_last4.getText().toString();
-                            User.current.card.brand = CreditCard.getHolder(txt_number.getText().toString());
-                            BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.USER);
-                            dismissDialog();
-                            BentoNowUtils.openCompleteOrderActivity(EnterCreditCardActivity.this);
-                            finish();
-                        }
+            new Stripe().createToken(card, getResources().getString(R.string.stripe_key), new TokenCallback() {
+                public void onSuccess(Token token) {
+                    mCurrentUser.stripe_token = token.getId();
+                    mCurrentUser.card.last4 = txt_last4.getText().toString();
+                    mCurrentUser.card.brand = CreditCard.getHolder(txt_number.getText().toString());
 
-                        public void onError(Exception error) {
-                            dismissDialog();
-                            mDialog = new ConfirmationDialog(EnterCreditCardActivity.this, "Error", error.getLocalizedMessage());
-                            mDialog.addAcceptButton("OK", null);
-                            mDialog.show();
-                        }
-                    });
+                    userDao.updateUser(mCurrentUser);
+
+                    dismissDialog();
+                    BentoNowUtils.openCompleteOrderActivity(EnterCreditCardActivity.this);
+                    finish();
+                }
+
+                public void onError(Exception error) {
+                    dismissDialog();
+                    mDialog = new ConfirmationDialog(EnterCreditCardActivity.this, "Error", error.getLocalizedMessage());
+                    mDialog.addAcceptButton("OK", null);
+                    mDialog.show();
+                }
+            });
         }
     }
 

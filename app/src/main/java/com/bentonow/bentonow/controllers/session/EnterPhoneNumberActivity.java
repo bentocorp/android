@@ -19,6 +19,7 @@ import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
+import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.ui.BackendButton;
@@ -38,30 +39,32 @@ public class EnterPhoneNumberActivity extends BaseFragmentActivity implements Vi
 
     public static final String TAG_FB_USER = "Facebook_User";
 
-    User user;
-    BackendButton btn_done;
-    EditText txt_phone;
-    ImageView img_phone;
+    private BackendButton btn_done;
+    private EditText txt_phone;
+    private ImageView img_phone;
     private TextView textPrivacyPolicy;
     private TextView textConfirmationTerms;
+
+    private UserDao userDao = new UserDao();
+    private User mCurrentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enter_phone_number);
-        user = new User();
+        mCurrentUser = new User();
 
         try {
             JSONObject fbUser = new JSONObject(getIntent().getStringExtra(TAG_FB_USER));
 
-            user.firstname = fbUser.getString("first_name");
-            user.lastname = fbUser.getString("last_name");
-            user.email = fbUser.getString("email");
-            user.fb_token = AccessToken.getCurrentAccessToken().getToken();
-            user.fb_id = fbUser.getString("id");
-            user.fb_profile_pic = "https://graph.facebook.com/" + user.fb_id + "/picture?width=400";
-            user.fb_gender = fbUser.getString("gender");
-            user.fb_age_range = "";
+            mCurrentUser.firstname = fbUser.getString("first_name");
+            mCurrentUser.lastname = fbUser.getString("last_name");
+            mCurrentUser.email = fbUser.getString("email");
+            mCurrentUser.fb_token = AccessToken.getCurrentAccessToken().getToken();
+            mCurrentUser.fb_id = fbUser.getString("id");
+            mCurrentUser.fb_profile_pic = "https://graph.facebook.com/" + mCurrentUser.fb_id + "/picture?width=400";
+            mCurrentUser.fb_gender = fbUser.getString("gender");
+            mCurrentUser.fb_age_range = "";
 
 
         } catch (JSONException ignore) {
@@ -183,10 +186,10 @@ public class EnterPhoneNumberActivity extends BaseFragmentActivity implements Vi
         if (!isValid())
             return;
 
-        user.phone = BentoNowUtils.getNumberFromPhone(txt_phone.getText().toString());
+        mCurrentUser.phone = BentoNowUtils.getNumberFromPhone(txt_phone.getText().toString());
 
         RequestParams params = new RequestParams();
-        params.put("data", new Gson().toJson(user));
+        params.put("data", new Gson().toJson(mCurrentUser));
 
         BentoRestClient.post("/user/fbsignup", params, new TextHttpResponseHandler() {
             @SuppressWarnings("deprecation")
@@ -217,13 +220,14 @@ public class EnterPhoneNumberActivity extends BaseFragmentActivity implements Vi
 
                 try {
                     User mNewUser = new Gson().fromJson(responseString, User.class);
-                    user.api_token = mNewUser.api_token;
-                    User.current = user;
+                    mCurrentUser.api_token = mNewUser.api_token;
+
+                    userDao.insertUser(mCurrentUser);
 
                     MixpanelUtils.track("Completed Registration");
 
-                    BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.USER);
                 } catch (Exception ex) {
+                    DebugUtils.logError(TAG, ex);
                     WidgetsUtils.createShortToast(R.string.error_sign_up_user);
                 }
 

@@ -14,6 +14,8 @@ import java.util.List;
  */
 public class LocationUtils {
 
+    public static LatLng mCurrentLocation;
+
     public static String getFullAddress(Address mAddress) {
         if (mAddress == null)
             return "";

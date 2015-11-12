@@ -61,8 +61,6 @@ public class Settings {
             tzName = jsonSettings.getString("tzName");
             min_version = new JSONObject(data).getInt("android_min_version");
 
-            DebugUtils.logDebug(TAG, "Settings: " + jsonSettings);
-
             JSONObject meal = new JSONObject(data).getJSONObject("meals");
             Gson gson = new Gson();
 
@@ -122,13 +120,10 @@ public class Settings {
     }
 
     public static void load() {
-        String user = SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.USER);
         String location = SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.LOCATION);
         String address = SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.ADDRESS);
         String backendText = SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.BACKENDTEXT);
 
-        if (User.current == null && !user.isEmpty())
-            User.current = new Gson().fromJson(user, User.class);
         if (Order.location == null && !location.isEmpty())
             Order.location = new Gson().fromJson(location, LatLng.class);
         if (Order.address == null && !address.isEmpty())

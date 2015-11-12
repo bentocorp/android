@@ -22,6 +22,7 @@ import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
+import com.bentonow.bentonow.web.request.UserRequest;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.apache.http.Header;
@@ -77,9 +78,6 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
             }
 
         }
-
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
-
         setupNextMenu();
 
         super.onResume();
@@ -159,7 +157,7 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
             mDialog.addAcceptButton("OK", null);
             mDialog.show();
         } else {
-            UserDao.requestCoupon(User.current, getEditTxtEmail().getText().toString(), Settings.status, new TextHttpResponseHandler() {
+            UserRequest.requestCoupon(getEditTxtEmail().getText().toString(), Settings.status, new TextHttpResponseHandler() {
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {

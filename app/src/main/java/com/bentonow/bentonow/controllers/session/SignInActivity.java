@@ -29,6 +29,7 @@ import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.User;
+import com.bentonow.bentonow.web.request.UserRequest;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -61,6 +62,9 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
     ImageView img_password;
 
     Button btn_signin;
+
+    private UserDao userDao = new UserDao();
+    private User mCurrentUser;
 
     CallbackManager callbackManager;
     private ConfirmationDialog mDialog;
@@ -162,10 +166,12 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
 
         try {
             Log.i(TAG, "onSignInSuccess: " + responseString);
-            User.current = new Gson().fromJson(responseString, User.class);
-            Log.i(TAG, "After Gson: " + User.current.api_token);
+            mCurrentUser = new Gson().fromJson(responseString, User.class);
+            userDao.insertUser(mCurrentUser);
 
-            MixpanelUtils.logInUser();
+            Log.i(TAG, "After Gson: " + mCurrentUser.api_token);
+
+            MixpanelUtils.logInUser(mCurrentUser);
 
             if (getIntent().getBooleanExtra("settings", false)) {
                 onBackPressed();
@@ -255,7 +261,7 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
         mProgressDialog = new ProgressDialog(SignInActivity.this, BackendText.get("sign-up-sign-in-link"));
         mProgressDialog.show();
 
-        UserDao.login(loginUser, new TextHttpResponseHandler() {
+        UserRequest.login(loginUser, new TextHttpResponseHandler() {
             @SuppressWarnings("deprecation")
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
@@ -362,7 +368,7 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
             loginUser.email = user.getString("email");
             loginUser.fb_token = AccessToken.getCurrentAccessToken().getToken();
 
-            UserDao.login(loginUser, new TextHttpResponseHandler() {
+            UserRequest.login(loginUser, new TextHttpResponseHandler() {
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {

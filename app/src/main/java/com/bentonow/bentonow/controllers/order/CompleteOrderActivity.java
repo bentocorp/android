@@ -32,6 +32,7 @@ import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.payment.EnterCreditCardActivity;
 import com.bentonow.bentonow.controllers.session.SignInActivity;
 import com.bentonow.bentonow.dao.OrderDao;
+import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.listener.ListenerDialog;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
@@ -75,10 +76,14 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
     LayoutInflater inflater;
 
+    private UserDao userDao = new UserDao();
+    private User mCurrentUser;
+
     boolean edit = false;
     int selected = -1;
     LazyListAdapter adapter;
     String action = "";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +91,8 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         setContentView(R.layout.activity_complete_order);
 
         Order.clearIncomplete();
+
+        mCurrentUser = userDao.getCurrentUser();
 
         txt_address = (TextView) findViewById(R.id.txt_address);
         txt_credit_card = (TextView) findViewById(R.id.txt_credit_card);
@@ -143,7 +150,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
     @Override
     protected void onResume() {
         super.onResume();
-        if (User.current == null || Order.location == null || Order.address == null) {
+        if (mCurrentUser == null || Order.location == null || Order.address == null || Order.current == null) {
             if (Order.current == null || Order.current.OrderItems == null || Order.current.OrderItems.isEmpty())
                 emptyOrders();
             else
@@ -169,8 +176,8 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
             else
                 params.put("quantity", Order.current.OrderItems.size());
 
-            if (User.current != null)
-                params.put("payment method", User.current.card.brand);
+            if (mCurrentUser != null)
+                params.put("payment method", mCurrentUser.card.brand);
 
             params.put("total price", Order.current.OrderDetails.total_cents / 100);
             params.put("status", error == null ? "success" : "failure");
@@ -193,7 +200,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
             mProgressDialog.show();
 
             RequestParams params = new RequestParams();
-            params.put("api_token", User.current.api_token);
+            params.put("api_token", mCurrentUser.api_token);
             BentoRestClient.get("/coupon/apply/" + code, params, new TextHttpResponseHandler() {
                 @SuppressWarnings("deprecation")
                 @Override
@@ -223,7 +230,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
                     Log.i(TAG, "requestPromoCode success " + responseString);
 
-                    User.current.coupon_code = Order.current.CouponCode = code;
+                    mCurrentUser.coupon_code = Order.current.CouponCode = code;
                     int discount = 0;
 
                     try {
@@ -360,13 +367,13 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         mProgressDialog = new ProgressDialog(CompleteOrderActivity.this, R.string.processing_label);
         mProgressDialog.show();
 
-        Order.current.Stripe.stripeToken = User.current.stripe_token;
+        Order.current.Stripe.stripeToken = mCurrentUser.stripe_token;
         Order.current.IdempotentToken = BentoNowUtils.getUUIDBento();
         Order.current.Platform = "Android";
 
         RequestParams params = new RequestParams();
         params.put("data", Order.current.toString());
-        params.put("api_token", User.current.api_token);
+        params.put("api_token", mCurrentUser.api_token);
         //params.put("api_token", "bad token to force 401");
 
         if (Order.current.OrderItems == null || Order.current.OrderItems.isEmpty()) {
@@ -405,8 +412,10 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                     case 401:
                         DebugUtils.logError(TAG, "Invalid Api Token");
                         WidgetsUtils.createShortToast("You session is expired, please LogIn again");
-                        User.current = null;
-                        BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.USER);
+
+                        if (!userDao.removeUser())
+                            userDao.clearAllData();
+
                         startActivity(new Intent(CompleteOrderActivity.this, SignInActivity.class));
                         break;
                     case 402:
@@ -415,8 +424,8 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                         break;
                     case 406:
                         if (responseString.contains("You cannot use a Stripe token more than once")) {
-                            User.current.stripe_token = null;
-                            BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.USER);
+                            mCurrentUser.stripe_token = null;
+                            userDao.updateUser(mCurrentUser);
                             error = "";
                             onLetsEatPressed(null);
                         }
@@ -451,11 +460,11 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
                 track(null);
 
-                MixpanelUtils.trackRevenue((double) Order.current.OrderDetails.total_cents / 100);
+                MixpanelUtils.trackRevenue(Order.current.OrderDetails.total_cents / 100, mCurrentUser);
 
                 Log.i(TAG, "Order: " + responseString);
 
-                User.current.stripe_token = null;
+                mCurrentUser.stripe_token = null;
 
                 SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.UUID_BENTO, "");
                 BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);
@@ -486,7 +495,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         }
 
         txt_address.setText(Order.getStreetAddress());
-        txt_credit_card.setText(User.current.card.last4);
+        txt_credit_card.setText(mCurrentUser.card.last4);
 
         getTxtDeliveryPrice().setText(String.format(getString(R.string.money_format), (double) Order.current.OrderDetails.delivery_price));
         txt_discount.setText(String.format(getString(R.string.money_format), (double) Order.current.OrderDetails.coupon_discount_cents / 100));
@@ -497,7 +506,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
         int card;
 
-        switch (User.current.card.brand) {
+        switch (mCurrentUser.card.brand) {
             case "American Express":
                 card = R.drawable.card_amex;
                 break;
@@ -522,7 +531,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         }
 
         img_credit_card.setImageResource(card);
-        txt_credit_card.setText(User.current.card.last4 != null ? User.current.card.last4 : "");
+        txt_credit_card.setText(mCurrentUser.card.last4 != null ? mCurrentUser.card.last4 : "");
 
         if (edit) {
             btn_delete.setTextColor(getResources().getColor(R.color.btn_green));

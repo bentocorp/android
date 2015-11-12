@@ -13,6 +13,7 @@ import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
+import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.listener.InterfaceWebRequest;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.service.BentoService;
@@ -33,6 +34,7 @@ public class BentoApplication extends Application {
     public static BentoApplication instance;
 
     private Handler mHandler = new Handler();
+    private UserDao userDao = new UserDao();
 
     @Override
     public void onCreate() {
@@ -50,7 +52,7 @@ public class BentoApplication extends Application {
         Settings.load();
 
         try {
-            MixpanelUtils.logInUser();
+            MixpanelUtils.logInUser(userDao.getCurrentUser());
             FacebookSdk.sdkInitialize(this);
             Fabric.with(this, new Crashlytics());
             BentoRestClient.init();

@@ -17,6 +17,7 @@ import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.ui.BackendEditText;
+import com.bentonow.bentonow.web.request.UserRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -66,7 +67,7 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
             mDialog.addAcceptButton("OK", null);
             mDialog.show();
         } else {
-            UserDao.requestCoupon(User.current, txt_email.getText().toString(), "outside of delivery zone", new TextHttpResponseHandler() {
+            UserRequest.requestCoupon(txt_email.getText().toString(), "outside of delivery zone", new TextHttpResponseHandler() {
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {

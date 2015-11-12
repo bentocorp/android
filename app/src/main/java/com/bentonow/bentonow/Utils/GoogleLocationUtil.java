@@ -61,9 +61,9 @@ public class GoogleLocationUtil {
                     DebugUtils.logDebug(TAG, "startLocationUpdates", "onLocationChanged() " + mLocation.toString());
 
                     if (BuildConfig.DEBUG && BentoNowUtils.B_KOKUSHO_TESTING) {
-                        User.location = new LatLng(37.76573527907957, -122.41834457963704);
+                        LocationUtils.mCurrentLocation = new LatLng(37.76573527907957, -122.41834457963704);
                     } else {
-                        User.location = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
+                        LocationUtils.mCurrentLocation = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
                     }
 
                     Order.address = LocationUtils.getAddressFromLocation(mLocation);
@@ -104,11 +104,11 @@ public class GoogleLocationUtil {
 
     public static void setAppiumLocation(boolean bLunch) {
         if (bLunch)
-            User.location = new LatLng(37.784741, -122.402802);
+            LocationUtils.mCurrentLocation = new LatLng(37.784741, -122.402802);
         else
-            User.location = new LatLng(37.767780, -122.414818);
+            LocationUtils.mCurrentLocation = new LatLng(37.767780, -122.414818);
 
-        Order.address = LocationUtils.getAddressFromLocation(User.location);
+        Order.address = LocationUtils.getAddressFromLocation(LocationUtils.mCurrentLocation);
 
     }
 }

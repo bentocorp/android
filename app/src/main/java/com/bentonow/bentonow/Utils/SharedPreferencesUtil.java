@@ -16,7 +16,6 @@ public class SharedPreferencesUtil {
 
     public static final String APP_FIRST_RUN = "app_first_run"; //String
     public static final String STORE_STATUS = "store_status"; //String
-    public static final String USER = "user"; //String
     public static final String LOCATION = "location"; //String
     public static final String ADDRESS = "address"; //String
     public static final String BACKENDTEXT = "backendText"; //String
@@ -25,6 +24,7 @@ public class SharedPreferencesUtil {
     public static final String IS_STORE_CHANGIN = "IS_STORE_CHANGIN"; //boolean
     public static final String IS_ORDER_SOLD_OUT = "IS_ORDER_SOLD_OUT"; //boolean
     public static final String IS_APP_IN_FRONT = "IS_THE_APP_IN_FRONT"; //boolean
+    public static final String CURRENT_USER_ID = "CURRENT_USER_ID"; //long
 
 
     /**

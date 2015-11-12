@@ -28,38 +28,38 @@ public class MixpanelUtils {
         getMixpanelApi().track(event, params);
     }
 
-    public static void signUpUser() {
-        if (User.current != null) {
-            getMixpanelApi().alias(User.current.email, User.current.email);
-            setProfileProperties();
+    public static void signUpUser(User mUser) {
+        if (mUser != null) {
+            getMixpanelApi().alias(mUser.email, mUser.email);
+            setProfileProperties(mUser);
         }
     }
 
-    public static void logInUser() {
-        if (User.current != null) {
+    public static void logInUser(User mUser) {
+        if (mUser != null) {
             MixpanelAPI.People people = getMixpanelApi().getPeople();
-            people.identify(User.current.email);
+            people.identify(mUser.email);
             people.initPushHandling(BentoApplication.instance.getString(R.string.google_project_key));
-            setProfileProperties();
+            setProfileProperties(mUser);
         }
     }
 
-    public static void setProfileProperties() {
-        getMixpanelApi().getPeople().identify(User.current.email);
-        getMixpanelApi().getPeople().set("$name", User.current.firstname + " " + User.current.lastname);
-        getMixpanelApi().getPeople().set("$email", User.current.email);
-        getMixpanelApi().getPeople().set("$phone", User.current.phone);
+    public static void setProfileProperties(User mUser) {
+        getMixpanelApi().getPeople().identify(mUser.email);
+        getMixpanelApi().getPeople().set("$name", mUser.firstname + " " + mUser.lastname);
+        getMixpanelApi().getPeople().set("$email", mUser.email);
+        getMixpanelApi().getPeople().set("$phone", mUser.phone);
         getMixpanelApi().getPeople().set("$created", BentoNowUtils.getMixpanelDate());
         getMixpanelApi().getPeople().set("Last Login Address", LocationUtils.getCustomAddress(Order.address));
-        trackRevenue(0);
+        trackRevenue(0, mUser);
     }
 
-    public static void trackRevenue(double iRevenue) {
+    public static void trackRevenue(double iRevenue, User mUser) {
         JSONObject properties = new JSONObject();
         try {
             FacebookUtil.trackRevenue(iRevenue);
             properties.put("$time", BentoNowUtils.getMixpanelDate());
-            getMixpanelApi().getPeople().identify(User.current.email);
+            getMixpanelApi().getPeople().identify(mUser.email);
             getMixpanelApi().getPeople().trackCharge(iRevenue, properties);
         } catch (Exception ex) {
             DebugUtils.logError("trackRevenue()", ex);

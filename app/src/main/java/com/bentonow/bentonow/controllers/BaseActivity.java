@@ -3,6 +3,7 @@ package com.bentonow.bentonow.controllers;
 import android.os.Bundle;
 
 import com.bentonow.bentonow.Utils.BentoNowUtils;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.model.Menu;
 
 public class BaseActivity extends BaseFragmentActivity {
@@ -19,7 +20,7 @@ public class BaseActivity extends BaseFragmentActivity {
 
         Menu mCurrentMenu = Menu.get();
 
-        if (mCurrentMenu == null) {
+        if (mCurrentMenu == null || !SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS).equals("open")) {
             BentoNowUtils.openMainActivity(this);
         }
     }

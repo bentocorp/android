@@ -24,6 +24,7 @@ import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.dialog.EditPhoneDialog;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
+import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.listener.ListenerDialog;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.User;
@@ -47,10 +48,14 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
 
     private LinearLayout layoutContainerPhone;
 
+    private UserDao userDao = new UserDao();
+    private User mCurrentUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+
         initActionbar();
 
         ((FontAwesomeButton) findViewById(R.id.btn_facebook)).setup(this);
@@ -73,9 +78,11 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
     protected void onResume() {
         super.onResume();
 
+        mCurrentUser = userDao.getCurrentUser();
+
         updateUI();
 
-        if (User.current != null && (User.current.coupon_code == null || User.current.coupon_code.isEmpty()))
+        if (mCurrentUser != null && (mCurrentUser.coupon_code == null || mCurrentUser.coupon_code.isEmpty()))
             getUserInfo();
 
     }
@@ -91,25 +98,25 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
     }
 
     void updateUI() {
-        findViewById(R.id.container_user).setVisibility(User.current == null ? View.GONE : View.VISIBLE);
-        findViewById(R.id.container_sig_in).setVisibility(User.current != null ? View.GONE : View.VISIBLE);
+        findViewById(R.id.container_user).setVisibility(mCurrentUser == null ? View.GONE : View.VISIBLE);
+        findViewById(R.id.container_sig_in).setVisibility(mCurrentUser != null ? View.GONE : View.VISIBLE);
         getLayoutContainerPhone().setOnClickListener(this);
 
-        if (User.current != null) {
-            ((TextView) findViewById(R.id.txt_name)).setText(User.current.lastname != null ? User.current.firstname + " " + User.current.lastname : User.current.firstname);
+        if (mCurrentUser != null) {
+            ((TextView) findViewById(R.id.txt_name)).setText(mCurrentUser.lastname != null ? mCurrentUser.firstname + " " + mCurrentUser.lastname : mCurrentUser.firstname);
 
-            ((TextView) findViewById(R.id.txt_phone)).setText(BentoNowUtils.getPhoneFromNumber(User.current.phone));
-            ((TextView) findViewById(R.id.txt_email)).setText(User.current.email);
+            ((TextView) findViewById(R.id.txt_phone)).setText(BentoNowUtils.getPhoneFromNumber(mCurrentUser.phone));
+            ((TextView) findViewById(R.id.txt_email)).setText(mCurrentUser.email);
 
-            ((TextView) findViewById(R.id.txt_coupon)).setText(User.current.coupon_code);
+            ((TextView) findViewById(R.id.txt_coupon)).setText(mCurrentUser.coupon_code);
             findViewById(R.id.container_coupon).setVisibility(View.VISIBLE);
         } else {
             findViewById(R.id.container_coupon).setVisibility(View.GONE);
         }
 
 
-        if (User.current != null && User.current.coupon_code != null && !User.current.coupon_code.isEmpty()) {
-            message = BackendText.get("share-precomposed-message").replace("%@", User.current.coupon_code).replace("http://apple.co/1FPEbWY", "https://bnc.lt/referrallink");
+        if (mCurrentUser != null && mCurrentUser.coupon_code != null && !mCurrentUser.coupon_code.isEmpty()) {
+            message = BackendText.get("share-precomposed-message").replace("%@", mCurrentUser.coupon_code).replace("http://apple.co/1FPEbWY", "https://bnc.lt/referrallink");
         }
     }
 
@@ -124,7 +131,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
 
     private void updatePhoneNumber(final String sPhoneNumber) {
         RequestParams params = new RequestParams();
-        params.put("api_token", User.current.api_token);
+        params.put("api_token", mCurrentUser.api_token);
         params.put("data", "{\"new_phone\":\"" + sPhoneNumber + "\"}");
         BentoRestClient.post("/user/phone", params, new TextHttpResponseHandler() {
             @SuppressWarnings("deprecation")
@@ -137,9 +144,10 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
             @SuppressWarnings("deprecation")
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                User.current.phone = sPhoneNumber;
-                BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.USER);
-                MixpanelUtils.setProfileProperties();
+                mCurrentUser.phone = sPhoneNumber;
+                userDao.updateUser(mCurrentUser);
+
+                MixpanelUtils.setProfileProperties(mCurrentUser);
 
                 runOnUiThread(new Runnable() {
                     @Override
@@ -268,7 +276,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
 
     private void getUserInfo() {
         RequestParams params = new RequestParams();
-        params.put("api_token", User.current.api_token);
+        params.put("api_token", mCurrentUser.api_token);
         BentoRestClient.get("/user/info", params, new TextHttpResponseHandler() {
             @SuppressWarnings("deprecation")
             @Override
@@ -283,7 +291,9 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
                 DebugUtils.logDebug(TAG, "getUserInfo: " + responseString);
                 try {
                     User mUserInfo = new Gson().fromJson(responseString, User.class);
-                    BentoNowUtils.updateUser(mUserInfo);
+                    mUserInfo.api_token = mCurrentUser.api_token;
+                    userDao.updateUser(mUserInfo);
+
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -309,10 +319,10 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
                     Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:4153001332"));
                     startActivity(intent);
                 } else if (action.equals("logout")) {
-                    User.current = null;
+                    mCurrentUser = null;
+                    userDao.removeUser();
                     MixpanelUtils.clearPreferences();
                     updateUI();
-                    BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);
                 }
 
                 action = "";

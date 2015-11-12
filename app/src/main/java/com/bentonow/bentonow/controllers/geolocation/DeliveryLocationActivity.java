@@ -38,6 +38,7 @@ import com.bentonow.bentonow.controllers.errors.BummerActivity;
 import com.bentonow.bentonow.controllers.fragment.MySupportMapFragment;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
+import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.listener.OnCustomDragListener;
 import com.bentonow.bentonow.model.AutoCompleteModel;
 import com.bentonow.bentonow.model.BackendText;
@@ -101,11 +102,16 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
     private ArrayList<AutoCompleteModel> resultList;
 
+    private UserDao userDao = new UserDao();
+    private User mCurrentUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_delivery_location);
+
+        mCurrentUser = userDao.getCurrentUser();
 
         try {
             optDelivery = (ConstantUtils.optDeliveryAction) getIntent().getExtras().getSerializable(TAG_DELIVERY_ACTION);
@@ -116,7 +122,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         initActionbar();
         setupAutocomplete();
 
-        mLastLocations = User.location;
+        mLastLocations = LocationUtils.mCurrentLocation;
         mLastOrderLocation = Order.location;
         sOrderAddress = Order.address;
 
@@ -341,7 +347,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
         if (isInDeliveryArea) {
             Order.location = mLastOrderLocation;
-            User.location = mLastOrderLocation;
+            LocationUtils.mCurrentLocation = mLastOrderLocation;
             Order.address = sOrderAddress;
 
             switch (optDelivery) {
@@ -349,9 +355,9 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                     onBackPressed();
                     break;
                 case COMPLETE_ORDER:
-                    if (User.current != null)
+                    if (mCurrentUser != null)
                         startActivity(new Intent(this, CompleteOrderActivity.class));
-                    else if (User.current == null) {
+                    else if (mCurrentUser == null) {
                         BentoNowUtils.openBuildBentoActivity(this);
                     } else {
 

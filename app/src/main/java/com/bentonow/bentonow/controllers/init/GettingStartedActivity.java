@@ -36,10 +36,10 @@ public class GettingStartedActivity extends BaseFragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, "main");
     }
 
     public void onGettingStartedPressed(View view) {
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.APP_FIRST_RUN, true);
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("checkLocation", true);
         startActivity(intent);

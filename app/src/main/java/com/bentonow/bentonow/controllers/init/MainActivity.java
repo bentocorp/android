@@ -17,6 +17,7 @@ import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.GoogleLocationUtil;
+import com.bentonow.bentonow.Utils.LocationUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
@@ -134,10 +135,7 @@ public class MainActivity extends BaseFragmentActivity {
     }
 
     void checkFirstRun() {
-        Log.i(TAG, "firstRun " + SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.APP_FIRST_RUN));
         if (!SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.APP_FIRST_RUN)) {
-            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.APP_FIRST_RUN, true);
-
             if (Settings.min_version > BuildConfig.VERSION_CODE) {
                 Intent intent = new Intent(this, ErrorVersionActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -173,7 +171,7 @@ public class MainActivity extends BaseFragmentActivity {
     }
 
     void waitForUserLocation() {
-        if (User.location == null) {
+        if (LocationUtils.mCurrentLocation == null) {
             new Handler().post(new Runnable() {
                 @Override
                 public void run() {
@@ -189,8 +187,8 @@ public class MainActivity extends BaseFragmentActivity {
 
                 @Override
                 public void onTick(long millisUntilFinished) {
-                    Log.i(TAG, "location " + User.location);
-                    if (User.location != null) {
+                    Log.i(TAG, "location " + LocationUtils.mCurrentLocation);
+                    if (LocationUtils.mCurrentLocation != null) {
                         timer.cancel();
                         goNext();
                     }
@@ -218,9 +216,14 @@ public class MainActivity extends BaseFragmentActivity {
 
         if (mCurrentMenu == null || !Settings.status.equals("open")) {
             Log.i(TAG, "goNext ErrorActivity");
-            BentoNowUtils.openErrorActivity(this);
 
-        } else if (Settings.isInServiceArea(User.location)) {
+            if (Settings.status.equals("open"))
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, "closed");
+            else
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+
+            BentoNowUtils.openErrorActivity(this);
+        } else if (Settings.isInServiceArea(LocationUtils.mCurrentLocation)) {
             BentoNowUtils.openBuildBentoActivity(this);
         } else {
             Log.i(TAG, "goNext DeliveryLocationActivity");
@@ -236,7 +239,7 @@ public class MainActivity extends BaseFragmentActivity {
     private void trackAppOpen() {
         try {
             JSONObject params = new JSONObject();
-            params.put("coordinates", User.location == null ? "0.0,0.0" : User.location.latitude + "," + User.location.longitude);
+            params.put("coordinates", LocationUtils.mCurrentLocation == null ? "0.0,0.0" : LocationUtils.mCurrentLocation.latitude + "," + LocationUtils.mCurrentLocation.longitude);
             MixpanelUtils.track("App Launched", params);
         } catch (Exception e) {
             DebugUtils.logError(TAG, "track(): " + e.toString());
