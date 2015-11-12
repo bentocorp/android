@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.bentonow.bentonow.R;
-import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 
@@ -22,13 +21,6 @@ public class OrderConfirmedActivity extends BaseActivity implements View.OnClick
         ImageView actionbar_right_btn = (ImageView) findViewById(R.id.actionbar_right_btn);
         actionbar_right_btn.setImageResource(R.drawable.ic_ab_help);
         actionbar_right_btn.setOnClickListener(this);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_STORE_CHANGIN))
-            finish();
     }
 
     public void onFaqPressed(View view) {

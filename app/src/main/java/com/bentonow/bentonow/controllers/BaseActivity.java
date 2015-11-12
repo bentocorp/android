@@ -3,8 +3,10 @@ package com.bentonow.bentonow.controllers;
 import android.os.Bundle;
 
 import com.bentonow.bentonow.Utils.BentoNowUtils;
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.model.Menu;
+import com.bentonow.bentonow.model.Settings;
 
 public class BaseActivity extends BaseFragmentActivity {
 
@@ -20,8 +22,21 @@ public class BaseActivity extends BaseFragmentActivity {
 
         Menu mCurrentMenu = Menu.get();
 
-        if (mCurrentMenu == null || !SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS).equals("open")) {
-            BentoNowUtils.openMainActivity(this);
+        if (mCurrentMenu == null || !Settings.status.equals("open")) {
+            DebugUtils.logDebug("Finish activity: " + Settings.status + mCurrentMenu);
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, "closed");
+            BentoNowUtils.openErrorActivity(this);
+        }
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (!Settings.status.equals("open") || Menu.get() == null) {
+            DebugUtils.logDebug("Finish activity: " + Settings.status + " or Menu is null");
+            finish();
         }
     }
 

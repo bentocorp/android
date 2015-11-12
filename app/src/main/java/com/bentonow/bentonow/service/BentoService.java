@@ -84,6 +84,8 @@ public class BentoService extends Service {
         if (bSendRequest) {
             bSendRequest = false;
 
+            DebugUtils.logDebug(TAG, "Task Start");
+
             BentoRestClient.get("/init/" + BentoNowUtils.getTodayDate(), null, new TextHttpResponseHandler() {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
@@ -133,7 +135,11 @@ public class BentoService extends Service {
                     }
                 } else {
                     if (!Settings.status.equals(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS))) {
+
+                        DebugUtils.logDebug(TAG, "Should change from: " + SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS) + " to " + Settings.status);
+
                         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+
                         switch (Settings.status) {
                             case "open":
                                 BentoNowUtils.openMainActivity(this);
@@ -143,7 +149,6 @@ public class BentoService extends Service {
                                 BentoNowUtils.openErrorActivity(this);
                                 break;
                         }
-                        DebugUtils.logDebug(TAG, "set To Current Status: " + Settings.status);
                     } else {
                         if (Order.current != null && mMenu != null)
                             if (!Order.current.MealName.equals(mMenu.meal_name) || !Order.current.MenuType.equals(mMenu.menu_type)) {
@@ -166,7 +171,6 @@ public class BentoService extends Service {
             task = new Runnable() {
                 public void run() {
                     loadData();
-                    DebugUtils.logDebug(TAG, "Task Start");
                 }
             };
         }

@@ -14,19 +14,15 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
-import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
-import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
-import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
 import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.model.BackendText;
-import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.web.request.UserRequest;
 import com.facebook.AccessToken;
@@ -228,17 +224,8 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
 
             MixpanelUtils.signUpUser(registerUser);
 
-            if (getIntent().getBooleanExtra("settings", false)) {
-                onBackPressed();
-            } else if (Order.location == null) {
-                Intent intent = new Intent(SignUpActivity.this, DeliveryLocationActivity.class);
-                intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.COMPLETE_ORDER);
-                startActivity(intent);
-            } else {
-                startActivity(new Intent(SignUpActivity.this, CompleteOrderActivity.class));
-            }
+            onBackPressed();
 
-            finish();
         } catch (Exception e) {
             DebugUtils.logError(TAG, "onSignUpSuccess: " + e.toString());
         }

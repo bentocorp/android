@@ -11,7 +11,6 @@ import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
-import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
@@ -21,6 +20,7 @@ import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
+import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.Stock;
 import com.bentonow.bentonow.model.order.OrderItem;
 import com.bentonow.bentonow.ui.AutoFitTxtView;
@@ -73,17 +73,16 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
 
         BentoNowUtils.rotateBanner(getTxtPromoName());
 
-
+        DebugUtils.logDebug(TAG, "Create: ");
     }
 
     @Override
     protected void onResume() {
-        super.onResume();
         bIsOpen = true;
 
         mMenu = Menu.get();
 
-        if (mMenu == null) {
+        if (mMenu == null || !Settings.status.equals("open")) {
             BentoNowUtils.openErrorActivity(BuildBentoActivity.this);
         } else {
             if (Order.current == null) {
@@ -105,7 +104,13 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
             updateUI();
         }
 
+        super.onResume();
+    }
 
+    @Override
+    protected void onPause() {
+        bIsOpen = false;
+        super.onPause();
     }
 
     private void initActionbar() {
@@ -371,20 +376,6 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
         } catch (Exception e) {
             DebugUtils.logError(TAG, "track(): " + e.toString());
         }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        bIsOpen = false;
-        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_STORE_CHANGIN))
-            finish();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        bIsOpen = false;
     }
 
     private AutoFitTxtView getTxtPromoName() {

@@ -28,7 +28,6 @@ import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.Stock;
-import com.bentonow.bentonow.model.User;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.loopj.android.http.TextHttpResponseHandler;
@@ -55,7 +54,6 @@ public class MainActivity extends BaseFragmentActivity {
         if (getCallingActivity() != null)
             Log.i(TAG, "callerActivity " + getCallingActivity());
 
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_STORE_CHANGIN, false);
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, "open");
 
         GoogleLocationUtil.getGoogleApiClient();
@@ -131,6 +129,8 @@ public class MainActivity extends BaseFragmentActivity {
         Stock.set(responseString);
         Settings.set(responseString);
 
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+
         checkFirstRun();
     }
 
@@ -153,6 +153,7 @@ public class MainActivity extends BaseFragmentActivity {
 
     void checkAppStatus() {
         Log.i(TAG, "checkAppStatus");
+
         if (Settings.min_version > BuildConfig.VERSION_CODE) {
             Intent intent = new Intent(this, ErrorVersionActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -215,16 +216,14 @@ public class MainActivity extends BaseFragmentActivity {
         Menu mCurrentMenu = Menu.get();
 
         if (mCurrentMenu == null || !Settings.status.equals("open")) {
-            Log.i(TAG, "goNext ErrorActivity");
-
             if (Settings.status.equals("open"))
                 SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, "closed");
-            else
-                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
 
             BentoNowUtils.openErrorActivity(this);
+            Log.i(TAG, "goNext ErrorActivity");
         } else if (Settings.isInServiceArea(LocationUtils.mCurrentLocation)) {
             BentoNowUtils.openBuildBentoActivity(this);
+            Log.i(TAG, "goNext BuildBentoActivity");
         } else {
             Log.i(TAG, "goNext DeliveryLocationActivity");
             MixpanelUtils.track("Opened App Outside of Service Area");

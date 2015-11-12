@@ -8,7 +8,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
-import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.adapter.CustomMainListAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
@@ -84,7 +83,7 @@ public class SelectMainCustomActivity extends BaseActivity implements View.OnCli
         if (DishDao.isSoldOut(getListAdapter().getCurrentSelected(), true) || !DishDao.canBeAdded(getListAdapter().getCurrentSelected()))
             return;
 
-        Order.current.OrderItems.get(orderIndex).items  .set(0, getListAdapter().getCurrentSelected());
+        Order.current.OrderItems.get(orderIndex).items.set(0, getListAdapter().getCurrentSelected());
 
         onBackPressed();
     }
@@ -105,13 +104,6 @@ public class SelectMainCustomActivity extends BaseActivity implements View.OnCli
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         getListAdapter().setCurrentSelected(getListAdapter().getItem(position));
         getListAdapter().notifyDataSetChanged();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_STORE_CHANGIN))
-            finish();
     }
 
     private CustomMainListAdapter getListAdapter() {

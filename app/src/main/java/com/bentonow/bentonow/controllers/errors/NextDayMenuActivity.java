@@ -18,6 +18,7 @@ import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
+import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.ui.ItemHolder;
 import com.wsdcamp.list.LazyListAdapter;
 import com.wsdcamp.list.LazyListAdapterInterface;
@@ -96,6 +97,9 @@ public class NextDayMenuActivity extends BaseFragmentActivity implements View.On
     protected void onPause() {
         super.onPause();
         BentoApplication.onPause();
+        if (Settings.status.equals("open")) {
+            finish();
+        }
     }
 
     @Override

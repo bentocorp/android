@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
-import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.adapter.CustomSideListAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
@@ -105,14 +104,6 @@ public class SelectSideCustomActivity extends BaseActivity implements View.OnCli
         getListAdapter().setCurrentSelected(getListAdapter().getItem(position));
         getListAdapter().notifyDataSetChanged();
     }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_STORE_CHANGIN))
-            finish();
-    }
-
 
     private CustomSideListAdapter getListAdapter() {
         if (mListAdapter == null)

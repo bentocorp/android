@@ -79,6 +79,8 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
 
         BentoNowUtils.rotateBanner(getTxtPromoName());
 
+        DebugUtils.logDebug(TAG, "Create: ");
+
     }
 
     private void addMainDishes() {
@@ -250,7 +252,6 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
 
     @Override
     protected void onResume() {
-        super.onResume();
         bIsOpen = true;
 
         mMenu = Menu.get();
@@ -270,22 +271,14 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
             updateUI();
         }
 
+        super.onResume();
     }
 
     @Override
     protected void onPause() {
+        bIsOpen = false;
         super.onPause();
-        bIsOpen = false;
-        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_STORE_CHANGIN))
-            finish();
     }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        bIsOpen = false;
-    }
-
 
     private ImageView getActionbarLeftBtn() {
         if (actionbarLeftBtn == null)

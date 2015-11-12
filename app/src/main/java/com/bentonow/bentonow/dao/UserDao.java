@@ -2,20 +2,12 @@ package com.bentonow.bentonow.dao;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.util.Log;
 
-import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.db.DBAdapter;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.user.Card;
-import com.bentonow.bentonow.model.user.CouponRequest;
-import com.google.gson.Gson;
-import com.loopj.android.http.RequestParams;
-import com.loopj.android.http.TextHttpResponseHandler;
-
-import java.util.Calendar;
 
 /**
  * Created by Jose Torres on 11/3/15.
@@ -194,11 +186,9 @@ public class UserDao {
         cValues.put(FB_PROFILE_PIC, mUser.fb_profile_pic);
         cValues.put(FB_AGE_RANGE, mUser.fb_age_range);
         cValues.put(FB_GENDER, mUser.fb_gender);
+        cValues.put(CARD_BRAND, mUser.card == null ? "" : mUser.card.brand);
+        cValues.put(CARD_LAST4, mUser.card == null ? "" : mUser.card.last4);
 
-        if (mUser.card != null) {
-            cValues.put(CARD_BRAND, mUser.card.brand);
-            cValues.put(CARD_LAST4, mUser.card.last4);
-        }
         return cValues;
     }
 

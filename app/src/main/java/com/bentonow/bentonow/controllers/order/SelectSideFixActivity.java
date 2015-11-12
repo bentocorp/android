@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.ImageUtils;
-import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.adapter.DishFixGridListAdapter;
@@ -113,13 +112,6 @@ public class SelectSideFixActivity extends BaseActivity implements View.OnClickL
         getGridDishAdapter().notifyDataSetChanged();
 
         tapOnDish(false);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_STORE_CHANGIN))
-            finish();
     }
 
     private ImageView getActionbarLeftBtn() {

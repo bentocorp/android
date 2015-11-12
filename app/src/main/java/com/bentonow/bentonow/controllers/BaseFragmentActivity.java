@@ -34,11 +34,17 @@ public class BaseFragmentActivity extends FragmentActivity {
 
     @Override
     protected void onResume() {
+        super.onResume();
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_APP_IN_FRONT, true);
         BentoApplication.onResume();
         AppEventsLogger.activateApp(this);
 
-        super.onResume();
+    }
+
+    @Override
+    protected void onStart() {
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_APP_IN_FRONT, true);
+        super.onStart();
     }
 
     @Override
@@ -55,4 +61,5 @@ public class BaseFragmentActivity extends FragmentActivity {
 
         super.onPause();
     }
+
 }

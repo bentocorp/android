@@ -149,7 +149,6 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
     @Override
     protected void onResume() {
-        super.onResume();
         if (mCurrentUser == null || Order.location == null || Order.address == null || Order.current == null) {
             if (Order.current == null || Order.current.OrderItems == null || Order.current.OrderItems.isEmpty())
                 emptyOrders();
@@ -158,15 +157,9 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         } else {
             updateUI();
         }
-    }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_STORE_CHANGIN))
-            finish();
+        super.onResume();
     }
-
 
     void track(String error) {
         try {

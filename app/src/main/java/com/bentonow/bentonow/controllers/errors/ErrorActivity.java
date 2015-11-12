@@ -13,15 +13,12 @@ import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Email;
-import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
-import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Settings;
-import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.web.request.UserRequest;
 import com.loopj.android.http.TextHttpResponseHandler;
 
@@ -43,6 +40,8 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
     private ImageView actionbar_left_btn;
     private ImageView actionbar_right_btn;
 
+    Menu mCurrentMenu;
+
     public static boolean bIsOpen = false;
 
     @Override
@@ -56,12 +55,14 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
         getMenuItemProfile().setImageResource(R.drawable.ic_signup_profile);
         getMenuItemProfile().setOnClickListener(ErrorActivity.this);
 
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_STORE_CHANGIN, false);
+        DebugUtils.logDebug(TAG, "Create: ");
     }
 
     @Override
     protected void onResume() {
         bIsOpen = true;
+
+        mCurrentMenu = Menu.getNext();
 
         Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE);
@@ -86,26 +87,27 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
     @Override
     protected void onPause() {
         super.onPause();
+        bIsOpen = false;
 
-        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_STORE_CHANGIN))
+        if (Settings.status.equals("open") && Menu.get() != null) {
             finish();
+        }
     }
 
     void setupNextMenu() {
-        Menu menu = Menu.getNext();
 
-        if (menu != null) {
-            Log.i(TAG, "menu: " + menu.toString());
+        if (mCurrentMenu != null) {
+            Log.i(TAG, "menu: " + mCurrentMenu.toString());
             getBtnNextDayMenu().setVisibility(View.VISIBLE);
 
             DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 
-            if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate())) {
+            if (mCurrentMenu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate())) {
                 getBtnNextDayMenu().setText(BackendText.get("closed-sneak-preview-button"));
             } else {
                 try {
-                    String day = new SimpleDateFormat("EEEE", Locale.ENGLISH).format(format.parse(menu.for_date));
-                    String title = day + "'s " + menu.meal_name.substring(0, 1).toUpperCase() + menu.meal_name.substring(1);
+                    String day = new SimpleDateFormat("EEEE", Locale.ENGLISH).format(format.parse(mCurrentMenu.for_date));
+                    String title = day + "'s " + mCurrentMenu.meal_name.substring(0, 1).toUpperCase() + mCurrentMenu.meal_name.substring(1);
                     getBtnNextDayMenu().setText(title);
                 } catch (Exception e) {
                     DebugUtils.logError(TAG, "setupNextMenu: " + e.getLocalizedMessage());
@@ -132,19 +134,6 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
                 break;
         }
     }
-
-    @Override
-    protected void onStop() {
-        bIsOpen = false;
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        bIsOpen = false;
-    }
-
 
     @Override
     public void onBackPressed() {
