@@ -30,7 +30,7 @@ public class OrderDao {
         for (int a = 0; a < Order.current.OrderItems.size(); a++) {
             boolean bIsSoldOut = false;
             for (DishModel mDishModel : Order.current.OrderItems.get(a).items) {
-                if (!sSoldOutItems.contains(mDishModel.name) && DishDao.isSoldOut(mDishModel, false)) {
+                if (mDishModel != null && !sSoldOutItems.contains(mDishModel.name) && DishDao.isSoldOut(mDishModel, false)) {
                     bIsSoldOut = true;
                     sSoldOutItems += "\n- " + mDishModel.name;
                     DebugUtils.logDebug("calculateSoldOutItems:", mDishModel.name);

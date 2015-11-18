@@ -320,6 +320,9 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
     }
 
     public void onContinueOrderPressed(View view) {
+
+        String sSoldOutItems = OrderDao.calculateSoldOutItems();
+
         if (!Order.current.OrderItems.get(orderIndex).isComplete()) {
             if (Order.current.OrderItems.get(orderIndex).items.get(0) == null) {
                 startActivity(new Intent(this, SelectMainCustomActivity.class));
@@ -344,16 +347,12 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
                 intent.putExtra("itemIndex", 4);
                 startActivity(intent);
             }
+        } else if (!sSoldOutItems.isEmpty()) {
+            updateUI();
+            WidgetsUtils.createShortToast(String.format(getString(R.string.error_sold_out_items), sSoldOutItems));
         } else if (BentoNowUtils.isValidCompleteOrder(BuildBentoActivity.this)) {
-            String sSoldOutItems = OrderDao.calculateSoldOutItems();
-            if (sSoldOutItems.isEmpty()) {
-                Order.current.OrderItems.get(orderIndex).bIsSoldoOut = false;
-                track();
-                BentoNowUtils.openCompleteOrderActivity(BuildBentoActivity.this);
-            } else {
-                updateUI();
-                WidgetsUtils.createShortToast(String.format(getString(R.string.error_sold_out_items), sSoldOutItems));
-            }
+            track();
+            BentoNowUtils.openCompleteOrderActivity(BuildBentoActivity.this);
         }
     }
 

@@ -48,11 +48,22 @@ public class EnterPhoneNumberActivity extends BaseFragmentActivity implements Vi
     private UserDao userDao = new UserDao();
     private User mCurrentUser;
 
+    private ConstantUtils.optOpenScreen optOpenScreen;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enter_phone_number);
         mCurrentUser = new User();
+
+        try {
+            optOpenScreen = (ConstantUtils.optOpenScreen) getIntent().getExtras().getSerializable(ConstantUtils.TAG_OPEN_SCREEN);
+        } catch (Exception ex) {
+            DebugUtils.logError(TAG, ex);
+        }
+
+        if (optOpenScreen == null)
+            optOpenScreen = ConstantUtils.optOpenScreen.NORMAL;
 
         try {
             JSONObject fbUser = new JSONObject(getIntent().getStringExtra(TAG_FB_USER));
@@ -224,6 +235,13 @@ public class EnterPhoneNumberActivity extends BaseFragmentActivity implements Vi
 
                     userDao.insertUser(mCurrentUser);
 
+                    switch (optOpenScreen) {
+                        case COMPLETE_ORDER:
+                            if (BentoNowUtils.isValidCompleteOrder(EnterPhoneNumberActivity.this))
+                                BentoNowUtils.openCompleteOrderActivity(EnterPhoneNumberActivity.this);
+                            break;
+                    }
+
                     MixpanelUtils.track("Completed Registration");
 
                 } catch (Exception ex) {
@@ -231,8 +249,7 @@ public class EnterPhoneNumberActivity extends BaseFragmentActivity implements Vi
                     WidgetsUtils.createShortToast(R.string.error_sign_up_user);
                 }
 
-                onBackPressed();
-
+                finish();
 
             }
         });

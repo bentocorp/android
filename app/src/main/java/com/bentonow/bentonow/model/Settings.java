@@ -23,22 +23,22 @@ public class Settings {
 
     public class Meal {
         public int order;
-        public String name;
-        public String startTime;
+        public String name = "";
+        public String startTime = "";
     }
 
     static public int buffer_minutes;
     static public int geofence_order_radius_meters;
-    static public String serviceArea_dinner;
-    static public String serviceArea_dinner_map;
-    static public String serviceArea_lunch;
-    static public String serviceArea_lunch_map;
+    static public String serviceArea_dinner = "";
+    static public String serviceArea_dinner_map = "";
+    static public String serviceArea_lunch = "";
+    static public String serviceArea_lunch_map = "";
     static public String status = "";
     static public double delivery_price;
     static public double price;
     static public double sale_price;
     static public double tax_percent;
-    static public String tzName;
+    static public String tzName = "";
     static public int min_version;
     static public Meal lunch;
     static public Meal dinner;

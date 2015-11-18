@@ -249,10 +249,11 @@ public class BentoNowUtils {
         mView.setAnimation(an);
     }
 
-    public static void openEnterPhoneNumberActivity(FragmentActivity mActivity, GraphResponse graphResponse) {
+    public static void openEnterPhoneNumberActivity(FragmentActivity mActivity, GraphResponse graphResponse, ConstantUtils.optOpenScreen optOpenScreen) {
         Intent iPhoneNumber = new Intent(mActivity, EnterPhoneNumberActivity.class);
         iPhoneNumber.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         iPhoneNumber.putExtra(EnterPhoneNumberActivity.TAG_FB_USER, graphResponse.getJSONObject().toString());
+        iPhoneNumber.putExtra(ConstantUtils.TAG_OPEN_SCREEN, optOpenScreen);
         mActivity.startActivity(iPhoneNumber);
         mActivity.finish();
     }
@@ -316,17 +317,28 @@ public class BentoNowUtils {
         User mUser = userDao.getCurrentUser();
 
         if (mUser == null) {
-            mContext.startActivity(new Intent(mContext, SignInActivity.class));
+            WidgetsUtils.createShortToast(R.string.error_no_user_log_in);
+
+            Intent mIntentSignIn = new Intent(mContext, SignInActivity.class);
+            mIntentSignIn.putExtra(ConstantUtils.TAG_OPEN_SCREEN, ConstantUtils.optOpenScreen.COMPLETE_ORDER);
+            mContext.startActivity(mIntentSignIn);
+
             bIsValid = false;
         } else if (LocationUtils.mCurrentLocation == null || !Settings.isInServiceArea(LocationUtils.mCurrentLocation) || Order.address == null) {
             WidgetsUtils.createShortToast(mContext.getString(R.string.error_no_valid_delivery_address));
 
             Intent intent = new Intent(mContext, DeliveryLocationActivity.class);
-            intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.COMPLETE_ORDER);
+            intent.putExtra(ConstantUtils.TAG_OPEN_SCREEN, ConstantUtils.optOpenScreen.COMPLETE_ORDER);
             mContext.startActivity(intent);
+
             bIsValid = false;
         } else if (!userDao.isCreditCardValid(mUser)) {
-            mContext.startActivity(new Intent(mContext, EnterCreditCardActivity.class));
+            WidgetsUtils.createShortToast(R.string.error_no_credit_card);
+
+            Intent mIntentCredit = new Intent(mContext, EnterCreditCardActivity.class);
+            mIntentCredit.putExtra(ConstantUtils.TAG_OPEN_SCREEN, ConstantUtils.optOpenScreen.COMPLETE_ORDER);
+            mContext.startActivity(mIntentCredit);
+
             bIsValid = false;
         }
 

@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
+import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
@@ -45,7 +46,8 @@ import java.util.Collections;
 
 public class SignInActivity extends BaseFragmentActivity implements View.OnClickListener, FacebookCallback<LoginResult>, GraphRequest.GraphJSONObjectCallback {
 
-    static final String TAG = "SignInActivity";
+    public static final String TAG = "SignInActivity";
+
 
     //region Variables
     View container_alert;
@@ -62,6 +64,8 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
     private UserDao userDao = new UserDao();
     private User mCurrentUser;
 
+    private ConstantUtils.optOpenScreen optOpenScreen;
+
     CallbackManager callbackManager;
     private ConfirmationDialog mDialog;
     private ProgressDialog mProgressDialog;
@@ -74,6 +78,15 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_sign_in);
+
+        try {
+            optOpenScreen = (ConstantUtils.optOpenScreen) getIntent().getExtras().getSerializable(ConstantUtils.TAG_OPEN_SCREEN);
+        } catch (Exception ex) {
+            DebugUtils.logError(TAG, ex);
+        }
+
+        if (optOpenScreen == null)
+            optOpenScreen = ConstantUtils.optOpenScreen.NORMAL;
 
         callbackManager = CallbackManager.Factory.create();
         LoginManager.getInstance().registerCallback(callbackManager, this);
@@ -169,7 +182,16 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
 
             MixpanelUtils.logInUser(mCurrentUser);
 
-            onBackPressed();
+            switch (optOpenScreen) {
+                case NORMAL:
+                    onBackPressed();
+                    break;
+                case COMPLETE_ORDER:
+                    if (BentoNowUtils.isValidCompleteOrder(SignInActivity.this))
+                        BentoNowUtils.openCompleteOrderActivity(SignInActivity.this);
+                    break;
+            }
+            finish();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -274,9 +296,9 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
     }
 
     public void onSignUpPressed(View view) {
-        Intent intent = new Intent(this, SignUpActivity.class);
-        intent.putExtra("settings", getIntent().getBooleanExtra("settings", false));
-        startActivity(intent);
+        Intent mIntentSignUp = new Intent(this, SignUpActivity.class);
+        mIntentSignUp.putExtra(ConstantUtils.TAG_OPEN_SCREEN, optOpenScreen);
+        startActivity(mIntentSignUp);
         finish();
     }
 
@@ -304,6 +326,7 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
                 break;
             case R.id.btn_ok:
                 Intent intent = new Intent(this, SignUpActivity.class);
+                intent.putExtra(ConstantUtils.TAG_OPEN_SCREEN, optOpenScreen);
                 intent.putExtra("email", txt_email.getText());
                 startActivity(intent);
                 finish();
@@ -364,7 +387,7 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
                     switch (statusCode) {
                         case 404:
                             DebugUtils.logError(TAG, "onCompleted(): facebook email not found");
-                            BentoNowUtils.openEnterPhoneNumberActivity(SignInActivity.this, graphResponse);
+                            BentoNowUtils.openEnterPhoneNumberActivity(SignInActivity.this, graphResponse, optOpenScreen);
                             break;
                         default:
                             try {

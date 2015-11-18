@@ -18,6 +18,7 @@ import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.CreditCard;
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
@@ -53,6 +54,8 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
     private ConfirmationDialog mDialog;
     private ProgressDialog mProgressDialog;
 
+    private ConstantUtils.optOpenScreen optOpenScreen;
+
     private UserDao userDao = new UserDao();
     private User mCurrentUser;
 
@@ -63,6 +66,15 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_enter_credit_card);
+
+        try {
+            optOpenScreen = (ConstantUtils.optOpenScreen) getIntent().getExtras().getSerializable(ConstantUtils.TAG_OPEN_SCREEN);
+        } catch (Exception ex) {
+            DebugUtils.logError(TAG, ex);
+        }
+
+        if (optOpenScreen == null)
+            optOpenScreen = ConstantUtils.optOpenScreen.NORMAL;
 
         mCurrentUser = userDao.getCurrentUser();
 
@@ -431,7 +443,16 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
                     userDao.updateUser(mCurrentUser);
 
                     dismissDialog();
-                    BentoNowUtils.openCompleteOrderActivity(EnterCreditCardActivity.this);
+
+                    switch (optOpenScreen) {
+                        case NORMAL:
+                            onBackPressed();
+                            break;
+                        case COMPLETE_ORDER:
+                            if (BentoNowUtils.isValidCompleteOrder(EnterCreditCardActivity.this))
+                                BentoNowUtils.openCompleteOrderActivity(EnterCreditCardActivity.this);
+                            break;
+                    }
                     finish();
                 }
 

@@ -14,13 +14,13 @@ public class Menu {
     static final String TAG = "model.Menu";
     public static List<Menu> list;
 
-    public String name;
-    public String for_date;
-    public String menu_type;
-    public String meal_type;
-    public String meal_name;
-    public String meal_order;
-    public String day_text;
+    public String name = "";
+    public String for_date = "";
+    public String menu_type = "";
+    public String meal_type = "";
+    public String meal_name = "";
+    public String meal_order = "";
+    public String day_text = "";
     public List<DishModel> dishModels;
 
     static public void set(String data) {

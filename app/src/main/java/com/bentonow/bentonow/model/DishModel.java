@@ -9,10 +9,10 @@ public class DishModel implements Parcelable {
     public static final String TAG_LIST = "DishModel List";
 
     public int itemId;
-    public String name;
-    public String description;
-    public String type;
-    public String image1;
+    public String name = "";
+    public String description = "";
+    public String type = "";
+    public String image1 = "";
     public int max_per_order;
     public double price;
 

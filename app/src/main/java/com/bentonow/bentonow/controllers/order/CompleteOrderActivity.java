@@ -283,9 +283,11 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                         BentoNowUtils.openErrorActivity(this);
                         break;
                     case "credit_card":
+                        WidgetsUtils.createShortToast(R.string.error_no_credit_card);
                         startActivity(new Intent(this, EnterCreditCardActivity.class));
                         break;
                     case "sign_in":
+                        WidgetsUtils.createShortToast(R.string.error_no_user_log_in);
                         startActivity(new Intent(this, SignInActivity.class));
                         finish();
                         break;
@@ -294,6 +296,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                         onBackPressed();
                         break;
                     case "sold_out":
+                        WidgetsUtils.createShortToast(R.string.error_sold_out_items);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -319,7 +322,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
     public void onChangeAddressPressed(View v) {
         Intent intent = new Intent(this, DeliveryLocationActivity.class);
-        intent.putExtra(DeliveryLocationActivity.TAG_DELIVERY_ACTION, ConstantUtils.optDeliveryAction.CHANGE);
+        intent.putExtra(ConstantUtils.TAG_OPEN_SCREEN, ConstantUtils.optOpenScreen.SUMMARY);
         startActivity(intent);
     }
 

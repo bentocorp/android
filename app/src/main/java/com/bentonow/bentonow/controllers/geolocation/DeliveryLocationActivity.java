@@ -37,14 +37,12 @@ import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.errors.BummerActivity;
 import com.bentonow.bentonow.controllers.fragment.MySupportMapFragment;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
-import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
 import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.listener.OnCustomDragListener;
 import com.bentonow.bentonow.model.AutoCompleteModel;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
-import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.ui.BackendTextView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -75,8 +73,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
     public static final String TAG = "DeliveryLocationAct";
 
-    public static final String TAG_DELIVERY_ACTION = "DeliveryAction";
-
     private GoogleMap googleMap; // Might be null if Google Play services APK is not available.
     private MySupportMapFragment mapFragment;
     private AutoCompleteTextView txt_address;
@@ -98,26 +94,25 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private LatLng mLastOrderLocation;
     private Address sOrderAddress;
 
-    private ConstantUtils.optDeliveryAction optDelivery;
+    private ConstantUtils.optOpenScreen optOpenScreen;
 
     private ArrayList<AutoCompleteModel> resultList;
 
     private UserDao userDao = new UserDao();
-    private User mCurrentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_delivery_location);
-
-        mCurrentUser = userDao.getCurrentUser();
-
         try {
-            optDelivery = (ConstantUtils.optDeliveryAction) getIntent().getExtras().getSerializable(TAG_DELIVERY_ACTION);
+            optOpenScreen = (ConstantUtils.optOpenScreen) getIntent().getExtras().getSerializable(ConstantUtils.TAG_OPEN_SCREEN);
         } catch (Exception ex) {
-            optDelivery = ConstantUtils.optDeliveryAction.NONE;
+            DebugUtils.logError(TAG, ex);
         }
+
+        if (optOpenScreen == null)
+            optOpenScreen = ConstantUtils.optOpenScreen.NORMAL;
 
         initActionbar();
         setupAutocomplete();
@@ -156,7 +151,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             }
         });
 
-        if (mGoogleApiClient.isConnected() && optDelivery == ConstantUtils.optDeliveryAction.NONE)
+        if (mGoogleApiClient.isConnected() && optOpenScreen == ConstantUtils.optOpenScreen.NORMAL)
             startLocationUpdates();
 
         setupMap();
@@ -173,14 +168,13 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         TextView actionbar_title = (TextView) findViewById(R.id.actionbar_title);
         actionbar_title.setText(getResources().getString(R.string.delivery_location_actionbar_title));
 
-        if (optDelivery != ConstantUtils.optDeliveryAction.NONE) {
-            ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
-            actionbar_left_btn.setImageResource(R.drawable.ic_ab_back);
-            actionbar_left_btn.setOnClickListener(this);
+        if (optOpenScreen == ConstantUtils.optOpenScreen.SUMMARY) {
+            getImageView().setImageResource(R.drawable.ic_ab_back);
+        } else {
+            getImageView().setImageResource(R.drawable.ic_ab_user);
         }
 
 
-        getImageView().setImageResource(R.drawable.ic_ab_user);
         getImageView().setOnClickListener(this);
 
         getHelpMark().setImageResource(R.drawable.ic_ab_help);
@@ -350,25 +344,21 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             LocationUtils.mCurrentLocation = mLastOrderLocation;
             Order.address = sOrderAddress;
 
-            switch (optDelivery) {
-                case CHANGE:
+            switch (optOpenScreen) {
+                case NORMAL:
                     onBackPressed();
                     break;
                 case COMPLETE_ORDER:
-                    if (mCurrentUser != null)
-                        startActivity(new Intent(this, CompleteOrderActivity.class));
-                    else if (mCurrentUser == null) {
-                        BentoNowUtils.openBuildBentoActivity(this);
-                    } else {
-
-                        BentoNowUtils.openBuildBentoActivity(this);
-                    }
+                    if (BentoNowUtils.isValidCompleteOrder(DeliveryLocationActivity.this))
+                        BentoNowUtils.openCompleteOrderActivity(DeliveryLocationActivity.this);
                     break;
-                case NONE:
-                    BentoNowUtils.openBuildBentoActivity(this);
+                case BUILD_BENTO:
+                    BentoNowUtils.openBuildBentoActivity(DeliveryLocationActivity.this);
+                    break;
+                case SUMMARY:
+                    onBackPressed();
                     break;
             }
-
             finish();
         } else {
             try {
@@ -581,7 +571,14 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.actionbar_left_btn:
-                BentoNowUtils.openSettingsActivity(DeliveryLocationActivity.this);
+                switch (optOpenScreen) {
+                    case SUMMARY:
+                        onBackPressed();
+                        break;
+                    default:
+                        BentoNowUtils.openSettingsActivity(DeliveryLocationActivity.this);
+                        break;
+                }
                 break;
             case R.id.actionbar_right_btn:
                 Intent iHelp = new Intent(DeliveryLocationActivity.this, HelpActivity.class);
@@ -628,7 +625,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     public void onConnected(Bundle bundle) {
         DebugUtils.logDebug("buildGoogleApiClient", "onConnected:");
 
-        if (optDelivery == ConstantUtils.optDeliveryAction.NONE) {
+        if (optOpenScreen == ConstantUtils.optOpenScreen.NORMAL) {
             mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             if (mCurrentLocation != null) {
                 mLastLocations = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());

@@ -16,7 +16,6 @@ import android.widget.Toast;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
-import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
@@ -291,8 +290,17 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
                 DebugUtils.logDebug(TAG, "getUserInfo: " + responseString);
                 try {
                     User mUserInfo = new Gson().fromJson(responseString, User.class);
-                    mUserInfo.api_token = mCurrentUser.api_token;
-                    userDao.updateUser(mUserInfo);
+
+                    if (!mUserInfo.api_token.isEmpty())
+                        mCurrentUser.api_token = mUserInfo.api_token;
+
+                    if (!mUserInfo.coupon_code.isEmpty())
+                        mCurrentUser.coupon_code = mUserInfo.coupon_code;
+
+                    if (!mUserInfo.card.brand.isEmpty())
+                        mCurrentUser.card = mUserInfo.card;
+
+                    userDao.updateUser(mCurrentUser);
 
                     runOnUiThread(new Runnable() {
                         @Override

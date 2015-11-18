@@ -15,6 +15,7 @@ import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
+import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.GoogleLocationUtil;
 import com.bentonow.bentonow.Utils.LocationUtils;
@@ -228,6 +229,7 @@ public class MainActivity extends BaseFragmentActivity {
             Log.i(TAG, "goNext DeliveryLocationActivity");
             MixpanelUtils.track("Opened App Outside of Service Area");
             Intent intent = new Intent(this, DeliveryLocationActivity.class);
+            intent.putExtra(ConstantUtils.TAG_OPEN_SCREEN, ConstantUtils.optOpenScreen.BUILD_BENTO);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | IntentCompat.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
         }

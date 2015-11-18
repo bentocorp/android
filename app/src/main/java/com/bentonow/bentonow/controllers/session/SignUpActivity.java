@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
+import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
@@ -62,6 +63,8 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
 
     Button btn_signup;
 
+    private ConstantUtils.optOpenScreen optOpenScreen;
+
     private ConfirmationDialog mDialog;
     private ProgressDialog mProgressDialog;
 
@@ -79,6 +82,15 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_sign_up);
+
+        try {
+            optOpenScreen = (ConstantUtils.optOpenScreen) getIntent().getExtras().getSerializable(ConstantUtils.TAG_OPEN_SCREEN);
+        } catch (Exception ex) {
+            DebugUtils.logError(TAG, ex);
+        }
+
+        if (optOpenScreen == null)
+            optOpenScreen = ConstantUtils.optOpenScreen.NORMAL;
 
         callbackManager = CallbackManager.Factory.create();
         LoginManager.getInstance().registerCallback(callbackManager, this);
@@ -224,7 +236,16 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
 
             MixpanelUtils.signUpUser(registerUser);
 
-            onBackPressed();
+            switch (optOpenScreen) {
+                case NORMAL:
+                    onBackPressed();
+                    break;
+                case COMPLETE_ORDER:
+                    if (BentoNowUtils.isValidCompleteOrder(SignUpActivity.this))
+                        BentoNowUtils.openCompleteOrderActivity(SignUpActivity.this);
+                    break;
+            }
+            finish();
 
         } catch (Exception e) {
             DebugUtils.logError(TAG, "onSignUpSuccess: " + e.toString());
@@ -454,7 +475,7 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
                     switch (statusCode) {
                         case 404:
                             DebugUtils.logError(TAG, "onCompleted(): facebook email not found");
-                            BentoNowUtils.openEnterPhoneNumberActivity(SignUpActivity.this, graphResponse);
+                            BentoNowUtils.openEnterPhoneNumberActivity(SignUpActivity.this, graphResponse, optOpenScreen);
                             break;
                         case 403:
                             DebugUtils.logError(TAG, "onCompleted(): facebook bad fb_token");
