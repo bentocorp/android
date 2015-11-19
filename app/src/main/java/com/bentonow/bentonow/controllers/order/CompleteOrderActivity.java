@@ -66,6 +66,8 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
     View container_discount;
 
     BackendButton btn_delete;
+    BackendButton btnOnLetsEatPressed;
+
     TextView btn_add_promo_code;
     TextView txtPromoTotal;
 
@@ -100,6 +102,8 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         txt_tax = (TextView) findViewById(R.id.txt_tax);
         txt_tip = (TextView) findViewById(R.id.txt_tip_percent);
         txt_total = (TextView) findViewById(R.id.txt_total);
+
+        getBtnOnLetsEatPressed().setOnClickListener(this);
 
         btn_delete = (BackendButton) findViewById(R.id.btn_delete);
 
@@ -164,9 +168,10 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
     void track(String error) {
         try {
             JSONObject params = new JSONObject();
-            if (Order.current.OrderItems == null)
+            if (Order.current.OrderItems == null) {
+                Crashlytics.log("Order Items 0");
                 params.put("quantity", 0);
-            else
+            } else
                 params.put("quantity", Order.current.OrderItems.size());
 
             if (mCurrentUser != null)
@@ -244,8 +249,6 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         }
     }
 
-    //region OnClick
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -308,6 +311,9 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                 }
                 action = "";
                 break;
+            case R.id.btn_on_lets_eat_pressed:
+                onLetsEatPressed();
+                break;
             default:
                 DebugUtils.logError(TAG, "View Id wasnt found: " + v.getId());
                 break;
@@ -359,119 +365,122 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         updateUI();
     }
 
-    public void onLetsEatPressed(View v) {
-        mProgressDialog = new ProgressDialog(CompleteOrderActivity.this, R.string.processing_label);
-        mProgressDialog.show();
+    public void onLetsEatPressed() {
+        if (BentoNowUtils.isValidCompleteOrder(CompleteOrderActivity.this)) {
+            mProgressDialog = new ProgressDialog(CompleteOrderActivity.this, R.string.processing_label);
+            mProgressDialog.show();
 
-        Order.current.Stripe.stripeToken = mCurrentUser.stripe_token;
-        Order.current.IdempotentToken = BentoNowUtils.getUUIDBento();
-        Order.current.Platform = "Android";
+            Order.current.Stripe.stripeToken = mCurrentUser.stripe_token;
+            Order.current.IdempotentToken = BentoNowUtils.getUUIDBento();
+            Order.current.Platform = "Android";
 
-        RequestParams params = new RequestParams();
-        params.put("data", Order.current.toString());
-        params.put("api_token", mCurrentUser.api_token);
-        //params.put("api_token", "bad token to force 401");
+            RequestParams params = new RequestParams();
+            params.put("data", Order.current.toString());
+            params.put("api_token", mCurrentUser.api_token);
+            //params.put("api_token", "bad token to force 401");
 
-        if (Order.current.OrderItems == null || Order.current.OrderItems.isEmpty()) {
-            action = "no_items";
-            track(action);
-            Crashlytics.log(Log.ERROR, getString(R.string.app_name), "No Items in the Order");
-            DebugUtils.logError(TAG, "Order Items 0 ");
-            emptyOrders();
-            return;
-        }
+            if (Order.current.OrderItems == null || Order.current.OrderItems.isEmpty()) {
+                action = "no_items";
+                track(action);
+                Crashlytics.log(Log.ERROR, getString(R.string.app_name), "No Items in the Order");
+                DebugUtils.logError(TAG, "Order Items 0 ");
+                emptyOrders();
+                return;
+            }
 
-        DebugUtils.logDebug(TAG, "Order: " + Order.current.toString());
+            DebugUtils.logDebug(TAG, "Order: " + Order.current.toString());
 
-        BentoRestClient.post("/order", params, new TextHttpResponseHandler() {
-            @SuppressWarnings("deprecation")
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                String error;
-                JSONObject json;
+            BentoRestClient.post("/order", params, new TextHttpResponseHandler() {
+                @SuppressWarnings("deprecation")
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    String error;
+                    JSONObject json;
 
-                Log.e(TAG, "Order: " + statusCode + " " + responseString);
+                    Log.e(TAG, "Order: " + statusCode + " " + responseString);
 
-                try {
-                    json = new JSONObject(responseString);
-                    if (json.has("Error")) {
-                        error = json.getString("Error");
-                    } else {
-                        error = json.getString("error");
-                    }
-                } catch (Exception ignore) {
-                    error = "No Network";
-                    DebugUtils.logError(TAG, "onFailure(): " + ignore.toString());
-                }
-
-                switch (statusCode) {
-                    case 401:
-                        DebugUtils.logError(TAG, "Invalid Api Token");
-                        WidgetsUtils.createShortToast("You session is expired, please LogIn again");
-
-                        if (!userDao.removeUser())
-                            userDao.clearAllData();
-
-                        startActivity(new Intent(CompleteOrderActivity.this, SignInActivity.class));
-                        break;
-                    case 402:
-                        action = "credit_card";
-                        dismissDialog();
-                        break;
-                    case 406:
-                        if (responseString.contains("You cannot use a Stripe token more than once")) {
-                            mCurrentUser.stripe_token = null;
-                            userDao.updateUser(mCurrentUser);
-                            error = "";
-                            onLetsEatPressed(null);
+                    try {
+                        json = new JSONObject(responseString);
+                        if (json.has("Error")) {
+                            error = json.getString("Error");
+                        } else {
+                            error = json.getString("error");
                         }
-                        break;
-                    case 410:
-                        action = "sold_out";
-                        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_ORDER_SOLD_OUT, true);
-                        Stock.set(responseString);
-                        error += OrderDao.calculateSoldOutItems();
-                        break;
-                    case 423:
-                        action = "closed";
-                        break;
-                    default:
-                        error = getResources().getString(R.string.error_send_order);
-                        break;
+                    } catch (Exception ignore) {
+                        error = "No Network";
+                        DebugUtils.logError(TAG, "onFailure(): " + ignore.toString());
+                    }
+
+                    switch (statusCode) {
+                        case 401:
+                            DebugUtils.logError(TAG, "Invalid Api Token");
+                            WidgetsUtils.createShortToast("You session is expired, please LogIn again");
+
+                            if (!userDao.removeUser())
+                                userDao.clearAllData();
+
+                            startActivity(new Intent(CompleteOrderActivity.this, SignInActivity.class));
+                            break;
+                        case 402:
+                            action = "credit_card";
+                            error = getString(R.string.error_no_credit_card);
+                            break;
+                        case 406:
+                            if (responseString.contains("You cannot use a Stripe token more than once")) {
+                                mCurrentUser.stripe_token = null;
+                                userDao.updateUser(mCurrentUser);
+                                error = "";
+                                onLetsEatPressed();
+                            }
+                            break;
+                        case 410:
+                            action = "sold_out";
+                            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_ORDER_SOLD_OUT, true);
+                            Stock.set(responseString);
+                            error += OrderDao.calculateSoldOutItems();
+                            break;
+                        case 423:
+                            action = "closed";
+                            error = BackendText.get("closed-title");
+                            break;
+                        default:
+                            error = getResources().getString(R.string.error_send_order);
+                            break;
+                    }
+
+                    dismissDialog();
+
+                    track(error);
+
+                    if (!error.equals("")) {
+                        mDialog = new ConfirmationDialog(CompleteOrderActivity.this, null, error);
+                        mDialog.addAcceptButton("OK", null);
+                        mDialog.show();
+                    }
                 }
 
-                dismissDialog();
+                @SuppressWarnings("deprecation")
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                    track(null);
 
-                track(error);
+                    MixpanelUtils.trackRevenue(Order.current.OrderDetails.total_cents / 100, mCurrentUser);
 
-                if (!error.equals("")) {
-                    mDialog = new ConfirmationDialog(CompleteOrderActivity.this, null, error);
-                    mDialog.addAcceptButton("OK", null);
-                    mDialog.show();
+                    Log.i(TAG, "Order: " + responseString);
+
+                    mCurrentUser.stripe_token = null;
+
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.UUID_BENTO, "");
+                    BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);
+
+                    dismissDialog();
+
+                    startActivity(new Intent(CompleteOrderActivity.this, OrderConfirmedActivity.class));
+                    Order.cleanUp();
+                    finish();
                 }
-            }
-
-            @SuppressWarnings("deprecation")
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                track(null);
-
-                MixpanelUtils.trackRevenue(Order.current.OrderDetails.total_cents / 100, mCurrentUser);
-
-                Log.i(TAG, "Order: " + responseString);
-
-                mCurrentUser.stripe_token = null;
-
-                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.UUID_BENTO, "");
-                BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);
-
-                dismissDialog();
-
-                startActivity(new Intent(CompleteOrderActivity.this, OrderConfirmedActivity.class));
-                Order.cleanUp();
-                finish();
-            }
-        });
+            });
+        }
     }
 
     void updateUI() {
@@ -669,5 +678,10 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         return txtPromoTotal;
     }
 
+    private BackendButton getBtnOnLetsEatPressed() {
+        if (btnOnLetsEatPressed == null)
+            btnOnLetsEatPressed = (BackendButton) findViewById(R.id.btn_on_lets_eat_pressed);
+        return btnOnLetsEatPressed;
+    }
 
 }

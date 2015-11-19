@@ -104,7 +104,7 @@
     <string name="error_closed_text">Bento opens at 5pm today! We\'re cookin\' up some delicious dinner. \n Get excited!</string>
     <string name="error_closed_input_mail_hint">Enter email for \'We\'re Open\'! email</string>
     <string name="error_no_valid_delivery_address">Please enter a valid delivery address.</string>
-    <string name="error_no_user_log_in">Please register before complete an order.</string>
-    <string name="error_no_credit_card">Please add a valid credit card before complete an order.</string>
+    <string name="error_no_user_log_in">Please register before completing an order.</string>
+    <string name="error_no_credit_card">Please add a valid credit card before completing an order.</string>
     <string name="error_new_menu_type">There is a new menu available</string>
 </resources>

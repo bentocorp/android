@@ -317,15 +317,14 @@ public class BentoNowUtils {
         User mUser = userDao.getCurrentUser();
 
         if (mUser == null) {
-            WidgetsUtils.createShortToast(R.string.error_no_user_log_in);
-
+            // WidgetsUtils.createShortToast(R.string.error_no_user_log_in);
             Intent mIntentSignIn = new Intent(mContext, SignInActivity.class);
             mIntentSignIn.putExtra(ConstantUtils.TAG_OPEN_SCREEN, ConstantUtils.optOpenScreen.COMPLETE_ORDER);
             mContext.startActivity(mIntentSignIn);
 
             bIsValid = false;
         } else if (LocationUtils.mCurrentLocation == null || !Settings.isInServiceArea(LocationUtils.mCurrentLocation) || Order.address == null) {
-            WidgetsUtils.createShortToast(mContext.getString(R.string.error_no_valid_delivery_address));
+            // WidgetsUtils.createShortToast(mContext.getString(R.string.error_no_valid_delivery_address));
 
             Intent intent = new Intent(mContext, DeliveryLocationActivity.class);
             intent.putExtra(ConstantUtils.TAG_OPEN_SCREEN, ConstantUtils.optOpenScreen.COMPLETE_ORDER);
@@ -333,7 +332,7 @@ public class BentoNowUtils {
 
             bIsValid = false;
         } else if (!userDao.isCreditCardValid(mUser)) {
-            WidgetsUtils.createShortToast(R.string.error_no_credit_card);
+            //  WidgetsUtils.createShortToast(R.string.error_no_credit_card);
 
             Intent mIntentCredit = new Intent(mContext, EnterCreditCardActivity.class);
             mIntentCredit.putExtra(ConstantUtils.TAG_OPEN_SCREEN, ConstantUtils.optOpenScreen.COMPLETE_ORDER);

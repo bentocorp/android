@@ -36,7 +36,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
     static final String TAG = "BuildBentoActivity";
 
     private ImageView actionbar_right_btn;
-    private BackendButton btn_continue;
+    private BackendButton btnContinue;
     private BackendButton btn_add_another_bento;
     private TextView actionbar_right_badge;
 
@@ -61,7 +61,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
 
         setContentView(R.layout.activity_build_bento);
 
-        btn_continue = (BackendButton) findViewById(R.id.btn_continue);
+        getBtnContinue().setOnClickListener(this);
         btn_add_another_bento = (BackendButton) findViewById(R.id.btn_add_another_bento);
         actionbar_right_btn = (ImageView) findViewById(R.id.actionbar_right_btn);
         actionbar_right_badge = (TextView) findViewById(R.id.actionbar_right_badge);
@@ -185,13 +185,13 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
 
     public void updateUI() {
         if (Order.current.OrderItems.get(orderIndex).isComplete() && !Stock.isSold()) {
-            btn_continue.setBackgroundColor(getResources().getColor(R.color.btn_green));
-            btn_continue.setText(BackendText.get("build-button-2"));
+            getBtnContinue().setBackgroundColor(getResources().getColor(R.color.btn_green));
+            getBtnContinue().setText(BackendText.get("build-button-2"));
             btn_add_another_bento.setBackgroundResource(R.drawable.btn_gray);
             btn_add_another_bento.setTextColor(getResources().getColor(R.color.btn_green));
         } else {
-            btn_continue.setBackgroundColor(getResources().getColor(R.color.gray));
-            btn_continue.setText(BackendText.get("build-button-1"));
+            getBtnContinue().setBackgroundColor(getResources().getColor(R.color.gray));
+            getBtnContinue().setText(BackendText.get("build-button-1"));
             btn_add_another_bento.setBackgroundResource(R.drawable.btn_gray_pressed);
             btn_add_another_bento.setTextColor(getResources().getColor(R.color.btn_green_trans));
         }
@@ -250,7 +250,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
                 break;
             case R.id.actionbar_right_btn:
                 if (Order.current.OrderItems.get(orderIndex).isComplete()) {
-                    onContinueOrderPressed(null);
+                    onContinueOrderPressed();
                 } else {
                     mDialog = new ConfirmationDialog(BuildBentoActivity.this, null, BackendText.get("build-not-complete-text"));
                     mDialog.addAcceptButton(BackendText.get("build-not-complete-confirmation-2"), BuildBentoActivity.this);
@@ -263,15 +263,18 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
                 autocomplete();
 
                 if (Order.countCompletedOrders() > 0) {
-                    onContinueOrderPressed(null);
+                    onContinueOrderPressed();
                 }
                 break;
             case R.id.btn_cancel:
                 if (Order.current.OrderItems.size() > 1) {
                     Order.current.OrderItems.remove(orderIndex);
                     orderIndex = Order.current.OrderItems.size() - 1;
-                    onContinueOrderPressed(null);
+                    onContinueOrderPressed();
                 }
+                break;
+            case R.id.btn_continue:
+                onContinueOrderPressed();
                 break;
         }
     }
@@ -319,7 +322,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
         updateUI();
     }
 
-    public void onContinueOrderPressed(View view) {
+    public void onContinueOrderPressed() {
 
         String sSoldOutItems = OrderDao.calculateSoldOutItems();
 
@@ -382,4 +385,12 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
             txtPromoName = (AutoFitTxtView) findViewById(R.id.txt_promo_name);
         return txtPromoName;
     }
+
+    private BackendButton getBtnContinue() {
+        if (btnContinue == null)
+            btnContinue = (BackendButton) findViewById(R.id.btn_continue);
+        return btnContinue;
+    }
+
+
 }

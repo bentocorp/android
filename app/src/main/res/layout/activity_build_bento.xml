@@ -465,7 +465,6 @@
             android:layout_height="wrap_content"
             android:background="@color/gray"
             android:gravity="center"
-            android:onClick="onContinueOrderPressed"
             android:padding="@dimen/btn_padding"
             android:text="@string/btn_continue_text"
             android:textColor="@color/white"
