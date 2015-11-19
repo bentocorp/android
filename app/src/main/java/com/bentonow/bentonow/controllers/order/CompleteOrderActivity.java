@@ -94,8 +94,6 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
         Order.clearIncomplete();
 
-        mCurrentUser = userDao.getCurrentUser();
-
         txt_address = (TextView) findViewById(R.id.txt_address);
         txt_credit_card = (TextView) findViewById(R.id.txt_credit_card);
         txt_discount = (TextView) findViewById(R.id.txt_discount);
@@ -132,9 +130,8 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
     }
 
     private void emptyOrders() {
-        Order.current = null;
-        BentoNowUtils.openBuildBentoActivity(this);
-        finish();
+        Order.cleanUp();
+        onBackPressed();
     }
 
     void deleteBento() {
@@ -153,11 +150,11 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
     @Override
     protected void onResume() {
-        if (mCurrentUser == null || Order.location == null || Order.address == null || Order.current == null) {
-            if (Order.current == null || Order.current.OrderItems == null || Order.current.OrderItems.isEmpty())
-                emptyOrders();
-            else
-                finish();
+        mCurrentUser = userDao.getCurrentUser();
+
+        if (Order.current == null || Order.current.OrderItems == null || Order.current.OrderItems.isEmpty()) {
+            Crashlytics.log(Log.ERROR, "Order", "No Items in the Order");
+            emptyOrders();
         } else {
             updateUI();
         }
@@ -169,7 +166,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         try {
             JSONObject params = new JSONObject();
             if (Order.current.OrderItems == null) {
-                Crashlytics.log("Order Items 0");
+                Crashlytics.log(Log.ERROR, "Order", "No Items in the Order");
                 params.put("quantity", 0);
             } else
                 params.put("quantity", Order.current.OrderItems.size());
@@ -382,7 +379,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
             if (Order.current.OrderItems == null || Order.current.OrderItems.isEmpty()) {
                 action = "no_items";
                 track(action);
-                Crashlytics.log(Log.ERROR, getString(R.string.app_name), "No Items in the Order");
+                Crashlytics.log(Log.ERROR, "Order", "No Items in the Order");
                 DebugUtils.logError(TAG, "Order Items 0 ");
                 emptyOrders();
                 return;
@@ -444,6 +441,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                             error = BackendText.get("closed-title");
                             break;
                         default:
+                            Crashlytics.log(Log.ERROR, "SendOrderError", "Code " + statusCode + " : Response " + responseString + " : Parsing " + error);
                             error = getResources().getString(R.string.error_send_order);
                             break;
                     }
