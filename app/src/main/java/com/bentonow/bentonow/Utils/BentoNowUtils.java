@@ -52,7 +52,7 @@ public class BentoNowUtils {
 
     public static int getCurrentTime() {
         if (BuildConfig.DEBUG && BentoNowUtils.B_KOKUSHO_TESTING)
-            return 113000;
+            return 203000;
             //return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
         else
             return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
@@ -323,7 +323,7 @@ public class BentoNowUtils {
             mContext.startActivity(mIntentSignIn);
 
             bIsValid = false;
-        } else if (LocationUtils.mCurrentLocation == null || !Settings.isInServiceArea(LocationUtils.mCurrentLocation) || Order.address == null) {
+        } else if (LocationUtils.mCurrentLocation == null || !Settings.isInServiceArea(LocationUtils.mCurrentLocation) || Order.address == null || Order.location == null) {
             // WidgetsUtils.createShortToast(mContext.getString(R.string.error_no_valid_delivery_address));
 
             Intent intent = new Intent(mContext, DeliveryLocationActivity.class);
