@@ -17,6 +17,8 @@ import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
 
+import java.util.ArrayList;
+
 
 public class SelectMainCustomActivity extends BaseActivity implements View.OnClickListener, AdapterView.OnItemClickListener, ListenerCustomDish {
 
@@ -49,12 +51,18 @@ public class SelectMainCustomActivity extends BaseActivity implements View.OnCli
             getListAdapter().setCurrentAdded(Order.current.OrderItems.get(orderIndex).items.get(0));
             getListAdapter().setCurrentSelected(Order.current.OrderItems.get(orderIndex).items.get(0));
 
+            ArrayList<DishModel> aSoldDish = new ArrayList<>();
 
             for (DishModel dishModel : menu.dishModels) {
-                if (!dishModel.type.equals("main"))
-                    continue;
-                getListAdapter().add(dishModel);
+                if (dishModel.type.equals("main")) {
+                    if (DishDao.isSoldOut(dishModel, true))
+                        aSoldDish.add(dishModel);
+                    else
+                        getListAdapter().add(dishModel);
+                }
             }
+
+            getListAdapter().addAll(aSoldDish);
         }
     }
 

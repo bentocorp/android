@@ -90,9 +90,17 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
             mDialog.show();
         } else {
             getAdapterListBento().clear();
+
+            ArrayList<DishModel> aSoldDish = new ArrayList<>();
+
             for (DishModel dishModel : mMenu.dishModels)
                 if (dishModel.type.equals("main"))
-                    getAdapterListBento().add(dishModel);
+                    if (DishDao.isSoldOut(dishModel, true))
+                        aSoldDish.add(dishModel);
+                    else
+                        getAdapterListBento().add(dishModel);
+
+            getAdapterListBento().addAll(aSoldDish);
 
             setSideDishList();
         }
