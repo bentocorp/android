@@ -22,7 +22,6 @@ import com.bentonow.bentonow.Utils.LocationUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
-import com.bentonow.bentonow.controllers.errors.ErrorVersionActivity;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Menu;
@@ -137,16 +136,14 @@ public class MainActivity extends BaseFragmentActivity {
 
     void checkFirstRun() {
         if (!SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.APP_FIRST_RUN)) {
-            if (Settings.min_version > BuildConfig.VERSION_CODE) {
-                Intent intent = new Intent(this, ErrorVersionActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(intent);
-            } else {
+
+            if (BentoNowUtils.isLastVersionApp(MainActivity.this)) {
                 Intent intent = new Intent(this, GettingStartedActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
             }
             finish();
+
         } else {
             checkAppStatus();
         }
@@ -155,20 +152,15 @@ public class MainActivity extends BaseFragmentActivity {
     void checkAppStatus() {
         Log.i(TAG, "checkAppStatus");
 
-        if (Settings.min_version > BuildConfig.VERSION_CODE) {
-            Intent intent = new Intent(this, ErrorVersionActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            startActivity(intent);
-
-            finish();
-        } else if (!Settings.status.equals("open")) {
-            BentoNowUtils.openErrorActivity(this);
-            finish();
-       /* } else if (Order.pendingOrders()) {
-            BentoNowUtils.openBuildBentoActivity(this);
-            finish();*/
+        if (BentoNowUtils.isLastVersionApp(MainActivity.this)) {
+            if (!Settings.status.equals("open")) {
+                BentoNowUtils.openErrorActivity(this);
+                finish();
+            } else {
+                waitForUserLocation();
+            }
         } else {
-            waitForUserLocation();
+            finish();
         }
     }
 

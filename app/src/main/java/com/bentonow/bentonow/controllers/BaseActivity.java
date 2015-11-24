@@ -22,11 +22,16 @@ public class BaseActivity extends BaseFragmentActivity {
 
         Menu mCurrentMenu = Menu.get();
 
-        if (mCurrentMenu == null || !Settings.status.equals("open")) {
-            DebugUtils.logDebug("Finish activity: " + Settings.status + mCurrentMenu);
-            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, "closed");
-            BentoNowUtils.openErrorActivity(this);
+        if (BentoNowUtils.isLastVersionApp(this)) {
+            if (mCurrentMenu == null || !Settings.status.equals("open")) {
+                DebugUtils.logDebug("Finish activity: " + Settings.status + mCurrentMenu);
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, "closed");
+                BentoNowUtils.openErrorActivity(this);
+            }
+        } else {
+            finish();
         }
+
 
     }
 

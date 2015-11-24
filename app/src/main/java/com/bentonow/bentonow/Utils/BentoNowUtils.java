@@ -11,6 +11,7 @@ import android.view.animation.RotateAnimation;
 import com.bentonow.bentonow.BuildConfig;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.controllers.errors.ErrorActivity;
+import com.bentonow.bentonow.controllers.errors.ErrorVersionActivity;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.controllers.init.MainActivity;
@@ -258,6 +259,15 @@ public class BentoNowUtils {
         mActivity.finish();
     }
 
+    public static boolean isLastVersionApp(Context mContext) {
+        if (Settings.min_version != 0 && (Settings.min_version > BuildConfig.VERSION_CODE)) {
+            Intent intent = new Intent(mContext, ErrorVersionActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            mContext.startActivity(intent);
+            return false;
+        }
+        return true;
+    }
 
     public static void openPolicyActivity(FragmentActivity mActivity) {
         Intent intent = new Intent(mActivity, HelpActivity.class);

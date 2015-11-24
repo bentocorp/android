@@ -127,38 +127,40 @@ public class BentoService extends Service {
             Menu mMenu = Menu.get();
 
             if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.APP_FIRST_RUN)) {
-
-                if (mMenu == null) {
-                    if (!SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS).equals("closed")) {
-                        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, "closed");
-                        BentoNowUtils.openErrorActivity(this);
-                    }
-                } else {
-                    if (!Settings.status.equals(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS))) {
-
-                        DebugUtils.logDebug(TAG, "Should change from: " + SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS) + " to " + Settings.status);
-
-                        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
-
-                        switch (Settings.status) {
-                            case "open":
-                                BentoNowUtils.openMainActivity(this);
-                                break;
-                            case "sold out":
-                            case "closed":
-                                BentoNowUtils.openErrorActivity(this);
-                                break;
+                if (BentoNowUtils.isLastVersionApp(this)) {
+                    if (mMenu == null) {
+                        if (!SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS).equals("closed")) {
+                            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, "closed");
+                            BentoNowUtils.openErrorActivity(this);
                         }
                     } else {
-                        if (Order.current != null && mMenu != null)
-                            if (!Order.current.MealName.equals(mMenu.meal_name) || !Order.current.MenuType.equals(mMenu.menu_type)) {
-                                DebugUtils.logDebug(TAG, "New Menu: " + mMenu.meal_name + "||" + mMenu.menu_type);
-                                WidgetsUtils.createShortToast(R.string.error_new_menu_type);
-                                Order.cleanUp();
-                                BentoNowUtils.openBuildBentoActivity(this);
+                        if (!Settings.status.equals(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS))) {
+
+                            DebugUtils.logDebug(TAG, "Should change from: " + SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS) + " to " + Settings.status);
+
+                            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+
+                            switch (Settings.status) {
+                                case "open":
+                                    BentoNowUtils.openMainActivity(this);
+                                    break;
+                                case "sold out":
+                                case "closed":
+                                    BentoNowUtils.openErrorActivity(this);
+                                    break;
                             }
+                        } else {
+                            if (Order.current != null && mMenu != null)
+                                if (!Order.current.MealName.equals(mMenu.meal_name) || !Order.current.MenuType.equals(mMenu.menu_type)) {
+                                    DebugUtils.logDebug(TAG, "New Menu: " + mMenu.meal_name + "||" + mMenu.menu_type);
+                                    WidgetsUtils.createShortToast(R.string.error_new_menu_type);
+                                    Order.cleanUp();
+                                    BentoNowUtils.openBuildBentoActivity(this);
+                                }
+                        }
                     }
                 }
+
             }
 
         } catch (Exception ex) {
