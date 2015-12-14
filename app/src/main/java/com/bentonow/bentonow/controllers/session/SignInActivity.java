@@ -365,8 +365,6 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
 
     @Override
     public void onCompleted(JSONObject jsonObject, final GraphResponse graphResponse) {
-        mProgressDialog = new ProgressDialog(SignInActivity.this, BackendText.get("sign-up-sign-in-link"));
-        mProgressDialog.show();
 
         try {
             final JSONObject user = graphResponse.getJSONObject();
@@ -375,6 +373,9 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
             User loginUser = new User();
             loginUser.email = user.getString("email");
             loginUser.fb_token = AccessToken.getCurrentAccessToken().getToken();
+
+            mProgressDialog = new ProgressDialog(SignInActivity.this, BackendText.get("sign-up-sign-in-link"));
+            mProgressDialog.show();
 
             UserRequest.login(loginUser, new TextHttpResponseHandler() {
                 @SuppressWarnings("deprecation")
@@ -410,8 +411,11 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
                 }
             });
         } catch (Exception e) {
-            dismissDialog();
             DebugUtils.logError(TAG, e.toString());
+            dismissDialog();
+            mDialog = new ConfirmationDialog(SignInActivity.this, "Error", "Sorry! Please share your email address through Facebook to continue.");
+            mDialog.addAcceptButton("OK", null);
+            mDialog.show();
         }
     }
 

@@ -39,7 +39,6 @@ import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Collections;
@@ -455,8 +454,6 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
     public void onCompleted(JSONObject jsonObject, final GraphResponse graphResponse) {
         final JSONObject user = graphResponse.getJSONObject();
 
-        mProgressDialog = new ProgressDialog(SignUpActivity.this, BackendText.get("sign-in-sign-up-link"));
-        mProgressDialog.show();
 
         try {
             Log.i(TAG, "graphResponse:" + graphResponse.toString());
@@ -464,6 +461,9 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
             User loginUser = new User();
             loginUser.email = user.getString("email");
             loginUser.fb_token = AccessToken.getCurrentAccessToken().getToken();
+
+            mProgressDialog = new ProgressDialog(SignUpActivity.this, BackendText.get("sign-in-sign-up-link"));
+            mProgressDialog.show();
 
             UserRequest.login(loginUser, new TextHttpResponseHandler() {
                 @SuppressWarnings("deprecation")
@@ -490,8 +490,12 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
                     //BentoNowUtils.openEnterPhoneNumberActivity(SignUpActivity.this, graphResponse);
                 }
             });
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            DebugUtils.logError(TAG, e);
+            dismissDialog();
+            mDialog = new ConfirmationDialog(SignUpActivity.this, "Error", "Sorry! Please share your email address through Facebook to continue.");
+            mDialog.addAcceptButton("OK", null);
+            mDialog.show();
         }
     }
 
