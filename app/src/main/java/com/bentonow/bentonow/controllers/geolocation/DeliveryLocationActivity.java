@@ -370,7 +370,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             }
 
             Intent intent = new Intent(DeliveryLocationActivity.this, BummerActivity.class);
-            intent.putExtra("invalid_address", sOrderAddress.toString());
+            intent.putExtra(BummerActivity.TAG_INVALID_ADDRESS, LocationUtils.getCustomAddress(sOrderAddress));
             startActivity(intent);
         }
     }
@@ -414,6 +414,12 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                         // Assign the data to the FilterResults
                         filterResults.values = resultList;
                         filterResults.count = resultList.size();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                notifyDataSetChanged();
+                            }
+                        });
                     }
                     return filterResults;
                 }

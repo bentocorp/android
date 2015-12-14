@@ -12,10 +12,8 @@ import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
-import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
-import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.ui.BackendEditText;
 import com.bentonow.bentonow.web.request.UserRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -32,10 +30,15 @@ import org.json.JSONObject;
 
 public class BummerActivity extends BaseFragmentActivity implements View.OnClickListener {
 
-    static final String TAG = "ErrorInvalidAddressAct";
+    public static final String TAG = "BummerActivity";
+    public static final String TAG_INVALID_ADDRESS = "invalid_address";
 
     EditText txt_email;
+    private TextView txtAddress;
     GoogleMap map;
+
+    String sCurrentLocation = "";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,9 +47,14 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
 
         initActionbar();
 
+        sCurrentLocation = getIntent().getExtras().getString(TAG_INVALID_ADDRESS);
+
         txt_email = (BackendEditText) findViewById(R.id.txt_email);
 
-        ((TextView) findViewById(R.id.txt_address)).setText(Order.getFullAddress());
+        if (sCurrentLocation == null || sCurrentLocation.isEmpty())
+            sCurrentLocation = Order.getFullAddress();
+
+        getTxtAddress().setText(sCurrentLocation);
 
         try {
             JSONObject params = new JSONObject();
@@ -131,5 +139,12 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
         rectOptions.strokeColor(getResources().getColor(R.color.blue));
 
         map.addPolygon(rectOptions);
+    }
+
+
+    private TextView getTxtAddress() {
+        if (txtAddress == null)
+            txtAddress = (TextView) findViewById(R.id.txt_address);
+        return txtAddress;
     }
 }

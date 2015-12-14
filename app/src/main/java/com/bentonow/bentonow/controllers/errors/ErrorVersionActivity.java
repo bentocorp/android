@@ -21,11 +21,15 @@ public class ErrorVersionActivity extends BaseFragmentActivity {
         Log.i(TAG, "onCreate");
     }
 
-    public void onUpdatePressed (View view) {
+    public void onUpdatePressed(View view) {
         String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
         try {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
-        } catch (android.content.ActivityNotFoundException anfe) {
+            Intent mIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName));
+            if (mIntent.resolveActivity(getPackageManager()) != null)
+                startActivityForResult(mIntent, 0);
+            else
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+        } catch (Exception anfe) {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
         }
     }
