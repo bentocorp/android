@@ -100,14 +100,14 @@ public class Order {
     }
 
     public static void calculate() {
-        double bento_total = 0;
+        double items_total = 0;
         double subtotal;
         double subtotal_taxed;
         double tax;
         double delivery_percent;
         double tip;
         double total;
-
+        double item_total = 0;
         double tax_percent = Settings.tax_percent;
 
         current.OrderDetails.delivery_price = Settings.delivery_price;
@@ -115,22 +115,25 @@ public class Order {
         delivery_percent = (current.OrderDetails.delivery_price * 100);
 
         for (OrderItem mItem : current.OrderItems)
-            bento_total += OrderDao.getPriceByOrder(mItem) * 100;
+            items_total += OrderDao.getPriceByOrder(mItem) * 100;
 
+        current.OrderDetails.items_total = items_total / 100;
 
-        subtotal = bento_total + delivery_percent;
+        subtotal = items_total + delivery_percent;
 
         if (subtotal - current.OrderDetails.coupon_discount_cents <= 0)
             subtotal_taxed = 0;
         else
             subtotal_taxed = subtotal - current.OrderDetails.coupon_discount_cents;
 
-        tip = Math.round(bento_total * current.OrderDetails.tip_percentage / 100);
+        tip = Math.round(items_total * current.OrderDetails.tip_percentage / 100);
         current.OrderDetails.tip_cents = tip;
 
         tax = Math.round(subtotal_taxed * (tax_percent / 100));
 
         current.OrderDetails.tax_cents = tax;
+        current.OrderDetails.tax_percentage = tax_percent;
+        current.OrderDetails.total_cents_without_coupon = subtotal + tax + tip;
 
         if ((subtotal + tax + tip - current.OrderDetails.coupon_discount_cents) <= 0)
             total = 0;
@@ -141,6 +144,7 @@ public class Order {
                 total = subtotal + tax + tip - current.OrderDetails.coupon_discount_cents;
         }
 
+        current.OrderDetails.subtotal = (subtotal + tax) / 100;
 
         DebugUtils.logDebug(TAG, "Subtotal: " + subtotal);
         DebugUtils.logDebug(TAG, "Subtotal Taxed: " + subtotal_taxed);
