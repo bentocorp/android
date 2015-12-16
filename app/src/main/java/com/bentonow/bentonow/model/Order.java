@@ -2,6 +2,7 @@ package com.bentonow.bentonow.model;
 
 import android.location.Address;
 
+import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.dao.OrderDao;
 import com.bentonow.bentonow.model.order.OrderDetails;
@@ -101,60 +102,80 @@ public class Order {
 
     public static void calculate() {
         double items_total = 0;
-        double subtotal;
-        double subtotal_taxed;
+        double delivery_fee = Settings.delivery_price;
+        double pre_coupon_subtotal;
+        double post_coupon_subtotal;
+        double coupon_discount;
         double tax;
-        double delivery_percent;
+        double tax_w_o_coupon;
+        double subtotal_w_o_coupon;
+        double subtotal;
         double tip;
         double total;
-        double item_total = 0;
         double tax_percent = Settings.tax_percent;
+        double total_w_o_coupon;
 
-        current.OrderDetails.delivery_price = Settings.delivery_price;
-
-        delivery_percent = (current.OrderDetails.delivery_price * 100);
+        coupon_discount = current.OrderDetails.coupon_discount_cents / 100;
 
         for (OrderItem mItem : current.OrderItems)
-            items_total += OrderDao.getPriceByOrder(mItem) * 100;
+            items_total += OrderDao.getPriceByOrder(mItem);
 
-        current.OrderDetails.items_total = items_total / 100;
+        pre_coupon_subtotal = items_total + delivery_fee;
 
-        subtotal = items_total + delivery_percent;
-
-        if (subtotal - current.OrderDetails.coupon_discount_cents <= 0)
-            subtotal_taxed = 0;
+        if (pre_coupon_subtotal - coupon_discount < 0)
+            post_coupon_subtotal = 0;
         else
-            subtotal_taxed = subtotal - current.OrderDetails.coupon_discount_cents;
+            post_coupon_subtotal = pre_coupon_subtotal - coupon_discount;
 
-        tip = Math.round(items_total * current.OrderDetails.tip_percentage / 100);
-        current.OrderDetails.tip_cents = tip;
+        tax_w_o_coupon = pre_coupon_subtotal * (tax_percent / 100);
 
-        tax = Math.round(subtotal_taxed * (tax_percent / 100));
+        subtotal_w_o_coupon = pre_coupon_subtotal + tax_w_o_coupon;
 
-        current.OrderDetails.tax_cents = tax;
-        current.OrderDetails.tax_percentage = tax_percent;
-        current.OrderDetails.total_cents_without_coupon = subtotal + tax + tip;
+        tax = post_coupon_subtotal * (tax_percent / 100);
 
-        if ((subtotal + tax + tip - current.OrderDetails.coupon_discount_cents) <= 0)
+        tip = items_total * (current.OrderDetails.tip_percentage / 100);
+
+        subtotal = post_coupon_subtotal + tax;
+
+        if ((subtotal_w_o_coupon + tip) <= 0)
+            total_w_o_coupon = 0;
+        else if ((subtotal_w_o_coupon + tip) < 0.5)
+            total_w_o_coupon = 50;
+        else
+            total_w_o_coupon = subtotal_w_o_coupon + tip;
+
+        if (pre_coupon_subtotal + tax + tip - coupon_discount <= 0)
             total = 0;
-        else {
-            if ((subtotal + tax + tip - current.OrderDetails.coupon_discount_cents) < 50)
-                total = 50;
-            else
-                total = subtotal + tax + tip - current.OrderDetails.coupon_discount_cents;
-        }
+        else if (pre_coupon_subtotal + tax + tip - coupon_discount < 0.5)
+            total = 0.5;
+        else
+            total = pre_coupon_subtotal + tax + tip - coupon_discount;
 
-        current.OrderDetails.subtotal = (subtotal + tax) / 100;
 
-        DebugUtils.logDebug(TAG, "Subtotal: " + subtotal);
-        DebugUtils.logDebug(TAG, "Subtotal Taxed: " + subtotal_taxed);
+        current.OrderDetails.coupon_discount_cents = (int) Math.round(coupon_discount * 100);
+        current.OrderDetails.delivery_price = Settings.delivery_price;
+        current.OrderDetails.items_total = AndroidUtil.round(items_total, 2);
+        current.OrderDetails.subtotal = AndroidUtil.round(subtotal, 2);
+        current.OrderDetails.tax_cents = AndroidUtil.round(tax, 2) * 100;
+        current.OrderDetails.tax_percentage = AndroidUtil.round(tax_percent, 2);
+        current.OrderDetails.tip_cents = AndroidUtil.round(tip, 2) * 100;
+        current.OrderDetails.total_cents = AndroidUtil.round(total, 2) * 100;
+        current.OrderDetails.total_cents_without_coupon = AndroidUtil.round(total_w_o_coupon, 2) * 100;
+
+        DebugUtils.logDebug(TAG, "Item Price: " + current.OrderDetails.items_total);
+        DebugUtils.logDebug(TAG, "Delivery Fee: " + delivery_fee);
+        DebugUtils.logDebug(TAG, "Pre-Coupon Subtotal: " + pre_coupon_subtotal);
+        DebugUtils.logDebug(TAG, "Post-Coupon Subtotal: " + post_coupon_subtotal);
+        DebugUtils.logDebug(TAG, "Coupon (Promo) Discount: " + coupon_discount);
+        DebugUtils.logDebug(TAG, "Tax w/o coupon: " + tax_w_o_coupon);
         DebugUtils.logDebug(TAG, "Tax: " + tax);
         DebugUtils.logDebug(TAG, "Tax double: " + Settings.tax_percent);
+        DebugUtils.logDebug(TAG, "Subtotal w/o coupon: " + subtotal_w_o_coupon);
+        DebugUtils.logDebug(TAG, "Subtotal: " + subtotal);
         DebugUtils.logDebug(TAG, "Tip: " + tip);
+        DebugUtils.logDebug(TAG, "Total Cent W O Coupon: " + total_w_o_coupon);
         DebugUtils.logDebug(TAG, "Total: " + total);
-        DebugUtils.logDebug(TAG, "Delivery Price: " + Settings.delivery_price);
-
-        current.OrderDetails.total_cents = Math.round(total);
+        DebugUtils.logDebug(TAG, "Total Discount: " + (total_w_o_coupon - total));
     }
 
     public static void clearIncomplete() {

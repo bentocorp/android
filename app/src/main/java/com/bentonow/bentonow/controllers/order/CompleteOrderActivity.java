@@ -487,7 +487,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         if (Order.current.OrderDetails.coupon_discount_cents > 0) {
             getBtnAddPromoCode().setTextColor(getResources().getColor(R.color.orange));
             getBtnAddPromoCode().setText("REMOVE PROMO");
-            getTxtPromoTotal().setText(String.format(getString(R.string.money_format), (Order.current.OrderDetails.coupon_discount_cents + Order.current.OrderDetails.total_cents) / 100));
+            getTxtPromoTotal().setText(String.format(getString(R.string.money_format), Order.current.OrderDetails.total_cents_without_coupon / 100));
             getLayoutWrapperDiscount().setVisibility(View.VISIBLE);
             container_discount.setVisibility(View.VISIBLE);
         } else {
