@@ -37,9 +37,11 @@
     <string name="alert_error_enter_valid_number">Please enter a valid phone number.</string>
     <string name="alert_error_mismatch">Phone numbers entered must match.</string>
     <string name="processing_label">Processing...</string>
+    <string name="searching_label">Searching...</string>
 
     <string name="error_web_request">There is an error, please try again later</string>
     <string name="error_sold_out_items">There are sold out items, please change them before continue \n%s</string>
+    <string name="error_location_place">Please move the map to set your location</string>
 
 
     <string name="cardNumber">1234 5678 9012 3456</string>
@@ -107,4 +109,5 @@
     <string name="error_no_user_log_in">Please register before completing an order.</string>
     <string name="error_no_credit_card">Please add a valid credit card before completing an order.</string>
     <string name="error_new_menu_type">There is a new menu available</string>
+    <string name="error_no_location_found">We cant get your </string>
 </resources>

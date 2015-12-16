@@ -33,17 +33,21 @@ import com.bentonow.bentonow.Utils.LocationUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
+import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
+import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
 import com.bentonow.bentonow.controllers.errors.BummerActivity;
 import com.bentonow.bentonow.controllers.fragment.MySupportMapFragment;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.dao.UserDao;
+import com.bentonow.bentonow.listener.ListenerWebRequest;
 import com.bentonow.bentonow.listener.OnCustomDragListener;
 import com.bentonow.bentonow.model.AutoCompleteModel;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.ui.BackendTextView;
+import com.bentonow.bentonow.web.request.RequestGetPlaceDetail;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -85,6 +89,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private ImageView actionbar_right_btn;
     private ImageView actionbar_left_btn;
     private ProgressBar progressBar;
+    private ProgressDialog mProgressDialog;
 
     private boolean mRequestingLocationUpdates;
     private GoogleApiClient mGoogleApiClient;
@@ -483,6 +488,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             // Extract the Place descriptions from the results
             resultList = new ArrayList<>(list.length());
             for (int i = 0; i < list.length(); i++) {
+                DebugUtils.logDebug(TAG, "Predictions: " + list.getJSONObject(i).toString());
                 AutoCompleteModel mAutocomplete = new AutoCompleteModel();
                 mAutocomplete.setAddress(list.getJSONObject(i).getString("description"));
                 mAutocomplete.setPlaceId(list.getJSONObject(i).getString("place_id"));
@@ -496,11 +502,19 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
     private void getExactLocationByPlaceId(final String sAddress, final String sPlaceId) {
-        checkAddress(sAddress);
-       /* BentoApplication.instance.webRequest(new RequestGetPlaceDetail(sPlaceId, new ListenerWebRequest() {
+        // checkAddress(sAddress);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mProgressDialog = new ProgressDialog(DeliveryLocationActivity.this, R.string.searching_label);
+                mProgressDialog.show();
+            }
+        });
+        BentoApplication.instance.webRequest(new RequestGetPlaceDetail(sPlaceId, new ListenerWebRequest() {
             @Override
             public void onError(String sError, int statusCode) {
                 checkAddress(sAddress);
+                onComplete();
             }
 
             @Override
@@ -512,14 +526,15 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                         moveMapToCenter((LatLng) oResponse, sAddress);
                     }
                 });
+                onComplete();
             }
 
 
             @Override
             public void onComplete() {
-
+                dismissDialog();
             }
-        }));*/
+        }));
 
     }
 
@@ -530,9 +545,29 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             List<Address> addresses = geoCoderClick.getFromLocationName(sAddress, 5);
             if (addresses.size() > 0) {
                 moveMapToCenter(new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude()), sAddress);
+            } else {
+                WidgetsUtils.createShortToast(R.string.error_location_place);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        getTxtAddress().setText("", false);
+                    }
+                });
+                DebugUtils.logDebug(TAG, "No Address Found");
             }
         } catch (IOException e) {
             DebugUtils.logError(TAG, e);
+        }
+    }
+
+    private void dismissDialog() {
+        if (mProgressDialog != null) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mProgressDialog.dismiss();
+                }
+            });
         }
     }
 
@@ -603,6 +638,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getTxtAddress().getWindowToken(), 0);
         getExactLocationByPlaceId(resultList.get(position).getAddress(), resultList.get(position).getPlaceId());
+        // getExactLocationByPlaceId("aaezazaafñpke", "asdresd");
     }
 
     @Override

@@ -10,6 +10,9 @@ import android.widget.EditText;
 
 import com.bentonow.bentonow.controllers.BentoApplication;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 /**
  * Created by Jose Torres on 19/08/15.
  */
@@ -22,12 +25,12 @@ public class AndroidUtil {
     }
 
 
-    public static int dpToPx(float dp){
+    public static int dpToPx(float dp) {
         float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, BentoApplication.instance.getResources().getDisplayMetrics());
         return (int) px;
     }
 
-    public static int dpToPx(float dp, Resources resources){
+    public static int dpToPx(float dp, Resources resources) {
         float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, resources.getDisplayMetrics());
         return (int) px;
     }
@@ -52,6 +55,12 @@ public class AndroidUtil {
             DebugUtils.logError("getAppVersionName", ex);
         }
         return sVersionName;
+    }
+
+    public static double round(double value, int places) {
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 
 }

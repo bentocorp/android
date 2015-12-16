@@ -61,8 +61,11 @@ public class MainActivity extends BaseFragmentActivity {
         if (BentoNowUtils.B_APPIUM_TESTING) {
             GoogleLocationUtil.setAppiumLocation(true);
             SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.APP_FIRST_RUN, true);
-
         }
+
+        trackAppOpen();
+
+        LocationUtils.mCurrentLocation = null;
 
         Order.cleanUp();
     }
@@ -205,7 +208,6 @@ public class MainActivity extends BaseFragmentActivity {
     }
 
     void goNext() {
-        trackAppOpen();
         Menu mCurrentMenu = Menu.get();
 
         if (mCurrentMenu == null || !Settings.status.equals("open")) {
