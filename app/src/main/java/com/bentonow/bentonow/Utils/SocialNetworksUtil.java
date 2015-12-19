@@ -8,9 +8,12 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.pm.Signature;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Telephony;
 import android.support.v4.app.FragmentActivity;
 import android.util.Base64;
+import android.widget.Toast;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.controllers.BentoApplication;
@@ -207,5 +210,45 @@ public class SocialNetworksUtil {
         shareIntent.putExtra(Intent.EXTRA_STREAM, uriImage);
         shareIntent.setType("image/jpeg");
         context.startActivity(Intent.createChooser(shareIntent, sTitle));
+    }
+
+    public static void sendSms(Context mContext, String sMessage) {
+        try {
+            Intent intent;
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                String defaultSmsPackageName = Telephony.Sms.getDefaultSmsPackage(mContext);
+
+                intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_TEXT, sMessage);
+
+                if (defaultSmsPackageName != null)
+                    intent.setPackage(defaultSmsPackageName);
+
+            } else {
+                intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("sms:"));
+                intent.putExtra("sms_body", sMessage);
+            }
+
+            mContext.startActivity(intent);
+        } catch (Exception ex) {
+            DebugUtils.logError("sendSms", ex);
+            WidgetsUtils.createShortToast(R.string.error_no_sms_app);
+        }
+    }
+
+    public static void sendEmail(Context mContext, String sMessage) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("text/plain");
+            intent.putExtra(Intent.EXTRA_SUBJECT, "Use my Bento promo code");
+            intent.putExtra(Intent.EXTRA_TEXT, sMessage);
+
+            mContext.startActivity(Intent.createChooser(intent, "Send mail..."));
+        } catch (Exception ex) {
+            WidgetsUtils.createShortToast(R.string.error_no_email_app);
+        }
     }
 }

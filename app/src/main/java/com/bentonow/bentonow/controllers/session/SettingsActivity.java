@@ -18,6 +18,7 @@ import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
+import com.bentonow.bentonow.Utils.SocialNetworksUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
@@ -234,44 +235,12 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
     }
 
     public void onMessagePressed(View v) {
-        Intent intent;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) //At least KitKat
-        {
-            String defaultSmsPackageName = Telephony.Sms.getDefaultSmsPackage(this); //Need to change the build to API 19
-
-            intent = new Intent(Intent.ACTION_SEND);
-            intent.setType("text/plain");
-            intent.putExtra(Intent.EXTRA_TEXT, message);
-
-            if (defaultSmsPackageName != null)//Can be null in case that there is no default, then the user would be able to choose any app that support this intent.
-            {
-                intent.setPackage(defaultSmsPackageName);
-            }
-
-        } else { //For early versions, do what worked for you before.
-            intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse("sms:"));
-            intent.putExtra("sms_body", message);
-        }
-
-        startActivity(intent);
+        SocialNetworksUtil.sendSms(SettingsActivity.this, message);
     }
 
     public void onEmailPressed(View v) {
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_SUBJECT, "Use my Bento promo code");
-        intent.putExtra(Intent.EXTRA_TEXT, message);
-
-        try {
-            startActivity(Intent.createChooser(intent, "Send mail..."));
-        } catch (android.content.ActivityNotFoundException ex) {
-            Toast.makeText(getApplicationContext(), "There is no email client installed.", Toast.LENGTH_SHORT).show();
-        }
+        SocialNetworksUtil.sendEmail(SettingsActivity.this, message);
     }
-
-    //endregion
 
     private void getUserInfo() {
         RequestParams params = new RequestParams();
