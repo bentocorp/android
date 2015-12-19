@@ -47,34 +47,33 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
 
     static final String TAG = "SignUpActivity";
 
-    View container_alert;
-    TextView txt_message;
+    private View container_alert;
+    private TextView txt_message;
 
-    EditText txt_name;
-    EditText txt_email;
-    EditText txt_phone;
-    EditText txt_password;
+    private EditText txt_name;
+    private EditText txt_email;
+    private EditText txt_phone;
+    private EditText txt_password;
 
-    ImageView img_user;
-    ImageView img_email;
-    ImageView img_phone;
-    ImageView img_password;
+    private ImageView img_user;
+    private ImageView img_email;
+    private ImageView img_phone;
+    private ImageView img_password;
 
-    Button btn_signup;
+    private Button btn_signup;
 
     private ConstantUtils.optOpenScreen optOpenScreen;
 
     private ConfirmationDialog mDialog;
     private ProgressDialog mProgressDialog;
 
-    CallbackManager callbackManager;
+    private CallbackManager callbackManager;
 
     private UserDao userDao = new UserDao();
-
-    String error = "";
-
-    boolean beganRegistration = false;
     private User registerUser;
+
+    private boolean beganRegistration = false;
+    private String error = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +96,7 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
         container_alert = findViewById(R.id.container_alert);
         txt_message = (TextView) findViewById(R.id.txt_message);
 
-        txt_name = (EditText) findViewById(R.id.txt_name);
+
         txt_email = (EditText) findViewById(R.id.txt_email);
         txt_phone = (EditText) findViewById(R.id.txt_phone);
         txt_password = (EditText) findViewById(R.id.txt_password);
@@ -138,7 +137,7 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
             }
         };
 
-        txt_name.addTextChangedListener(watcher);
+        getEditName().addTextChangedListener(watcher);
         txt_email.addTextChangedListener(watcher);
         txt_password.addTextChangedListener(watcher);
 
@@ -202,7 +201,7 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
     }
 
     boolean validName() {
-        return !txt_name.getText().toString().equals("") && !error.contains("name");
+        return !getEditName().getText().toString().equals("") && !error.contains("name");
     }
 
     boolean validEmail() {
@@ -265,14 +264,15 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
     }
 
     void updateUI() {
-        boolean add_local_error = error.length() == 0;
+        boolean add_local_error = error.isEmpty();
 
         if (!validName()) {
-            txt_name.setTextColor(getResources().getColor(R.color.orange));
+            getEditName().setTextColor(getResources().getColor(R.color.orange));
             img_user.setImageResource(R.drawable.ic_signup_profile_error);
-            if (add_local_error) error = "The name field is required.";
+            if (add_local_error)
+                error = "The name field is required.";
         } else {
-            txt_name.setTextColor(getResources().getColor(R.color.gray));
+            getEditName().setTextColor(getResources().getColor(R.color.gray));
             img_user.setImageResource(R.drawable.ic_signup_profile);
         }
 
@@ -281,7 +281,7 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
             txt_email.setTextColor(getResources().getColor(R.color.orange));
             img_email.setImageResource(R.drawable.ic_signup_email_error);
             if (add_local_error && txt_email.getText().length() == 0)
-                error += (error.length() > 0 ? "\n" : "") + "The name field is required.";
+                error += (error.length() > 0 ? "\n" : "") + "The email field is required.";
             else if (add_local_error)
                 error += (error.length() > 0 ? "\n" : "") + "The email must be a valid email address.";
         } else {
@@ -338,7 +338,7 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
         }
 
         registerUser = new User();
-        registerUser.firstname = txt_name.getText().toString();
+        registerUser.firstname = getEditName().getText().toString();
         registerUser.email = txt_email.getText().toString();
         registerUser.phone = BentoNowUtils.getPhoneFromNumber(txt_phone.getText().toString());
         registerUser.password = txt_password.getText().toString();
@@ -505,5 +505,12 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
 
         if (mProgressDialog != null)
             mProgressDialog.dismiss();
+    }
+
+
+    private EditText getEditName() {
+        if (txt_name == null)
+            txt_name = (EditText) findViewById(R.id.txt_name);
+        return txt_name;
     }
 }
