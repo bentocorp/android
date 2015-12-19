@@ -112,4 +112,6 @@
     <string name="error_no_location_found">We cant get your </string>
     <string name="error_no_sms_app">Sorry you don\'t have apps to send SMS</string>
     <string name="error_no_email_app">There is no email client installed</string>
+    <string name="error_no_facebook_sign_in">An error occur while trying to sign in with Facebook</string>
+    <string name="error_no_internet">There is a problem with the internet connection, please try again</string>
 </resources>

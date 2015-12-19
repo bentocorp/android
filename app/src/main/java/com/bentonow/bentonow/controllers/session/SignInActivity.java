@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
@@ -50,23 +51,23 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
 
 
     //region Variables
-    View container_alert;
-    TextView txt_message;
+    private View container_alert;
+    private TextView txt_message;
 
-    EditText txt_email;
-    EditText txt_password;
+    private EditText txt_email;
+    private EditText txt_password;
 
-    ImageView img_email;
-    ImageView img_password;
+    private ImageView img_email;
+    private ImageView img_password;
 
-    Button btn_signin;
+    private Button btn_signin;
 
     private UserDao userDao = new UserDao();
     private User mCurrentUser;
 
     private ConstantUtils.optOpenScreen optOpenScreen;
 
-    CallbackManager callbackManager;
+    private CallbackManager callbackManager;
     private ConfirmationDialog mDialog;
     private ProgressDialog mProgressDialog;
 
@@ -334,10 +335,6 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
         }
     }
 
-    //endregion
-
-    //region Facebook
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -352,12 +349,17 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
 
     @Override
     public void onCancel() {
-
+        DebugUtils.logError(TAG, "onCancel()");
+        AndroidUtil.hideKeyboard(txt_message);
     }
 
     @Override
     public void onError(FacebookException e) {
-        mDialog = new ConfirmationDialog(SignInActivity.this, "Error", "An error occur while trying to sign in with Facebook");
+        if (e.toString().contains("net::")) {
+            mDialog = new ConfirmationDialog(SignInActivity.this, "Error", getString(R.string.error_no_internet));
+        } else
+            mDialog = new ConfirmationDialog(SignInActivity.this, "Error", getString(R.string.error_no_facebook_sign_in));
+
         mDialog.addAcceptButton("OK", null);
         mDialog.show();
         DebugUtils.logError("FacebookException", e);

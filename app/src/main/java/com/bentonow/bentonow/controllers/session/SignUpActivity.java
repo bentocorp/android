@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
@@ -439,12 +440,17 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
 
     @Override
     public void onCancel() {
-
+        DebugUtils.logError(TAG, "onCancel()");
+        AndroidUtil.hideKeyboard(txt_message);
     }
 
     @Override
     public void onError(FacebookException e) {
-        mDialog = new ConfirmationDialog(SignUpActivity.this, "Error", "An error occur while trying to sign in with Facebook");
+        if (e.toString().contains("net::ERR_NAME_NOT_RESOLVED")) {
+            mDialog = new ConfirmationDialog(SignUpActivity.this, "Error", getString(R.string.error_no_internet));
+        } else
+            mDialog = new ConfirmationDialog(SignUpActivity.this, "Error", getString(R.string.error_no_facebook_sign_in));
+
         mDialog.addAcceptButton("OK", null);
         mDialog.show();
         DebugUtils.logError("FacebookException", e);
