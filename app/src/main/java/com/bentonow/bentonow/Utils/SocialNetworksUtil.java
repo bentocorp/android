@@ -251,4 +251,15 @@ public class SocialNetworksUtil {
             WidgetsUtils.createShortToast(R.string.error_no_email_app);
         }
     }
+
+    public static void phoneCall(Context mContext, String sPhone) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + sPhone));
+            mContext.startActivity(intent);
+        } catch (Exception ex) {
+            WidgetsUtils.createShortToast(R.string.error_no_call_app);
+        }
+    }
+
+
 }

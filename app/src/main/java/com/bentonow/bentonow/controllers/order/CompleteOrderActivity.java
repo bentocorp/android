@@ -464,7 +464,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
                     MixpanelUtils.trackRevenue(Order.current.OrderDetails.total_cents / 100, mCurrentUser);
 
-                    DebugUtils.logDebug(TAG, "Order: " + responseString);
+                    Log.i(TAG, "Order: " + responseString);
 
                     mCurrentUser.stripe_token = null;
 

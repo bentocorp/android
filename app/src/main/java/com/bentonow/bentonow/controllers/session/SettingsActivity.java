@@ -293,8 +293,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
                 break;
             case R.id.button_accept:
                 if (action.equals("phone")) {
-                    Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:4153001332"));
-                    startActivity(intent);
+                    SocialNetworksUtil.phoneCall(SettingsActivity.this, "4153001332");
                 } else if (action.equals("logout")) {
                     mCurrentUser = null;
                     userDao.removeUser();
