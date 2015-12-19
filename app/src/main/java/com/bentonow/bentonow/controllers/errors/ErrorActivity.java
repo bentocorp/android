@@ -97,7 +97,7 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
     void setupNextMenu() {
 
         if (mCurrentMenu != null) {
-            Log.i(TAG, "menu: " + mCurrentMenu.toString());
+            DebugUtils.logDebug(TAG, "menu: " + mCurrentMenu.toString());
             getBtnNextDayMenu().setVisibility(View.VISIBLE);
 
             DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
@@ -150,7 +150,7 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    Log.e(TAG, responseString);
+                    DebugUtils.logError(TAG, responseString);
                     ConfirmationDialog mDialog = new ConfirmationDialog(ErrorActivity.this, "Error", "We having issues connecting to the server, please try later.");
                     mDialog.addAcceptButton("OK", null);
                     mDialog.show();
@@ -160,7 +160,7 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
                     String message = Settings.status.equals("sold out") ? BackendText.get("sold-out-confirmation-text") : BackendText.get("closed-confirmation-text");
-                    Log.i(TAG, responseString);
+                    DebugUtils.logDebug(TAG, responseString);
                     getEditTxtEmail().setText("");
 
                     ConfirmationDialog mDialog = new ConfirmationDialog(ErrorActivity.this, null, message);

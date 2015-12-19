@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -33,10 +34,9 @@ public class BackendText {
             }.getType());
 
             BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.BACKEND_TEXT);
-            Log.i(TAG, "backend texts: " + list.size());
+            DebugUtils.logDebug(TAG, "backend texts: " + list.size());
         } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-            e.printStackTrace();
+            DebugUtils.logError(TAG, e.getMessage());
         }
     }
 

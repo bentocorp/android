@@ -175,11 +175,11 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
         dismissDialog();
 
         try {
-            Log.i(TAG, "onSignInSuccess: " + responseString);
+            DebugUtils.logDebug(TAG, "onSignInSuccess: " + responseString);
             mCurrentUser = new Gson().fromJson(responseString, User.class);
             userDao.insertUser(mCurrentUser);
 
-            Log.i(TAG, "After Gson: " + mCurrentUser.api_token);
+            DebugUtils.logDebug(TAG, "After Gson: " + mCurrentUser.api_token);
 
             MixpanelUtils.logInUser(mCurrentUser);
 
@@ -213,7 +213,7 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
     }
 
     void updateUI() {
-        Log.i(TAG, "updateUI");
+        DebugUtils.logDebug(TAG, "updateUI");
 
         boolean add_local_error = error == null || error.length() == 0;
 
@@ -273,7 +273,7 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
             @SuppressWarnings("deprecation")
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Log.i(TAG, "onSignInPressedOnFailure statusCode:" + statusCode + " responseString: " + responseString);
+                DebugUtils.logDebug(TAG, "onSignInPressedOnFailure statusCode:" + statusCode + " responseString: " + responseString);
 
                 dismissDialog();
 
@@ -290,7 +290,7 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
             @SuppressWarnings("deprecation")
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                Log.i(TAG, "onSignInPressedOnSuccess statusCode:" + statusCode + " responseString: " + responseString);
+                DebugUtils.logDebug(TAG, "onSignInPressedOnSuccess statusCode:" + statusCode + " responseString: " + responseString);
                 onSignInSuccess(responseString);
             }
         });
@@ -370,7 +370,7 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
 
         try {
             final JSONObject user = graphResponse.getJSONObject();
-            Log.i(TAG, "graphResponse:" + graphResponse.toString());
+            DebugUtils.logDebug(TAG, "graphResponse:" + graphResponse.toString());
 
             User loginUser = new User();
             loginUser.email = user.getString("email");

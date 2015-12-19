@@ -222,7 +222,7 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
         dismissDialog();
 
         try {
-            Log.i(TAG, "onSignUpSuccess: " + responseString);
+            DebugUtils.logDebug(TAG, "onSignUpSuccess: " + responseString);
 
             if (registerUser != null) {
                 User mUser = new Gson().fromJson(responseString, User.class);
@@ -352,7 +352,7 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
             @Override
             public void onFailure(int statusCode, Header[] headers, String
                     responseString, Throwable throwable) {
-                Log.i(TAG, "onRegisterPressedOnFailure statusCode:" + statusCode + " responseString: " + responseString);
+                DebugUtils.logDebug(TAG, "onRegisterPressedOnFailure statusCode:" + statusCode + " responseString: " + responseString);
 
                 dismissDialog();
 
@@ -382,7 +382,7 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
             @SuppressWarnings("deprecation")
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                Log.i(TAG, "onRegisterPressedOnSuccess statusCode:" + statusCode + " responseString: " + responseString);
+                DebugUtils.logDebug(TAG, "onRegisterPressedOnSuccess statusCode:" + statusCode + " responseString: " + responseString);
                 onSignUpSuccess(responseString);
             }
         });
@@ -462,7 +462,7 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
 
 
         try {
-            Log.i(TAG, "graphResponse:" + graphResponse.toString());
+            DebugUtils.logDebug(TAG, "graphResponse:" + graphResponse.toString());
 
             User loginUser = new User();
             loginUser.email = user.getString("email");
@@ -476,7 +476,7 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                     dismissDialog();
-                    Log.i(TAG, "fbLoginFailed: " + responseString + " statusCode: " + statusCode);
+                    DebugUtils.logDebug(TAG, "fbLoginFailed: " + responseString + " statusCode: " + statusCode);
 
                     switch (statusCode) {
                         case 404:

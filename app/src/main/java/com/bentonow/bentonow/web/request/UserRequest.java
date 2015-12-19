@@ -3,6 +3,7 @@ package com.bentonow.bentonow.web.request;
 import android.util.Log;
 
 import com.bentonow.bentonow.Utils.BentoRestClient;
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.user.CouponRequest;
@@ -31,7 +32,7 @@ public class UserRequest {
         RequestParams params = new RequestParams();
         params.put("data", data);
 
-        Log.i(TAG, "requestCoupon data: " + data);
+        DebugUtils.logDebug(TAG, "requestCoupon data: " + data);
 
         BentoRestClient.post("/coupon/request", params, response);
     }
@@ -45,7 +46,7 @@ public class UserRequest {
         RequestParams params = new RequestParams();
         params.put("data", data);
 
-        Log.i(TAG, "login data: " + data);
+        DebugUtils.logDebug(TAG, "login data: " + data);
 
         BentoRestClient.post(endpoint, params, responseHandler);
     }
@@ -59,7 +60,7 @@ public class UserRequest {
         RequestParams params = new RequestParams();
         params.put("data", data);
 
-        Log.i(TAG, "register data: " + data);
+        DebugUtils.logDebug(TAG, "register data: " + data);
 
         BentoRestClient.post(endpoint, params, responseHandler);
     }

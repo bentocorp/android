@@ -64,7 +64,7 @@ public class BentoApplication extends Application {
     static public void onPause() {
         timer = new Timer();
 
-        Log.i(TAG, "onPause");
+        DebugUtils.logDebug(TAG, "onPause");
 
         stopService = new TimerTask() {
             @Override
@@ -85,10 +85,10 @@ public class BentoApplication extends Application {
     }
 
     static public void onResume() {
-        Log.i(TAG, "onResume");
+        DebugUtils.logDebug(TAG, "onResume");
 
         if (timer != null) {
-            Log.i(TAG, "cancel timer");
+            DebugUtils.logDebug(TAG, "cancel timer");
             timer.cancel();
             timer = null;
         }

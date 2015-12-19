@@ -469,10 +469,10 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                 jsonResults.append(buff, 0, read);
             }
         } catch (MalformedURLException e) {
-            Log.e(TAG, "Error processing Places API URL", e);
+            DebugUtils.logError(TAG, "Error processing Places API URL", e);
             return null;
         } catch (IOException e) {
-            Log.e(TAG, "Error connecting to Places API", e);
+            DebugUtils.logError(TAG, "Error connecting to Places API", e);
             return null;
         } finally {
             if (conn != null) {
@@ -495,7 +495,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                 resultList.add(mAutocomplete);
             }
         } catch (JSONException e) {
-            Log.e(TAG, "Cannot process JSON results", e);
+            DebugUtils.logError(TAG, "Cannot process JSON results", e);
         }
 
         return resultList;

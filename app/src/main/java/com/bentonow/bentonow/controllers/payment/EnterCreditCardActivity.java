@@ -258,7 +258,7 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
                         try {
                             int month = Integer.parseInt(charSequence);
                             if (month > 12) {
-                                Log.i(TAG, "month: " + month);
+                                DebugUtils.logDebug(TAG, "month: " + month);
                                 charSequence = charSequence.substring(0, 1);
                                 txt_date.setText(charSequence);
                                 txt_date.setSelection(charSequence.length());

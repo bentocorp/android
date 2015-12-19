@@ -88,7 +88,7 @@ public class Settings {
 
     static public boolean isInServiceArea(LatLng location) {
         if (location != null) {
-            Log.i(TAG, "inServiceArea: Location " + location.toString());
+            DebugUtils.logDebug(TAG, "inServiceArea: Location " + location.toString());
             String[] area = getServiceArea();
             List<LatLng> latLngList = new ArrayList<>();
 
@@ -97,11 +97,11 @@ public class Settings {
                 latLngList.add(new LatLng(Double.valueOf(latLng[1]), Double.valueOf(latLng[0])));
             }
 
-            Log.i(TAG, "inServiceArea: Area " + latLngList.toString());
+            DebugUtils.logDebug(TAG, "inServiceArea: Area " + latLngList.toString());
 
             return PolyUtil.containsLocation(location, latLngList, false);
         } else {
-            Log.i(TAG, "inServiceArea: Location null");
+            DebugUtils.logDebug(TAG, "inServiceArea: Location null");
             return false;
         }
     }

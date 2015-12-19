@@ -6,6 +6,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.Button;
 
+import com.bentonow.bentonow.Utils.DebugUtils;
+
 public class FontAwesomeButton extends Button {
     final String TAG = getClass().getSimpleName();
 
@@ -25,7 +27,7 @@ public class FontAwesomeButton extends Button {
     }
 
     public void setup (Context context) {
-        Log.i(TAG, "setup");
+        DebugUtils.logDebug(TAG, "setup");
         Typeface tf = Typeface.createFromAsset(context.getAssets(), "fonts/fontawesome-webfont.ttf");
         setTypeface(tf);
     }

@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 
 public class ErrorVersionActivity extends BaseFragmentActivity {
@@ -18,7 +19,7 @@ public class ErrorVersionActivity extends BaseFragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_needed);
 
-        Log.i(TAG, "onCreate");
+        DebugUtils.logDebug(TAG, "onCreate");
     }
 
     public void onUpdatePressed(View view) {

@@ -29,47 +29,52 @@ public class DebugUtils {
     }
 
     public static void logError(Exception e) {
-        if (DEBUG)
+        if (DEBUG && e != null)
             Log.e(TAG, e.toString());
     }
 
     public static void logError(String sText) {
-        if (DEBUG)
+        if (DEBUG && sText != null)
             Log.e(TAG, String.valueOf(sText));
     }
 
     public static void logError(String method, String sText) {
-        if (DEBUG)
+        if (DEBUG && method != null && sText != null)
             Log.e(String.valueOf(method), String.valueOf(sText));
     }
 
     public static void logError(String method, Exception e) {
-        if (DEBUG)
+        if (DEBUG && method != null && e != null)
             Log.e(String.valueOf(method), e.toString());
     }
 
     public static void logError(String sClass, String method, String sText) {
-        if (DEBUG)
+        if (DEBUG && method != null && sText != null)
             Log.e(sClass + " :: " + String.valueOf(method), String.valueOf(sText));
     }
 
+    public static void logError(String sClass, String method, Exception ex) {
+        if (DEBUG && method != null && ex != null)
+            Log.e(sClass + " :: " + String.valueOf(method), ex.toString());
+    }
+
     public static void logDebug(String sText) {
-        if (DEBUG)
+        if (DEBUG && sText != null)
             Log.d(TAG, String.valueOf(sText));
     }
 
     public static void logDebug(String method, String sText) {
-        if (DEBUG)
+        if (DEBUG && method != null && sText != null)
             Log.d(String.valueOf(method), String.valueOf(sText));
     }
 
     public static void logDebug(String method, Object obj) {
-        if (DEBUG)
+        if (DEBUG && method != null && obj != null)
             Log.d(String.valueOf(method), String.valueOf(obj));
     }
 
     public static void logDebug(String sClass, String method, String sText) {
-        if (DEBUG)
+        if (DEBUG && sClass != null && method != null && sText != null)
             Log.d(sClass + " :: " + String.valueOf(method), String.valueOf(sText));
     }
 

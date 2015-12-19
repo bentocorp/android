@@ -311,7 +311,7 @@ public class BentoNowUtils {
 
     public static void runBentoService(Context ctx) {
         if (!BentoService.isRunning()) {
-            Log.i(TAG, "starting service");
+            DebugUtils.logDebug(TAG, "starting service");
             try {
                 ctx.startService(new Intent(ctx, BentoService.class));
             } catch (Exception e) {

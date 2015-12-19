@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.model.BackendText;
@@ -32,7 +33,7 @@ public class HelpActivity extends BaseFragmentActivity implements View.OnClickLi
         initElements();
         loadData();
 
-        Log.i(TAG, "HelpActivity");
+        DebugUtils.logDebug(TAG, "HelpActivity");
     }
 
     private void initElements() {

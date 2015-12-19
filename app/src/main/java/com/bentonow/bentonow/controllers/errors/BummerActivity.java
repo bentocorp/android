@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
@@ -79,7 +80,7 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    Log.e(TAG, responseString);
+                    DebugUtils.logError(TAG, responseString);
                     ConfirmationDialog mDialog = new ConfirmationDialog(BummerActivity.this, "Error", "We having issues connecting to the server, please try later.");
                     mDialog.addAcceptButton("OK", null);
                     mDialog.show();
@@ -88,7 +89,7 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    Log.i(TAG, responseString);
+                    DebugUtils.logDebug(TAG, responseString);
                     txt_email.setText("");
                     ConfirmationDialog mDialog = new ConfirmationDialog(BummerActivity.this, null, "Thanks! We'll let you know when we're in your area.");
                     mDialog.addAcceptButton("OK", null);

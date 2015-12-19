@@ -33,19 +33,19 @@ public class BentoService extends Service {
         if (task == null || handler == null)
             SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_BENTO_SERVICE_RUNNING, false);
 
-        Log.i(TAG, "isRunning: " + SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_BENTO_SERVICE_RUNNING));
+        DebugUtils.logDebug(TAG, "isRunning: " + SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_BENTO_SERVICE_RUNNING));
         return SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_BENTO_SERVICE_RUNNING);
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.i(TAG, "onBind");
+        DebugUtils.logDebug(TAG, "onBind");
         return null;
     }
 
     @Override
     public void onCreate() {
-        Log.i(TAG, "onCreate()");
+        DebugUtils.logDebug(TAG, "onCreate()");
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_BENTO_SERVICE_RUNNING, true);
         bSendRequest = true;
 
@@ -56,7 +56,7 @@ public class BentoService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.i(TAG, "onDestroy()");
+        DebugUtils.logDebug(TAG, "onDestroy()");
 
         if (handler != null && task != null)
             handler.removeCallbacks(task);
@@ -72,7 +72,7 @@ public class BentoService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-        Log.i(TAG, "onStartCommand()");
+        DebugUtils.logDebug(TAG, "onStartCommand()");
         return (START_NOT_STICKY);
     }
 
@@ -89,7 +89,7 @@ public class BentoService extends Service {
             BentoRestClient.get("/init/" + BentoNowUtils.getTodayDate(), null, new TextHttpResponseHandler() {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    Log.e(TAG, "cannot loadData");
+                    DebugUtils.logError(TAG, "cannot loadData");
                     onFinish();
                 }
 

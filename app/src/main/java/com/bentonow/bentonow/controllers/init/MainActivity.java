@@ -52,7 +52,7 @@ public class MainActivity extends BaseFragmentActivity {
         setContentView(R.layout.activity_main);
 
         if (getCallingActivity() != null)
-            Log.i(TAG, "callerActivity " + getCallingActivity());
+            DebugUtils.logDebug(TAG, "callerActivity " + getCallingActivity());
 
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, "open");
 
@@ -74,7 +74,7 @@ public class MainActivity extends BaseFragmentActivity {
     protected void onResume() {
         bIsOpen = true;
 
-        Log.i(TAG, "onResume");
+        DebugUtils.logDebug(TAG, "onResume");
 
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
         if (resultCode == ConnectionResult.SUCCESS) {
@@ -102,7 +102,7 @@ public class MainActivity extends BaseFragmentActivity {
     }
 
     void loadData() {
-        Log.i(TAG, "loadData");
+        DebugUtils.logDebug(TAG, "loadData");
         //noinspection deprecation
         BentoRestClient.get("/init/" + BentoNowUtils.getTodayDate(), null, new TextHttpResponseHandler() {
             @Override
@@ -110,13 +110,13 @@ public class MainActivity extends BaseFragmentActivity {
                 ((TextView) findViewById(R.id.txt_message))
                         .setText("We seem to have trouble connecting to the network, please wait while we retry" + (retry > 0 ? "(" + retry + ")" : ""));
                 ++retry;
-                Log.i(TAG, "retry: " + retry);
+                DebugUtils.logDebug(TAG, "retry: " + retry);
                 loadData();
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                Log.i(TAG, responseString != null ? responseString : "null");
+                DebugUtils.logDebug(TAG, responseString != null ? responseString : "null");
                 set(responseString);
             }
         });
@@ -125,7 +125,7 @@ public class MainActivity extends BaseFragmentActivity {
     }
 
     void set(final String responseString) {
-        Log.i(TAG, "set");
+        DebugUtils.logDebug(TAG, "set");
 
         BackendText.set(responseString);
         Menu.set(responseString);
@@ -153,7 +153,7 @@ public class MainActivity extends BaseFragmentActivity {
     }
 
     void checkAppStatus() {
-        Log.i(TAG, "checkAppStatus");
+        DebugUtils.logDebug(TAG, "checkAppStatus");
 
         if (BentoNowUtils.isLastVersionApp(MainActivity.this)) {
             if (!Settings.status.equals("open")) {
@@ -184,7 +184,7 @@ public class MainActivity extends BaseFragmentActivity {
 
                 @Override
                 public void onTick(long millisUntilFinished) {
-                    Log.i(TAG, "location " + LocationUtils.mCurrentLocation);
+                    DebugUtils.logDebug(TAG, "location " + LocationUtils.mCurrentLocation);
                     if (LocationUtils.mCurrentLocation != null) {
                         timer.cancel();
                         goNext();
@@ -215,12 +215,12 @@ public class MainActivity extends BaseFragmentActivity {
                 SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, "closed");
 
             BentoNowUtils.openErrorActivity(this);
-            Log.i(TAG, "goNext ErrorActivity");
+            DebugUtils.logDebug(TAG, "goNext ErrorActivity");
         } else if (Settings.isInServiceArea(LocationUtils.mCurrentLocation)) {
             BentoNowUtils.openBuildBentoActivity(this);
-            Log.i(TAG, "goNext BuildBentoActivity");
+            DebugUtils.logDebug(TAG, "goNext BuildBentoActivity");
         } else {
-            Log.i(TAG, "goNext DeliveryLocationActivity");
+            DebugUtils.logDebug(TAG, "goNext DeliveryLocationActivity");
             MixpanelUtils.track("Opened App Outside of Service Area");
             Intent intent = new Intent(this, DeliveryLocationActivity.class);
             intent.putExtra(ConstantUtils.TAG_OPEN_SCREEN, ConstantUtils.optOpenScreen.BUILD_BENTO);

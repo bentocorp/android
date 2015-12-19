@@ -1,7 +1,6 @@
 package com.bentonow.bentonow.web.request;
 
-import android.util.Log;
-
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.listener.InterfaceWebRequest;
 import com.bentonow.bentonow.listener.ListenerWebRequest;
 import com.bentonow.bentonow.web.BentoNowApi;
@@ -57,7 +56,7 @@ public class RequestGetPlaceDetail implements InterfaceWebRequest {
 
         } catch (Exception e) {
             mListener.onError(e.getLocalizedMessage(), 400);
-            Log.e(TAG, "Cannot process JSON results", e);
+            DebugUtils.logError(TAG, "Cannot process JSON results", e);
 
         } finally {
             if (conn != null) {

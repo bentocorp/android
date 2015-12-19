@@ -185,7 +185,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
     }
 
     void requestPromoCode(final String code) {
-        Log.i(TAG, "requestPromoCode " + code);
+        DebugUtils.logDebug(TAG, "requestPromoCode " + code);
         if (code == null || code.isEmpty()) {
             mDialog = new ConfirmationDialog(CompleteOrderActivity.this, "Error", "Invalid coupon code");
             mDialog.addAcceptButton("OK", null);
@@ -202,7 +202,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                     dismissDialog();
 
-                    Log.i(TAG, "requestPromoCode failed " + responseString);
+                    DebugUtils.logDebug(TAG, "requestPromoCode failed " + responseString);
                     String sError;
 
                     try {
@@ -223,7 +223,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
                     dismissDialog();
 
-                    Log.i(TAG, "requestPromoCode success " + responseString);
+                    DebugUtils.logDebug(TAG, "requestPromoCode success " + responseString);
 
                     mCurrentUser.coupon_code = Order.current.CouponCode = code;
                     int discount = 0;
@@ -234,7 +234,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                         DebugUtils.logError(TAG, "requestPromoCode(): " + e.getLocalizedMessage());
                     }
 
-                    Log.i(TAG, "discount " + discount);
+                    DebugUtils.logDebug(TAG, "discount " + discount);
 
                     Order.current.OrderDetails.coupon_discount_cents = discount;
 
@@ -394,7 +394,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                     String error;
                     JSONObject json;
 
-                    Log.e(TAG, "Order: " + statusCode + " " + responseString);
+                    DebugUtils.logError(TAG, "Order: " + statusCode + " " + responseString);
 
                     try {
                         json = new JSONObject(responseString);
@@ -464,7 +464,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
                     MixpanelUtils.trackRevenue(Order.current.OrderDetails.total_cents / 100, mCurrentUser);
 
-                    Log.i(TAG, "Order: " + responseString);
+                    DebugUtils.logDebug(TAG, "Order: " + responseString);
 
                     mCurrentUser.stripe_token = null;
 

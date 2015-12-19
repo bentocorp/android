@@ -31,9 +31,9 @@ public class Stock {
             Gson gson = new Gson();
             list = gson.fromJson(data, new TypeToken<List<Stock>>() {
             }.getType());
-            Log.i(TAG, "stock: " + list.size());
+            DebugUtils.logDebug(TAG, "stock: " + list.size());
         } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
+            DebugUtils.logError(TAG, e.getMessage());
             e.printStackTrace();
         }
     }
@@ -68,7 +68,7 @@ public class Stock {
             }
         }
 
-        Log.i(TAG, "isSold " + type + " qty: " + qty + " sold: " + sold);
+        DebugUtils.logDebug(TAG, "isSold " + type + " qty: " + qty + " sold: " + sold);
 
         return sold >= qty;
     }

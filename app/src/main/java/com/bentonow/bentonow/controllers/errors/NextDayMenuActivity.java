@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.BentoApplication;
@@ -41,7 +42,7 @@ public class NextDayMenuActivity extends BaseFragmentActivity implements View.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(TAG, "onCreate()");
+        DebugUtils.logDebug(TAG, "onCreate()");
 
         setContentView(R.layout.activity_next_day_menu);
 
@@ -116,9 +117,9 @@ public class NextDayMenuActivity extends BaseFragmentActivity implements View.On
         currentSelectedDishModel = ((ItemHolder) view.getTag()).dishModel;
 
         if (currentSelectedDishModel != null) {
-            Log.i(TAG, "currentSelectedItem: " + currentSelectedDishModel.name);
+            DebugUtils.logDebug(TAG, "currentSelectedItem: " + currentSelectedDishModel.name);
         } else {
-            Log.i(TAG, "currentSelectedItem: null");
+            DebugUtils.logDebug(TAG, "currentSelectedItem: null");
         }
 
         mainAdapter.notifyDataSetChanged();

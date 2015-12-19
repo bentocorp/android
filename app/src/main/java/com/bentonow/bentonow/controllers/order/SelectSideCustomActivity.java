@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.adapter.CustomSideListAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
@@ -101,7 +102,7 @@ public class SelectSideCustomActivity extends BaseActivity implements View.OnCli
         DishModel dishModel = DishDao.clone(getListAdapter().getCurrentSelected());
         dishModel.type += itemIndex;
         Order.current.OrderItems.get(orderIndex).items.set(itemIndex, dishModel);
-        Log.i(TAG, "added " + dishModel.type);
+        DebugUtils.logDebug(TAG, "added " + dishModel.type);
 
         onBackPressed();
     }

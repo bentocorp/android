@@ -77,20 +77,20 @@ public class BentoRestClient {
     }
 
     public static void get(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
-        Log.i(TAG, "[GET] " + getAbsoluteUrl(url));
-        Log.i(TAG, "[params] " + (params != null ? params.toString() : "null"));
+        DebugUtils.logDebug(TAG, "[GET] " + getAbsoluteUrl(url));
+        DebugUtils.logDebug(TAG, "[params] " + (params != null ? params.toString() : "null"));
         client.get(getAbsoluteUrl(url), params, responseHandler);
     }
 
     public static void post(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
-        Log.i(TAG, "[POST] " + getAbsoluteUrl(url));
-        Log.i(TAG, "[params] " + (params != null ? params.toString() : "null"));
+        DebugUtils.logDebug(TAG, "[POST] " + getAbsoluteUrl(url));
+        DebugUtils.logDebug(TAG, "[params] " + (params != null ? params.toString() : "null"));
         client.post(getAbsoluteUrl(url), params, responseHandler);
     }
 
     public static void getCustom(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
-        Log.i(TAG, "[GET] " + url);
-        Log.i(TAG, "[params] " + (params != null ? params.toString() : "null"));
+        DebugUtils.logDebug(TAG, "[GET] " + url);
+        DebugUtils.logDebug(TAG, "[params] " + (params != null ? params.toString() : "null"));
         client.get(url, params, responseHandler);
     }
 

@@ -160,7 +160,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
     }
 
     public void onLogoutPressed(View v) {
-        Log.i(TAG, "onLogoutPressed");
+        DebugUtils.logDebug(TAG, "onLogoutPressed");
         action = "logout";
         ConfirmationDialog mDialog = new ConfirmationDialog(SettingsActivity.this, "Confirmation", "Are you sure you want to log out ?");
         mDialog.addAcceptButton("YES", SettingsActivity.this);
