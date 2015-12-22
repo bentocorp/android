@@ -1,6 +1,7 @@
 package com.bentonow.bentonow.controllers.order;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -11,11 +12,13 @@ import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.dao.DishDao;
 import com.bentonow.bentonow.dao.OrderDao;
+import com.bentonow.bentonow.listener.InterfaceCustomerService;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
@@ -23,6 +26,7 @@ import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.Stock;
 import com.bentonow.bentonow.model.order.OrderItem;
+import com.bentonow.bentonow.service.BentoCustomerService;
 import com.bentonow.bentonow.ui.AutoFitTxtView;
 import com.bentonow.bentonow.ui.BackendButton;
 import com.bentonow.bentonow.ui.ItemHolder;
@@ -31,7 +35,7 @@ import com.mixpanel.android.mpmetrics.Tweak;
 
 import org.json.JSONObject;
 
-public class BuildBentoActivity extends BaseActivity implements View.OnClickListener {
+public class BuildBentoActivity extends BaseActivity implements View.OnClickListener, InterfaceCustomerService {
 
     static final String TAG = "BuildBentoActivity";
 
@@ -52,8 +56,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
 
     private Menu mMenu;
 
-    public static boolean bIsOpen = false;
-    private static Tweak<Boolean> showBanner = MixpanelAPI.booleanTweak("Show Banner", false);
+    //private static Tweak<Boolean> showBanner = MixpanelAPI.booleanTweak("Show Banner", false);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,12 +81,10 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
 
     @Override
     protected void onResume() {
-        bIsOpen = true;
-
         mMenu = Menu.get();
 
         if (mMenu == null || !Settings.status.equals("open")) {
-            BentoNowUtils.openErrorActivity(BuildBentoActivity.this);
+            openErrorActivity();
         } else {
             if (Order.current == null) {
                 Order.current = new Order();
@@ -105,12 +106,6 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
         }
 
         super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        bIsOpen = false;
-        super.onPause();
     }
 
     private void initActionbar() {
@@ -359,10 +354,6 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
         }
     }
 
-    //****
-    // Mixpanel
-    //****
-
     private void track() {
         try {
             OrderItem item = Order.current.OrderItems.get(orderIndex);
@@ -379,6 +370,49 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
             DebugUtils.logError(TAG, "track(): " + e.toString());
         }
     }
+
+
+    @Override
+    public void openErrorActivity() {
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+        BentoNowUtils.openErrorActivity(BuildBentoActivity.this);
+    }
+
+    @Override
+    public void openMainActivity() {
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+        BentoNowUtils.openMainActivity(BuildBentoActivity.this);
+    }
+
+    @Override
+    public void openBuildBentoActivity() {
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+    }
+
+    @Override
+    public void onConnectService() {
+        DebugUtils.logDebug(TAG, "Service Connected");
+        mBentoService.setServiceListener(BuildBentoActivity.this);
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent intent = new Intent(this, BentoCustomerService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mBound) {
+            mBentoService.setServiceListener(null);
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
+
 
     private AutoFitTxtView getTxtPromoName() {
         if (txtPromoName == null)

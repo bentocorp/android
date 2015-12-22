@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.multidex.MultiDex;
-import android.util.Log;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
@@ -16,7 +15,6 @@ import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.listener.InterfaceWebRequest;
 import com.bentonow.bentonow.model.Settings;
-import com.bentonow.bentonow.service.BentoService;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
 
@@ -29,8 +27,6 @@ import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 public class BentoApplication extends Application {
     private static final String TAG = "BentoApplication";
 
-    static Timer timer;
-    static TimerTask stopService;
     public static BentoApplication instance;
 
     private Handler mHandler = new Handler();
@@ -59,41 +55,6 @@ public class BentoApplication extends Application {
         } catch (Exception e) {
             DebugUtils.logError(TAG, e);
         }
-    }
-
-    static public void onPause() {
-        timer = new Timer();
-
-        DebugUtils.logDebug(TAG, "onPause");
-
-        stopService = new TimerTask() {
-            @Override
-            public void run() {
-                DebugUtils.logDebug(TAG, "stopping service");
-                try {
-                    instance.stopService(new Intent(instance, BentoService.class));
-                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_BENTO_SERVICE_RUNNING, false);
-                } catch (Exception e) {
-                    DebugUtils.logError(TAG, "stopping service: " + e.toString());
-                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_BENTO_SERVICE_RUNNING, false);
-                }
-            }
-        };
-
-        // After timer reached the service will be stop
-        timer.schedule(stopService, 5 * 1000);
-    }
-
-    static public void onResume() {
-        DebugUtils.logDebug(TAG, "onResume");
-
-        if (timer != null) {
-            DebugUtils.logDebug(TAG, "cancel timer");
-            timer.cancel();
-            timer = null;
-        }
-
-        BentoNowUtils.runBentoService(instance);
     }
 
     @Override

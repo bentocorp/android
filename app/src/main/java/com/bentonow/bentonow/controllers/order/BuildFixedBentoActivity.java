@@ -1,5 +1,6 @@
 package com.bentonow.bentonow.controllers.order;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -17,13 +18,16 @@ import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.adapter.BuildBentoFixListAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.dao.DishDao;
+import com.bentonow.bentonow.listener.InterfaceCustomerService;
 import com.bentonow.bentonow.listener.ListenerMainDishFix;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
+import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.Stock;
 import com.bentonow.bentonow.model.order.OrderItem;
+import com.bentonow.bentonow.service.BentoCustomerService;
 import com.bentonow.bentonow.ui.AutoFitTxtView;
 import com.bentonow.bentonow.ui.BackendButton;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
@@ -37,7 +41,7 @@ import java.util.ArrayList;
  * @author José Torres Fuentes
  */
 
-public class BuildFixedBentoActivity extends BaseActivity implements View.OnClickListener, ListenerMainDishFix {
+public class BuildFixedBentoActivity extends BaseActivity implements View.OnClickListener, ListenerMainDishFix, InterfaceCustomerService {
 
     static final String TAG = "BuildFixedBentoActivity";
 
@@ -53,8 +57,7 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
 
     private ArrayList<DishModel> aSideDish = new ArrayList<>();
 
-    public static boolean bIsOpen = false;
-    private static Tweak<Boolean> showBanner = MixpanelAPI.booleanTweak("Show Fix Banner", false);
+    //private static Tweak<Boolean> showBanner = MixpanelAPI.booleanTweak("Show Fix Banner", false);
 
     private Menu mMenu;
 
@@ -260,12 +263,10 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
 
     @Override
     protected void onResume() {
-        bIsOpen = true;
-
         mMenu = Menu.get();
 
-        if (mMenu == null) {
-            BentoNowUtils.openErrorActivity(BuildFixedBentoActivity.this);
+        if (mMenu == null || !Settings.status.equals("open")) {
+            openErrorActivity();
         } else {
             if (Order.current == null) {
                 Order.current = new Order();
@@ -282,10 +283,47 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
         super.onResume();
     }
 
+
+    @Override
+    public void openErrorActivity() {
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+        BentoNowUtils.openErrorActivity(BuildFixedBentoActivity.this);
+    }
+
+    @Override
+    public void openMainActivity() {
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+        BentoNowUtils.openMainActivity(BuildFixedBentoActivity.this);
+    }
+
+    @Override
+    public void openBuildBentoActivity() {
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+    }
+
+    @Override
+    public void onConnectService() {
+        DebugUtils.logDebug(TAG, "Service Connected");
+        mBentoService.setServiceListener(BuildFixedBentoActivity.this);
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent intent = new Intent(this, BentoCustomerService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
     @Override
     protected void onPause() {
-        bIsOpen = false;
         super.onPause();
+
+        if (mBound) {
+            mBentoService.setServiceListener(null);
+            unbindService(mConnection);
+            mBound = false;
+        }
     }
 
     private ImageView getActionbarLeftBtn() {

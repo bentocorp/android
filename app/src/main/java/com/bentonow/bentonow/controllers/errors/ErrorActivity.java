@@ -1,5 +1,6 @@
 package com.bentonow.bentonow.controllers.errors;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,12 +14,15 @@ import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Email;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
+import com.bentonow.bentonow.listener.InterfaceCustomerService;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Settings;
+import com.bentonow.bentonow.service.BentoCustomerService;
 import com.bentonow.bentonow.web.request.UserRequest;
 import com.loopj.android.http.TextHttpResponseHandler;
 
@@ -30,7 +34,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 
-public class ErrorActivity extends BaseFragmentActivity implements View.OnClickListener {
+public class ErrorActivity extends BaseFragmentActivity implements View.OnClickListener, InterfaceCustomerService {
     private static final String TAG = "ErrorActivity";
 
     private TextView txt_title;
@@ -41,8 +45,6 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
     private ImageView actionbar_right_btn;
 
     Menu mCurrentMenu;
-
-    public static boolean bIsOpen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +62,6 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
 
     @Override
     protected void onResume() {
-        bIsOpen = true;
-
         mCurrentMenu = Menu.getNext();
 
         Calendar calendar = Calendar.getInstance();
@@ -82,16 +82,6 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
         setupNextMenu();
 
         super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        bIsOpen = false;
-
-        if (Settings.status.equals("open") && Menu.get() != null) {
-            finish();
-        }
     }
 
     void setupNextMenu() {
@@ -133,11 +123,6 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
                 BentoNowUtils.openSettingsActivity(ErrorActivity.this);
                 break;
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        BentoNowUtils.goToDashboard(ErrorActivity.this);
     }
 
     public void onSubmitPressed(View view) {
@@ -192,6 +177,53 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
         startActivity(intent);
     }
 
+
+    @Override
+    public void onBackPressed() {
+        BentoNowUtils.goToDashboard(ErrorActivity.this);
+    }
+
+    @Override
+    public void openErrorActivity() {
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+    }
+
+    @Override
+    public void openMainActivity() {
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+        BentoNowUtils.openMainActivity(ErrorActivity.this);
+    }
+
+    @Override
+    public void openBuildBentoActivity() {
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+        BentoNowUtils.openBuildBentoActivity(ErrorActivity.this);
+    }
+
+    @Override
+    public void onConnectService() {
+        DebugUtils.logDebug(TAG, "Service Connected");
+        mBentoService.setServiceListener(ErrorActivity.this);
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent intent = new Intent(this, BentoCustomerService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mBound) {
+            mBentoService.setServiceListener(null);
+            unbindService(mConnection);
+            mBound = false;
+        }
+    }
+
     private TextView getTxtTitle() {
         if (txt_title == null)
             txt_title = (TextView) findViewById(R.id.txt_title);
@@ -233,4 +265,5 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
 
         return edit_txt_email;
     }
+
 }

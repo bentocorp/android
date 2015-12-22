@@ -89,21 +89,6 @@ public class NextDayMenuActivity extends BaseFragmentActivity implements View.On
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        BentoApplication.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        BentoApplication.onPause();
-        if (Settings.status.equals("open")) {
-            finish();
-        }
-    }
-
-    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.actionbar_left_btn:
@@ -196,9 +181,9 @@ public class NextDayMenuActivity extends BaseFragmentActivity implements View.On
         }
     }
 
-    @Override
+   /* @Override
     public void onBackPressed() {
         BentoNowUtils.openErrorActivity(NextDayMenuActivity.this);
         finish();
-    }
+    }*/
 }

@@ -1,18 +1,31 @@
 package com.bentonow.bentonow.controllers;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
+import com.bentonow.bentonow.service.BentoCustomerService;
 import com.facebook.appevents.AppEventsLogger;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class BaseFragmentActivity extends FragmentActivity {
+
+    private String TAG = getClass() != null ? getClass().getName() : "BaseFragmentActivity";
+
+    public BentoCustomerService mBentoService = null;
+    public ServiceConnection mConnection = new WebSocketServiceConnection();
+    public boolean mBound = false;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +40,27 @@ public class BaseFragmentActivity extends FragmentActivity {
 
     }
 
+    private class WebSocketServiceConnection implements ServiceConnection {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder binder) {
+            DebugUtils.logDebug(TAG, "Successfully bounded to " + name.getClassName());
+            BentoCustomerService.WebSocketServiceBinder webSocketServiceBinder = (BentoCustomerService.WebSocketServiceBinder) binder;
+            mBentoService = webSocketServiceBinder.getService();
+            onConnectService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            DebugUtils.logDebug(TAG, "Disconnected from service " + name);
+            mBound = true;
+        }
+    }
+
+    public void onConnectService() {
+
+    }
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
@@ -36,7 +70,6 @@ public class BaseFragmentActivity extends FragmentActivity {
     protected void onResume() {
         super.onResume();
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_APP_IN_FRONT, true);
-        BentoApplication.onResume();
         AppEventsLogger.activateApp(this);
 
     }
@@ -56,9 +89,7 @@ public class BaseFragmentActivity extends FragmentActivity {
     @Override
     protected void onPause() {
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_APP_IN_FRONT, false);
-        BentoApplication.onPause();
         AppEventsLogger.deactivateApp(this);
-
         super.onPause();
     }
 

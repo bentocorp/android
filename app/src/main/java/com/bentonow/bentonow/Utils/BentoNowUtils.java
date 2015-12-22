@@ -3,7 +3,6 @@ package com.bentonow.bentonow.Utils;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
@@ -28,7 +27,6 @@ import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
-import com.bentonow.bentonow.service.BentoService;
 import com.facebook.GraphResponse;
 import com.google.gson.Gson;
 
@@ -83,43 +81,49 @@ public class BentoNowUtils {
         return sdfBento.format(cDate.getTime());
     }
 
-    public static void openMainActivity(Context mContext) {
-        if (!MainActivity.bIsOpen && SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_APP_IN_FRONT)) {
+    public static void openMainActivity(FragmentActivity mContext) {
+        if (!MainActivity.bIsOpen) {
             Intent intent = new Intent(mContext, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(intent);
+            mContext.finish();
         } else
             DebugUtils.logDebug(TAG, "Cant: openMainActivity");
     }
 
-    public static void openBuildBentoActivity(Context mContext) {
+    public static void openBuildBentoActivity(FragmentActivity mContext) {
         Menu mCurrentMenu = Menu.get();
 
         Intent iBuildBento;
         if (mCurrentMenu != null)
             if (mCurrentMenu.menu_type.equals(ConstantUtils.sFixed)) {
                 iBuildBento = new Intent(mContext, BuildFixedBentoActivity.class);
-                iBuildBento.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                if (!BuildFixedBentoActivity.bIsOpen)
-                    mContext.startActivity(iBuildBento);
+                iBuildBento.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(iBuildBento);
             } else {
                 iBuildBento = new Intent(mContext, BuildBentoActivity.class);
-                iBuildBento.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                if (!BuildBentoActivity.bIsOpen)
-                    mContext.startActivity(iBuildBento);
+                iBuildBento.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                mContext.startActivity(iBuildBento);
             }
         else
             openErrorActivity(mContext);
+
+        mContext.finish();
+    }
+
+    public static void openErrorActivity(FragmentActivity mContext) {
+        Intent intent = new Intent(mContext, ErrorActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        mContext.startActivity(intent);
+        mContext.finish();
+        Order.cleanUp();
     }
 
     public static void openErrorActivity(Context mContext) {
-        if (!ErrorActivity.bIsOpen && SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_APP_IN_FRONT)) {
-            Intent intent = new Intent(mContext, ErrorActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            mContext.startActivity(intent);
-            Order.cleanUp();
-        } else
-            DebugUtils.logDebug(TAG, "Cant: openErrorActivity");
+        Intent intent = new Intent(mContext, ErrorActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(intent);
+        Order.cleanUp();
     }
 
     public static void openCompleteOrderActivity(Context mContext) {
@@ -130,7 +134,6 @@ public class BentoNowUtils {
 
     public static void openSettingsActivity(FragmentActivity mContext) {
         Intent intent = new Intent(mContext, SettingsActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(intent);
         mContext.overridePendingTransition(R.anim.left_slide_in, R.anim.right_slide_out);
     }
@@ -309,16 +312,6 @@ public class BentoNowUtils {
             return getNumberFromPrice(dPrice);
     }
 
-    public static void runBentoService(Context ctx) {
-        if (!BentoService.isRunning()) {
-            DebugUtils.logDebug(TAG, "starting service");
-            try {
-                ctx.startService(new Intent(ctx, BentoService.class));
-            } catch (Exception e) {
-                DebugUtils.logError("BentoService: ", e);
-            }
-        }
-    }
 
     public static boolean isValidCompleteOrder(Context mContext) {
         boolean bIsValid = true;

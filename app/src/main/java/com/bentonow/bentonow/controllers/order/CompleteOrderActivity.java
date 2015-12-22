@@ -33,12 +33,15 @@ import com.bentonow.bentonow.controllers.payment.EnterCreditCardActivity;
 import com.bentonow.bentonow.controllers.session.SignInActivity;
 import com.bentonow.bentonow.dao.OrderDao;
 import com.bentonow.bentonow.dao.UserDao;
+import com.bentonow.bentonow.listener.InterfaceCustomerService;
 import com.bentonow.bentonow.listener.ListenerDialog;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Order;
+import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.Stock;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.order.OrderItem;
+import com.bentonow.bentonow.service.BentoCustomerService;
 import com.bentonow.bentonow.ui.BackendButton;
 import com.crashlytics.android.Crashlytics;
 import com.loopj.android.http.RequestParams;
@@ -50,7 +53,7 @@ import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class CompleteOrderActivity extends BaseActivity implements View.OnClickListener, LazyListAdapterInterface, OnItemClickListener {
+public class CompleteOrderActivity extends BaseActivity implements View.OnClickListener, LazyListAdapterInterface, OnItemClickListener, InterfaceCustomerService {
     private static final String TAG = "CompleteOrderActivity";
 
     TextView txt_address;
@@ -155,9 +158,10 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         if (Order.current == null || Order.current.OrderItems == null || Order.current.OrderItems.isEmpty()) {
             Crashlytics.log(Log.ERROR, "Order", "No Items in the Order");
             emptyOrders();
-        } else {
+        } else if (!Settings.status.equals("open")) {
+
+        } else
             updateUI();
-        }
 
         super.onResume();
     }
@@ -648,6 +652,47 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         mDialog = null;
         mDialogCoupon = null;
         mProgressDialog = null;
+    }
+
+    @Override
+    public void openErrorActivity() {
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+        onBackPressed();
+    }
+
+    @Override
+    public void openMainActivity() {
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+        BentoNowUtils.openMainActivity(CompleteOrderActivity.this);
+    }
+
+    @Override
+    public void openBuildBentoActivity() {
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+    }
+
+    @Override
+    public void onConnectService() {
+        DebugUtils.logDebug(TAG, "Service Connected");
+        mBentoService.setServiceListener(CompleteOrderActivity.this);
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent intent = new Intent(this, BentoCustomerService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mBound) {
+            mBentoService.setServiceListener(null);
+            unbindService(mConnection);
+            mBound = false;
+        }
     }
 
 
