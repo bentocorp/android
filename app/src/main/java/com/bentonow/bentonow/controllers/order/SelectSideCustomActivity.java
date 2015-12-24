@@ -28,6 +28,8 @@ public class SelectSideCustomActivity extends BaseActivity implements View.OnCli
 
     private GridView mGridView;
 
+    private Order mOrder;
+
     int orderIndex;
     int itemIndex;
 
@@ -41,19 +43,21 @@ public class SelectSideCustomActivity extends BaseActivity implements View.OnCli
 
         Menu menu = Menu.get();
 
+        mOrder = mOrderDao.getCurrentOrder();
+
         if (menu == null) {
             ConfirmationDialog mDialog = new ConfirmationDialog(SelectSideCustomActivity.this, null, "There is no current menu to show");
             mDialog.addAcceptButton("OK", SelectSideCustomActivity.this);
             mDialog.show();
         } else {
-            orderIndex = Order.current.currentOrderItem;
+            orderIndex = mOrder.currentOrderItem;
             itemIndex = getIntent().getIntExtra("itemIndex", 0);
 
             getGridView().setAdapter(getListAdapter());
             getGridView().setOnItemClickListener(this);
 
-            getListAdapter().setCurrentSelected(Order.current.OrderItems.get(orderIndex).items.get(itemIndex));
-            getListAdapter().setCurrentAdded(Order.current.OrderItems.get(orderIndex).items.get(itemIndex));
+            getListAdapter().setCurrentSelected(mOrder.OrderItems.get(orderIndex).items.get(itemIndex));
+            getListAdapter().setCurrentAdded(mOrder.OrderItems.get(orderIndex).items.get(itemIndex));
 
             ArrayList<DishModel> aSoldDish = new ArrayList<>();
 
@@ -97,11 +101,17 @@ public class SelectSideCustomActivity extends BaseActivity implements View.OnCli
 
     @Override
     public void onAddToBentoClick(int iDishPosition) {
-        if (DishDao.isSoldOut(getListAdapter().getCurrentSelected(), true) || !DishDao.canBeAdded(getListAdapter().getCurrentSelected()))
+        if (DishDao.isSoldOut(getListAdapter().getCurrentSelected(), true) || !mDishDao.canBeAdded(getListAdapter().getCurrentSelected()))
             return;
         DishModel dishModel = DishDao.clone(getListAdapter().getCurrentSelected());
         dishModel.type += itemIndex;
-        Order.current.OrderItems.get(orderIndex).items.set(itemIndex, dishModel);
+        dishModel.dish_pk = mOrder.OrderItems.get(orderIndex).items.get(itemIndex).dish_pk;
+        dishModel.bento_pk = mOrder.OrderItems.get(orderIndex).items.get(itemIndex).bento_pk;
+
+        //Order.current.OrderItems.get(orderIndex).items.set(itemIndex, dishModel);
+
+        mDishDao.updateDishItem(dishModel);
+
         DebugUtils.logDebug(TAG, "added " + dishModel.type);
 
         onBackPressed();

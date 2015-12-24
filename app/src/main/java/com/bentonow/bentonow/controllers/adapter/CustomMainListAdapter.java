@@ -27,6 +27,7 @@ public class CustomMainListAdapter extends ArrayAdapter<DishModel> {
     private ListenerCustomDish mListener;
     private DishModel mCurrentAdded;
     private DishModel mCurrentSelected;
+    private DishDao mDishDao;
 
     /**
      * @param context
@@ -35,6 +36,7 @@ public class CustomMainListAdapter extends ArrayAdapter<DishModel> {
         super(context, 0);
         this.mActivity = context;
         this.mListener = mListener;
+        mDishDao = new DishDao();
     }
 
     @Override
@@ -64,7 +66,7 @@ public class CustomMainListAdapter extends ArrayAdapter<DishModel> {
                 viewHolder.getImgDish().setTag(mDish.image1);
             }
 
-            DebugUtils.logDebug("Dish Price: " + mDish.price);
+            //DebugUtils.logDebug("Dish Price: " + mDish.price);
         } catch (Exception ex) {
             DebugUtils.logError("LoadImage", ex);
             viewHolder.getImgDish().setImageResource(R.drawable.menu_placeholder);
@@ -76,7 +78,7 @@ public class CustomMainListAdapter extends ArrayAdapter<DishModel> {
 
         viewHolder.getBtnAdded().setVisibility(added ? View.VISIBLE : View.GONE);
 
-        viewHolder.getTxtDishPrice().setText(String.format(mActivity.getString(R.string.money_main_format),  BentoNowUtils.getDefaultPriceBento(mDish.price)));
+        viewHolder.getTxtDishPrice().setText(String.format(mActivity.getString(R.string.money_main_format), BentoNowUtils.getDefaultPriceBento(mDish.price)));
         viewHolder.getTxtDishPrice().setVisibility(selected ? View.GONE : View.VISIBLE);
 
         viewHolder.getTxtDescription().setText(selected ? mDish.description : "");
@@ -85,7 +87,7 @@ public class CustomMainListAdapter extends ArrayAdapter<DishModel> {
         viewHolder.getTxtAddPrice().setTextColor(added ? mActivity.getResources().getColor(R.color.black) : mActivity.getResources().getColor(R.color.white));
 
         viewHolder.getWrapperAddPrice().setVisibility(selected ? View.VISIBLE : View.GONE);
-        viewHolder.getWrapperAddPrice().setBackground(!added ? mActivity.getResources().getDrawable(R.drawable.btn_border_lineal_white) : mActivity.getResources().getDrawable(R.drawable.btn_white));
+        viewHolder.getWrapperAddPrice().setBackgroundDrawable(!added ? mActivity.getResources().getDrawable(R.drawable.btn_border_lineal_white) : mActivity.getResources().getDrawable(R.drawable.btn_white));
 
         viewHolder.getViewLineDivider().setBackgroundColor(added ? mActivity.getResources().getColor(R.color.black) : mActivity.getResources().getColor(R.color.white));
 
@@ -107,7 +109,7 @@ public class CustomMainListAdapter extends ArrayAdapter<DishModel> {
             }
         });
 
-        if (!DishDao.canBeAdded(mDish)) {
+        if (!mDishDao.canBeAdded(mDish)) {
             viewHolder.getBtnAddToBento().setText(BackendText.get("reached-max-button"));
             viewHolder.getImgSoldOut().setVisibility(View.GONE);
         } else if (DishDao.isSoldOut(mDish, true)) {

@@ -26,6 +26,7 @@ public class CustomSideListAdapter extends ArrayAdapter<DishModel> {
     private ListenerCustomDish mListener;
     private DishModel mCurrentAdded;
     private DishModel mCurrentSelected;
+    private DishDao dishDao;
 
     /**
      * @param context
@@ -34,6 +35,7 @@ public class CustomSideListAdapter extends ArrayAdapter<DishModel> {
         super(context, 0);
         this.mActivity = context;
         this.mListener = mListener;
+        dishDao = new DishDao();
     }
 
     @Override
@@ -85,10 +87,10 @@ public class CustomSideListAdapter extends ArrayAdapter<DishModel> {
         } else
             viewHolder.getTxtDescription().setVisibility(View.GONE);
 
-        if (!DishDao.canBeAdded(mDish)) {
+        if (!dishDao.canBeAdded(mDish)) {
             viewHolder.getBtnAddToBento().setText(BackendText.get("reached-max-button"));
             viewHolder.getImgSoldOut().setVisibility(View.GONE);
-        } else if (DishDao.isSoldOut(mDish, true)) {
+        } else if (dishDao.isSoldOut(mDish, true)) {
             viewHolder.getBtnAddToBento().setText("Sold Out");
             viewHolder.getImgSoldOut().setVisibility(View.VISIBLE);
         } else {

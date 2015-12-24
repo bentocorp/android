@@ -13,6 +13,7 @@ import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
+import com.bentonow.bentonow.dao.OrderDao;
 import com.bentonow.bentonow.listener.InterfaceCustomerService;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Menu;
@@ -89,13 +90,17 @@ public class BentoCustomerService extends Service {
                                     break;
                             }
                         } else {
-                            if (Order.current != null && mMenu != null && SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_APP_IN_FRONT))
-                                if (!Order.current.MealName.equals(mMenu.meal_name) || !Order.current.MenuType.equals(mMenu.menu_type)) {
+                            OrderDao mOrderDao = new OrderDao();
+                            Order mOrder = mOrderDao.getCurrentOrder();
+
+                            if (mOrder != null && mMenu != null && SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_APP_IN_FRONT))
+                                if (!mOrder.MealName.equals(mMenu.meal_name) || !mOrder.MenuType.equals(mMenu.menu_type)) {
                                     DebugUtils.logDebug(TAG, "New Menu: " + mMenu.meal_name + "||" + mMenu.menu_type);
                                     WidgetsUtils.createShortToast(R.string.error_new_menu_type);
-                                    Order.cleanUp();
-                                    if (mListener != null)
+                                    if (mListener != null) {
+                                        mOrderDao.cleanUp();
                                         mListener.openBuildBentoActivity();
+                                    }
                                 }
                         }
                     }
@@ -143,7 +148,7 @@ public class BentoCustomerService extends Service {
     }
 
     private void startTimerTask() {
-        getHandler().postDelayed(getLoadingTask(), 1000 * 15);
+        getHandler().postDelayed(getLoadingTask(), 1000 * 30);
     }
 
     public void disconnectBentoService() {

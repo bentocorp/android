@@ -66,7 +66,7 @@ public class GoogleLocationUtil {
                         LocationUtils.mCurrentLocation = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
                     }
 
-                    Order.address = LocationUtils.getAddressFromLocation(mLocation);
+                    // Order.address = LocationUtils.getAddressFromLocation(mLocation);
 
                 }
             });
@@ -108,7 +108,7 @@ public class GoogleLocationUtil {
         else
             LocationUtils.mCurrentLocation = new LatLng(37.767780, -122.414818);
 
-        Order.address = LocationUtils.getAddressFromLocation(LocationUtils.mCurrentLocation);
+        // Order.address = LocationUtils.getAddressFromLocation(LocationUtils.mCurrentLocation);
 
     }
 }

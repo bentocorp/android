@@ -25,6 +25,7 @@ public class ItemHolder {
     public BackendAutoFitTextView btn_added;
 
     public DishModel dishModel;
+    public DishDao dishDao;
     public boolean added;
     public boolean selected;
 
@@ -68,7 +69,7 @@ public class ItemHolder {
 
     public void setData(DishModel dishModel, boolean countCurrent) {
         this.dishModel = dishModel;
-
+        dishDao = new DishDao();
         updateUI(countCurrent);
     }
 
@@ -112,7 +113,7 @@ public class ItemHolder {
 
 
             if (btn_add_to_bento != null) {
-                if (!DishDao.canBeAdded(dishModel)) {
+                if (!dishDao.canBeAdded(dishModel)) {
                     btn_add_to_bento.setText(BackendText.get("reached-max-button"));
                 } else if (DishDao.isSoldOut(dishModel, countCurrent)) {
                     btn_add_to_bento.setText("Sold Out");

@@ -2,6 +2,8 @@ package com.bentonow.bentonow.Utils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.animation.Animation;
@@ -9,6 +11,7 @@ import android.view.animation.RotateAnimation;
 
 import com.bentonow.bentonow.BuildConfig;
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.controllers.errors.ErrorActivity;
 import com.bentonow.bentonow.controllers.errors.ErrorVersionActivity;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
@@ -21,6 +24,7 @@ import com.bentonow.bentonow.controllers.payment.EnterCreditCardActivity;
 import com.bentonow.bentonow.controllers.session.EnterPhoneNumberActivity;
 import com.bentonow.bentonow.controllers.session.SettingsActivity;
 import com.bentonow.bentonow.controllers.session.SignInActivity;
+import com.bentonow.bentonow.dao.OrderDao;
 import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Menu;
@@ -28,6 +32,7 @@ import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
 import com.facebook.GraphResponse;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 
 import java.text.DateFormat;
@@ -51,8 +56,8 @@ public class BentoNowUtils {
 
     public static int getCurrentTime() {
         if (BuildConfig.DEBUG && BentoNowUtils.B_KOKUSHO_TESTING)
-            //  return 203000;
-            return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
+            return 203000;
+            //return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
         else
             return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
     }
@@ -116,14 +121,16 @@ public class BentoNowUtils {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         mContext.startActivity(intent);
         mContext.finish();
-        Order.cleanUp();
+        OrderDao mOrderDao = new OrderDao();
+        mOrderDao.cleanUp();
     }
 
     public static void openErrorActivity(Context mContext) {
         Intent intent = new Intent(mContext, ErrorActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(intent);
-        Order.cleanUp();
+        OrderDao mOrderDao = new OrderDao();
+        mOrderDao.cleanUp();
     }
 
     public static void openCompleteOrderActivity(Context mContext) {
@@ -213,29 +220,20 @@ public class BentoNowUtils {
     }
 
     public static void saveSettings(ConstantUtils.optSaveSettings optSave) {
-        Gson gson = new Gson();
-        String location = "";
-        String address = "";
-        String backendText = gson.toJson(BackendText.list);
+        String backendText = new Gson().toJson(BackendText.list);
 
-        if (Order.location != null)
-            location = gson.toJson(Order.location);
-        if (Order.address != null)
-            address = gson.toJson(Order.address);
+       /* if (BentoApplication.location != null)
+            location = gson.toJson(BentoApplication.location);
+        if (BentoApplication.address != null)
+            address = gson.toJson(BentoApplication.address);*/
 
         switch (optSave) {
             case ALL:
-                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.LOCATION, location);
-                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ADDRESS, address);
+               /* SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.LOCATION, location);
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ADDRESS, address);*/
 
                 if (BackendText.list != null && BackendText.list.size() > 0)
                     SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.BACKENDTEXT, backendText);
-                break;
-            case LOCATION:
-                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.LOCATION, location);
-                break;
-            case ADDRESS:
-                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ADDRESS, address);
                 break;
             case BACKEND_TEXT:
                 if (BackendText.list != null && BackendText.list.size() > 0)
@@ -319,6 +317,9 @@ public class BentoNowUtils {
         UserDao userDao = new UserDao();
         User mUser = userDao.getCurrentUser();
 
+        LatLng mLocation = new Gson().fromJson(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.LOCATION), LatLng.class);
+        Address mAddress = new Gson().fromJson(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.ADDRESS), Address.class);
+
         if (mUser == null) {
             // WidgetsUtils.createShortToast(R.string.error_no_user_log_in);
             Intent mIntentSignIn = new Intent(mContext, SignInActivity.class);
@@ -326,7 +327,8 @@ public class BentoNowUtils {
             mContext.startActivity(mIntentSignIn);
 
             bIsValid = false;
-        } else if (LocationUtils.mCurrentLocation == null || !Settings.isInServiceArea(LocationUtils.mCurrentLocation) || Order.address == null || Order.location == null) {
+            // } else if (LocationUtils.mCurrentLocation == null || !Settings.isInServiceArea(LocationUtils.mCurrentLocation) || BentoApplication.address == null || BentoApplication.location == null) {
+        } else if (mLocation == null || !Settings.isInServiceArea(mLocation) || mAddress == null) {
             // WidgetsUtils.createShortToast(mContext.getString(R.string.error_no_valid_delivery_address));
 
             Intent intent = new Intent(mContext, DeliveryLocationActivity.class);
@@ -347,8 +349,39 @@ public class BentoNowUtils {
         return bIsValid;
     }
 
-    public static void openFirstScreen() {
+    public static String getFullAddress() {
+        Address mAddress;
+        try {
+            mAddress = new Gson().fromJson(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.ADDRESS), Address.class);
+        } catch (Exception ex) {
+            mAddress = null;
+            DebugUtils.logError(TAG, ex);
+        }
 
+        if (mAddress == null) return "";
+
+        String sAddress = "";
+
+        for (int i = 0; i < mAddress.getMaxAddressLineIndex(); ++i) {
+            if (sAddress.length() > 0) sAddress += ", ";
+            sAddress += mAddress.getAddressLine(i);
+        }
+
+        return sAddress;
+    }
+
+    public static String getStreetAddress() {
+        Address mAddress;
+        try {
+            mAddress = new Gson().fromJson(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.ADDRESS), Address.class);
+        } catch (Exception ex) {
+            mAddress = null;
+            DebugUtils.logError(TAG, ex);
+        }
+
+        if (mAddress == null)
+            return "";
+        return mAddress.getThoroughfare() + ", " + mAddress.getSubThoroughfare();
     }
 
 }

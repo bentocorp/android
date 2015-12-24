@@ -17,7 +17,6 @@ import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.dao.DishDao;
-import com.bentonow.bentonow.dao.OrderDao;
 import com.bentonow.bentonow.listener.InterfaceCustomerService;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.DishModel;
@@ -30,8 +29,6 @@ import com.bentonow.bentonow.service.BentoCustomerService;
 import com.bentonow.bentonow.ui.AutoFitTxtView;
 import com.bentonow.bentonow.ui.BackendButton;
 import com.bentonow.bentonow.ui.ItemHolder;
-import com.mixpanel.android.mpmetrics.MixpanelAPI;
-import com.mixpanel.android.mpmetrics.Tweak;
 
 import org.json.JSONObject;
 
@@ -55,6 +52,8 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
     ConfirmationDialog mDialog;
 
     private Menu mMenu;
+
+    private Order mOrder;
 
     //private static Tweak<Boolean> showBanner = MixpanelAPI.booleanTweak("Show Banner", false);
 
@@ -86,7 +85,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
         if (mMenu == null || !Settings.status.equals("open")) {
             openErrorActivity();
         } else {
-            if (Order.current == null) {
+           /* if (Order.current == null) {
                 Order.current = new Order();
                 Order.current.MealName = mMenu.meal_name;
                 Order.current.MenuType = mMenu.menu_type;
@@ -101,9 +100,28 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
             } else if (Order.current.OrderItems.size() <= orderIndex) {
                 orderIndex = Order.current.OrderItems.size() - 1;
             }
+*/
+            mOrder = mOrderDao.getCurrentOrder();
+
+            if (mOrder == null) {
+                mOrder = mOrderDao.getNewOrder();
+                mOrder.MealName = mMenu.meal_name;
+                mOrder.MenuType = mMenu.menu_type;
+
+                mOrderDao.updateOrder(mOrder);
+            }
+
+            orderIndex = mOrder.currentOrderItem;
+
+            if (mOrder.OrderItems.size() == 0) {
+                mOrder.OrderItems.add(mBentoDao.getNewBento());
+            } else if (mOrder.OrderItems.size() <= orderIndex) {
+                orderIndex = mOrder.OrderItems.size() - 1;
+            }
 
             updateUI();
         }
+
 
         super.onResume();
     }
@@ -179,7 +197,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
     }
 
     public void updateUI() {
-        if (Order.current.OrderItems.get(orderIndex).isComplete() && !Stock.isSold()) {
+        if (mBentoDao.isBentoComplete(mOrder.OrderItems.get(orderIndex)) && !Stock.isSold()) {
             getBtnContinue().setBackgroundColor(getResources().getColor(R.color.btn_green));
             getBtnContinue().setText(BackendText.get("build-button-2"));
             btn_add_another_bento.setBackgroundResource(R.drawable.btn_gray);
@@ -191,17 +209,17 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
             btn_add_another_bento.setTextColor(getResources().getColor(R.color.btn_green_trans));
         }
 
-        if (Order.countCompletedOrders() == 0) {
+        if (mOrderDao.countCompletedOrders() == 0) {
             actionbar_right_badge.setVisibility(View.GONE);
             actionbar_right_badge.setText("0");
             actionbar_right_btn.setImageResource(R.drawable.ic_ab_bento);
         } else {
             actionbar_right_badge.setVisibility(View.VISIBLE);
-            actionbar_right_badge.setText(Order.countCompletedOrders() + "");
+            actionbar_right_badge.setText(mOrderDao.countCompletedOrders() + "");
             actionbar_right_btn.setImageResource(R.drawable.ic_ab_bento_completed);
         }
 
-        OrderItem item = Order.current.OrderItems.get(orderIndex);
+        OrderItem item = mOrder.OrderItems.get(orderIndex);
 
         mainHolder.setData(item.items.get(0), false);
         side1Holder.setData(item.items.get(1), false);
@@ -211,7 +229,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
     }
 
     void autocomplete() {
-        OrderItem orderItem = Order.current.OrderItems.get(orderIndex);
+        /*OrderItem orderItem = Order.current.OrderItems.get(orderIndex);
         DishModel dishModel;
 
         if (orderItem.items.get(0) == null) {
@@ -232,9 +250,31 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
                 dishModel.type += i;
                 orderItem.items.set(i, dishModel);
             }
+        }*/
+
+        if (mOrder.OrderItems.get(orderIndex).items.get(0).name.isEmpty()) {
+            mOrder.OrderItems.get(orderIndex).items.set(0, mDishDao.updateDishItem(mOrder.OrderItems.get(orderIndex).items.get(0), mDishDao.getFirstAvailable("main", null)));
         }
 
-        updateUI();
+        int[] ids = new int[4];
+
+        for (int i = 1; i < 5; ++i) {
+            if (mOrder.OrderItems.get(orderIndex).items.get(i).name.isEmpty()) {
+                DishModel dishModel = mDishDao.getFirstAvailable("side", ids);
+
+                if (dishModel == null)
+                    continue;
+
+                ids[i - 1] = dishModel.itemId;
+
+                dishModel = DishDao.clone(dishModel);
+                dishModel.type += i;
+
+                mOrder.OrderItems.get(orderIndex).items.set(i, mDishDao.updateDishItem(mOrder.OrderItems.get(orderIndex).items.get(i), dishModel));
+            }
+
+            updateUI();
+        }
     }
 
     @Override
@@ -244,7 +284,8 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
                 BentoNowUtils.openSettingsActivity(BuildBentoActivity.this);
                 break;
             case R.id.actionbar_right_btn:
-                if (Order.current.OrderItems.get(orderIndex).isComplete()) {
+                // if (Order.current.OrderItems.get(orderIndex).isComplete()) {
+                if (mBentoDao.isBentoComplete(mOrder.OrderItems.get(orderIndex))) {
                     onContinueOrderPressed();
                 } else {
                     mDialog = new ConfirmationDialog(BuildBentoActivity.this, null, BackendText.get("build-not-complete-text"));
@@ -257,16 +298,23 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
             case R.id.button_accept:
                 autocomplete();
 
-                if (Order.countCompletedOrders() > 0) {
+                if (mOrderDao.countCompletedOrders() > 0) {
                     onContinueOrderPressed();
                 }
                 break;
             case R.id.btn_cancel:
-                if (Order.current.OrderItems.size() > 1) {
+                /*if (Order.current.OrderItems.size() > 1) {
                     Order.current.OrderItems.remove(orderIndex);
                     orderIndex = Order.current.OrderItems.size() - 1;
                     onContinueOrderPressed();
                 }
+                if (mOrder.OrderItems.size() > 1) {
+                    mBentoDao.removeBento(mOrder.OrderItems.get(orderIndex).order_pk);
+                    mOrder.OrderItems.remove(orderIndex);
+                    orderIndex = Order.current.OrderItems.size() - 1;
+                    onContinueOrderPressed();
+                }
+                */
                 break;
             case R.id.btn_continue:
                 onContinueOrderPressed();
@@ -309,19 +357,27 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
     }
 
     public void onAddAnotherBentoPressed(View view) {
-        if (!Order.current.OrderItems.get(orderIndex).isComplete() || Stock.isSold()) return;
+       /* if (!Order.current.OrderItems.get(orderIndex).isComplete() || Stock.isSold()) return;
 
         Order.current.OrderItems.add(new OrderItem());
-        Order.current.currentOrderItem = orderIndex = Order.current.OrderItems.size() - 1;
+        Order.current.currentOrderItem = orderIndex = Order.current.OrderItems.size() - 1;*/
+
+        if (!mBentoDao.isBentoComplete(mOrder.OrderItems.get(orderIndex)) || Stock.isSold())
+            return;
+
+        mOrder.OrderItems.add(mBentoDao.getNewBento());
+        mOrder.currentOrderItem = orderIndex = mOrder.OrderItems.size() - 1;
+
+        mOrderDao.updateOrder(mOrder);
 
         updateUI();
     }
 
     public void onContinueOrderPressed() {
 
-        String sSoldOutItems = OrderDao.calculateSoldOutItems();
+        String sSoldOutItems = mOrderDao.calculateSoldOutItems();
 
-        if (!Order.current.OrderItems.get(orderIndex).isComplete()) {
+    /*    if (!Order.current.OrderItems.get(orderIndex).isComplete()) {
             if (Order.current.OrderItems.get(orderIndex).items.get(0) == null) {
                 startActivity(new Intent(this, SelectMainCustomActivity.class));
             } else if (Order.current.OrderItems.get(orderIndex).items.get(1) == null) {
@@ -344,6 +400,30 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
                 intent.putExtra("orderIndex", orderIndex);
                 intent.putExtra("itemIndex", 4);
                 startActivity(intent);
+            }*/
+        if (!mBentoDao.isBentoComplete(mOrder.OrderItems.get(orderIndex))) {
+            if (mOrder.OrderItems.get(orderIndex).items.get(0) == null) {
+                startActivity(new Intent(this, SelectMainCustomActivity.class));
+            } else if (mOrder.OrderItems.get(orderIndex).items.get(1) == null) {
+                Intent intent = new Intent(this, SelectSideCustomActivity.class);
+                intent.putExtra("orderIndex", orderIndex);
+                intent.putExtra("itemIndex", 1);
+                startActivity(intent);
+            } else if (mOrder.OrderItems.get(orderIndex).items.get(2) == null) {
+                Intent intent = new Intent(this, SelectSideCustomActivity.class);
+                intent.putExtra("orderIndex", orderIndex);
+                intent.putExtra("itemIndex", 2);
+                startActivity(intent);
+            } else if (mOrder.OrderItems.get(orderIndex).items.get(3) == null) {
+                Intent intent = new Intent(this, SelectSideCustomActivity.class);
+                intent.putExtra("orderIndex", orderIndex);
+                intent.putExtra("itemIndex", 3);
+                startActivity(intent);
+            } else if (mOrder.OrderItems.get(orderIndex).items.get(4) == null) {
+                Intent intent = new Intent(this, SelectSideCustomActivity.class);
+                intent.putExtra("orderIndex", orderIndex);
+                intent.putExtra("itemIndex", 4);
+                startActivity(intent);
             }
         } else if (!sSoldOutItems.isEmpty()) {
             updateUI();
@@ -356,7 +436,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
 
     private void track() {
         try {
-            OrderItem item = Order.current.OrderItems.get(orderIndex);
+            OrderItem item = mOrder.OrderItems.get(orderIndex);
 
             JSONObject params = new JSONObject();
             params.put("main", item.items.get(0) == null ? "0" : item.items.get(0).itemId);

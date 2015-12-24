@@ -3,6 +3,8 @@ package com.bentonow.bentonow.model;
 import android.util.Log;
 
 import com.bentonow.bentonow.Utils.DebugUtils;
+import com.bentonow.bentonow.dao.DishDao;
+import com.bentonow.bentonow.dao.OrderDao;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -40,10 +42,11 @@ public class Stock {
 
     public static boolean isSold(int itemId, boolean countCurrent) {
         int iCurrent = countCurrent ? 1 : 0;
+        DishDao mDishDao = new DishDao();
 
         for (Stock stock : list) {
             if (stock.itemId == itemId) {
-                int iCurrentStock = stock.qty - (Order.countItemsById(itemId) + iCurrent);
+                int iCurrentStock = stock.qty - (mDishDao.countItemsById(itemId) + iCurrent);
                 if (iCurrentStock < 0) {
                     DebugUtils.logDebug(TAG, "isSold: " + itemId + ": " + " QTY:" + stock.qty + " Stock:" + iCurrentStock);
                     return true;

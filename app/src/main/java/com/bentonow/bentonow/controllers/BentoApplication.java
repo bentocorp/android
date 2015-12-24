@@ -3,6 +3,7 @@ package com.bentonow.bentonow.controllers;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
 import android.os.Handler;
 import android.support.multidex.MultiDex;
 
@@ -17,6 +18,7 @@ import com.bentonow.bentonow.listener.InterfaceWebRequest;
 import com.bentonow.bentonow.model.Settings;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -31,6 +33,8 @@ public class BentoApplication extends Application {
 
     private Handler mHandler = new Handler();
     private UserDao userDao = new UserDao();
+
+
 
     @Override
     public void onCreate() {

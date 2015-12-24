@@ -61,6 +61,8 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
 
     private Menu mMenu;
 
+    private Order mOrder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,10 +117,10 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                getTxtToolbarBadge().setVisibility(Order.current.OrderItems.size() != 0 ? View.VISIBLE : View.INVISIBLE);
-                getTxtToolbarBadge().setText(String.valueOf(Order.current.OrderItems.size()));
+                getTxtToolbarBadge().setVisibility(mOrder.OrderItems.size() != 0 ? View.VISIBLE : View.INVISIBLE);
+                getTxtToolbarBadge().setText(String.valueOf(mOrder.OrderItems.size()));
 
-                if (!Order.current.OrderItems.isEmpty() && !Stock.isSold()) {
+                if (!mOrder.OrderItems.isEmpty() && !Stock.isSold()) {
                     getButtonComplete().setBackgroundColor(getResources().getColor(R.color.btn_green));
                     getButtonComplete().setText(BackendText.get("build-button-2"));
                 } else {
@@ -130,47 +132,50 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
     }
 
     private void autocompleteBento(DishModel mDish) {
-        OrderItem orderItem = new OrderItem();
+        OrderItem orderItem = mBentoDao.getNewBento();
 
-        if (orderItem.items.get(0) == null) {
+        if (orderItem.items.get(0).name.isEmpty()) {
             if (mDish == null)
-                orderItem.items.set(0, DishDao.getFirstAvailable("main", null));
-            else
-                orderItem.items.set(0, mDish);
+                mDish = mDishDao.getFirstAvailable("main", null);
         }
 
+        mDishDao.updateDishItem(orderItem.items.get(0), mDish);
+        orderItem.items.set(0, mDish);
+
         for (int a = 0; a < aSideDish.size(); a++) {
+            mDishDao.updateDishItem(orderItem.items.get(a + 1), aSideDish.get(a));
             orderItem.items.set(a + 1, aSideDish.get(a));
         }
 
-        Order.current.OrderItems.add(orderItem);
+        mOrder.OrderItems.add(orderItem);
 
         updateUI();
     }
 
 
     private void onContinueOrderPressed() {
-        if (!Order.current.OrderItems.isEmpty()) {
+        if (!mOrder.OrderItems.isEmpty()) {
 
-            boolean bOrderComplete = true;
-            for (OrderItem mOrder : Order.current.OrderItems) {
-                bOrderComplete = mOrder.isComplete();
-                if (!bOrderComplete)
+            for (OrderItem mBento : mOrder.OrderItems) {
+                if (!mBentoDao.isBentoComplete(mBento)) {
+                    WidgetsUtils.createShortToast("The Bento is Not complete");
                     return;
+                }
             }
 
-            if (bOrderComplete && BentoNowUtils.isValidCompleteOrder(BuildFixedBentoActivity.this)) {
+            if (BentoNowUtils.isValidCompleteOrder(BuildFixedBentoActivity.this)) {
                 trackBuildBentos();
                 BentoNowUtils.openCompleteOrderActivity(BuildFixedBentoActivity.this);
-            } else
-                WidgetsUtils.createShortToast("There are not enough dishes to build a bento, try again later");
+            }
+           /* else
+                WidgetsUtils.createShortToast("There are not enough dishes to build a bento, try again later");*/
         } else
             WidgetsUtils.createShortToast("Add some Bentos in your cart");
     }
 
     private void trackBuildBentos() {
         try {
-            for (OrderItem item : Order.current.OrderItems) {
+            for (OrderItem item : mOrder.OrderItems) {
 
                 JSONObject params = new JSONObject();
                 params.put("main", item.items.get(0) == null ? "0" : item.items.get(0).itemId);
@@ -197,7 +202,7 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
             DishModel dishModel;
 
             for (int i = 1; i < 5; ++i) {
-                dishModel = DishDao.getFirstAvailable("side", ids);
+                dishModel = mDishDao.getFirstAvailable("side", ids);
 
                 if (dishModel == null)
                     continue;
@@ -229,7 +234,7 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
                 BentoNowUtils.openSettingsActivity(BuildFixedBentoActivity.this);
                 break;
             case R.id.actionbar_right_btn:
-                if (!Order.current.OrderItems.isEmpty()) {
+                if (!mOrder.OrderItems.isEmpty()) {
                     onContinueOrderPressed();
                 } else {
                     ConfirmationDialog mDialog = new ConfirmationDialog(BuildFixedBentoActivity.this, null, BackendText.get("build-not-complete-text"));
@@ -264,14 +269,17 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
     @Override
     protected void onResume() {
         mMenu = Menu.get();
+        mOrder = mOrderDao.getCurrentOrder();
 
         if (mMenu == null || !Settings.status.equals("open")) {
             openErrorActivity();
         } else {
-            if (Order.current == null) {
-                Order.current = new Order();
-                Order.current.MealName = mMenu.meal_name;
-                Order.current.MenuType = mMenu.menu_type;
+            if (mOrder == null) {
+                mOrder = new Order();
+                mOrder.MealName = mMenu.meal_name;
+                mOrder.MenuType = mMenu.menu_type;
+
+                mOrderDao.insertNewOrder(mOrder);
 
                 MixpanelUtils.track("Began Building A Bento");
             }

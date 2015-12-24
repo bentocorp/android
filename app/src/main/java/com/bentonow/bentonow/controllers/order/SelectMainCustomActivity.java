@@ -30,6 +30,8 @@ public class SelectMainCustomActivity extends BaseActivity implements View.OnCli
 
     private int orderIndex;
 
+    private Order mOrder;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_main);
@@ -46,10 +48,12 @@ public class SelectMainCustomActivity extends BaseActivity implements View.OnCli
             getListView().setAdapter(getListAdapter());
             getListView().setOnItemClickListener(this);
 
-            orderIndex = Order.current.currentOrderItem;
+            mOrder = mOrderDao.getCurrentOrder();
 
-            getListAdapter().setCurrentAdded(Order.current.OrderItems.get(orderIndex).items.get(0));
-            getListAdapter().setCurrentSelected(Order.current.OrderItems.get(orderIndex).items.get(0));
+            orderIndex = mOrder.currentOrderItem;
+
+            getListAdapter().setCurrentAdded(mOrder.OrderItems.get(orderIndex).items.get(0));
+            getListAdapter().setCurrentSelected(mOrder.OrderItems.get(orderIndex).items.get(0));
 
             ArrayList<DishModel> aSoldDish = new ArrayList<>();
 
@@ -79,7 +83,14 @@ public class SelectMainCustomActivity extends BaseActivity implements View.OnCli
     @Override
     public void onAddedClick(int iDishPosition) {
         //if (currentSelectedItem.itemId == Order.current.OrderItems.get(orderIndex).items.get(0).itemId)
-        Order.current.OrderItems.get(orderIndex).items.set(0, null);
+
+        //Order.current.OrderItems.get(orderIndex).items.set(0, null);
+
+        DishModel mDish = mDishDao.getEmptyDish(mOrder.OrderItems.get(orderIndex).order_pk);
+        mDish.dish_pk = mOrder.OrderItems.get(orderIndex).items.get(0).dish_pk;
+        mDish.bento_pk = mOrder.OrderItems.get(orderIndex).items.get(0).bento_pk;
+        mDishDao.updateDishItem(mDish);
+
         getListAdapter().setCurrentAdded(null);
 
         getListAdapter().notifyDataSetChanged();
@@ -88,10 +99,15 @@ public class SelectMainCustomActivity extends BaseActivity implements View.OnCli
 
     @Override
     public void onAddToBentoClick(int iDishPosition) {
-        if (DishDao.isSoldOut(getListAdapter().getCurrentSelected(), true) || !DishDao.canBeAdded(getListAdapter().getCurrentSelected()))
+        if (DishDao.isSoldOut(getListAdapter().getCurrentSelected(), true) || !mDishDao.canBeAdded(getListAdapter().getCurrentSelected()))
             return;
 
-        Order.current.OrderItems.get(orderIndex).items.set(0, getListAdapter().getCurrentSelected());
+        //  Order.current.OrderItems.get(orderIndex).items.set(0, getListAdapter().getCurrentSelected());
+
+        DishModel mDish = getListAdapter().getCurrentSelected();
+        mDish.dish_pk = mOrder.OrderItems.get(orderIndex).items.get(0).dish_pk;
+        mDish.bento_pk = mOrder.OrderItems.get(orderIndex).items.get(0).bento_pk;
+        mDishDao.updateDishItem(mDish);
 
         onBackPressed();
     }

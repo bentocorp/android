@@ -120,14 +120,13 @@ public class Settings {
     }
 
     public static void load() {
-        String location = SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.LOCATION);
-        String address = SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.ADDRESS);
+
         String backendText = SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.BACKENDTEXT);
 
-        if (Order.location == null && !location.isEmpty())
+       /* if (Order.location == null && !location.isEmpty())
             Order.location = new Gson().fromJson(location, LatLng.class);
         if (Order.address == null && !address.isEmpty())
-            Order.address = new Gson().fromJson(address, Address.class);
+            Order.address = new Gson().fromJson(address, Address.class);*/
         if (BackendText.list.size() == 0 && !backendText.isEmpty())
             BackendText.set(backendText);
     }

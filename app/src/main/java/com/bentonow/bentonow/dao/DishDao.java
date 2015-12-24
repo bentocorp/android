@@ -1,11 +1,20 @@
 package com.bentonow.bentonow.dao;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+
 import com.bentonow.bentonow.Utils.DebugUtils;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
+import com.bentonow.bentonow.db.DBAdapter;
+import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.Stock;
+import com.bentonow.bentonow.model.User;
+import com.bentonow.bentonow.model.order.OrderItem;
+import com.bentonow.bentonow.model.user.Card;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -18,15 +27,249 @@ import java.util.List;
  * Created by Jose Torres on 27/09/15.
  */
 public class DishDao {
-    static final String TAG = "DishModel";
+    static final String TAG = "DishDao";
+
+    private DBAdapter dbAdapter;
+    private boolean success = true;
+
+    public final static String TABLE_NAME = "table_dish";
+    public final static String ID_PK = "dish_pk";
+
+    private static final String ITEM_ID = "itemId";
+    private static final String NAME = "name";
+    private static final String DESCRIPTION = "description";
+    private static final String TYPE = "type";
+    private static final String IMAGE1 = "image1";
+    private static final String MAX_PER_ORDER = "max_per_order";
+    private static final String PRICE = "price";
+    private static final String BENTO_PK = "bento_pk";
+
+    public static final String QUERY_TABLE = "" + "CREATE TABLE " + TABLE_NAME + " (" + ID_PK + " INTEGER PRIMARY KEY autoincrement, "
+            + ITEM_ID + " INTEGER, " + NAME + " TEXT, " + DESCRIPTION + " TEXT, " + TYPE + " TEXT, " + IMAGE1 + " TEXT," + MAX_PER_ORDER + " INTEGER, " + BENTO_PK + " INTEGER, " + PRICE + " REAL);";
+
+    public final static String[] FIELDS = {ID_PK, ITEM_ID, NAME, DESCRIPTION, TYPE, IMAGE1,
+            MAX_PER_ORDER, BENTO_PK, PRICE};
+
+
+    public DishDao() {
+        dbAdapter = new DBAdapter();
+    }
+
+    public boolean insertDish(DishModel mDish) {
+        DebugUtils.logDebug(TAG, "Insert Dish");
+
+        dbAdapter.begginTransaction();
+
+        ContentValues cValues = getContentValues(mDish);
+
+        long idInsert = dbAdapter.insert(TABLE_NAME, cValues);
+        success = idInsert != -1;
+
+        dbAdapter.setTransacctionSuccesfull();
+
+        return success;
+    }
+
+    public DishModel getEmptyDish(int iOrderPk) {
+        DishModel mDish = new DishModel();
+        mDish.bento_pk = iOrderPk;
+
+        dbAdapter.begginTransaction();
+
+        ContentValues cValues = getContentValues(mDish);
+
+        mDish.dish_pk = (int) dbAdapter.insert(TABLE_NAME, cValues);
+
+        dbAdapter.setTransacctionSuccesfull();
+
+        DebugUtils.logDebug(TAG, "New Dish: " + mDish.dish_pk);
+
+        return mDish;
+    }
+
+    public List<DishModel> getAllDishByOrder(int iOrderPk) {
+        List<DishModel> mListDish = new ArrayList<>();
+
+        String conditional = BENTO_PK + " = " + iOrderPk;
+
+        try {
+
+            dbAdapter.begginTransaction();
+
+            Cursor cursor = dbAdapter.getData(TABLE_NAME, FIELDS, conditional);
+
+            int _ID_PK = cursor.getColumnIndex(ID_PK);
+            int _ITEM_ID = cursor.getColumnIndex(ITEM_ID);
+            int _NAME = cursor.getColumnIndex(NAME);
+            int _DESCRIPTION = cursor.getColumnIndex(DESCRIPTION);
+            int _TYPE = cursor.getColumnIndex(TYPE);
+            int _IMAGE1 = cursor.getColumnIndex(IMAGE1);
+            int _MAX_PER_ORDER = cursor.getColumnIndex(MAX_PER_ORDER);
+            int _PRICE = cursor.getColumnIndex(PRICE);
+            int _BENTO_PK = cursor.getColumnIndex(BENTO_PK);
+
+
+            cursor.moveToFirst();
+            for (int i = 0; i < cursor.getCount(); i++) {
+                DishModel mDish = new DishModel();
+                mDish.dish_pk = (cursor.getInt(_ID_PK));
+                mDish.itemId = (cursor.getInt(_ITEM_ID));
+                mDish.name = (cursor.getString(_NAME));
+                mDish.description = (cursor.getString(_DESCRIPTION));
+                mDish.type = (cursor.getString(_TYPE));
+                mDish.image1 = (cursor.getString(_IMAGE1));
+                mDish.max_per_order = (cursor.getInt(_MAX_PER_ORDER));
+                mDish.price = (cursor.getDouble(_PRICE));
+                mDish.bento_pk = (cursor.getInt(_BENTO_PK));
+                mListDish.add(mDish);
+
+                cursor.moveToNext();
+            }
+
+            cursor.close();
+
+            dbAdapter.setTransacctionSuccesfull();
+        } catch (Exception ex) {
+            DebugUtils.logError(TAG, ex);
+        }
+
+        return mListDish;
+    }
+
+    public DishModel getDishItem(int iPk) {
+        DishModel mDish = null;
+
+        String conditional = ID_PK + " = " + iPk;
+
+        try {
+
+            dbAdapter.begginTransaction();
+
+            Cursor cursor = dbAdapter.getData(TABLE_NAME, FIELDS, conditional);
+
+            int _ID_PK = cursor.getColumnIndex(ID_PK);
+            int _ITEM_ID = cursor.getColumnIndex(ITEM_ID);
+            int _NAME = cursor.getColumnIndex(NAME);
+            int _DESCRIPTION = cursor.getColumnIndex(DESCRIPTION);
+            int _TYPE = cursor.getColumnIndex(TYPE);
+            int _IMAGE1 = cursor.getColumnIndex(IMAGE1);
+            int _MAX_PER_ORDER = cursor.getColumnIndex(MAX_PER_ORDER);
+            int _PRICE = cursor.getColumnIndex(PRICE);
+            int _BENTO_PK = cursor.getColumnIndex(BENTO_PK);
+
+
+            cursor.moveToFirst();
+            for (int i = 0; i < cursor.getCount(); i++) {
+                mDish = new DishModel();
+                mDish.dish_pk = (cursor.getInt(_ID_PK));
+                mDish.itemId = (cursor.getInt(_ITEM_ID));
+                mDish.name = (cursor.getString(_NAME));
+                mDish.description = (cursor.getString(_DESCRIPTION));
+                mDish.type = (cursor.getString(_TYPE));
+                mDish.image1 = (cursor.getString(_IMAGE1));
+                mDish.max_per_order = (cursor.getInt(_MAX_PER_ORDER));
+                mDish.price = (cursor.getDouble(_PRICE));
+                mDish.bento_pk = (cursor.getInt(_BENTO_PK));
+                cursor.moveToNext();
+            }
+
+            cursor.close();
+
+            dbAdapter.setTransacctionSuccesfull();
+        } catch (Exception ex) {
+            DebugUtils.logError(TAG, ex);
+        }
+
+        return mDish;
+    }
+
+
+    public boolean updateDishItem(DishModel mDish) {
+        String where = ID_PK + " =?";
+        String[] whereArgs = new String[]{String.valueOf(mDish.dish_pk)};
+
+        ContentValues cValues = getContentValues(mDish);
+
+        dbAdapter.begginTransaction();
+
+        long isInserted = dbAdapter.update(TABLE_NAME, cValues, where, whereArgs);
+
+        success = isInserted == 1;
+
+        dbAdapter.setTransacctionSuccesfull();
+
+        DebugUtils.logDebug(TAG, "Updated Dish: " + success);
+
+        return success;
+    }
+
+    public DishModel updateDishItem(DishModel mOldDish, DishModel mNewDish) {
+        String where = ID_PK + " =?";
+
+        mNewDish.bento_pk = mOldDish.bento_pk;
+        mNewDish.dish_pk = mOldDish.dish_pk;
+
+        String[] whereArgs = new String[]{String.valueOf(mNewDish.dish_pk)};
+
+        ContentValues cValues = getContentValues(mNewDish);
+
+        dbAdapter.begginTransaction();
+
+        long isInserted = dbAdapter.update(TABLE_NAME, cValues, where, whereArgs);
+
+        success = isInserted == 1;
+
+        dbAdapter.setTransacctionSuccesfull();
+
+        DebugUtils.logDebug(TAG, "Updated Dish: " + success);
+
+        return mNewDish;
+    }
+
+
+    public boolean removeAllDishBento(int iBentoPk) {
+        String where = BENTO_PK + "=?";
+        String[] whereArgs = new String[]{String.valueOf(iBentoPk)};
+
+        dbAdapter.begginTransaction();
+
+        long idInsert = dbAdapter.delete(TABLE_NAME, where, whereArgs);
+        success = idInsert == 5;
+
+        dbAdapter.setTransacctionSuccesfull();
+
+        DebugUtils.logDebug(TAG, "Remove Dish: " + success);
+        return success;
+    }
+
+
+    public void clearAllData() {
+        DebugUtils.logDebug(TAG, "Clear All Data");
+        dbAdapter.deleteAll(TABLE_NAME);
+    }
+
+
+    private ContentValues getContentValues(DishModel mDish) {
+        ContentValues cValues = new ContentValues();
+        cValues.put(ITEM_ID, mDish.itemId);
+        cValues.put(NAME, mDish.name == null ? "" : mDish.name);
+        cValues.put(DESCRIPTION, mDish.description == null ? "" : mDish.description);
+        cValues.put(TYPE, mDish.type == null ? "" : mDish.type);
+        cValues.put(IMAGE1, mDish.image1 == null ? "" : mDish.image1);
+        cValues.put(MAX_PER_ORDER, mDish.max_per_order);
+        cValues.put(PRICE, mDish.price);
+        cValues.put(BENTO_PK, mDish.bento_pk);
+
+        return cValues;
+    }
 
 
     public static boolean isSoldOut(DishModel mDishModel, boolean countCurrent) {
         return Stock.isSold(mDishModel.itemId, countCurrent);
     }
 
-    public static boolean canBeAdded(DishModel mDishModel) {
-        boolean bCanBeAdded = mDishModel.max_per_order > Order.countItemsById(mDishModel.itemId);
+    public boolean canBeAdded(DishModel mDishModel) {
+        boolean bCanBeAdded = mDishModel.max_per_order > countItemsById(mDishModel.itemId);
 
         if (!bCanBeAdded)
             DebugUtils.logDebug(TAG, "canNotBeAdded " + mDishModel.name + " : Max Per Order:" + mDishModel.max_per_order);
@@ -34,7 +277,7 @@ public class DishDao {
         return bCanBeAdded;
     }
 
-    public static DishModel getFirstAvailable(String type, int[] tryExcludeIds) {
+    public DishModel getFirstAvailable(String type, int[] tryExcludeIds) {
         Menu menu = Menu.get();
 
         if (menu != null) {
@@ -96,4 +339,29 @@ public class DishDao {
             return dPrice;
     }
 
+    public int countItemsById(int itemId) {
+        int count = 0;
+
+        String conditional = ITEM_ID + " = " + itemId;
+
+        try {
+
+            dbAdapter.begginTransaction();
+
+            Cursor cursor = dbAdapter.getData(TABLE_NAME, FIELDS, conditional);
+
+            cursor.moveToFirst();
+
+            count = cursor.getCount();
+
+            cursor.close();
+
+            dbAdapter.setTransacctionSuccesfull();
+        } catch (Exception ex) {
+            DebugUtils.logError(TAG, ex);
+        }
+
+
+        return count;
+    }
 }

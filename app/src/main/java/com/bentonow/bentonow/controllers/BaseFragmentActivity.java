@@ -11,6 +11,9 @@ import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
+import com.bentonow.bentonow.dao.BentoDao;
+import com.bentonow.bentonow.dao.DishDao;
+import com.bentonow.bentonow.dao.OrderDao;
 import com.bentonow.bentonow.service.BentoCustomerService;
 import com.facebook.appevents.AppEventsLogger;
 
@@ -25,6 +28,10 @@ public class BaseFragmentActivity extends FragmentActivity {
     public ServiceConnection mConnection = new WebSocketServiceConnection();
     public boolean mBound = false;
 
+    protected OrderDao mOrderDao = new OrderDao();
+    protected BentoDao mBentoDao = new BentoDao();
+    protected DishDao mDishDao = new DishDao();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,11 +39,11 @@ public class BaseFragmentActivity extends FragmentActivity {
 
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_APP_IN_FRONT, true);
 
-        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+       /* CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
                         .setDefaultFontPath("fonts/OpenSans-Regular.ttf")
                         .setFontAttrId(R.attr.fontPath)
                         .build()
-        );
+        );*/
 
     }
 

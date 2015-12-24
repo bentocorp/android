@@ -3,6 +3,7 @@ package com.bentonow.bentonow.web.request;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.DebugUtils;
+import com.bentonow.bentonow.dao.OrderDao;
 import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.listener.InterfaceWebRequest;
 import com.bentonow.bentonow.listener.ListenerWebRequest;
@@ -29,18 +30,17 @@ public class RequestPostCompleteOrder implements InterfaceWebRequest {
     @Override
     public void dispatchRequest() {
         UserDao userDao = new UserDao();
+        OrderDao orderDao = new OrderDao();
         User mUser = userDao.getCurrentUser();
+        Order mOrder = orderDao.getCurrentOrder();
 
-        Order.current.Stripe.stripeToken = mUser.stripe_token;
-        Order.current.IdempotentToken = BentoNowUtils.getUUIDBento();
-        Order.current.Platform = "Android";
 
         RequestParams params = new RequestParams();
-        params.put("data", Order.current.toString());
+        params.put("data", mOrder.toString());
         params.put("api_token", mUser.api_token);
 
 
-        DebugUtils.logDebug(TAG, "Order: " + Order.current.toString());
+        DebugUtils.logDebug(TAG, "Order: " + mOrder.toString());
 
         BentoRestClient.post("/order", params, new TextHttpResponseHandler() {
 

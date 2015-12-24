@@ -14,13 +14,17 @@ import android.database.sqlite.SQLiteQueryBuilder;
 
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.controllers.BentoApplication;
+import com.bentonow.bentonow.dao.BentoDao;
+import com.bentonow.bentonow.dao.DishDao;
+import com.bentonow.bentonow.dao.OrderDao;
 import com.bentonow.bentonow.dao.UserDao;
 
 
 public class DBAdapter {
 
     private static final String DATA_BASE_NAME = "BentoNow.db";
-    private static int mDbVersion = 3;
+    // private static int mDbVersion = 3;
+    private static int mDbVersion = 5;
     private SQLiteDatabase mDb;
     private DatabaseHelper mDbHelper;
 
@@ -35,13 +39,19 @@ public class DBAdapter {
         @Override
         public void onCreate(SQLiteDatabase db) {
             db.execSQL(UserDao.QUERY_TABLE);
+            db.execSQL(DishDao.QUERY_TABLE);
+            db.execSQL(BentoDao.QUERY_TABLE);
+            db.execSQL(OrderDao.QUERY_TABLE);
             DebugUtils.logDebug(DATA_BASE_NAME, "Database Creation");
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             db.execSQL("DROP TABLE IF EXISTS " + UserDao.TABLE_NAME);
-
+            db.execSQL("DROP TABLE IF EXISTS " + DishDao.TABLE_NAME);
+            db.execSQL("DROP TABLE IF EXISTS " + BentoDao.TABLE_NAME);
+            db.execSQL("DROP TABLE IF EXISTS " + OrderDao.TABLE_NAME);
+            DebugUtils.logDebug(DATA_BASE_NAME, "Update Database: From: " + oldVersion + " New Version: " + newVersion);
             onCreate(db);
         }
     }

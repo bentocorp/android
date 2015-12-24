@@ -133,7 +133,6 @@ public class UserDao {
         return mUser;
     }
 
-
     public boolean updateUser(User mUser) {
         DebugUtils.logDebug(TAG, "Update User");
         String where = ID_PK + " =?";
@@ -144,7 +143,7 @@ public class UserDao {
         dbAdapter.begginTransaction();
 
         long idInsert = dbAdapter.update(TABLE_NAME, cValues, where, whereArgs);
-        success = idInsert != 1;
+        success = idInsert != -1;
 
         dbAdapter.setTransacctionSuccesfull();
 
@@ -159,7 +158,7 @@ public class UserDao {
         dbAdapter.begginTransaction();
 
         long idInsert = dbAdapter.delete(TABLE_NAME, where, whereArgs);
-        success = idInsert != -1;
+        success = idInsert == 1;
 
         dbAdapter.setTransacctionSuccesfull();
 

@@ -1,9 +1,12 @@
 package com.bentonow.bentonow.Utils;
 
+import android.location.Address;
+
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.User;
+import com.google.gson.Gson;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 import org.json.JSONObject;
@@ -50,7 +53,7 @@ public class MixpanelUtils {
         getMixpanelApi().getPeople().set("$email", mUser.email);
         getMixpanelApi().getPeople().set("$phone", mUser.phone);
         getMixpanelApi().getPeople().set("$created", BentoNowUtils.getMixpanelDate());
-        getMixpanelApi().getPeople().set("Last Login Address", LocationUtils.getCustomAddress(Order.address));
+        getMixpanelApi().getPeople().set("Last Login Address", BentoNowUtils.getFullAddress());
         trackRevenue(0, mUser);
     }
 

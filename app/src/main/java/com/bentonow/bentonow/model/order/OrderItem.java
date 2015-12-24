@@ -10,20 +10,9 @@ public class OrderItem {
     public boolean bIsSoldoOut = false;
     public double unit_price = 0;
     public List<DishModel> items = new ArrayList<>();
+    public int order_pk = 0;
 
     public OrderItem() {
-        items.add(null);
-        items.add(null);
-        items.add(null);
-        items.add(null);
-        items.add(null);
     }
 
-    public boolean isComplete() {
-        return items.get(0) != null &&
-                items.get(1) != null &&
-                items.get(2) != null &&
-                items.get(3) != null &&
-                items.get(4) != null;
-    }
 }

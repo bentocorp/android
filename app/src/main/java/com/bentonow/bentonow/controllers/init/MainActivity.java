@@ -30,6 +30,7 @@ import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.Stock;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.gson.Gson;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.apache.http.Header;
@@ -55,6 +56,8 @@ public class MainActivity extends BaseFragmentActivity {
             DebugUtils.logDebug(TAG, "callerActivity " + getCallingActivity());
 
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, "open");
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.LOCATION, "");
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ADDRESS, "");
 
         GoogleLocationUtil.getGoogleApiClient();
 
@@ -67,7 +70,7 @@ public class MainActivity extends BaseFragmentActivity {
 
         LocationUtils.mCurrentLocation = null;
 
-        Order.cleanUp();
+        mOrderDao.cleanUp();
     }
 
     @Override

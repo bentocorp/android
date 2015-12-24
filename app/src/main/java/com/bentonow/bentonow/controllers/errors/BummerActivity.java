@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
@@ -53,16 +54,16 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
         txt_email = (BackendEditText) findViewById(R.id.txt_email);
 
         if (sCurrentLocation == null || sCurrentLocation.isEmpty())
-            sCurrentLocation = Order.getFullAddress();
+            sCurrentLocation = BentoNowUtils.getFullAddress();
 
         getTxtAddress().setText(sCurrentLocation);
 
         try {
             JSONObject params = new JSONObject();
-            params.put("Address", Order.getFullAddress());
+            params.put("Address", sCurrentLocation);
             MixpanelUtils.track("Selected Address Outside of Service Area", params);
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            DebugUtils.logError(TAG, e);
         }
     }
 

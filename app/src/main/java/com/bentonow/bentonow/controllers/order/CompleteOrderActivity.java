@@ -83,6 +83,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
     private UserDao userDao = new UserDao();
     private User mCurrentUser;
+    private Order mOrder;
 
     boolean edit = false;
     int selected = -1;
@@ -95,7 +96,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_complete_order);
 
-        Order.clearIncomplete();
+        mOrder = mOrderDao.getCurrentOrder();
 
         txt_address = (TextView) findViewById(R.id.txt_address);
         txt_credit_card = (TextView) findViewById(R.id.txt_credit_card);
@@ -133,20 +134,19 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
     }
 
     private void emptyOrders() {
-        Order.cleanUp();
+        mOrderDao.cleanUp();
         onBackPressed();
     }
 
     void deleteBento() {
-        if (Order.current.OrderItems.size() > 1) {
-            Order.current.OrderItems.remove(selected);
+        if (mOrder.OrderItems.size() > 1) {
+            mBentoDao.removeBento(mOrder.OrderItems.get(selected).order_pk);
+            mOrder.OrderItems.remove(selected);
             selected = -1;
             adapter.notifyDataSetChanged();
-
             updateUI();
         } else {
-            Order.cleanUp();
-            onBackPressed();
+            emptyOrders();
         }
 
     }
@@ -155,7 +155,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
     protected void onResume() {
         mCurrentUser = userDao.getCurrentUser();
 
-        if (Order.current == null || Order.current.OrderItems == null || Order.current.OrderItems.isEmpty()) {
+        if (mOrder == null || mOrder.OrderItems == null || mOrder.OrderItems.isEmpty()) {
             Crashlytics.log(Log.ERROR, "Order", "No Items in the Order");
             emptyOrders();
         } else if (!Settings.status.equals("open")) {
@@ -169,21 +169,21 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
     void track(String error) {
         try {
             JSONObject params = new JSONObject();
-            if (Order.current.OrderItems == null) {
+            if (mOrder.OrderItems == null) {
                 Crashlytics.log(Log.ERROR, "Order", "No Items in the Order");
                 params.put("quantity", 0);
             } else
-                params.put("quantity", Order.current.OrderItems.size());
+                params.put("quantity", mOrder.OrderItems.size());
 
             if (mCurrentUser != null)
                 params.put("payment method", mCurrentUser.card.brand);
 
-            params.put("total price", Order.current.OrderDetails.total_cents / 100);
+            params.put("total price", mOrder.OrderDetails.total_cents / 100);
             params.put("status", error == null ? "success" : "failure");
             params.put("status_error", error);
 
             MixpanelUtils.track("Placed An Order", params);
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -229,7 +229,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
                     DebugUtils.logDebug(TAG, "requestPromoCode success " + responseString);
 
-                    mCurrentUser.coupon_code = Order.current.CouponCode = code;
+                    mCurrentUser.coupon_code = mOrder.CouponCode = code;
                     int discount = 0;
 
                     try {
@@ -240,7 +240,8 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
                     DebugUtils.logDebug(TAG, "discount " + discount);
 
-                    Order.current.OrderDetails.coupon_discount_cents = discount;
+                    mOrder.OrderDetails.coupon_discount_cents = discount;
+                    mOrderDao.updateOrder(mOrder);
 
                     BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);
 
@@ -257,7 +258,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                 onBackPressed();
                 break;
             case R.id.btn_remove:
-                if (Order.current.OrderItems.size() == 1) {
+                if (mOrder.OrderItems.size() == 1) {
                     action = "delete";
                     mDialog = new ConfirmationDialog(CompleteOrderActivity.this, null, BackendText.get("complete-remove-all-text"));
                     mDialog.addAcceptButton(BackendText.get("complete-remove-all-confirmation-2"), CompleteOrderActivity.this);
@@ -323,7 +324,9 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Order.current.currentOrderItem = position;
+        mOrder.currentOrderItem = position;
+        mOrderDao.updateOrder(mOrder);
+
         onBackPressed();
     }
 
@@ -338,8 +341,10 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
     }
 
     public void onAddAnotherBentoPressed(View v) {
-        Order.current.OrderItems.add(new OrderItem());
-        Order.current.currentOrderItem = Order.current.OrderItems.size() - 1;
+        mOrder.OrderItems.add(mBentoDao.getNewBento());
+        mOrder.currentOrderItem = mOrder.OrderItems.size() - 1;
+        mOrderDao.updateOrder(mOrder);
+
         onBackPressed();
     }
 
@@ -351,16 +356,16 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
 
     public void onMinusTipPressed(View v) {
-        if (Order.current.OrderDetails.tip_percentage > 0) {
-            Order.current.OrderDetails.tip_percentage -= 5;
+        if (mOrder.OrderDetails.tip_percentage > 0) {
+            mOrder.OrderDetails.tip_percentage -= 5;
         }
 
         updateUI();
     }
 
     public void onPlusTipPressed(View v) {
-        if (Order.current.OrderDetails.tip_percentage < 30) {
-            Order.current.OrderDetails.tip_percentage += 5;
+        if (mOrder.OrderDetails.tip_percentage < 30) {
+            mOrder.OrderDetails.tip_percentage += 5;
         }
 
         updateUI();
@@ -371,16 +376,17 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
             mProgressDialog = new ProgressDialog(CompleteOrderActivity.this, R.string.processing_label);
             mProgressDialog.show();
 
-            Order.current.Stripe.stripeToken = mCurrentUser.stripe_token;
-            Order.current.IdempotentToken = BentoNowUtils.getUUIDBento();
-            Order.current.Platform = "Android";
+            mOrder.Stripe.stripeToken = mCurrentUser.stripe_token;
+            mOrder.IdempotentToken = BentoNowUtils.getUUIDBento();
+            mOrder.Platform = "Android";
 
             RequestParams params = new RequestParams();
-            params.put("data", Order.current.toString());
+            params.put("data", mOrder.toString());
             params.put("api_token", mCurrentUser.api_token);
-            //params.put("api_token", "bad token to force 401");
 
-            if (Order.current.OrderItems == null || Order.current.OrderItems.isEmpty()) {
+            mOrderDao.updateOrder(mOrder);
+
+            if (mOrder.OrderItems == null || mOrder.OrderItems.isEmpty()) {
                 action = "no_items";
                 track(action);
                 Crashlytics.log(Log.ERROR, "Order", "No Items in the Order");
@@ -389,7 +395,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                 return;
             }
 
-            DebugUtils.logDebug(TAG, "Order: " + Order.current.toString());
+            DebugUtils.logDebug(TAG, "Order: " + mOrder.toString());
 
             BentoRestClient.post("/order", params, new TextHttpResponseHandler() {
                 @SuppressWarnings("deprecation")
@@ -438,7 +444,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                             action = "sold_out";
                             SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_ORDER_SOLD_OUT, true);
                             Stock.set(responseString);
-                            error += OrderDao.calculateSoldOutItems();
+                            error += mOrderDao.calculateSoldOutItems();
                             break;
                         case 423:
                             action = "closed";
@@ -466,7 +472,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
                     track(null);
 
-                    MixpanelUtils.trackRevenue(Order.current.OrderDetails.total_cents / 100, mCurrentUser);
+                    MixpanelUtils.trackRevenue(mOrder.OrderDetails.total_cents / 100, mCurrentUser);
 
                     Log.i(TAG, "Order: " + responseString);
 
@@ -477,8 +483,10 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
                     dismissDialog();
 
+                    mOrderDao.cleanUp();
+
                     startActivity(new Intent(CompleteOrderActivity.this, OrderConfirmedActivity.class));
-                    Order.cleanUp();
+
                     finish();
                 }
             });
@@ -486,12 +494,13 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
     }
 
     void updateUI() {
-        Order.calculate();
+        mOrderDao.calculateOrder(mOrder);
+        mOrderDao.updateOrder(mOrder);
 
-        if (Order.current.OrderDetails.coupon_discount_cents > 0) {
+        if (mOrder.OrderDetails.coupon_discount_cents > 0) {
             getBtnAddPromoCode().setTextColor(getResources().getColor(R.color.orange));
             getBtnAddPromoCode().setText("REMOVE PROMO");
-            getTxtPromoTotal().setText(String.format(getString(R.string.money_format), Order.current.OrderDetails.total_cents_without_coupon / 100));
+            getTxtPromoTotal().setText(String.format(getString(R.string.money_format), mOrder.OrderDetails.total_cents_without_coupon / 100));
             getLayoutWrapperDiscount().setVisibility(View.VISIBLE);
             container_discount.setVisibility(View.VISIBLE);
         } else {
@@ -501,14 +510,14 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
             container_discount.setVisibility(View.GONE);
         }
 
-        txt_address.setText(Order.getStreetAddress());
+        txt_address.setText(BentoNowUtils.getStreetAddress());
         txt_credit_card.setText(mCurrentUser.card.last4);
 
-        getTxtDeliveryPrice().setText(String.format(getString(R.string.money_format), (double) Order.current.OrderDetails.delivery_price));
-        txt_discount.setText(String.format(getString(R.string.money_format), (double) Order.current.OrderDetails.coupon_discount_cents / 100));
-        txt_tax.setText(String.format(getString(R.string.money_format), Order.current.OrderDetails.tax_cents / 100));
-        txt_tip.setText(String.format(getString(R.string.tip_percentage), (double) Order.current.OrderDetails.tip_percentage) + " %");
-        txt_total.setText(String.format(getString(R.string.money_format), Order.current.OrderDetails.total_cents / 100));
+        getTxtDeliveryPrice().setText(String.format(getString(R.string.money_format), (double) mOrder.OrderDetails.delivery_price));
+        txt_discount.setText(String.format(getString(R.string.money_format), (double) mOrder.OrderDetails.coupon_discount_cents / 100));
+        txt_tax.setText(String.format(getString(R.string.money_format), mOrder.OrderDetails.tax_cents / 100));
+        txt_tip.setText(String.format(getString(R.string.tip_percentage), (double) mOrder.OrderDetails.tip_percentage) + " %");
+        txt_total.setText(String.format(getString(R.string.money_format), mOrder.OrderDetails.total_cents / 100));
 
 
         int card;
@@ -579,7 +588,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
     @Override
     public int getCount() {
-        return Order.current.OrderItems.size();
+        return mOrder.OrderItems.size();
     }
 
     @Override
@@ -609,14 +618,14 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
             holder = (ItemHolder) convertView.getTag();
         }
 
-        holder.set(Order.current.OrderItems.get(position), position);
+        holder.set(mOrder.OrderItems.get(position), position);
 
         return convertView;
     }
 
     public void showAddPromoCodeDialog(View v) {
-        if (Order.current.OrderDetails.coupon_discount_cents > 0) {
-            Order.current.OrderDetails.coupon_discount_cents = 0;
+        if (mOrder.OrderDetails.coupon_discount_cents > 0) {
+            mOrder.OrderDetails.coupon_discount_cents = 0;
             updateUI();
         } else {
             mDialogCoupon = new CouponDialog(this);

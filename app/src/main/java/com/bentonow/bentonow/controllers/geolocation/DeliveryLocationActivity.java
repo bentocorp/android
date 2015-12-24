@@ -31,6 +31,7 @@ import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.LocationUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.BentoApplication;
@@ -56,6 +57,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.Gson;
 import com.wsdcamp.anim.FadeInOut;
 
 import org.json.JSONArray;
@@ -123,8 +125,18 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         setupAutocomplete();
 
         mLastLocations = LocationUtils.mCurrentLocation;
-        mLastOrderLocation = Order.location;
-        sOrderAddress = Order.address;
+
+        try {
+            mLastOrderLocation = new Gson().fromJson(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.LOCATION), LatLng.class);
+        } catch (Exception ex) {
+            mLastOrderLocation = null;
+        }
+
+        try {
+            sOrderAddress = new Gson().fromJson(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.ADDRESS), Address.class);
+        } catch (Exception ex) {
+            sOrderAddress = null;
+        }
 
         mRequestingLocationUpdates = true;
         buildGoogleApiClient();
@@ -251,7 +263,11 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private void moveMapToCenter(LatLng mLocation, String sAddress) {
         mLastOrderLocation = mLocation;
         getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(mLocation, getGoogleMap().getCameraPosition().zoom > 11f ? getGoogleMap().getCameraPosition().zoom : 17f));
-        getTxtAddress().setText(sAddress, false);
+        if (AndroidUtil.isJellyBean())
+            getTxtAddress().setText(sAddress, false);
+        else
+            getTxtAddress().setText(sAddress);
+
         sOrderAddress = LocationUtils.getAddressFromLocation(mLocation);
         updateUI();
     }
@@ -270,9 +286,15 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                     @Override
                     public void run() {
                         if (sOrderAddress != null) {
-                            getTxtAddress().setText(sCustomAddress, false);
+                            if (AndroidUtil.isJellyBean())
+                                getTxtAddress().setText(sCustomAddress, false);
+                            else
+                                getTxtAddress().setText(sCustomAddress);
                         } else {
-                            getTxtAddress().setText("", false);
+                            if (AndroidUtil.isJellyBean())
+                                getTxtAddress().setText("", false);
+                            else
+                                getTxtAddress().setText("");
                         }
 
                         updateUI();
@@ -286,7 +308,11 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
 
     public void onClearPressed(View view) {
-        getTxtAddress().setText("");
+        if (AndroidUtil.isJellyBean())
+            getTxtAddress().setText("", false);
+        else
+            getTxtAddress().setText("");
+
         sOrderAddress = null;
         updateUI();
     }
@@ -345,9 +371,10 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         DebugUtils.logDebug(TAG, "onContinuePressed isInDeliveryArea " + (isInDeliveryArea ? "YES" : "NO"));
 
         if (isInDeliveryArea) {
-            Order.location = mLastOrderLocation;
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.LOCATION, new Gson().toJson(mLastOrderLocation));
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ADDRESS, new Gson().toJson(sOrderAddress));
+
             LocationUtils.mCurrentLocation = mLastOrderLocation;
-            Order.address = sOrderAddress;
 
             switch (optOpenScreen) {
                 case NORMAL:
@@ -444,7 +471,11 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
     void setupAutocomplete() {
         getTxtAddress().setAdapter(new GooglePlacesAutocompleteAdapter(this, R.layout.listitem_locationaddress));
-        getTxtAddress().setText("", false);
+        if (AndroidUtil.isJellyBean())
+            getTxtAddress().setText("", false);
+        else
+            getTxtAddress().setText("");
+
         getTxtAddress().setOnItemClickListener(this);
         getTxtAddress().setOnKeyListener(this);
         getTxtAddress().setOnEditorActionListener(this);
@@ -550,7 +581,10 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        getTxtAddress().setText("", false);
+                        if (AndroidUtil.isJellyBean())
+                            getTxtAddress().setText("", false);
+                        else
+                            getTxtAddress().setText("");
                     }
                 });
                 DebugUtils.logDebug(TAG, "No Address Found");
