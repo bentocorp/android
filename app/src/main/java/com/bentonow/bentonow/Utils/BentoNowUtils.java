@@ -88,10 +88,10 @@ public class BentoNowUtils {
 
     public static void openMainActivity(FragmentActivity mContext) {
         if (!MainActivity.bIsOpen) {
-            Intent intent = new Intent(mContext, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            mContext.startActivity(intent);
             mContext.finish();
+            Intent intent = new Intent(mContext, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            mContext.startActivity(intent);
         } else
             DebugUtils.logDebug(TAG, "Cant: openMainActivity");
     }
@@ -99,35 +99,36 @@ public class BentoNowUtils {
     public static void openBuildBentoActivity(FragmentActivity mContext) {
         Menu mCurrentMenu = Menu.get();
 
+        mContext.finish();
+
         Intent iBuildBento;
         if (mCurrentMenu != null)
             if (mCurrentMenu.menu_type.equals(ConstantUtils.sFixed)) {
                 iBuildBento = new Intent(mContext, BuildFixedBentoActivity.class);
-                iBuildBento.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                iBuildBento.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 mContext.startActivity(iBuildBento);
             } else {
                 iBuildBento = new Intent(mContext, BuildBentoActivity.class);
-                iBuildBento.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                iBuildBento.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 mContext.startActivity(iBuildBento);
             }
         else
             openErrorActivity(mContext);
 
-        mContext.finish();
     }
 
     public static void openErrorActivity(FragmentActivity mContext) {
+        mContext.finish();
         Intent intent = new Intent(mContext, ErrorActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         mContext.startActivity(intent);
-        mContext.finish();
         OrderDao mOrderDao = new OrderDao();
         mOrderDao.cleanUp();
     }
 
     public static void openErrorActivity(Context mContext) {
         Intent intent = new Intent(mContext, ErrorActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         mContext.startActivity(intent);
         OrderDao mOrderDao = new OrderDao();
         mOrderDao.cleanUp();
@@ -148,7 +149,7 @@ public class BentoNowUtils {
     public static void goToDashboard(Context mContext) {
         Intent startMain = new Intent(Intent.ACTION_MAIN);
         startMain.addCategory(Intent.CATEGORY_HOME);
-        startMain.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         mContext.startActivity(startMain);
     }
 

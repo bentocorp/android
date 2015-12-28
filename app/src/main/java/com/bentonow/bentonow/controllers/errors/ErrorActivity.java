@@ -64,22 +64,22 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
     protected void onResume() {
         mCurrentMenu = Menu.getNext();
 
-        Calendar calendar = Calendar.getInstance();
-        int hour = calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE);
+            Calendar calendar = Calendar.getInstance();
+            int hour = calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE);
 
-        if (Settings.status.equals("sold out")) {
-            getTxtTitle().setText(BackendText.get("sold-out-title"));
-            getTxtDescription().setText(BackendText.get("sold-out-text"));
-        } else {
-            getTxtTitle().setText(BackendText.get("closed-title"));
-            if (hour >= 2000) {
-                getTxtDescription().setText(BackendText.get("closed-text-latenight"));
+            if (Settings.status.equals("sold out")) {
+                getTxtTitle().setText(BackendText.get("sold-out-title"));
+                getTxtDescription().setText(BackendText.get("sold-out-text"));
             } else {
-                getTxtDescription().setText(BackendText.get("closed-text"));
-            }
+                getTxtTitle().setText(BackendText.get("closed-title"));
+                if (hour >= 2000) {
+                    getTxtDescription().setText(BackendText.get("closed-text-latenight"));
+                } else {
+                    getTxtDescription().setText(BackendText.get("closed-text"));
+                }
 
-        }
-        setupNextMenu();
+            }
+            setupNextMenu();
 
         super.onResume();
     }

@@ -74,7 +74,7 @@ public class ItemHolder {
     }
 
     public void updateUI(boolean countCurrent) {
-        if (dishModel == null) {
+        if (dishModel == null || dishModel.name.isEmpty()) {
             image.setImageBitmap(null);
             if (title != null) title.setText("");
             if (description != null) description.setText("");

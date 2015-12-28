@@ -137,8 +137,11 @@ public class ProgressDialog extends android.app.Dialog {
         });
         Animation backAnim = AnimationUtils.loadAnimation(context, R.anim.dialog_root_hide_amin);
 
-        view.startAnimation(anim);
-        backView.startAnimation(backAnim);
+        if (view != null)
+            view.startAnimation(anim);
+
+        if (backView != null)
+            backView.startAnimation(backAnim);
     }
 
 

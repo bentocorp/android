@@ -165,6 +165,7 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
 
             if (BentoNowUtils.isValidCompleteOrder(BuildFixedBentoActivity.this)) {
                 trackBuildBentos();
+                mOrderDao.updateOrder(mOrder);
                 BentoNowUtils.openCompleteOrderActivity(BuildFixedBentoActivity.this);
             }
            /* else

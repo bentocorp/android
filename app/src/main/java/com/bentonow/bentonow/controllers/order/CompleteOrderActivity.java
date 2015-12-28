@@ -169,7 +169,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
     void track(String error) {
         try {
             JSONObject params = new JSONObject();
-            if (mOrder.OrderItems == null) {
+            if (mOrder == null || mOrder.OrderItems == null) {
                 Crashlytics.log(Log.ERROR, "Order", "No Items in the Order");
                 params.put("quantity", 0);
             } else
@@ -184,7 +184,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
             MixpanelUtils.track("Placed An Order", params);
         } catch (Exception e) {
-            e.printStackTrace();
+            DebugUtils.logError(TAG, e);
         }
     }
 
@@ -195,8 +195,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
             mDialog.addAcceptButton("OK", null);
             mDialog.show();
         } else {
-            mProgressDialog = new ProgressDialog(CompleteOrderActivity.this, R.string.processing_label);
-            mProgressDialog.show();
+            showLoadingDialog(getString(R.string.processing_label));
 
             RequestParams params = new RequestParams();
             params.put("api_token", mCurrentUser.api_token);
@@ -206,7 +205,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                     dismissDialog();
 
-                    DebugUtils.logDebug(TAG, "requestPromoCode failed " + responseString);
+                    DebugUtils.logDebug(TAG, "requestPromoCode failed: " + responseString + " StatusCode:" + statusCode);
                     String sError;
 
                     try {
@@ -373,8 +372,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
     public void onLetsEatPressed() {
         if (BentoNowUtils.isValidCompleteOrder(CompleteOrderActivity.this)) {
-            mProgressDialog = new ProgressDialog(CompleteOrderActivity.this, R.string.processing_label);
-            mProgressDialog.show();
+            showLoadingDialog(getString(R.string.processing_label));
 
             mOrder.Stripe.stripeToken = mCurrentUser.stripe_token;
             mOrder.IdempotentToken = BentoNowUtils.getUUIDBento();
@@ -661,6 +659,13 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         mDialog = null;
         mDialogCoupon = null;
         mProgressDialog = null;
+    }
+
+    private void showLoadingDialog(String sText) {
+        if (mProgressDialog == null || !mProgressDialog.isShowing()) {
+            mProgressDialog = new ProgressDialog(CompleteOrderActivity.this, sText);
+            mProgressDialog.show();
+        }
     }
 
     @Override
