@@ -17,6 +17,7 @@
     <string name="title_activity_error_invalid_address">ErrorInvalidAddressActivity</string>
     <string name="title_activity_bento_select_main">BentoSelectMainActivity</string>
     <string name="build_bento_price">Starting at $%s</string>
+    <string name="build_bento_eta">ETA: %s MIN.</string>
 
     <string name="bento_builder_actionbar_title">Build Your Bento</string>
     <string name="delivery_location_actionbar_title">Delivery Location</string>

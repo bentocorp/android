@@ -24,7 +24,6 @@ import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.apache.http.Header;
 
-import java.util.ArrayList;
 
 /**
  * Created by Kokusho on 21/12/15.
@@ -89,7 +88,7 @@ public class BentoCustomerService extends Service {
                                 break;
                         }
                     } else {
-                        OrderDao mOrderDao = new OrderDao();
+                       /* OrderDao mOrderDao = new OrderDao();
                         Order mOrder = mOrderDao.getCurrentOrder();
 
                         if (mOrder != null && mMenu != null && SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_APP_IN_FRONT))
@@ -100,7 +99,7 @@ public class BentoCustomerService extends Service {
                                     mOrderDao.cleanUp();
                                     mListener.openBuildBentoActivity();
                                 }
-                            }
+                            }*/
                     }
                 }
             }

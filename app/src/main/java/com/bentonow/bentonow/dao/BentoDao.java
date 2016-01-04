@@ -3,7 +3,9 @@ package com.bentonow.bentonow.dao;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.db.DBAdapter;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.order.OrderItem;
@@ -24,13 +26,14 @@ public class BentoDao {
     public final static String TABLE_NAME = "table_bento";
     public final static String ID_PK = "bento_pk";
 
+    private static final String ITEM_TYPE = "item_type";
     private static final String IS_SOLD_OUT = "bIsSoldOut";
     private static final String UNIT_PRICE = "unit_price";
 
     public static final String QUERY_TABLE = "" + "CREATE TABLE " + TABLE_NAME + " (" + ID_PK + " INTEGER PRIMARY KEY autoincrement, "
-            + IS_SOLD_OUT + " INTEGER, " + UNIT_PRICE + " REAL);";
+            + ITEM_TYPE + " TEXT, " + IS_SOLD_OUT + " INTEGER, " + UNIT_PRICE + " REAL);";
 
-    public final static String[] FIELDS = {ID_PK, IS_SOLD_OUT, UNIT_PRICE};
+    public final static String[] FIELDS = {ID_PK, ITEM_TYPE, IS_SOLD_OUT, UNIT_PRICE};
 
     public BentoDao() {
         dbAdapter = new DBAdapter();
@@ -52,8 +55,10 @@ public class BentoDao {
         return success;
     }
 
-    public OrderItem getNewBento() {
+    public OrderItem getNewBento(ConstantUtils.optItemType optItemType) {
         OrderItem mOrder = new OrderItem();
+
+        mOrder.item_type = optItemType == ConstantUtils.optItemType.CUSTOM_BENTO_BOX ? "CustomerBentoBox" : "AddonList";
 
         dbAdapter.begginTransaction();
 
@@ -63,14 +68,19 @@ public class BentoDao {
 
         dbAdapter.setTransacctionSuccesfull();
 
-        DishDao mDishDao = new DishDao();
+        switch (optItemType) {
+            case CUSTOM_BENTO_BOX:
+                DishDao mDishDao = new DishDao();
 
-        for (int a = 0; a < 5; a++) {
-            DishModel mDish = mDishDao.getEmptyDish(mOrder.order_pk);
-            mOrder.items.add(mDish);
+                for (int a = 0; a < 5; a++) {
+                    DishModel mDish = mDishDao.getEmptyDish(mOrder.order_pk);
+                    mOrder.items.add(mDish);
+                }
+                break;
         }
 
-        DebugUtils.logDebug(TAG, "New Bento: " + mOrder.order_pk);
+
+        DebugUtils.logDebug(TAG, "New Bento: " + mOrder.order_pk + " Type: " + mOrder.item_type);
         return mOrder;
     }
 
@@ -104,6 +114,7 @@ public class BentoDao {
             Cursor cursor = dbAdapter.getData(TABLE_NAME, FIELDS, null);
 
             int _ID_PK = cursor.getColumnIndex(ID_PK);
+            int _ITEM_TYPE = cursor.getColumnIndex(ITEM_TYPE);
             int _IS_SOLD_OUT = cursor.getColumnIndex(IS_SOLD_OUT);
             int _UNIT_PRICE = cursor.getColumnIndex(UNIT_PRICE);
 
@@ -112,6 +123,7 @@ public class BentoDao {
             for (int i = 0; i < cursor.getCount(); i++) {
                 OrderItem mOrder = new OrderItem();
                 mOrder.order_pk = (cursor.getInt(_ID_PK));
+                mOrder.item_type = (cursor.getString(_ITEM_TYPE));
                 mOrder.bIsSoldoOut = (cursor.getInt(_IS_SOLD_OUT) == 1 ? true : false);
                 mOrder.unit_price = (cursor.getDouble(_UNIT_PRICE));
                 mListBento.add(mOrder);
@@ -134,6 +146,52 @@ public class BentoDao {
         DebugUtils.logDebug(TAG, "Get All Bento: " + mListBento.size());
 
         return mListBento;
+    }
+
+    public OrderItem getAddOnBento() {
+
+        OrderItem mOrder = new OrderItem();
+
+        try {
+
+            String conditional = ITEM_TYPE + " = 'AddonList'";
+
+            dbAdapter.begginTransaction();
+
+            Cursor cursor = dbAdapter.getData(TABLE_NAME, FIELDS, conditional);
+
+            int _ID_PK = cursor.getColumnIndex(ID_PK);
+            int _ITEM_TYPE = cursor.getColumnIndex(ITEM_TYPE);
+            int _IS_SOLD_OUT = cursor.getColumnIndex(IS_SOLD_OUT);
+            int _UNIT_PRICE = cursor.getColumnIndex(UNIT_PRICE);
+
+
+            cursor.moveToFirst();
+            for (int i = 0; i < cursor.getCount(); i++) {
+                mOrder.order_pk = (cursor.getInt(_ID_PK));
+                mOrder.item_type = (cursor.getString(_ITEM_TYPE));
+                mOrder.bIsSoldoOut = (cursor.getInt(_IS_SOLD_OUT) == 1 ? true : false);
+                mOrder.unit_price = (cursor.getDouble(_UNIT_PRICE));
+                cursor.moveToNext();
+            }
+
+            cursor.close();
+
+
+            DebugUtils.logDebug(TAG, "Get Bento: " + mOrder.toString());
+
+        } catch (Exception ex) {
+            DebugUtils.logError(TAG, ex);
+        } finally {
+            dbAdapter.setTransacctionSuccesfull();
+
+            DishDao mDisDao = new DishDao();
+
+            mOrder.items = mDisDao.getAllDishByOrder(mOrder.order_pk);
+        }
+
+
+        return mOrder;
     }
 
     public boolean removeBento(int iBentoPk) {
@@ -159,6 +217,7 @@ public class BentoDao {
     private ContentValues getContentValues(OrderItem mOrder) {
         ContentValues cValues = new ContentValues();
         cValues.put(IS_SOLD_OUT, mOrder.bIsSoldoOut);
+        cValues.put(ITEM_TYPE, mOrder.item_type);
         cValues.put(UNIT_PRICE, mOrder.unit_price);
         return cValues;
     }

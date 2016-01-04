@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
+import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
@@ -117,8 +118,8 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                getTxtToolbarBadge().setVisibility(mOrder.OrderItems.size() != 0 ? View.VISIBLE : View.INVISIBLE);
-                getTxtToolbarBadge().setText(String.valueOf(mOrder.OrderItems.size()));
+                getTxtToolbarBadge().setVisibility(mOrderDao.countCompletedOrders(mOrder) == 0 ? View.VISIBLE : View.INVISIBLE);
+                getTxtToolbarBadge().setText(String.valueOf(mOrderDao.countCompletedOrders(mOrder)));
 
                 if (!mOrder.OrderItems.isEmpty() && !Stock.isSold()) {
                     getButtonComplete().setBackgroundColor(getResources().getColor(R.color.btn_green));
@@ -132,7 +133,7 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
     }
 
     private void autocompleteBento(DishModel mDish) {
-        OrderItem orderItem = mBentoDao.getNewBento();
+        OrderItem orderItem = mBentoDao.getNewBento(ConstantUtils.optItemType.CUSTOM_BENTO_BOX);
 
         if (orderItem.items.get(0).name.isEmpty()) {
             if (mDish == null)
@@ -281,6 +282,9 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
                 mOrder.MenuType = mMenu.menu_type;
 
                 mOrderDao.insertNewOrder(mOrder);
+
+                if (mOrder.OrderItems.size() == 0)
+                    mOrder.OrderItems.add(mBentoDao.getNewBento(ConstantUtils.optItemType.ADD_ON));
 
                 MixpanelUtils.track("Began Building A Bento");
             }

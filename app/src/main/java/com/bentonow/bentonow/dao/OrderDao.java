@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 
 import com.bentonow.bentonow.Utils.AndroidUtil;
+import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.db.DBAdapter;
@@ -93,7 +94,8 @@ public class OrderDao {
     public Order getNewOrder() {
 
         Order mOrder = new Order();
-        mOrder.OrderItems.add(mBentoDao.getNewBento());
+        mOrder.OrderItems.add(mBentoDao.getNewBento(ConstantUtils.optItemType.CUSTOM_BENTO_BOX));
+        mOrder.OrderItems.add(mBentoDao.getNewBento(ConstantUtils.optItemType.ADD_ON));
 
         dbAdapter.begginTransaction();
 
@@ -192,13 +194,13 @@ public class OrderDao {
 
                 cursor.moveToNext();
             }
-
             cursor.close();
 
-            dbAdapter.setTransacctionSuccesfull();
 
         } catch (Exception ex) {
             DebugUtils.logError(TAG, ex);
+        } finally {
+            dbAdapter.setTransacctionSuccesfull();
         }
 
         if (mOrder != null)
@@ -404,18 +406,16 @@ public class OrderDao {
         return count;
     }*/
 
-    public boolean pendingOrders() {
-        return countCompletedOrders() > 0;
-    }
-
-    public int countCompletedOrders() {
+    public int countCompletedOrders(Order mOrder) {
         int count = 0;
 
-        mOrder = getCurrentOrder();
-
         for (OrderItem item : mOrder.OrderItems) {
-            if (mBentoDao.isBentoComplete(item))
-                ++count;
+            if (item.item_type.equals("CustomerBentoBox")) {
+                if (mBentoDao.isBentoComplete(item))
+                    ++count;
+            } else {
+                count = count + item.items.size();
+            }
         }
 
         return count;

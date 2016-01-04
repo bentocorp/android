@@ -242,8 +242,6 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                     mOrder.OrderDetails.coupon_discount_cents = discount;
                     mOrderDao.updateOrder(mOrder);
 
-                    BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);
-
                     updateUI();
                 }
             });
@@ -340,7 +338,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
     }
 
     public void onAddAnotherBentoPressed(View v) {
-        mOrder.OrderItems.add(mBentoDao.getNewBento());
+        mOrder.OrderItems.add(mBentoDao.getNewBento(ConstantUtils.optItemType.CUSTOM_BENTO_BOX));
         mOrder.currentOrderItem = mOrder.OrderItems.size() - 1;
         mOrderDao.updateOrder(mOrder);
 
@@ -477,7 +475,6 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                     mCurrentUser.stripe_token = null;
 
                     SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.UUID_BENTO, "");
-                    BentoNowUtils.saveSettings(ConstantUtils.optSaveSettings.ALL);
 
                     dismissDialog();
 

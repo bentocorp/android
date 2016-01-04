@@ -32,7 +32,7 @@
                 android:id="@+id/img_sold_out"
                 android:layout_width="130dp"
                 android:layout_height="130dp"
-                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
                 android:scaleType="centerCrop"
                 android:src="@drawable/banner_sold_out" />
 
@@ -50,7 +50,7 @@
             android:layout_width="fill_parent"
             android:layout_height="48dp"
             android:layout_above="@+id/wrapper_add_price"
-            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
             android:layout_marginBottom="10dp"
             android:background="@drawable/btn_border_half_square_white"
             android:gravity="center"

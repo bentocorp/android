@@ -72,6 +72,9 @@
             android:name=".controllers.order.SelectSideFixActivity"
             android:screenOrientation="portrait"></activity>
         <activity
+            android:name=".controllers.order.AddOnActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity
             android:name=".controllers.session.SignUpActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden"></activity>
@@ -104,6 +107,7 @@
         <activity
             android:name=".controllers.errors.NextDayMenuActivity"
             android:screenOrientation="portrait"></activity>
+
 
         <activity
             android:name=".controllers.errors.ErrorVersionActivity"

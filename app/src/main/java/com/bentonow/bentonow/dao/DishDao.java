@@ -56,16 +56,15 @@ public class DishDao {
     }
 
     public boolean insertDish(DishModel mDish) {
-        DebugUtils.logDebug(TAG, "Insert Dish");
-
         dbAdapter.begginTransaction();
 
         ContentValues cValues = getContentValues(mDish);
 
-        long idInsert = dbAdapter.insert(TABLE_NAME, cValues);
-        success = idInsert != -1;
+        mDish.dish_pk = (int) dbAdapter.insert(TABLE_NAME, cValues);
 
         dbAdapter.setTransacctionSuccesfull();
+
+        DebugUtils.logDebug(TAG, "New Dish: " + mDish.dish_pk);
 
         return success;
     }
@@ -239,6 +238,22 @@ public class DishDao {
         dbAdapter.setTransacctionSuccesfull();
 
         DebugUtils.logDebug(TAG, "Remove Dish: " + success);
+        return success;
+    }
+
+    public boolean removeDish(DishModel mOldDish) {
+        String where = ID_PK + "=?";
+        String[] whereArgs = new String[]{String.valueOf(mOldDish.dish_pk)};
+
+        dbAdapter.begginTransaction();
+
+        long idInsert = dbAdapter.delete(TABLE_NAME, where, whereArgs);
+        success = idInsert != -1;
+
+        dbAdapter.setTransacctionSuccesfull();
+
+        DebugUtils.logDebug(TAG, "Remove Dish: " + success + " Pk: " + mOldDish.dish_pk);
+
         return success;
     }
 

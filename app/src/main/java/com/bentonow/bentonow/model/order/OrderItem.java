@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OrderItem {
-    public String item_type = "CustomerBentoBox";
+    public String item_type;
     public boolean bIsSoldoOut = false;
     public double unit_price = 0;
     public List<DishModel> items = new ArrayList<>();

@@ -40,6 +40,8 @@ public class Settings {
     static public double tax_percent;
     static public String tzName = "";
     static public int min_version;
+    static public int eta_min;
+    static public int eta_max;
     static public Meal lunch;
     static public Meal dinner;
 
@@ -61,11 +63,16 @@ public class Settings {
             tzName = jsonSettings.getString("tzName");
             min_version = new JSONObject(data).getInt("android_min_version");
 
+            JSONObject jsonEta = new JSONObject(data).getJSONObject("eta");
+            eta_min = jsonEta.getInt("eta_min");
+            eta_max = jsonEta.getInt("eta_max");
+
             JSONObject meal = new JSONObject(data).getJSONObject("meals");
             Gson gson = new Gson();
 
             lunch = gson.fromJson(meal.getString("2"), Meal.class);
             dinner = gson.fromJson(meal.getString("3"), Meal.class);
+
 
         } catch (Exception e) {
             DebugUtils.logError(TAG, "Set: " + e);

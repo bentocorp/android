@@ -52,11 +52,11 @@ public class BentoNowUtils {
 
     public static final SimpleDateFormat sdfBento = new SimpleDateFormat("yyyyMMdd");
     public static final boolean B_APPIUM_TESTING = false;
-    public static final boolean B_KOKUSHO_TESTING = false;
+    public static final boolean B_KOKUSHO_TESTING = true;
 
     public static int getCurrentTime() {
         if (BuildConfig.DEBUG && BentoNowUtils.B_KOKUSHO_TESTING)
-            return 203000;
+            return 120000;
             //return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
         else
             return Integer.parseInt(new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date()).replace(":", ""));
@@ -218,30 +218,6 @@ public class BentoNowUtils {
     public static boolean validPhoneNumber(String sPhoneNumber) {
         String sPhone = getNumberFromPhone(sPhoneNumber);
         return sPhone.length() == 10;
-    }
-
-    public static void saveSettings(ConstantUtils.optSaveSettings optSave) {
-        String backendText = new Gson().toJson(BackendText.list);
-
-       /* if (BentoApplication.location != null)
-            location = gson.toJson(BentoApplication.location);
-        if (BentoApplication.address != null)
-            address = gson.toJson(BentoApplication.address);*/
-
-        switch (optSave) {
-            case ALL:
-               /* SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.LOCATION, location);
-                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ADDRESS, address);*/
-
-                if (BackendText.list != null && BackendText.list.size() > 0)
-                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.BACKENDTEXT, backendText);
-                break;
-            case BACKEND_TEXT:
-                if (BackendText.list != null && BackendText.list.size() > 0)
-                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.BACKENDTEXT, backendText);
-                break;
-        }
-
     }
 
     public static void rotateBanner(View mView) {

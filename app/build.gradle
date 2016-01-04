@@ -47,17 +47,17 @@ android {
         applicationId "com.bentonow.bentonow"
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 28
+        versionCode 29
         multiDexEnabled true
     }
     productFlavors {
         production {
             applicationId "com.bentonow.bentonow"
-            versionName '1.12-rc2'
+            versionName '1.12-rc1'
         }
         stage {
             applicationId "com.bentonow.bentonow.stage"
-            versionName '1.12-rc2-dev'
+            versionName '1.12-rc1-dev'
         }
     }
 
@@ -83,4 +83,6 @@ dependencies {
     compile 'com.loopj.android:android-async-http:1.4.8'
     compile 'com.google.code.gson:gson:2.3.1'
     compile 'com.android.support:multidex:1.0.1'
+    compile 'com.android.support:cardview-v7:22.1.1'
+    compile 'com.android.support:recyclerview-v7:22.1.1'
 }
