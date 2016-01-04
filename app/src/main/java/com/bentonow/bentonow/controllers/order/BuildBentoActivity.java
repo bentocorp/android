@@ -71,7 +71,6 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
         setContentView(R.layout.activity_build_bento);
 
         getBtnContinue().setOnClickListener(this);
-        getBtnAddOnAddOn().setOnClickListener(this);
 
         actionbar_right_btn = (ImageView) findViewById(R.id.actionbar_right_btn);
         actionbar_right_badge = (TextView) findViewById(R.id.actionbar_right_badge);
@@ -209,10 +208,16 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
             getBtnContinue().setBackgroundColor(getResources().getColor(R.color.btn_green));
             getBtnContinue().setText(BackendText.get("build-button-2"));
             getBtnAddAnotherBento().setTextColor(getResources().getColor(R.color.btn_green));
+            getBtnAddAnotherBento().setOnClickListener(this);
+            getBtnAddOnAddOn().setTextColor(getResources().getColor(R.color.btn_green));
+            getBtnAddOnAddOn().setOnClickListener(this);
         } else {
             getBtnContinue().setBackgroundColor(getResources().getColor(R.color.gray));
             getBtnContinue().setText(BackendText.get("build-button-1"));
             getBtnAddAnotherBento().setTextColor(getResources().getColor(R.color.btn_green_trans));
+            getBtnAddAnotherBento().setOnClickListener(null);
+            getBtnAddOnAddOn().setTextColor(getResources().getColor(R.color.btn_green_trans));
+            getBtnAddOnAddOn().setOnClickListener(null);
         }
 
         if (mOrderDao.countCompletedOrders(mOrder) == 0) {
@@ -329,6 +334,12 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
                 Intent mAddOnActivity = new Intent(BuildBentoActivity.this, AddOnActivity.class);
                 startActivity(mAddOnActivity);
                 break;
+            case R.id.btn_add_another_bento:
+                onAddAnotherBentoPressed();
+                break;
+            default:
+                DebugUtils.logError(TAG, String.valueOf(v.getId()));
+                break;
         }
     }
 
@@ -366,15 +377,7 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
         startActivity(intent);
     }
 
-    public void onAddAnotherBentoPressed(View view) {
-       /* if (!Order.current.OrderItems.get(orderIndex).isComplete() || Stock.isSold()) return;
-
-        Order.current.OrderItems.add(new OrderItem());
-        Order.current.currentOrderItem = orderIndex = Order.current.OrderItems.size() - 1;*/
-
-        if (!mBentoDao.isBentoComplete(mOrder.OrderItems.get(orderIndex)) || Stock.isSold())
-            return;
-
+    public void onAddAnotherBentoPressed() {
         mOrder.OrderItems.add(mBentoDao.getNewBento(ConstantUtils.optItemType.CUSTOM_BENTO_BOX));
         mOrder.currentOrderItem = orderIndex = mOrder.OrderItems.size() - 1;
 

@@ -118,20 +118,24 @@ public class BentoNowUtils {
     }
 
     public static void openErrorActivity(FragmentActivity mContext) {
-        mContext.finish();
-        Intent intent = new Intent(mContext, ErrorActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        mContext.startActivity(intent);
-        OrderDao mOrderDao = new OrderDao();
-        mOrderDao.cleanUp();
+        if (!ErrorActivity.bIsOpen) {
+            mContext.finish();
+            OrderDao mOrderDao = new OrderDao();
+            mOrderDao.cleanUp();
+            Intent intent = new Intent(mContext, ErrorActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            mContext.startActivity(intent);
+        }
     }
 
     public static void openErrorActivity(Context mContext) {
-        Intent intent = new Intent(mContext, ErrorActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        mContext.startActivity(intent);
-        OrderDao mOrderDao = new OrderDao();
-        mOrderDao.cleanUp();
+        if (!ErrorActivity.bIsOpen) {
+            Intent intent = new Intent(mContext, ErrorActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            mContext.startActivity(intent);
+            OrderDao mOrderDao = new OrderDao();
+            mOrderDao.cleanUp();
+        }
     }
 
     public static void openCompleteOrderActivity(Context mContext) {

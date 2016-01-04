@@ -487,7 +487,6 @@
                 android:background="@drawable/btn_gray"
                 android:gravity="center"
                 android:lines="1"
-                android:onClick="onAddAnotherBentoPressed"
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"
                 android:text="BUILD ANOTHER BENTO"

@@ -79,20 +79,17 @@ public class MainActivity extends BaseFragmentActivity {
 
         DebugUtils.logDebug(TAG, "onResume");
 
+        if (BuildConfig.DEBUG)
+            getTxtVersion().setText(AndroidUtil.getAppVersionName(this));
+
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
+
         if (resultCode == ConnectionResult.SUCCESS) {
-            if (getIntent() != null && getIntent().getBooleanExtra("checkLocation", false)) {
-                waitForUserLocation();
-            } else {
-                loadData();
-            }
+            loadData();
         } else {
             Dialog dialog = GooglePlayServicesUtil.getErrorDialog(resultCode, this, 1);
             dialog.show();
         }
-
-        if (BuildConfig.DEBUG)
-            getTxtVersion().setText(AndroidUtil.getAppVersionName(this));
 
         super.onResume();
     }
@@ -105,8 +102,6 @@ public class MainActivity extends BaseFragmentActivity {
     }
 
     void loadData() {
-        DebugUtils.logDebug(TAG, "loadData");
-        //noinspection deprecation
         BentoRestClient.get("/init/" + BentoNowUtils.getTodayDate(), null, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
@@ -137,37 +132,30 @@ public class MainActivity extends BaseFragmentActivity {
 
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
 
-        checkFirstRun();
-    }
-
-    void checkFirstRun() {
-        if (!SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.APP_FIRST_RUN)) {
-
-            if (BentoNowUtils.isLastVersionApp(MainActivity.this)) {
-                Intent intent = new Intent(this, GettingStartedActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(intent);
-            }
-            finish();
-
-        } else {
-            checkAppStatus();
-        }
+        checkAppStatus();
     }
 
     void checkAppStatus() {
         DebugUtils.logDebug(TAG, "checkAppStatus");
 
         if (BentoNowUtils.isLastVersionApp(MainActivity.this)) {
-            if (!Settings.status.equals("open")) {
-                BentoNowUtils.openErrorActivity(this);
+            if (!SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.APP_FIRST_RUN)) {
+                Intent intent = new Intent(this, GettingStartedActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 finish();
+                startActivity(intent);
             } else {
-                waitForUserLocation();
+                if (!Settings.status.equals("open")) {
+                    BentoNowUtils.openErrorActivity(this);
+                    finish();
+                } else {
+                    waitForUserLocation();
+                }
             }
         } else {
             finish();
         }
+
     }
 
     void waitForUserLocation() {

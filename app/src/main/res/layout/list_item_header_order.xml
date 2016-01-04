@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/complete_row"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/bgcolor"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <!-- ORDER ITEMS -->
+    <LinearLayout
+        android:id="@+id/add_another_bento_header"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/divisor_2"
+        android:orientation="horizontal">
+
+        <com.bentonow.bentonow.ui.BackendButton
+            android:id="@+id/btn_order_name"
+            style="@style/BtnOrderHeader"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            android:gravity="start"
+            android:textColor="@color/btn_green"
+            app:key="complete-add-another" />
+
+        <com.bentonow.bentonow.ui.BackendButton
+            android:id="@+id/btn_delete"
+            style="@style/BtnOrderHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:gravity="right"
+            android:textColor="@color/btn_green"
+            android:textSize="@dimen/text_very_very_small"
+            android:textStyle="bold"
+            app:key="complete-edit" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/divisor_6"
+        android:layout_width="fill_parent"
+        android:layout_height="1px"
+        android:layout_below="@+id/add_another_bento_header"
+        android:background="@color/divisor" />
+</LinearLayout>

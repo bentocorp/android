@@ -159,6 +159,12 @@
         <item name="fontPath">fonts/OpenSans-Regular.ttf</item>
     </style>
 
+    <style name="BtnOrderHeader" parent="@android:style/Widget.Button">
+        <item name="android:textColor">@color/btn_green</item>
+        <item name="android:padding">@dimen/btn_padding</item>
+        <item name="android:textSize">@dimen/text_very_very_small</item>
+        <item name="fontPath">fonts/OpenSans-Bold.ttf</item>
+    </style>
     <style name="TxtAddOnTitle" parent="@android:style/Widget.TextView">
         <item name="android:textColor">#576070</item>
         <item name="android:textStyle">bold</item>
@@ -247,6 +253,7 @@
         <item name="android:padding">5sp</item>
         <item name="android:textSize">32sp</item>
     </style>
+
 
     <style name="icon_white">
         <item name="android:layout_width">44sp</item>

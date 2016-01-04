@@ -46,6 +46,8 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
 
     Menu mCurrentMenu;
 
+    public static boolean bIsOpen;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,24 +64,26 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
 
     @Override
     protected void onResume() {
+        bIsOpen = true;
+
         mCurrentMenu = Menu.getNext();
 
-            Calendar calendar = Calendar.getInstance();
-            int hour = calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE);
+        Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE);
 
-            if (Settings.status.equals("sold out")) {
-                getTxtTitle().setText(BackendText.get("sold-out-title"));
-                getTxtDescription().setText(BackendText.get("sold-out-text"));
+        if (Settings.status.equals("sold out")) {
+            getTxtTitle().setText(BackendText.get("sold-out-title"));
+            getTxtDescription().setText(BackendText.get("sold-out-text"));
+        } else {
+            getTxtTitle().setText(BackendText.get("closed-title"));
+            if (hour >= 2000) {
+                getTxtDescription().setText(BackendText.get("closed-text-latenight"));
             } else {
-                getTxtTitle().setText(BackendText.get("closed-title"));
-                if (hour >= 2000) {
-                    getTxtDescription().setText(BackendText.get("closed-text-latenight"));
-                } else {
-                    getTxtDescription().setText(BackendText.get("closed-text"));
-                }
-
+                getTxtDescription().setText(BackendText.get("closed-text"));
             }
-            setupNextMenu();
+
+        }
+        setupNextMenu();
 
         super.onResume();
     }
@@ -217,6 +221,8 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
     @Override
     protected void onPause() {
         super.onPause();
+        bIsOpen = false;
+
         if (mBound) {
             mBentoService.setServiceListener(null);
             unbindService(mConnection);

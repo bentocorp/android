@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -25,6 +26,7 @@ import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseActivity;
+import com.bentonow.bentonow.controllers.adapter.ExpandableListOrderAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.dialog.CouponDialog;
 import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
@@ -36,6 +38,7 @@ import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.listener.InterfaceCustomerService;
 import com.bentonow.bentonow.listener.ListenerDialog;
 import com.bentonow.bentonow.model.BackendText;
+import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.Stock;
@@ -53,42 +56,44 @@ import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class CompleteOrderActivity extends BaseActivity implements View.OnClickListener, LazyListAdapterInterface, OnItemClickListener, InterfaceCustomerService {
+import java.util.ArrayList;
+import java.util.List;
+
+public class CompleteOrderActivity extends BaseActivity implements View.OnClickListener, OnItemClickListener, InterfaceCustomerService {
     private static final String TAG = "CompleteOrderActivity";
 
-    TextView txt_address;
-    TextView txt_credit_card;
-    TextView txt_discount;
-    TextView txt_tax;
-    TextView txt_delivery_price;
-    TextView txt_tip;
-    TextView txt_total;
+    private TextView txt_address;
+    private TextView txt_credit_card;
+    private TextView txt_discount;
+    private TextView txt_tax;
+    private TextView txt_delivery_price;
+    private TextView txt_tip;
+    private TextView txt_total;
 
-    ImageView img_credit_card;
+    private ImageView img_credit_card;
 
-    View container_discount;
+    private View container_discount;
 
-    BackendButton btn_delete;
-    BackendButton btnOnLetsEatPressed;
+    private BackendButton btnOnLetsEatPressed;
 
-    TextView btn_add_promo_code;
-    TextView txtPromoTotal;
+    private TextView btn_add_promo_code;
+    private TextView txtPromoTotal;
 
     private RelativeLayout layoutWrapperDiscount;
     private CouponDialog mDialogCoupon;
     private ConfirmationDialog mDialog;
     private ProgressDialog mProgressDialog;
-
-    LayoutInflater inflater;
+    private ExpandableListView mExpandableListOrder;
 
     private UserDao userDao = new UserDao();
     private User mCurrentUser;
     private Order mOrder;
+    private List<OrderItem> aOrder = new ArrayList<>();
+    private List<DishModel> aAddOn = new ArrayList<>();
 
-    boolean edit = false;
-    int selected = -1;
-    LazyListAdapter adapter;
-    String action = "";
+    private int selected = -1;
+    private ExpandableListOrderAdapter mExpandableAdapter;
+    private String action = "";
 
 
     @Override
@@ -97,6 +102,24 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         setContentView(R.layout.activity_complete_order);
 
         mOrder = mOrderDao.getCurrentOrder();
+
+        for (int a = 0; a < mOrder.OrderItems.size(); a++) {
+            if (mOrder.OrderItems.get(a).item_type.equals("CustomerBentoBox"))
+                aOrder.add(mOrder.OrderItems.get(a));
+            else {
+                if (mOrder.OrderItems.get(a).items != null && !mOrder.OrderItems.get(a).items.isEmpty()) {
+                    for (int b = 0; b < mOrder.OrderItems.get(a).items.size(); b++) {
+                        boolean bAddDish;
+                        for (int c = 0; c < aAddOn.size(); c++) {
+
+                        }
+                        if(bAddDish)
+                    }
+                    aAddOn.add(mOrder.OrderItems.get(a));
+                }
+            }
+
+        }
 
         txt_address = (TextView) findViewById(R.id.txt_address);
         txt_credit_card = (TextView) findViewById(R.id.txt_credit_card);
@@ -107,19 +130,14 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
         getBtnOnLetsEatPressed().setOnClickListener(this);
 
-        btn_delete = (BackendButton) findViewById(R.id.btn_delete);
-
         img_credit_card = (ImageView) findViewById(R.id.img_credit_card);
 
         container_discount = findViewById(R.id.container_discount);
 
-        adapter = new LazyListAdapter(this);
+        getExpandableListOrder().setAdapter(getExpandableListAdapter());
 
-        ListView list = (ListView) findViewById(R.id.list);
-        list.setAdapter(adapter);
-        list.setOnItemClickListener(this);
-
-        inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        getExpandableListOrder().expandGroup(0, false);
+        getExpandableListOrder().expandGroup(1, false);
 
         initActionbar();
     }
@@ -143,7 +161,6 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
             mBentoDao.removeBento(mOrder.OrderItems.get(selected).order_pk);
             mOrder.OrderItems.remove(selected);
             selected = -1;
-            adapter.notifyDataSetChanged();
             updateUI();
         } else {
             emptyOrders();
@@ -158,8 +175,6 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         if (mOrder == null || mOrder.OrderItems == null || mOrder.OrderItems.isEmpty()) {
             Crashlytics.log(Log.ERROR, "Order", "No Items in the Order");
             emptyOrders();
-        } else if (!Settings.status.equals("open")) {
-
         } else
             updateUI();
 
@@ -274,7 +289,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                     selected = position;
                 }
 
-                adapter.notifyDataSetChanged();
+                getExpandableListAdapter().notifyDataSetChanged();
                 break;
             case R.id.button_accept:
                 switch (action) {
@@ -302,7 +317,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                adapter.notifyDataSetChanged();
+                                getExpandableListAdapter().notifyDataSetChanged();
                                 updateUI();
                             }
                         });
@@ -321,10 +336,10 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        mOrder.currentOrderItem = position;
+       /* mOrder.currentOrderItem = position;
         mOrderDao.updateOrder(mOrder);
 
-        onBackPressed();
+        onBackPressed();*/
     }
 
     public void onChangeAddressPressed(View v) {
@@ -338,19 +353,12 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
     }
 
     public void onAddAnotherBentoPressed(View v) {
-        mOrder.OrderItems.add(mBentoDao.getNewBento(ConstantUtils.optItemType.CUSTOM_BENTO_BOX));
+       /* mOrder.OrderItems.add(mBentoDao.getNewBento(ConstantUtils.optItemType.CUSTOM_BENTO_BOX));
         mOrder.currentOrderItem = mOrder.OrderItems.size() - 1;
         mOrderDao.updateOrder(mOrder);
 
-        onBackPressed();
+        onBackPressed();*/
     }
-
-    public void onDeleteBentoPressed(View v) {
-        edit = !edit;
-        adapter.notifyDataSetChanged();
-        updateUI();
-    }
-
 
     public void onMinusTipPressed(View v) {
         if (mOrder.OrderDetails.tip_percentage > 0) {
@@ -544,78 +552,13 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         img_credit_card.setImageResource(card);
         txt_credit_card.setText(mCurrentUser.card.last4 != null ? mCurrentUser.card.last4 : "");
 
-        if (edit) {
+/*        if (edit) {
             btn_delete.setTextColor(getResources().getColor(R.color.btn_green));
             btn_delete.setText(BackendText.get("complete-done"));
         } else {
             btn_delete.setTextColor(getResources().getColor(R.color.orange));
             btn_delete.setText(BackendText.get("complete-edit"));
-        }
-    }
-
-
-    private class ItemHolder {
-        public TextView txt_name;
-        public TextView txt_price;
-        public ImageButton btn_edit;
-        public ImageButton btn_remove;
-
-        public ItemHolder(View view) {
-            txt_name = (TextView) view.findViewById(R.id.txt_name);
-            txt_price = (TextView) view.findViewById(R.id.txt_price);
-            btn_edit = (ImageButton) view.findViewById(R.id.btn_edit);
-            btn_remove = (ImageButton) view.findViewById(R.id.btn_remove);
-        }
-
-        public void set(OrderItem mItem, int position) {
-            txt_name.setTextColor(mItem.bIsSoldoOut ? getResources().getColor(R.color.orange) : getResources().getColor(R.color.btn_green));
-            txt_price.setTextColor(mItem.bIsSoldoOut ? getResources().getColor(R.color.orange) : getResources().getColor(R.color.btn_green));
-
-            txt_name.setText(mItem.items.get(0).name);
-
-            txt_price.setText("$" + BentoNowUtils.getNumberFromPrice(OrderDao.getPriceByOrder(mItem)));
-
-            btn_remove.setVisibility(selected == position ? View.VISIBLE : View.GONE);
-            btn_edit.setVisibility(edit ? View.VISIBLE : View.GONE);
-            btn_edit.setTag(position);
-        }
-    }
-
-    @Override
-    public int getCount() {
-        return mOrder.OrderItems.size();
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return null;
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return 0;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ItemHolder holder;
-
-        if (convertView == null) {
-            convertView = inflater.inflate(R.layout.list_item_order, null);
-
-            holder = new ItemHolder(convertView);
-
-            holder.btn_remove.setOnClickListener(this);
-            holder.btn_edit.setOnClickListener(this);
-
-            convertView.setTag(holder);
-        } else {
-            holder = (ItemHolder) convertView.getTag();
-        }
-
-        holder.set(mOrder.OrderItems.get(position), position);
-
-        return convertView;
+        }*/
     }
 
     public void showAddPromoCodeDialog(View v) {
@@ -738,4 +681,19 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         return btnOnLetsEatPressed;
     }
 
+    private ExpandableListView getExpandableListOrder() {
+        if (mExpandableListOrder == null) {
+            mExpandableListOrder = (ExpandableListView) findViewById(R.id.expand_list_order);
+            mExpandableListOrder.setGroupIndicator(null);
+            mExpandableListOrder.setClickable(false);
+        }
+        return mExpandableListOrder;
+    }
+
+
+    private ExpandableListOrderAdapter getExpandableListAdapter() {
+        if (mExpandableAdapter == null)
+            mExpandableAdapter = new ExpandableListOrderAdapter(CompleteOrderActivity.this, aOrder, aAddOn);
+        return mExpandableAdapter;
+    }
 }

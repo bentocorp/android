@@ -9,6 +9,7 @@ import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.model.BackendText;
+import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.ui.AutoFitTxtView;
 
 
@@ -40,10 +41,13 @@ public class GettingStartedActivity extends BaseFragmentActivity {
 
     public void onGettingStartedPressed(View view) {
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.APP_FIRST_RUN, true);
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("checkLocation", true);
-        startActivity(intent);
-        finish();
+        if (!Settings.status.equals("open")) {
+            finish();
+            BentoNowUtils.openErrorActivity(this);
+        } else {
+            finish();
+            BentoNowUtils.openBuildBentoActivity(this);
+        }
     }
 
     private AutoFitTxtView getTxtTitle() {

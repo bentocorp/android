@@ -17,6 +17,7 @@ public class DishModel implements Parcelable {
     public double price;
     public int dish_pk;
     public int bento_pk;
+    public int num_dish;
 
     public DishModel() {
 
@@ -32,6 +33,7 @@ public class DishModel implements Parcelable {
         price = parcel.readDouble();
         dish_pk = parcel.readInt();
         bento_pk = parcel.readInt();
+        num_dish = parcel.readInt();
     }
 
     @Override
@@ -45,6 +47,7 @@ public class DishModel implements Parcelable {
         dest.writeDouble(price);
         dest.writeInt(dish_pk);
         dest.writeInt(bento_pk);
+        dest.writeInt(num_dish);
     }
 
 

@@ -422,6 +422,7 @@ public class OrderDao {
     }
 
     public void cleanUp() {
+        DebugUtils.logDebug(TAG, "Clean Up");
         OrderDao mOrderDao = new OrderDao();
         mOrderDao.clearAllData();
     }
