@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/base_relative_layout"
     android:layout_width="match_parent"
@@ -13,7 +14,7 @@
         android:layout_height="?android:attr/actionBarSize"
         android:layout_alignParentTop="true">
 
-        <include layout="@layout/actionbar_green_border" />
+        <include layout="@layout/bento_toolbar" />
     </RelativeLayout>
 
     <android.support.v7.widget.RecyclerView
@@ -24,9 +25,28 @@
         android:divider="@android:color/transparent"
         android:dividerHeight="0dp"
         android:scrollbars="vertical"
-        tools:listitem="@layout/list_item_add_on" />
+        tools:listitem="@layout/list_item_add_on"
+        android:layout_above="@+id/footer_container" />
 
+    <RelativeLayout
+        android:id="@+id/footer_container"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
+        <com.bentonow.bentonow.ui.BackendButton
+            android:id="@+id/btn_finalize"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/btn_green"
+            android:gravity="center"
+            android:padding="@dimen/btn_padding"
+            android:text="@string/btn_continue_text"
+            android:textColor="@color/white"
+            app:key="build-button-2" />
+    </RelativeLayout>
 </RelativeLayout>
 
 

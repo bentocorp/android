@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
+import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
@@ -45,18 +46,26 @@ import java.util.ArrayList;
 
 public class AddOnActivity extends BaseActivity implements View.OnClickListener, ListenerAddOn {
 
-    static final String TAG = "AddOnActivity";
+    public static final String TAG = "AddOnActivity";
+
+    public static final String TAG_OPEN_BY = "OpenByActivity";
 
     private ImageView menuItemBuildBento;
     private ImageView actionbarLeftBtn;
     private TextView txtToolbarTitle;
+    private TextView txtToolbarRightBadge;
+    private BackendButton btnFinalize;
+
     private RecyclerView mListAddOn;
 
     private AddOnListAdapter mAdapter;
 
     private Menu mMenu;
 
+    private Order mOrder;
     private OrderItem mBento;
+
+    private ConstantUtils.optOpenAddOn optOpenBy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,17 +75,30 @@ public class AddOnActivity extends BaseActivity implements View.OnClickListener,
 
         getTxtToolbarTitle().setText("Choose Add-Ons");
 
+        try {
+            optOpenBy = (ConstantUtils.optOpenAddOn) getIntent().getExtras().get(TAG_OPEN_BY);
+        } catch (Exception ex) {
+            optOpenBy = ConstantUtils.optOpenAddOn.BUILDER;
+            DebugUtils.logError(TAG, ex);
+        }
+
         getActionbarLeftBtn().setImageResource(R.drawable.ic_ab_back);
-        getMenuItemBuildBento().setVisibility(View.GONE);
+
+        getMenuItemBuildBento().setVisibility(View.VISIBLE);
+        getMenuItemBuildBento().setImageResource(R.drawable.ic_ab_bento_completed);
+        getTxtToolbarRightBadge().setVisibility(View.VISIBLE);
 
         getActionbarLeftBtn().setOnClickListener(this);
         getMenuItemBuildBento().setOnClickListener(this);
+        getBtnFinalize().setOnClickListener(this);
 
         getListAddOn().setHasFixedSize(true);
         getListAddOn().setAdapter(getListAdapter());
 
         mMenu = Menu.get();
         mBento = mBentoDao.getAddOnBento();
+
+        updateUI();
 
         addAddOnDishes();
 
@@ -108,6 +130,40 @@ public class AddOnActivity extends BaseActivity implements View.OnClickListener,
         getListAdapter().notifyDataSetChanged();
     }
 
+    private void updateUI() {
+        mOrder = mOrderDao.getCurrentOrder();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                getTxtToolbarRightBadge().setText(mOrderDao.countCompletedOrders(mOrder) + "");
+            }
+        });
+    }
+
+    private void openSummaryScreen() {
+        switch (optOpenBy) {
+            case BUILDER:
+                String sSoldOutItems = mOrderDao.calculateSoldOutItems(mOrder);
+                if (!sSoldOutItems.isEmpty()) {
+                    updateUI();
+                    WidgetsUtils.createShortToast(String.format(getString(R.string.error_sold_out_items), sSoldOutItems));
+                } else if (BentoNowUtils.isValidCompleteOrder(AddOnActivity.this)) {
+                    Intent intent = new Intent(AddOnActivity.this, CompleteOrderActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    finish();
+                    startActivity(intent);
+                } else {
+                    finish();
+                    WidgetsUtils.createShortToast("There was a problem try again please");
+                }
+                break;
+            case SUMMARY:
+                finish();
+                break;
+        }
+
+    }
+
     @Override
     public void onAddClick(int iDishPosition) {
         DishModel mDish = DishDao.clone(getListAdapter().aListDish.get(iDishPosition));
@@ -115,20 +171,27 @@ public class AddOnActivity extends BaseActivity implements View.OnClickListener,
         mDishDao.insertDish(mDish);
         mBento.items.add(mDish);
 
+        updateUI();
+
         getListAdapter().notifyDataSetChanged();
     }
 
     @Override
     public void onRemoveClick(int iDishPosition) {
         DishModel mDish = getListAdapter().aListDish.get(iDishPosition);
+        boolean bRemove = false;
 
         for (int a = 0; a < mBento.items.size(); a++) {
             if (mDish.itemId == mBento.items.get(a).itemId) {
                 mDishDao.removeDish(mBento.items.get(a));
                 mBento.items.remove(a);
+                bRemove = true;
                 break;
             }
         }
+
+        if (bRemove)
+            updateUI();
 
         getListAdapter().notifyDataSetChanged();
     }
@@ -141,6 +204,12 @@ public class AddOnActivity extends BaseActivity implements View.OnClickListener,
                 break;
             case R.id.button_accept:
                 finish();
+                break;
+            case R.id.btn_finalize:
+                openSummaryScreen();
+                break;
+            case R.id.actionbar_right_btn:
+                openSummaryScreen();
                 break;
             default:
                 DebugUtils.logError(TAG, "onClick(): " + v.getId());
@@ -167,6 +236,13 @@ public class AddOnActivity extends BaseActivity implements View.OnClickListener,
         return txtToolbarTitle;
     }
 
+
+    private TextView getTxtToolbarRightBadge() {
+        if (txtToolbarRightBadge == null)
+            txtToolbarRightBadge = (TextView) findViewById(R.id.actionbar_right_badge);
+        return txtToolbarRightBadge;
+    }
+
     private ImageView getMenuItemBuildBento() {
         if (menuItemBuildBento == null)
             menuItemBuildBento = (ImageView) findViewById(R.id.actionbar_right_btn);
@@ -179,6 +255,12 @@ public class AddOnActivity extends BaseActivity implements View.OnClickListener,
             mListAddOn.setLayoutManager(new LinearLayoutManager(AddOnActivity.this));
         }
         return mListAddOn;
+    }
+
+    private BackendButton getBtnFinalize() {
+        if (btnFinalize == null)
+            btnFinalize = (BackendButton) findViewById(R.id.btn_finalize);
+        return btnFinalize;
     }
 
     private AddOnListAdapter getListAdapter() {

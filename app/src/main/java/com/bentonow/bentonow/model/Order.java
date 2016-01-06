@@ -7,6 +7,7 @@ import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.dao.OrderDao;
 import com.bentonow.bentonow.model.order.OrderDetails;
+import com.bentonow.bentonow.model.order.OrderEta;
 import com.bentonow.bentonow.model.order.OrderItem;
 import com.bentonow.bentonow.model.order.OrderStripe;
 import com.google.android.gms.maps.model.LatLng;
@@ -31,6 +32,7 @@ public class Order {
     public List<OrderItem> OrderItems = new ArrayList<>();
     public OrderDetails OrderDetails = new OrderDetails();
     public OrderStripe Stripe = new OrderStripe();
+    public OrderEta Eta = new OrderEta();
     public String CouponCode = null;
     public String IdempotentToken = null;
     public String Platform = null;

@@ -15,9 +15,10 @@ public class DishModel implements Parcelable {
     public String image1 = "";
     public int max_per_order;
     public double price;
+    public double unit_price;
     public int dish_pk;
     public int bento_pk;
-    public int num_dish;
+    public int qty;
 
     public DishModel() {
 
@@ -31,9 +32,10 @@ public class DishModel implements Parcelable {
         image1 = parcel.readString();
         max_per_order = parcel.readInt();
         price = parcel.readDouble();
+        unit_price = parcel.readDouble();
         dish_pk = parcel.readInt();
         bento_pk = parcel.readInt();
-        num_dish = parcel.readInt();
+        qty = parcel.readInt();
     }
 
     @Override
@@ -45,9 +47,10 @@ public class DishModel implements Parcelable {
         dest.writeString(image1);
         dest.writeInt(max_per_order);
         dest.writeDouble(price);
+        dest.writeDouble(unit_price);
         dest.writeInt(dish_pk);
         dest.writeInt(bento_pk);
-        dest.writeInt(num_dish);
+        dest.writeInt(qty);
     }
 
 

@@ -3,6 +3,7 @@ package com.bentonow.bentonow.dao;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.db.DBAdapter;
@@ -119,6 +120,7 @@ public class DishDao {
                 mDish.image1 = (cursor.getString(_IMAGE1));
                 mDish.max_per_order = (cursor.getInt(_MAX_PER_ORDER));
                 mDish.price = (cursor.getDouble(_PRICE));
+                mDish.unit_price = (cursor.getDouble(_PRICE));
                 mDish.bento_pk = (cursor.getInt(_BENTO_PK));
                 mListDish.add(mDish);
 
@@ -130,6 +132,85 @@ public class DishDao {
             dbAdapter.setTransacctionSuccesfull();
         } catch (Exception ex) {
             DebugUtils.logError(TAG, ex);
+        }
+
+        return mListDish;
+    }
+
+    public List<DishModel> getAllDishByType(ConstantUtils.optDishType optDish) {
+
+        String sType = "";
+        switch (optDish) {
+            case MAIN:
+                sType = "main";
+                break;
+            case SIDE:
+                sType = "side";
+                break;
+            case ADDON:
+                sType = "addon";
+                break;
+        }
+
+
+        List<DishModel> mListDish = new ArrayList<>();
+
+        String conditional = TYPE + " = '" + sType + "'";
+
+        try {
+
+            dbAdapter.begginTransaction();
+
+            Cursor cursor = dbAdapter.getData(TABLE_NAME, FIELDS, conditional);
+
+            int _ID_PK = cursor.getColumnIndex(ID_PK);
+            int _ITEM_ID = cursor.getColumnIndex(ITEM_ID);
+            int _NAME = cursor.getColumnIndex(NAME);
+            int _DESCRIPTION = cursor.getColumnIndex(DESCRIPTION);
+            int _TYPE = cursor.getColumnIndex(TYPE);
+            int _IMAGE1 = cursor.getColumnIndex(IMAGE1);
+            int _MAX_PER_ORDER = cursor.getColumnIndex(MAX_PER_ORDER);
+            int _PRICE = cursor.getColumnIndex(PRICE);
+            int _BENTO_PK = cursor.getColumnIndex(BENTO_PK);
+
+
+            cursor.moveToFirst();
+            for (int i = 0; i < cursor.getCount(); i++) {
+                DishModel mDish = new DishModel();
+                mDish.dish_pk = (cursor.getInt(_ID_PK));
+                mDish.itemId = (cursor.getInt(_ITEM_ID));
+                mDish.name = (cursor.getString(_NAME));
+                mDish.description = (cursor.getString(_DESCRIPTION));
+                mDish.type = (cursor.getString(_TYPE));
+                mDish.image1 = (cursor.getString(_IMAGE1));
+                mDish.max_per_order = (cursor.getInt(_MAX_PER_ORDER));
+                mDish.price = (cursor.getDouble(_PRICE));
+                mDish.unit_price = (cursor.getDouble(_PRICE));
+                mDish.bento_pk = (cursor.getInt(_BENTO_PK));
+                mDish.qty = 1;
+
+                boolean bAdded = false;
+                for (int a = 0; a < mListDish.size(); a++) {
+                    if (mListDish.get(a).itemId == mDish.itemId) {
+                        bAdded = true;
+                        mListDish.get(a).qty = mListDish.get(a).qty + 1;
+                        break;
+                    }
+                }
+
+                if (!bAdded) {
+                    mListDish.add(mDish);
+                }
+
+                cursor.moveToNext();
+            }
+
+            cursor.close();
+
+        } catch (Exception ex) {
+            DebugUtils.logError(TAG, ex);
+        } finally {
+            dbAdapter.setTransacctionSuccesfull();
         }
 
         return mListDish;
@@ -168,6 +249,7 @@ public class DishDao {
                 mDish.image1 = (cursor.getString(_IMAGE1));
                 mDish.max_per_order = (cursor.getInt(_MAX_PER_ORDER));
                 mDish.price = (cursor.getDouble(_PRICE));
+                mDish.unit_price = (cursor.getDouble(_PRICE));
                 mDish.bento_pk = (cursor.getInt(_BENTO_PK));
                 cursor.moveToNext();
             }
@@ -253,6 +335,22 @@ public class DishDao {
         dbAdapter.setTransacctionSuccesfull();
 
         DebugUtils.logDebug(TAG, "Remove Dish: " + success + " Pk: " + mOldDish.dish_pk);
+
+        return success;
+    }
+
+    public boolean removeDish(int iId) {
+        String where = ITEM_ID + "=?";
+        String[] whereArgs = new String[]{String.valueOf(iId)};
+
+        dbAdapter.begginTransaction();
+
+        long idInsert = dbAdapter.delete(TABLE_NAME, where, whereArgs);
+        success = idInsert != -1;
+
+        dbAdapter.setTransacctionSuccesfull();
+
+        DebugUtils.logDebug(TAG, "Remove Dish: " + success + " Id: " + iId);
 
         return success;
     }

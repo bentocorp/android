@@ -13,6 +13,7 @@ import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.order.OrderAddress;
 import com.bentonow.bentonow.model.order.OrderDetails;
+import com.bentonow.bentonow.model.order.OrderEta;
 import com.bentonow.bentonow.model.order.OrderItem;
 import com.bentonow.bentonow.model.order.OrderLocation;
 import com.bentonow.bentonow.model.order.OrderStripe;
@@ -27,8 +28,6 @@ public class OrderDao {
 
     private DBAdapter dbAdapter;
     private boolean success = true;
-
-    private Order mOrder;
 
     private BentoDao mBentoDao = new BentoDao();
 
@@ -59,6 +58,8 @@ public class OrderDao {
     private static final String PLATFORM = "Platform";
     private static final String MENU_TYPE = "MenuType";
     private static final String MEAL_NAME = "MealName";
+    private static final String ETA_MIN = "EtaMin";
+    private static final String ETA_MAX = "EtaMax";
 
 
     public static final String QUERY_TABLE = "" + "CREATE TABLE " + TABLE_NAME + " (" + ID_PK + " INTEGER PRIMARY KEY autoincrement, "
@@ -66,11 +67,12 @@ public class OrderDao {
             + ORDER_DETAIL_TOTAL_CENTS + " REAL, " + ORDER_DETAIL_DELIVERY_PRICE + " REAL, " + ORDER_DETAIL_ITEMS_TOTAL + " REAL, " + ORDER_DETAIL_TAX_PERCENTAGE + " REAL, " + ORDER_DETAIL_SUBTOTAL + " REAL, " + ORDER_DETAIL_TOTAL_CENTS_WITHOUT_COUPON + " REAL, "
             + ORDER_ADDRESS_NUMBER + " STRING, " + ORDER_ADDRESS_STREET + " STRING, " + ORDER_ADDRESS_CITY + " STRING, " + ORDER_ADDRESS_STATE + " STRING, " + ORDER_ADDRESS_ZIP + " STRING, "
             + ORDER_LOCATION_LAT + " REAL, " + ORDER_LOCATION_LNG + " REAL," + ORDER_STRIPE_STRIPE_TOKEN + " STRING," + COUPON_CODE + " STRING," + IDEMPOTENT_TOKEN + " STRING," + PLATFORM + " STRING,"
-            + MENU_TYPE + " STRING," + MEAL_NAME + " STRING);";
+            + MENU_TYPE + " STRING," + MEAL_NAME + " STRING," + ETA_MIN + " STRING," + ETA_MAX + " STRING);";
 
     public final static String[] FIELDS = {ID_PK, CURRENT_ORDER_ITEM, ORDER_DETAIL_COUPON_DISCOUNT_CENTS, ORDER_DETAIL_TIP_PERCENTAGE, ORDER_DETAIL_TAX_CENTS, ORDER_DETAIL_TIP_CENTS, ORDER_DETAIL_TOTAL_CENTS,
             ORDER_DETAIL_DELIVERY_PRICE, ORDER_DETAIL_ITEMS_TOTAL, ORDER_DETAIL_TAX_PERCENTAGE, ORDER_DETAIL_SUBTOTAL, ORDER_DETAIL_TOTAL_CENTS_WITHOUT_COUPON, ORDER_ADDRESS_NUMBER,
-            ORDER_ADDRESS_STREET, ORDER_ADDRESS_CITY, ORDER_ADDRESS_STATE, ORDER_ADDRESS_ZIP, ORDER_LOCATION_LAT, ORDER_LOCATION_LNG, ORDER_STRIPE_STRIPE_TOKEN, COUPON_CODE, IDEMPOTENT_TOKEN, PLATFORM, MENU_TYPE, MEAL_NAME};
+            ORDER_ADDRESS_STREET, ORDER_ADDRESS_CITY, ORDER_ADDRESS_STATE, ORDER_ADDRESS_ZIP, ORDER_LOCATION_LAT, ORDER_LOCATION_LNG, ORDER_STRIPE_STRIPE_TOKEN, COUPON_CODE, IDEMPOTENT_TOKEN, PLATFORM, MENU_TYPE,
+            MEAL_NAME, ETA_MIN, ETA_MAX};
 
     public OrderDao() {
         dbAdapter = new DBAdapter();
@@ -96,6 +98,12 @@ public class OrderDao {
         Order mOrder = new Order();
         mOrder.OrderItems.add(mBentoDao.getNewBento(ConstantUtils.optItemType.CUSTOM_BENTO_BOX));
         mOrder.OrderItems.add(mBentoDao.getNewBento(ConstantUtils.optItemType.ADD_ON));
+
+        OrderEta mOrderEta = new OrderEta();
+        mOrderEta.max = String.valueOf(Settings.eta_max);
+        mOrderEta.min = String.valueOf(Settings.eta_min);
+
+        mOrder.Eta = mOrderEta;
 
         dbAdapter.begginTransaction();
 
@@ -146,6 +154,8 @@ public class OrderDao {
             int _PLATFORM = cursor.getColumnIndex(PLATFORM);
             int _MENU_TYPE = cursor.getColumnIndex(MENU_TYPE);
             int _MEAL_NAME = cursor.getColumnIndex(MEAL_NAME);
+            int _ETA_MIN = cursor.getColumnIndex(ETA_MIN);
+            int _ETA_MAX = cursor.getColumnIndex(ETA_MAX);
 
 
             cursor.moveToFirst();
@@ -185,12 +195,17 @@ public class OrderDao {
                 OrderStripe mOrderStripe = new OrderStripe();
                 mOrderStripe.stripeToken = (cursor.getString(_ORDER_STRIPE_STRIPE_TOKEN));
 
+                OrderEta mOrderEta = new OrderEta();
+                mOrderEta.max = (cursor.getString(_ETA_MAX));
+                mOrderEta.min = (cursor.getString(_ETA_MIN));
+
 
                 mOrderDetail.address = mOrderAddress;
                 mOrderDetail.coords = mOrderLocation;
 
                 mOrder.OrderDetails = mOrderDetail;
                 mOrder.Stripe = mOrderStripe;
+                mOrder.Eta = mOrderEta;
 
                 cursor.moveToNext();
             }
@@ -255,6 +270,8 @@ public class OrderDao {
         cValues.put(PLATFORM, mOrder.Platform == null ? "" : mOrder.Platform);
         cValues.put(MENU_TYPE, mOrder.MenuType == null ? "" : mOrder.MenuType);
         cValues.put(MEAL_NAME, mOrder.MealName == null ? "" : mOrder.MealName);
+        cValues.put(ETA_MAX, mOrder.Eta == null || mOrder.Eta.max == null ? "" : mOrder.Eta.max);
+        cValues.put(ETA_MIN, mOrder.Eta == null || mOrder.Eta.min == null ? "" : mOrder.Eta.min);
         return cValues;
     }
 
@@ -280,7 +297,7 @@ public class OrderDao {
     }
 
 
-    public String calculateSoldOutItems() {
+    public String calculateSoldOutItems(Order mOrder) {
         String sSoldOutItems = "";
         mOrder = getCurrentOrder();
 
@@ -328,8 +345,14 @@ public class OrderDao {
 
         coupon_discount = mOrder.OrderDetails.coupon_discount_cents / 100;
 
-        for (OrderItem mItem : mOrder.OrderItems)
-            items_total += OrderDao.getPriceByOrder(mItem);
+        for (int a = 0; a < mOrder.OrderItems.size(); a++) {
+            if (mOrder.OrderItems.get(a).item_type.equals("CustomerBentoBox")) {
+                items_total += OrderDao.getPriceByOrder(mOrder.OrderItems.get(a));
+            } else if (mOrder.OrderItems.get(a).item_type.equals("AddonList")) {
+                for (DishModel mDishModel : mOrder.OrderItems.get(a).items)
+                    items_total += mDishModel.price;
+            }
+        }
 
         pre_coupon_subtotal = items_total + delivery_fee;
 

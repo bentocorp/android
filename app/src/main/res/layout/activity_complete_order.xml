@@ -122,8 +122,6 @@
             android:layout_above="@+id/divisor_5"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/divisor_2"
-            android:layout_marginLeft="@dimen/btn_padding"
-            android:layout_marginRight="@dimen/btn_padding"
             tools:listheader="@layout/list_item_header_order"
             tools:listitem="@layout/list_item_order" />
 

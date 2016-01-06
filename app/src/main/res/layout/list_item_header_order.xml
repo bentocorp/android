@@ -4,7 +4,7 @@
     android:id="@+id/complete_row"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="@color/bgcolor"
+    android:background="#E1E9E9"
     android:gravity="center_vertical"
     android:orientation="horizontal">
 

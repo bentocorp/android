@@ -36,6 +36,7 @@ import com.bentonow.bentonow.controllers.session.SignInActivity;
 import com.bentonow.bentonow.dao.OrderDao;
 import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.listener.InterfaceCustomerService;
+import com.bentonow.bentonow.listener.ListenerCompleteOrder;
 import com.bentonow.bentonow.listener.ListenerDialog;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.DishModel;
@@ -59,7 +60,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CompleteOrderActivity extends BaseActivity implements View.OnClickListener, OnItemClickListener, InterfaceCustomerService {
+public class CompleteOrderActivity extends BaseActivity implements View.OnClickListener, InterfaceCustomerService, ListenerCompleteOrder {
     private static final String TAG = "CompleteOrderActivity";
 
     private TextView txt_address;
@@ -91,7 +92,6 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
     private List<OrderItem> aOrder = new ArrayList<>();
     private List<DishModel> aAddOn = new ArrayList<>();
 
-    private int selected = -1;
     private ExpandableListOrderAdapter mExpandableAdapter;
     private String action = "";
 
@@ -100,26 +100,6 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_complete_order);
-
-        mOrder = mOrderDao.getCurrentOrder();
-
-        for (int a = 0; a < mOrder.OrderItems.size(); a++) {
-            if (mOrder.OrderItems.get(a).item_type.equals("CustomerBentoBox"))
-                aOrder.add(mOrder.OrderItems.get(a));
-            else {
-                if (mOrder.OrderItems.get(a).items != null && !mOrder.OrderItems.get(a).items.isEmpty()) {
-                    for (int b = 0; b < mOrder.OrderItems.get(a).items.size(); b++) {
-                        boolean bAddDish;
-                        for (int c = 0; c < aAddOn.size(); c++) {
-
-                        }
-                        if(bAddDish)
-                    }
-                    aAddOn.add(mOrder.OrderItems.get(a));
-                }
-            }
-
-        }
 
         txt_address = (TextView) findViewById(R.id.txt_address);
         txt_credit_card = (TextView) findViewById(R.id.txt_credit_card);
@@ -136,9 +116,6 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
         getExpandableListOrder().setAdapter(getExpandableListAdapter());
 
-        getExpandableListOrder().expandGroup(0, false);
-        getExpandableListOrder().expandGroup(1, false);
-
         initActionbar();
     }
 
@@ -151,32 +128,40 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         actionbar_left_btn.setOnClickListener(this);
     }
 
-    private void emptyOrders() {
-        mOrderDao.cleanUp();
-        onBackPressed();
-    }
+    private void getCurrentOrder() {
+        mOrder = mOrderDao.getCurrentOrder();
 
-    void deleteBento() {
-        if (mOrder.OrderItems.size() > 1) {
-            mBentoDao.removeBento(mOrder.OrderItems.get(selected).order_pk);
-            mOrder.OrderItems.remove(selected);
-            selected = -1;
-            updateUI();
-        } else {
-            emptyOrders();
+        aOrder = new ArrayList<>();
+
+        for (int a = 0; a < mOrder.OrderItems.size(); a++) {
+            if (mOrder.OrderItems.get(a).item_type.equals("CustomerBentoBox"))
+                aOrder.add(mOrder.OrderItems.get(a));
         }
 
+        aAddOn = mDishDao.getAllDishByType(ConstantUtils.optDishType.ADDON);
+    }
+
+    private void emptyOrders() {
+        mOrderDao.cleanUp();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                finish();
+            }
+        });
     }
 
     @Override
     protected void onResume() {
         mCurrentUser = userDao.getCurrentUser();
 
+        getCurrentOrder();
+
         if (mOrder == null || mOrder.OrderItems == null || mOrder.OrderItems.isEmpty()) {
             Crashlytics.log(Log.ERROR, "Order", "No Items in the Order");
             emptyOrders();
         } else
-            updateUI();
+            updateBentoUI(false);
 
         super.onResume();
     }
@@ -257,7 +242,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                     mOrder.OrderDetails.coupon_discount_cents = discount;
                     mOrderDao.updateOrder(mOrder);
 
-                    updateUI();
+                    updateBentoUI(true);
                 }
             });
         }
@@ -270,32 +255,10 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                 onBackPressed();
                 break;
             case R.id.btn_remove:
-                if (mOrder.OrderItems.size() == 1) {
-                    action = "delete";
-                    mDialog = new ConfirmationDialog(CompleteOrderActivity.this, null, BackendText.get("complete-remove-all-text"));
-                    mDialog.addAcceptButton(BackendText.get("complete-remove-all-confirmation-2"), CompleteOrderActivity.this);
-                    mDialog.addCancelButton(BackendText.get("complete-remove-all-confirmation-1"), CompleteOrderActivity.this);
-                    mDialog.show();
-                } else {
-                    deleteBento();
-                }
-                break;
-            case R.id.btn_edit:
-                int position = (int) v.getTag();
 
-                if (selected == position) {
-                    selected = -1;
-                } else {
-                    selected = position;
-                }
-
-                getExpandableListAdapter().notifyDataSetChanged();
                 break;
             case R.id.button_accept:
                 switch (action) {
-                    case "delete":
-                        deleteBento();
-                        break;
                     case "closed":
                         BentoNowUtils.openErrorActivity(this);
                         break;
@@ -317,8 +280,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                getExpandableListAdapter().notifyDataSetChanged();
-                                updateUI();
+                                updateBentoUI(true);
                             }
                         });
                         break;
@@ -334,14 +296,6 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         }
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-       /* mOrder.currentOrderItem = position;
-        mOrderDao.updateOrder(mOrder);
-
-        onBackPressed();*/
-    }
-
     public void onChangeAddressPressed(View v) {
         Intent intent = new Intent(this, DeliveryLocationActivity.class);
         intent.putExtra(ConstantUtils.TAG_OPEN_SCREEN, ConstantUtils.optOpenScreen.SUMMARY);
@@ -352,20 +306,12 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
         startActivity(new Intent(this, EnterCreditCardActivity.class));
     }
 
-    public void onAddAnotherBentoPressed(View v) {
-       /* mOrder.OrderItems.add(mBentoDao.getNewBento(ConstantUtils.optItemType.CUSTOM_BENTO_BOX));
-        mOrder.currentOrderItem = mOrder.OrderItems.size() - 1;
-        mOrderDao.updateOrder(mOrder);
-
-        onBackPressed();*/
-    }
-
     public void onMinusTipPressed(View v) {
         if (mOrder.OrderDetails.tip_percentage > 0) {
             mOrder.OrderDetails.tip_percentage -= 5;
         }
 
-        updateUI();
+        updateViewsUI();
     }
 
     public void onPlusTipPressed(View v) {
@@ -373,7 +319,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
             mOrder.OrderDetails.tip_percentage += 5;
         }
 
-        updateUI();
+        updateViewsUI();
     }
 
     public void onLetsEatPressed() {
@@ -384,11 +330,18 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
             mOrder.IdempotentToken = BentoNowUtils.getUUIDBento();
             mOrder.Platform = "Android";
 
+            mOrderDao.updateOrder(mOrder);
+
+            for (int a = 0; a < mOrder.OrderItems.size(); a++) {
+                if (mOrder.OrderItems.get(a).item_type.equals("AddonList")) {
+                    mOrder.OrderItems.get(a).items = aAddOn;
+                }
+            }
+
             RequestParams params = new RequestParams();
             params.put("data", mOrder.toString());
             params.put("api_token", mCurrentUser.api_token);
 
-            mOrderDao.updateOrder(mOrder);
 
             if (mOrder.OrderItems == null || mOrder.OrderItems.isEmpty()) {
                 action = "no_items";
@@ -448,7 +401,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
                             action = "sold_out";
                             SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_ORDER_SOLD_OUT, true);
                             Stock.set(responseString);
-                            error += mOrderDao.calculateSoldOutItems();
+                            error += mOrderDao.calculateSoldOutItems(mOrder);
                             break;
                         case 423:
                             action = "closed";
@@ -488,15 +441,32 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
                     mOrderDao.cleanUp();
 
+                    finish();
+
                     startActivity(new Intent(CompleteOrderActivity.this, OrderConfirmedActivity.class));
 
-                    finish();
                 }
             });
         }
     }
 
-    void updateUI() {
+    private void updateBentoUI(boolean bRequestOrder) {
+        if (bRequestOrder)
+            getCurrentOrder();
+
+        getExpandableListAdapter().getaAddOnList().clear();
+        getExpandableListAdapter().getaOrderList().clear();
+        getExpandableListAdapter().setaAddOnList(aAddOn);
+        getExpandableListAdapter().setaOrderList(aOrder);
+
+        getExpandableListAdapter().notifyDataSetChanged();
+        getExpandableListOrder().expandGroup(0, false);
+        getExpandableListOrder().expandGroup(1, false);
+
+        updateViewsUI();
+    }
+
+    private void updateViewsUI() {
         mOrderDao.calculateOrder(mOrder);
         mOrderDao.updateOrder(mOrder);
 
@@ -564,7 +534,7 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
     public void showAddPromoCodeDialog(View v) {
         if (mOrder.OrderDetails.coupon_discount_cents > 0) {
             mOrder.OrderDetails.coupon_discount_cents = 0;
-            updateUI();
+            updateViewsUI();
         } else {
             mDialogCoupon = new CouponDialog(this);
             mDialogCoupon.setmDialogListener(new ListenerDialog() {
@@ -606,6 +576,92 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
             mProgressDialog = new ProgressDialog(CompleteOrderActivity.this, sText);
             mProgressDialog.show();
         }
+    }
+
+    private void openAddOnActivity() {
+        Intent mAddOnActivity = new Intent(CompleteOrderActivity.this, AddOnActivity.class);
+        mAddOnActivity.putExtra(AddOnActivity.TAG_OPEN_BY, ConstantUtils.optOpenAddOn.SUMMARY);
+        startActivity(mAddOnActivity);
+    }
+
+
+    @Override
+    public void onAddAnotherBento() {
+        mOrder.OrderItems.add(mBentoDao.getNewBento(ConstantUtils.optItemType.CUSTOM_BENTO_BOX));
+        mOrder.currentOrderItem = mOrder.OrderItems.size() - 1;
+        mOrderDao.updateOrder(mOrder);
+
+        onBackPressed();
+    }
+
+    @Override
+    public void onAddAnotherAddOn() {
+        openAddOnActivity();
+    }
+
+    @Override
+    public void onEditBento(int iPk) {
+        int idOrder = 0;
+        for (int a = 0; a < mOrder.OrderItems.size(); a++) {
+            if (mOrder.OrderItems.get(a).order_pk == iPk) {
+                idOrder = a;
+                break;
+            }
+        }
+        mOrder.currentOrderItem = idOrder;
+        mOrderDao.updateOrder(mOrder);
+
+        finish();
+    }
+
+    @Override
+    public void onEditAddOn() {
+        openAddOnActivity();
+    }
+
+    @Override
+    public void onRemoveBento(int iPk) {
+        if (aOrder.size() == 1) {
+            mDialog = new ConfirmationDialog(CompleteOrderActivity.this, null, BackendText.get("complete-remove-all-text"));
+            mDialog.addAcceptButton(BackendText.get("complete-remove-all-confirmation-2"), new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    emptyOrders();
+                }
+            });
+            mDialog.addCancelButton(BackendText.get("complete-remove-all-confirmation-1"), null);
+            mDialog.show();
+        } else {
+            int idOrder = -1;
+
+            for (int a = 0; a < mOrder.OrderItems.size(); a++) {
+                if (mOrder.OrderItems.get(a).order_pk == iPk) {
+                    idOrder = a;
+                    break;
+                }
+            }
+
+            mBentoDao.removeBento(mOrder.OrderItems.get(idOrder).order_pk);
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    updateBentoUI(true);
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onRemoveAddOn(int iPk) {
+        mDishDao.removeDish(iPk);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                updateBentoUI(true);
+            }
+        });
     }
 
     @Override
@@ -693,7 +749,8 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
 
     private ExpandableListOrderAdapter getExpandableListAdapter() {
         if (mExpandableAdapter == null)
-            mExpandableAdapter = new ExpandableListOrderAdapter(CompleteOrderActivity.this, aOrder, aAddOn);
+            mExpandableAdapter = new ExpandableListOrderAdapter(CompleteOrderActivity.this, CompleteOrderActivity.this);
         return mExpandableAdapter;
     }
+
 }

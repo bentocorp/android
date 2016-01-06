@@ -13,5 +13,9 @@ public class ConstantUtils {
 
     public enum optOpenScreen {NORMAL, COMPLETE_ORDER, BUILD_BENTO, SUMMARY}
 
+    public enum optDishType {MAIN, SIDE, ADDON}
+
+    public enum optOpenAddOn {BUILDER, SUMMARY}
+
 
 }
