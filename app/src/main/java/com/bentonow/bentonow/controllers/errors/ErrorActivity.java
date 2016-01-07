@@ -189,18 +189,23 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
 
     @Override
     public void openErrorActivity() {
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+        //SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, "closed");
     }
 
     @Override
     public void openMainActivity() {
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+
+        finish();
         BentoNowUtils.openMainActivity(ErrorActivity.this);
     }
 
     @Override
     public void openBuildBentoActivity() {
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+
+        finish();
         BentoNowUtils.openBuildBentoActivity(ErrorActivity.this);
     }
 

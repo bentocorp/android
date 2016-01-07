@@ -1,7 +1,6 @@
 package com.bentonow.bentonow.controllers.order;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -10,7 +9,7 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.DebugUtils;
-import com.bentonow.bentonow.controllers.BaseActivity;
+import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.adapter.CustomSideListAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.dao.DishDao;
@@ -22,7 +21,7 @@ import com.bentonow.bentonow.model.Order;
 import java.util.ArrayList;
 
 
-public class SelectSideCustomActivity extends BaseActivity implements View.OnClickListener, AdapterView.OnItemClickListener, ListenerCustomDish {
+public class SelectSideCustomActivity extends BaseFragmentActivity implements View.OnClickListener, AdapterView.OnItemClickListener, ListenerCustomDish {
 
     static final String TAG = "SelectSideActivity";
 

@@ -7,36 +7,25 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
-import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
-import com.bentonow.bentonow.controllers.BaseActivity;
+import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.adapter.AddOnListAdapter;
-import com.bentonow.bentonow.controllers.adapter.BuildBentoFixListAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.dao.DishDao;
-import com.bentonow.bentonow.listener.InterfaceCustomerService;
 import com.bentonow.bentonow.listener.ListenerAddOn;
-import com.bentonow.bentonow.listener.ListenerMainDishFix;
-import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
-import com.bentonow.bentonow.model.Settings;
-import com.bentonow.bentonow.model.Stock;
 import com.bentonow.bentonow.model.order.OrderItem;
 import com.bentonow.bentonow.service.BentoCustomerService;
-import com.bentonow.bentonow.ui.AutoFitTxtView;
 import com.bentonow.bentonow.ui.BackendButton;
-
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -44,7 +33,7 @@ import java.util.ArrayList;
  * @author José Torres Fuentes
  */
 
-public class AddOnActivity extends BaseActivity implements View.OnClickListener, ListenerAddOn {
+public class AddOnActivity extends BaseFragmentActivity implements View.OnClickListener, ListenerAddOn {
 
     public static final String TAG = "AddOnActivity";
 
@@ -143,18 +132,26 @@ public class AddOnActivity extends BaseActivity implements View.OnClickListener,
     private void openSummaryScreen() {
         switch (optOpenBy) {
             case BUILDER:
-                String sSoldOutItems = mOrderDao.calculateSoldOutItems(mOrder);
-                if (!sSoldOutItems.isEmpty()) {
-                    updateUI();
-                    WidgetsUtils.createShortToast(String.format(getString(R.string.error_sold_out_items), sSoldOutItems));
-                } else if (BentoNowUtils.isValidCompleteOrder(AddOnActivity.this)) {
-                    Intent intent = new Intent(AddOnActivity.this, CompleteOrderActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    finish();
-                    startActivity(intent);
+                if (SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.MENU_TYPE).equals("fixed")) {
+                    if (BentoNowUtils.isValidCompleteOrder(AddOnActivity.this)) {
+                        Intent intent = new Intent(AddOnActivity.this, CompleteOrderActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        finish();
+                        startActivity(intent);
+                    }
                 } else {
-                    finish();
-                    WidgetsUtils.createShortToast("There was a problem try again please");
+                    String sSoldOutItems = mOrderDao.calculateSoldOutItems(mOrder);
+                    if (!sSoldOutItems.isEmpty()) {
+                        updateUI();
+                        WidgetsUtils.createShortToast(String.format(getString(R.string.error_sold_out_items), sSoldOutItems));
+                    } else if (BentoNowUtils.isValidCompleteOrder(AddOnActivity.this)) {
+                        Intent intent = new Intent(AddOnActivity.this, CompleteOrderActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        finish();
+                        startActivity(intent);
+                    } else {
+                        finish();
+                    }
                 }
                 break;
             case SUMMARY:

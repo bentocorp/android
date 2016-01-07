@@ -5,15 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ExpandableListView;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -25,7 +19,7 @@ import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
-import com.bentonow.bentonow.controllers.BaseActivity;
+import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.adapter.ExpandableListOrderAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.dialog.CouponDialog;
@@ -33,7 +27,6 @@ import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.payment.EnterCreditCardActivity;
 import com.bentonow.bentonow.controllers.session.SignInActivity;
-import com.bentonow.bentonow.dao.OrderDao;
 import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.listener.InterfaceCustomerService;
 import com.bentonow.bentonow.listener.ListenerCompleteOrder;
@@ -50,17 +43,14 @@ import com.bentonow.bentonow.ui.BackendButton;
 import com.crashlytics.android.Crashlytics;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
-import com.wsdcamp.list.LazyListAdapter;
-import com.wsdcamp.list.LazyListAdapterInterface;
 
 import org.apache.http.Header;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CompleteOrderActivity extends BaseActivity implements View.OnClickListener, InterfaceCustomerService, ListenerCompleteOrder {
+public class CompleteOrderActivity extends BaseFragmentActivity implements View.OnClickListener, InterfaceCustomerService, ListenerCompleteOrder {
     private static final String TAG = "CompleteOrderActivity";
 
     private TextView txt_address;
@@ -679,6 +669,9 @@ public class CompleteOrderActivity extends BaseActivity implements View.OnClickL
     @Override
     public void openBuildBentoActivity() {
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+
+        finish();
+        BentoNowUtils.openBuildBentoActivity(CompleteOrderActivity.this);
     }
 
     @Override

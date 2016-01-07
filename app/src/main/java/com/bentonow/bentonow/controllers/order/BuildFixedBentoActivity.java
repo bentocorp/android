@@ -15,7 +15,7 @@ import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
-import com.bentonow.bentonow.controllers.BaseActivity;
+import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.adapter.BuildBentoFixListAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.dao.DishDao;
@@ -26,13 +26,10 @@ import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
-import com.bentonow.bentonow.model.Stock;
 import com.bentonow.bentonow.model.order.OrderItem;
 import com.bentonow.bentonow.service.BentoCustomerService;
 import com.bentonow.bentonow.ui.AutoFitTxtView;
 import com.bentonow.bentonow.ui.BackendButton;
-import com.mixpanel.android.mpmetrics.MixpanelAPI;
-import com.mixpanel.android.mpmetrics.Tweak;
 
 import org.json.JSONObject;
 
@@ -42,7 +39,7 @@ import java.util.ArrayList;
  * @author José Torres Fuentes
  */
 
-public class BuildFixedBentoActivity extends BaseActivity implements View.OnClickListener, ListenerMainDishFix, InterfaceCustomerService {
+public class BuildFixedBentoActivity extends BaseFragmentActivity implements View.OnClickListener, ListenerMainDishFix, InterfaceCustomerService {
 
     static final String TAG = "BuildFixedBentoActivity";
 
@@ -53,6 +50,8 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
     private BackendButton btnComplete;
     private ListView mListBento;
     private AutoFitTxtView txtPromoName;
+    private AutoFitTxtView txtEta;
+    private AutoFitTxtView btnAddOn;
 
     private BuildBentoFixListAdapter aListBento;
 
@@ -77,13 +76,12 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
 
         getActionbarLeftBtn().setOnClickListener(this);
         getMenuItemBuildBento().setOnClickListener(this);
-        getButtonComplete().setOnClickListener(this);
+
 
         getListBento().setAdapter(getAdapterListBento());
 
         getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), BentoNowUtils.getDefaultPriceBento(DishDao.getLowestMainPrice())));
-
-        BentoNowUtils.rotateBanner(getTxtPromoName());
+        getTxtEta().setText(String.format(getString(R.string.build_bento_eta), Settings.eta_min + "-" + Settings.eta_max));
 
         DebugUtils.logDebug(TAG, "Create: ");
 
@@ -118,15 +116,25 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                getTxtToolbarBadge().setVisibility(mOrderDao.countCompletedOrders(mOrder) == 0 ? View.VISIBLE : View.INVISIBLE);
-                getTxtToolbarBadge().setText(String.valueOf(mOrderDao.countCompletedOrders(mOrder)));
+                int iCompleteOrders = mOrderDao.countCompletedOrders(mOrder);
 
-                if (!mOrder.OrderItems.isEmpty() && !Stock.isSold()) {
+                if (iCompleteOrders > 0) {
+                    getTxtToolbarBadge().setVisibility(View.VISIBLE);
+                    getTxtToolbarBadge().setText(String.valueOf(iCompleteOrders));
                     getButtonComplete().setBackgroundColor(getResources().getColor(R.color.btn_green));
                     getButtonComplete().setText(BackendText.get("build-button-2"));
+                    getButtonComplete().setOnClickListener(BuildFixedBentoActivity.this);
+                    getBtnAddOn().setBackgroundColor(getResources().getColor(R.color.btn_green));
+                    getBtnAddOn().setOnClickListener(BuildFixedBentoActivity.this);
+                    getMenuItemBuildBento().setImageResource(R.drawable.ic_ab_bento_completed);
                 } else {
+                    getTxtToolbarBadge().setVisibility(View.INVISIBLE);
                     getButtonComplete().setBackgroundColor(getResources().getColor(R.color.gray));
                     getButtonComplete().setText(BackendText.get("build-button-1"));
+                    getButtonComplete().setOnClickListener(null);
+                    getBtnAddOn().setBackgroundColor(getResources().getColor(R.color.gray));
+                    getBtnAddOn().setOnClickListener(null);
+                    getMenuItemBuildBento().setImageResource(R.drawable.ic_ab_bento);
                 }
             }
         });
@@ -147,6 +155,7 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
             mDishDao.updateDishItem(orderItem.items.get(a + 1), aSideDish.get(a));
             orderItem.items.set(a + 1, aSideDish.get(a));
         }
+        mBentoDao.updateBento(orderItem);
 
         mOrder.OrderItems.add(orderItem);
 
@@ -253,6 +262,14 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
             case R.id.btn_continue:
                 onContinueOrderPressed();
                 break;
+            case R.id.btn_add_on_add_on:
+                Intent mAddOnActivity = new Intent(BuildFixedBentoActivity.this, AddOnActivity.class);
+                mAddOnActivity.putExtra(AddOnActivity.TAG_OPEN_BY, ConstantUtils.optOpenAddOn.BUILDER);
+                startActivity(mAddOnActivity);
+                break;
+            default:
+
+                break;
         }
     }
 
@@ -280,6 +297,8 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
                 mOrder = new Order();
                 mOrder.MealName = mMenu.meal_name;
                 mOrder.MenuType = mMenu.menu_type;
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MEAL_NAME, mMenu.meal_name);
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MENU_TYPE, mMenu.menu_type);
 
                 mOrderDao.insertNewOrder(mOrder);
 
@@ -312,6 +331,9 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
     @Override
     public void openBuildBentoActivity() {
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+        finish();
+        BentoNowUtils.openBuildBentoActivity(BuildFixedBentoActivity.this);
+
     }
 
     @Override
@@ -337,6 +359,18 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
             unbindService(mConnection);
             mBound = false;
         }
+    }
+
+    private AutoFitTxtView getTxtPromoName() {
+        if (txtPromoName == null)
+            txtPromoName = (AutoFitTxtView) findViewById(R.id.txt_promo_name);
+        return txtPromoName;
+    }
+
+    private AutoFitTxtView getTxtEta() {
+        if (txtEta == null)
+            txtEta = (AutoFitTxtView) findViewById(R.id.txt_promo_eta);
+        return txtEta;
     }
 
     private ImageView getActionbarLeftBtn() {
@@ -381,10 +415,9 @@ public class BuildFixedBentoActivity extends BaseActivity implements View.OnClic
         return btnComplete;
     }
 
-    private AutoFitTxtView getTxtPromoName() {
-        if (txtPromoName == null)
-            txtPromoName = (AutoFitTxtView) findViewById(R.id.txt_promo_name);
-        return txtPromoName;
+    private AutoFitTxtView getBtnAddOn() {
+        if (btnAddOn == null)
+            btnAddOn = (AutoFitTxtView) findViewById(R.id.btn_add_on_add_on);
+        return btnAddOn;
     }
-
 }

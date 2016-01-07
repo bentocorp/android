@@ -9,7 +9,7 @@ import android.widget.TextView;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.ImageUtils;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
-import com.bentonow.bentonow.controllers.BaseActivity;
+import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.adapter.DishFixGridListAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.dao.DishDao;
@@ -21,7 +21,7 @@ import com.bentonow.bentonow.ui.HeaderSideFixBento;
 import java.util.ArrayList;
 
 
-public class SelectSideFixActivity extends BaseActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
+public class SelectSideFixActivity extends BaseFragmentActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
 
     static final String TAG = "SelectSideFixActivity";
 

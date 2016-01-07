@@ -510,8 +510,7 @@
                 android:text="VIEW ADD-ONS"
                 android:textColor="@color/btn_green"
                 android:textSize="13sp"
-                android:textStyle="bold"
-                app:key="complete-add-another" />
+                android:textStyle="bold"/>
 
         </LinearLayout>
     </RelativeLayout>

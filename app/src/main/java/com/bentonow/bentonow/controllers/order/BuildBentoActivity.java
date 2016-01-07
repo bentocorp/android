@@ -16,7 +16,7 @@ import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
-import com.bentonow.bentonow.controllers.BaseActivity;
+import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.dao.DishDao;
 import com.bentonow.bentonow.listener.InterfaceCustomerService;
@@ -26,7 +26,6 @@ import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.Stock;
-import com.bentonow.bentonow.model.order.OrderEta;
 import com.bentonow.bentonow.model.order.OrderItem;
 import com.bentonow.bentonow.service.BentoCustomerService;
 import com.bentonow.bentonow.ui.AutoFitTxtView;
@@ -36,7 +35,7 @@ import com.bentonow.bentonow.ui.ItemHolder;
 
 import org.json.JSONObject;
 
-public class BuildBentoActivity extends BaseActivity implements View.OnClickListener, InterfaceCustomerService {
+public class BuildBentoActivity extends BaseFragmentActivity implements View.OnClickListener, InterfaceCustomerService {
 
     static final String TAG = "BuildBentoActivity";
 
@@ -89,31 +88,17 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
     protected void onResume() {
         mMenu = Menu.get();
 
-        if (mMenu == null || !Settings.status.equals("open")) {
+        if (mMenu == null) {
             openErrorActivity();
         } else {
-           /* if (Order.current == null) {
-                Order.current = new Order();
-                Order.current.MealName = mMenu.meal_name;
-                Order.current.MenuType = mMenu.menu_type;
-
-                MixpanelUtils.track("Began Building A Bento");
-            }
-
-            orderIndex = Order.current.currentOrderItem;
-
-            if (Order.current.OrderItems.size() == 0) {
-                Order.current.OrderItems.add(new OrderItem());
-            } else if (Order.current.OrderItems.size() <= orderIndex) {
-                orderIndex = Order.current.OrderItems.size() - 1;
-            }
-*/
             mOrder = mOrderDao.getCurrentOrder();
 
             if (mOrder == null) {
                 mOrder = mOrderDao.getNewOrder();
                 mOrder.MealName = mMenu.meal_name;
                 mOrder.MenuType = mMenu.menu_type;
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MEAL_NAME, mMenu.meal_name);
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MENU_TYPE, mMenu.menu_type);
 
                 mOrderDao.updateOrder(mOrder);
             }
@@ -482,6 +467,9 @@ public class BuildBentoActivity extends BaseActivity implements View.OnClickList
     @Override
     public void openBuildBentoActivity() {
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+
+        finish();
+        BentoNowUtils.openBuildBentoActivity(BuildBentoActivity.this);
     }
 
     @Override

@@ -6,6 +6,7 @@ import android.database.Cursor;
 import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.db.DBAdapter;
 import com.bentonow.bentonow.model.DishModel;
@@ -446,6 +447,8 @@ public class OrderDao {
 
     public void cleanUp() {
         DebugUtils.logDebug(TAG, "Clean Up");
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MEAL_NAME, "");
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MENU_TYPE, "");
         OrderDao mOrderDao = new OrderDao();
         mOrderDao.clearAllData();
     }

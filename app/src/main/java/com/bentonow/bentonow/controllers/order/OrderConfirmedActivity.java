@@ -6,10 +6,10 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.bentonow.bentonow.R;
-import com.bentonow.bentonow.controllers.BaseActivity;
+import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 
-public class OrderConfirmedActivity extends BaseActivity implements View.OnClickListener {
+public class OrderConfirmedActivity extends BaseFragmentActivity implements View.OnClickListener {
 
     private static final String TAG = "OrderConfirmedActivity";
 

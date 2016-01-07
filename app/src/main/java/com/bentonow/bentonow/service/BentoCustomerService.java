@@ -62,44 +62,43 @@ public class BentoCustomerService extends Service {
 
             if (BentoNowUtils.isLastVersionApp(this)) {
                 if (mMenu == null) {
-                    if (!SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS).equals("closed")) {
-                        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, "closed");
-                        BentoNowUtils.openErrorActivity(this);
-                    }
+                    if (mListener != null)
+                        mListener.openErrorActivity();
                 } else {
-                    if (!Settings.status.equals(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS))
-                            && SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_APP_IN_FRONT)) {
+                    if (!Settings.status.equals(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS))) {
 
                         DebugUtils.logDebug(TAG, "Should change from: " + SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS) + " to " + Settings.status);
 
-                        switch (Settings.status) {
-                            case "open":
-                                if (mListener != null) {
-                                    if (mMenu != null)
-                                        mListener.openBuildBentoActivity();
-                                    else
-                                        mListener.openMainActivity();
-                                }
-                                break;
-                            case "sold out":
-                            case "closed":
-                                if (mListener != null)
-                                    mListener.openErrorActivity();
-                                break;
-                        }
+                        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_APP_IN_FRONT))
+                            switch (Settings.status) {
+                                case "open":
+                                    if (mListener != null) {
+                                        if (mMenu != null)
+                                            mListener.openBuildBentoActivity();
+                                        else
+                                            mListener.openMainActivity();
+                                    }
+                                    break;
+                                case "sold out":
+                                case "closed":
+                                    if (mListener != null)
+                                        mListener.openErrorActivity();
+                                    break;
+                            }
                     } else {
-                       /* OrderDao mOrderDao = new OrderDao();
-                        Order mOrder = mOrderDao.getCurrentOrder();
+                        if (mMenu != null && !SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.MEAL_NAME).isEmpty())
+                            if (!SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.MEAL_NAME).equals(mMenu.meal_name) ||
+                                    !SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.MENU_TYPE).equals(mMenu.menu_type)) {
 
-                        if (mOrder != null && mMenu != null && SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_APP_IN_FRONT))
-                            if (!mOrder.MealName.equals(mMenu.meal_name) || !mOrder.MenuType.equals(mMenu.menu_type)) {
                                 DebugUtils.logDebug(TAG, "New Menu: " + mMenu.meal_name + "||" + mMenu.menu_type);
                                 WidgetsUtils.createShortToast(R.string.error_new_menu_type);
-                                if (mListener != null) {
+                                if (mListener != null && SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_APP_IN_FRONT)) {
+                                    OrderDao mOrderDao = new OrderDao();
                                     mOrderDao.cleanUp();
                                     mListener.openBuildBentoActivity();
                                 }
-                            }*/
+                            }
+
                     }
                 }
             }

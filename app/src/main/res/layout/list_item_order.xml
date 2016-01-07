@@ -2,15 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/complete_row"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="38dp"
     android:background="@color/bgcolor"
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
     <ImageButton
         android:id="@+id/btn_edit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
         android:background="@null"
         android:contentDescription="@null"
         android:src="@drawable/completeorder_cell_btn_minute" />

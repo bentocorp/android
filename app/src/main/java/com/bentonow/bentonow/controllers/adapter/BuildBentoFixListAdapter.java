@@ -70,10 +70,10 @@ public class BuildBentoFixListAdapter extends ArrayAdapter<DishModel> {
         if (DishDao.isSoldOut(mDish, true)) {
             viewHolder.getImageSoldOut().setVisibility(View.VISIBLE);
             viewHolder.getBtnAddToBento().setOnClickListener(null);
-            viewHolder.getWrapperAddPrice().setBackground(getContext().getResources().getDrawable(R.drawable.btn_dark_gray));
+            viewHolder.getWrapperAddPrice().setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.btn_dark_gray));
         } else {
             viewHolder.getImageSoldOut().setVisibility(View.INVISIBLE);
-            viewHolder.getWrapperAddPrice().setBackground(getContext().getResources().getDrawable(R.drawable.btn_rounded_green));
+            viewHolder.getWrapperAddPrice().setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.btn_rounded_green));
             viewHolder.getBtnAddToBento().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

@@ -12,6 +12,7 @@ import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.dao.DishDao;
 import com.bentonow.bentonow.dao.OrderDao;
 import com.bentonow.bentonow.listener.ListenerCompleteOrder;
+import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Stock;
 import com.bentonow.bentonow.model.order.OrderItem;
@@ -82,6 +83,7 @@ public class ExpandableListOrderAdapter extends BaseExpandableListAdapter {
                     @Override
                     public void onClick(View view) {
                         if (mListener != null) {
+                            restartSelected();
                             mListener.onRemoveBento(mOrder.order_pk);
                         } else {
                             Crashlytics.log("ExpandableListOrderAdapter null pointer Listener");
@@ -112,6 +114,7 @@ public class ExpandableListOrderAdapter extends BaseExpandableListAdapter {
                     @Override
                     public void onClick(View view) {
                         if (mListener != null) {
+                            restartSelected();
                             mListener.onRemoveAddOn(mDish.itemId);
                         } else {
                             Crashlytics.log("ExpandableListOrderAdapter null pointer Listener");
@@ -212,10 +215,15 @@ public class ExpandableListOrderAdapter extends BaseExpandableListAdapter {
             });
         }
 
-        if (groupPosition == 0)
+        if (groupPosition == 0) {
+            viewHolder.getBtnDelete().setTextColor(bEditOrder ? mActivity.getResources().getColor(R.color.orange) : mActivity.getResources().getColor(R.color.btn_green));
+            viewHolder.getBtnDelete().setText(bEditOrder ? BackendText.get("complete-done") : BackendText.get("complete-edit"));
             viewHolder.getBtnDelete().setVisibility(aOrderList.size() > 0 ? View.VISIBLE : View.INVISIBLE);
-        else
+        } else {
+            viewHolder.getBtnDelete().setTextColor(bEditAddOn ? mActivity.getResources().getColor(R.color.orange) : mActivity.getResources().getColor(R.color.btn_green));
+            viewHolder.getBtnDelete().setText(bEditAddOn ? BackendText.get("complete-done") : BackendText.get("complete-edit"));
             viewHolder.getBtnDelete().setVisibility(aAddOnList.size() > 0 ? View.VISIBLE : View.INVISIBLE);
+        }
 
 
         viewHolder.getBtnDelete().setOnClickListener(new View.OnClickListener() {
@@ -247,6 +255,13 @@ public class ExpandableListOrderAdapter extends BaseExpandableListAdapter {
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         return true;
+    }
+
+    private void restartSelected() {
+        iSelectedOrder = -1;
+        iSelectedAddOn = -1;
+        bEditAddOn = false;
+        bEditOrder = false;
     }
 
     public void setaOrderList(List<OrderItem> aOrderList) {

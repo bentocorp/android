@@ -45,7 +45,7 @@ android {
 
     defaultConfig {
         applicationId "com.bentonow.bentonow"
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 22
         versionCode 29
         multiDexEnabled true
@@ -53,11 +53,11 @@ android {
     productFlavors {
         production {
             applicationId "com.bentonow.bentonow"
-            versionName '1.12-rc1'
+            versionName '1.2-rc1'
         }
         stage {
             applicationId "com.bentonow.bentonow.stage"
-            versionName '1.12-rc1-dev'
+            versionName '1.2-rc1-dev'
         }
     }
 

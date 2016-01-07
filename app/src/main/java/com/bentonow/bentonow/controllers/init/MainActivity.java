@@ -22,6 +22,7 @@ import com.bentonow.bentonow.Utils.LocationUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
+import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Menu;
@@ -159,6 +160,28 @@ public class MainActivity extends BaseFragmentActivity {
     }
 
     void waitForUserLocation() {
+        if (LocationUtils.isGpsEnable(MainActivity.this)) {
+            getCurrentLocation();
+        } else {
+            ConfirmationDialog mDialog = new ConfirmationDialog(MainActivity.this, "Enable GPS", "GPS is disabled in your device. Enable it?");
+            mDialog.addAcceptButton("Yes", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent callGPSSettingIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(callGPSSettingIntent);
+                }
+            });
+            mDialog.addCancelButton("No", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    getCurrentLocation();
+                }
+            });
+            mDialog.show();
+        }
+    }
+
+    private void getCurrentLocation() {
         if (LocationUtils.mCurrentLocation == null) {
             new Handler().post(new Runnable() {
                 @Override
