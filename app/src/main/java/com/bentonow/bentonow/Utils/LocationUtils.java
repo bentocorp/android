@@ -13,6 +13,7 @@ import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,9 +58,11 @@ public class LocationUtils {
             else
                 sLine = mAddress.getAddressLine(i);
 
-            if (sLine != null && !sLine.equals("null"))
+            if (sLine != null)
                 sAddress += sLine;
         }
+
+        sAddress = sAddress.replace("null", "");
 
         DebugUtils.logDebug("getCustomAddress()", sAddress);
 
@@ -85,18 +88,19 @@ public class LocationUtils {
 
 
     public static Address getAddressFromLocation(LatLng mCurrentLocation) {
-        List<Address> matches;
+        List<Address> addresses = new ArrayList<>();
         Address mAddress = null;
         Geocoder geoCoder = new Geocoder(BentoApplication.instance);
 
         try {
-            matches = geoCoder.getFromLocation(mCurrentLocation.latitude, mCurrentLocation.longitude, 1);
-            if (matches != null && !matches.isEmpty())
-                mAddress = matches.get(0);
+            addresses = geoCoder.getFromLocation(mCurrentLocation.latitude, mCurrentLocation.longitude, 1);
         } catch (Exception e) {
             DebugUtils.logError("getAddressFromLocation()", "scanCurrentLocation() " + e);
         }
 
+        if (!addresses.isEmpty()) {
+            mAddress = addresses.get(0);
+        }
 
         return mAddress;
     }

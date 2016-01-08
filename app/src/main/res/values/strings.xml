@@ -118,4 +118,5 @@
     <string name="error_no_facebook_sign_in">An error occur while trying to sign in with Facebook</string>
     <string name="error_no_internet">There is a problem with the internet connection, please try again</string>
     <string name="error_no_internet_connection">There is not internet connection</string>
+    <string name="error_no_address_from_location">Sorry there was a problem getting your Address, try to move the map or write your address directly</string>
 </resources>

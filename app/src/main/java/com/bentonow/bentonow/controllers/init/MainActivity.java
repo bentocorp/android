@@ -21,6 +21,7 @@ import com.bentonow.bentonow.Utils.GoogleLocationUtil;
 import com.bentonow.bentonow.Utils.LocationUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
+import com.bentonow.bentonow.Utils.SocialNetworksUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
@@ -70,6 +71,8 @@ public class MainActivity extends BaseFragmentActivity {
         trackAppOpen();
 
         LocationUtils.mCurrentLocation = null;
+
+        SocialNetworksUtil.generateKeyHash();
 
         mOrderDao.cleanUp();
     }

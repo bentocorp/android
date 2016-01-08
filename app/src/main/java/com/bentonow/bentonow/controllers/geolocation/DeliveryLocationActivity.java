@@ -7,7 +7,6 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -40,12 +39,10 @@ import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
 import com.bentonow.bentonow.controllers.errors.BummerActivity;
 import com.bentonow.bentonow.controllers.fragment.MySupportMapFragment;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
-import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.listener.ListenerWebRequest;
 import com.bentonow.bentonow.listener.OnCustomDragListener;
 import com.bentonow.bentonow.model.AutoCompleteModel;
 import com.bentonow.bentonow.model.BackendText;
-import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.ui.BackendTextView;
 import com.bentonow.bentonow.web.request.RequestGetPlaceDetail;
@@ -56,6 +53,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.wsdcamp.anim.FadeInOut;
@@ -99,13 +97,14 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private LocationRequest mLocationRequest;
     private LatLng mLastLocations;
     private LatLng mLastOrderLocation;
-    private Address sOrderAddress;
+    private Address mOrderAddress;
 
     private ConstantUtils.optOpenScreen optOpenScreen;
 
     private ArrayList<AutoCompleteModel> resultList;
 
-    private UserDao userDao = new UserDao();
+    private boolean bMovedMap;
+    private float previousZoomLevel = -1.0f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,9 +132,9 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         }
 
         try {
-            sOrderAddress = new Gson().fromJson(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.ADDRESS), Address.class);
+            mOrderAddress = new Gson().fromJson(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.ADDRESS), Address.class);
         } catch (Exception ex) {
-            sOrderAddress = null;
+            mOrderAddress = null;
         }
 
         mRequestingLocationUpdates = true;
@@ -146,25 +145,46 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             @Override
             public void onDrag(MotionEvent motionEvent) {
                 switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_MOVE:
+                        bMovedMap = true;
+                        break;
                     case MotionEvent.ACTION_DOWN:
                         break;
                     case MotionEvent.ACTION_UP:
-                        sOrderAddress = null;
                         mLastLocations = getGoogleMap().getCameraPosition().target;
-                        mLastOrderLocation = mLastLocations;
 
-                        if (mLastLocations != null) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    scanLocation(mLastLocations);
-                                }
-                            });
+                        if (bMovedMap) {
+                            bMovedMap = false;
+                            mOrderAddress = null;
+                            mLastOrderLocation = mLastLocations;
+
+                            if (mLastLocations != null) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        scanLocation(mLastLocations);
+                                    }
+                                });
+                            }
+                        } else {
+                            DebugUtils.logDebug(TAG, "Didn't Change position");
                         }
+
                         break;
                     default:
                         break;
                 }
+            }
+        });
+
+        getGoogleMap().setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition cameraPosition) {
+                if (previousZoomLevel != cameraPosition.zoom) {
+                    bMovedMap = true;
+                }
+
+                previousZoomLevel = cameraPosition.zoom;
             }
         });
 
@@ -202,7 +222,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
         getProgressBar().setVisibility(View.GONE);
 
-        if (getCheckIAgree().isChecked() && sOrderAddress != null) {
+        if (getCheckIAgree().isChecked() && mOrderAddress != null) {
             getBtnContinue().setBackgroundColor(getResources().getColor(R.color.btn_green));
         } else {
             getBtnContinue().setBackgroundColor(getResources().getColor(R.color.gray));
@@ -211,10 +231,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         // btn_current_location.setVisibility(User.location != null ? View.VISIBLE : View.GONE);
         getBtnClear().setVisibility(getTxtAddress().getText().length() > 0 ? View.VISIBLE : View.GONE);
     }
-
-    //****
-    // Map
-    //****
 
     private void setupMap() {
         DebugUtils.logDebug(TAG, "setupMap()");
@@ -261,15 +277,22 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
     private void moveMapToCenter(LatLng mLocation, String sAddress) {
-        mLastOrderLocation = mLocation;
-        getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(mLocation, getGoogleMap().getCameraPosition().zoom > 11f ? getGoogleMap().getCameraPosition().zoom : 17f));
-        if (AndroidUtil.isJellyBean())
-            getTxtAddress().setText(sAddress, false);
-        else
-            getTxtAddress().setText(sAddress);
+        mOrderAddress = LocationUtils.getAddressFromLocation(mLocation);
 
-        sOrderAddress = LocationUtils.getAddressFromLocation(mLocation);
+        if (mOrderAddress != null) {
+            mLastOrderLocation = mLocation;
+            getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(mLocation, getGoogleMap().getCameraPosition().zoom > 11f ? getGoogleMap().getCameraPosition().zoom : 17f));
+            if (AndroidUtil.isJellyBean())
+                getTxtAddress().setText(sAddress, false);
+            else
+                getTxtAddress().setText(sAddress);
+
+        } else {
+
+        }
+
         updateUI();
+
     }
 
     private void scanLocation(final LatLng mLocation) {
@@ -279,27 +302,36 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         new Thread(new Runnable() {
             @Override
             public void run() {
-                sOrderAddress = LocationUtils.getAddressFromLocation(mLocation);
-                final String sCustomAddress = LocationUtils.getCustomAddress(sOrderAddress);
+                mOrderAddress = LocationUtils.getAddressFromLocation(mLocation);
+                final String sCustomAddress = LocationUtils.getCustomAddress(mOrderAddress);
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (sOrderAddress != null) {
-                            if (AndroidUtil.isJellyBean())
-                                getTxtAddress().setText(sCustomAddress, false);
-                            else
-                                getTxtAddress().setText(sCustomAddress);
-                        } else {
+                if (sCustomAddress.isEmpty()) {
+                    mOrderAddress = null;
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
                             if (AndroidUtil.isJellyBean())
                                 getTxtAddress().setText("", false);
                             else
                                 getTxtAddress().setText("");
-                        }
 
-                        updateUI();
-                    }
-                });
+                            updateUI();
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (AndroidUtil.isJellyBean())
+                                getTxtAddress().setText(sCustomAddress, false);
+                            else
+                                getTxtAddress().setText(sCustomAddress);
+
+                            updateUI();
+                        }
+                    });
+                }
 
             }
         }).start();
@@ -313,7 +345,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         else
             getTxtAddress().setText("");
 
-        sOrderAddress = null;
+        mOrderAddress = null;
         updateUI();
     }
 
@@ -342,11 +374,11 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private boolean isValidLocation() {
         boolean bIsValid = true;
 
-        if (sOrderAddress == null || mLastOrderLocation == null || !getCheckIAgree().isChecked()) {
+        if (mOrderAddress == null || mLastOrderLocation == null || !getCheckIAgree().isChecked()) {
             bIsValid = false;
             String sError = getString(R.string.alert_tab_checkbox);
 
-            if (sOrderAddress == null || mLastOrderLocation == null)
+            if (mOrderAddress == null || mLastOrderLocation == null)
                 sError = getString(R.string.delivery_alert_no_address);
 
             getTxtAlertAgree().setText(sError);
@@ -372,7 +404,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
         if (isInDeliveryArea) {
             SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.LOCATION, new Gson().toJson(mLastOrderLocation));
-            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ADDRESS, new Gson().toJson(sOrderAddress));
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ADDRESS, new Gson().toJson(mOrderAddress));
 
             LocationUtils.mCurrentLocation = mLastOrderLocation;
 
@@ -395,14 +427,14 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         } else {
             try {
                 JSONObject params = new JSONObject();
-                params.put("address", LocationUtils.getCustomAddress(sOrderAddress));
+                params.put("address", LocationUtils.getCustomAddress(mOrderAddress));
                 MixpanelUtils.track("Selected address outside of service area", params);
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
             Intent intent = new Intent(DeliveryLocationActivity.this, BummerActivity.class);
-            intent.putExtra(BummerActivity.TAG_INVALID_ADDRESS, LocationUtils.getCustomAddress(sOrderAddress));
+            intent.putExtra(BummerActivity.TAG_INVALID_ADDRESS, LocationUtils.getCustomAddress(mOrderAddress));
             startActivity(intent);
         }
     }
@@ -533,11 +565,10 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
     private void getExactLocationByPlaceId(final String sAddress, final String sPlaceId) {
-        // checkAddress(sAddress);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mProgressDialog = new ProgressDialog(DeliveryLocationActivity.this, R.string.searching_label);
+                mProgressDialog = new ProgressDialog(DeliveryLocationActivity.this, R.string.searching_label, true);
                 mProgressDialog.show();
             }
         });
@@ -672,7 +703,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getTxtAddress().getWindowToken(), 0);
         getExactLocationByPlaceId(resultList.get(position).getAddress(), resultList.get(position).getPlaceId());
-        // getExactLocationByPlaceId("aaezazaafñpke", "asdresd");
     }
 
     @Override
