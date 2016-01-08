@@ -71,8 +71,8 @@
                 <com.bentonow.bentonow.ui.BackendTextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:paddingEnd="@dimen/cero"
-                    android:paddingStart="@dimen/home_about_point_left_padding"
+                    android:paddingLeft="@dimen/home_about_point_left_padding"
+                    android:paddingRight="@dimen/cero"
                     android:singleLine="true"
                     android:text=""
                     android:textColor="@color/white"
@@ -101,8 +101,8 @@
                 <com.bentonow.bentonow.ui.BackendTextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:paddingEnd="@dimen/cero"
-                    android:paddingStart="@dimen/home_about_point_left_padding"
+                    android:paddingRight="@dimen/cero"
+                    android:paddingLeft="@dimen/home_about_point_left_padding"
                     android:singleLine="true"
                     android:text=""
                     android:textColor="@color/white"
@@ -131,8 +131,8 @@
                 <com.bentonow.bentonow.ui.BackendTextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:paddingEnd="@dimen/cero"
-                    android:paddingStart="@dimen/home_about_point_left_padding"
+                    android:paddingRight="@dimen/cero"
+                    android:paddingLeft="@dimen/home_about_point_left_padding"
                     android:singleLine="true"
                     android:text=""
                     android:textColor="@color/white"
