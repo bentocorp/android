@@ -5,17 +5,11 @@ import android.database.Cursor;
 
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
-import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.db.DBAdapter;
 import com.bentonow.bentonow.model.DishModel;
-import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
-import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.Stock;
-import com.bentonow.bentonow.model.User;
-import com.bentonow.bentonow.model.order.OrderItem;
-import com.bentonow.bentonow.model.user.Card;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -215,6 +209,48 @@ public class DishDao {
 
         return mListDish;
     }
+
+    public boolean hasDishByType(ConstantUtils.optDishType optDish) {
+        boolean hasDish;
+
+        String sType = "";
+        switch (optDish) {
+            case MAIN:
+                sType = "main";
+                break;
+            case SIDE:
+                sType = "side";
+                break;
+            case ADDON:
+                sType = "addon";
+                break;
+        }
+
+
+        String conditional = TYPE + " = '" + sType + "'";
+
+        try {
+
+            dbAdapter.begginTransaction();
+
+            Cursor cursor = dbAdapter.getData(TABLE_NAME, FIELDS, conditional);
+
+            cursor.moveToFirst();
+
+            hasDish = cursor.getCount() > 0;
+
+            cursor.close();
+
+        } catch (Exception ex) {
+            hasDish = false;
+            DebugUtils.logError(TAG, ex);
+        } finally {
+            dbAdapter.setTransacctionSuccesfull();
+        }
+
+        return hasDish;
+    }
+
 
     public DishModel getDishItem(int iPk) {
         DishModel mDish = null;

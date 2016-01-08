@@ -33,6 +33,8 @@ import com.bentonow.bentonow.service.BentoCustomerService;
 import com.bentonow.bentonow.ui.AutoFitTxtView;
 import com.bentonow.bentonow.ui.BackendAutoFitTextView;
 import com.bentonow.bentonow.ui.BackendButton;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
+import com.mixpanel.android.mpmetrics.Tweak;
 
 import org.json.JSONObject;
 
@@ -72,14 +74,16 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     private TextView txtTitleSide3;
     private TextView txtTitleSide4;
 
-
     ConfirmationDialog mDialog;
 
     private Menu mMenu;
 
     private Order mOrder;
 
+    private boolean bSawAddOns = false;
+    boolean bHasAddOns = false;
     //private static Tweak<Boolean> showBanner = MixpanelAPI.booleanTweak("Show Banner", false);
+    private static Tweak<Boolean> showAddons = MixpanelAPI.booleanTweak("Show AddOns", false);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,6 +130,13 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                 mOrder.OrderItems.add(mBentoDao.getNewBento(ConstantUtils.optItemType.ADD_ON));
             } else if (mOrder.OrderItems.size() <= orderIndex) {
                 orderIndex = mOrder.OrderItems.size() - 1;
+            }
+
+            for (int a = 0; a < mMenu.dishModels.size(); a++) {
+                if (mMenu.dishModels.get(a).type.equals("addon")) {
+                    bHasAddOns = true;
+                    break;
+                }
             }
 
             updateUI();
@@ -178,6 +189,8 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
             actionbar_right_btn.setImageResource(R.drawable.ic_ab_bento_completed);
         }
 
+
+        getBtnAddOn().setVisibility(bHasAddOns ? View.VISIBLE : View.GONE);
     }
 
     private void updateDishUI() {
@@ -271,6 +284,14 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         }
     }
 
+    private void openAddOnsActivity() {
+        Intent mAddOnActivity = new Intent(BuildBentoActivity.this, AddOnActivity.class);
+        mAddOnActivity.putExtra(AddOnActivity.TAG_OPEN_BY, ConstantUtils.optOpenAddOn.BUILDER);
+        bSawAddOns = true;
+        startActivity(mAddOnActivity);
+        overridePendingTransition(R.anim.bottom_slide_in, R.anim.none);
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -314,10 +335,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                 onContinueOrderPressed();
                 break;
             case R.id.btn_add_on_add_on:
-                Intent mAddOnActivity = new Intent(BuildBentoActivity.this, AddOnActivity.class);
-                mAddOnActivity.putExtra(AddOnActivity.TAG_OPEN_BY, ConstantUtils.optOpenAddOn.BUILDER);
-                startActivity(mAddOnActivity);
-                overridePendingTransition(R.anim.bottom_slide_in, R.anim.none);
+                openAddOnsActivity();
                 break;
             case R.id.btn_add_another_bento:
                 onAddAnotherBentoPressed();
@@ -375,30 +393,6 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
         String sSoldOutItems = mOrderDao.calculateSoldOutItems(mOrder);
 
-    /*    if (!Order.current.OrderItems.get(orderIndex).isComplete()) {
-            if (Order.current.OrderItems.get(orderIndex).items.get(0) == null) {
-                startActivity(new Intent(this, SelectMainCustomActivity.class));
-            } else if (Order.current.OrderItems.get(orderIndex).items.get(1) == null) {
-                Intent intent = new Intent(this, SelectSideCustomActivity.class);
-                intent.putExtra("orderIndex", orderIndex);
-                intent.putExtra("itemIndex", 1);
-                startActivity(intent);
-            } else if (Order.current.OrderItems.get(orderIndex).items.get(2) == null) {
-                Intent intent = new Intent(this, SelectSideCustomActivity.class);
-                intent.putExtra("orderIndex", orderIndex);
-                intent.putExtra("itemIndex", 2);
-                startActivity(intent);
-            } else if (Order.current.OrderItems.get(orderIndex).items.get(3) == null) {
-                Intent intent = new Intent(this, SelectSideCustomActivity.class);
-                intent.putExtra("orderIndex", orderIndex);
-                intent.putExtra("itemIndex", 3);
-                startActivity(intent);
-            } else if (Order.current.OrderItems.get(orderIndex).items.get(4) == null) {
-                Intent intent = new Intent(this, SelectSideCustomActivity.class);
-                intent.putExtra("orderIndex", orderIndex);
-                intent.putExtra("itemIndex", 4);
-                startActivity(intent);
-            }*/
         if (!mBentoDao.isBentoComplete(mOrder.OrderItems.get(orderIndex))) {
             if (mOrder.OrderItems.get(orderIndex).items.get(0) == null) {
                 startActivity(new Intent(this, SelectMainCustomActivity.class));
@@ -427,8 +421,12 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
             updateUI();
             WidgetsUtils.createShortToast(String.format(getString(R.string.error_sold_out_items), sSoldOutItems));
         } else if (BentoNowUtils.isValidCompleteOrder(BuildBentoActivity.this)) {
-            track();
-            BentoNowUtils.openCompleteOrderActivity(BuildBentoActivity.this);
+            if (bHasAddOns && showAddons.get() && !bSawAddOns) {
+                openAddOnsActivity();
+            } else {
+                track();
+                BentoNowUtils.openCompleteOrderActivity(BuildBentoActivity.this);
+            }
         }
     }
 

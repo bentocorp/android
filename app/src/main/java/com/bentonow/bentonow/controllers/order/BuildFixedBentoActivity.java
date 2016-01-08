@@ -30,6 +30,8 @@ import com.bentonow.bentonow.model.order.OrderItem;
 import com.bentonow.bentonow.service.BentoCustomerService;
 import com.bentonow.bentonow.ui.AutoFitTxtView;
 import com.bentonow.bentonow.ui.BackendButton;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
+import com.mixpanel.android.mpmetrics.Tweak;
 
 import org.json.JSONObject;
 
@@ -57,11 +59,14 @@ public class BuildFixedBentoActivity extends BaseFragmentActivity implements Vie
 
     private ArrayList<DishModel> aSideDish = new ArrayList<>();
 
-    //private static Tweak<Boolean> showBanner = MixpanelAPI.booleanTweak("Show Fix Banner", false);
-
     private Menu mMenu;
 
     private Order mOrder;
+
+    private boolean bSawAddOns = false;
+    boolean bHasAddOns = false;
+    //private static Tweak<Boolean> showBanner = MixpanelAPI.booleanTweak("Show Banner", false);
+    private static Tweak<Boolean> showAddons = MixpanelAPI.booleanTweak("Show AddOns", false);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,6 +141,17 @@ public class BuildFixedBentoActivity extends BaseFragmentActivity implements Vie
                     getBtnAddOn().setOnClickListener(null);
                     getMenuItemBuildBento().setImageResource(R.drawable.ic_ab_bento);
                 }
+
+                boolean bHasAddOns = false;
+
+                for (int a = 0; a < mMenu.dishModels.size(); a++) {
+                    if (mMenu.dishModels.get(a).type.equals("addon")) {
+                        bHasAddOns = true;
+                        return;
+                    }
+                }
+
+                getBtnAddOn().setVisibility(bHasAddOns ? View.VISIBLE : View.GONE);
             }
         });
     }
@@ -174,9 +190,12 @@ public class BuildFixedBentoActivity extends BaseFragmentActivity implements Vie
             }
 
             if (BentoNowUtils.isValidCompleteOrder(BuildFixedBentoActivity.this)) {
-                trackBuildBentos();
-                mOrderDao.updateOrder(mOrder);
-                BentoNowUtils.openCompleteOrderActivity(BuildFixedBentoActivity.this);
+                if (bHasAddOns && showAddons.get() && !bSawAddOns) {
+                    openAddOnsActivity();
+                } else {
+                    trackBuildBentos();
+                    BentoNowUtils.openCompleteOrderActivity(BuildFixedBentoActivity.this);
+                }
             }
            /* else
                 WidgetsUtils.createShortToast("There are not enough dishes to build a bento, try again later");*/
@@ -238,6 +257,14 @@ public class BuildFixedBentoActivity extends BaseFragmentActivity implements Vie
         }
     }
 
+    private void openAddOnsActivity() {
+        Intent mAddOnActivity = new Intent(BuildFixedBentoActivity.this, AddOnActivity.class);
+        mAddOnActivity.putExtra(AddOnActivity.TAG_OPEN_BY, ConstantUtils.optOpenAddOn.BUILDER);
+        bSawAddOns = true;
+        startActivity(mAddOnActivity);
+        overridePendingTransition(R.anim.bottom_slide_in, R.anim.none);
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -263,10 +290,7 @@ public class BuildFixedBentoActivity extends BaseFragmentActivity implements Vie
                 onContinueOrderPressed();
                 break;
             case R.id.btn_add_on_add_on:
-                Intent mAddOnActivity = new Intent(BuildFixedBentoActivity.this, AddOnActivity.class);
-                mAddOnActivity.putExtra(AddOnActivity.TAG_OPEN_BY, ConstantUtils.optOpenAddOn.BUILDER);
-                startActivity(mAddOnActivity);
-                overridePendingTransition(R.anim.bottom_slide_in, R.anim.none);
+                openAddOnsActivity();
                 break;
             default:
 
@@ -307,6 +331,13 @@ public class BuildFixedBentoActivity extends BaseFragmentActivity implements Vie
                     mOrder.OrderItems.add(mBentoDao.getNewBento(ConstantUtils.optItemType.ADD_ON));
 
                 MixpanelUtils.track("Began Building A Bento");
+            }
+
+            for (int a = 0; a < mMenu.dishModels.size(); a++) {
+                if (mMenu.dishModels.get(a).type.equals("addon")) {
+                    bHasAddOns = true;
+                    break;
+                }
             }
 
             addMainDishes();

@@ -12,10 +12,10 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="com.bentonow.bentonow.permission.C2D_MESSAGE" />
+    <uses-permission android:name="com.bentonow.bentonow.stage.permission.C2D_MESSAGE" />
 
     <permission
-        android:name="com.bentonow.bentonow.permission.C2D_MESSAGE"
+        android:name="com.bentonow.bentonow.stage.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
 
     <application
@@ -137,7 +137,7 @@
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
 
-                <category android:name="com.bentonow.bentonow" />
+                <category android:name="com.bentonow.bentonow.stage" />
             </intent-filter>
         </receiver>
 
