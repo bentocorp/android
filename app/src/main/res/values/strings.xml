@@ -117,4 +117,5 @@
     <string name="error_no_call_app">There is no call client installed</string>
     <string name="error_no_facebook_sign_in">An error occur while trying to sign in with Facebook</string>
     <string name="error_no_internet">There is a problem with the internet connection, please try again</string>
+    <string name="error_no_internet_connection">There is not internet connection</string>
 </resources>

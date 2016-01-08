@@ -201,13 +201,33 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
                     try {
                         sError = new JSONObject(responseString).getString("error");
                     } catch (Exception e) {
-                        sError = "No Network";
+                        sError = getString(R.string.error_no_internet_connection);
                         DebugUtils.logError(TAG, "requestPromoCode(): " + e.getLocalizedMessage());
+                    }
+
+                    switch (statusCode) {
+                        case 0:// No internet Connection
+                            sError = getString(R.string.error_no_internet_connection);
+                            break;
+                        case 401:// Invalid Api Token
+                            DebugUtils.logError(TAG, "Invalid Api Token");
+                            WidgetsUtils.createShortToast("You session is expired, please LogIn again");
+
+                            if (!userDao.removeUser())
+                                userDao.clearAllData();
+
+                            startActivity(new Intent(CompleteOrderActivity.this, SignInActivity.class));
+                            break;
+                        default:
+                            Crashlytics.log(Log.ERROR, "SendOrderError", "Code " + statusCode + " : Response " + responseString + " : Parsing " + sError);
+                            break;
                     }
 
                     mDialog = new ConfirmationDialog(CompleteOrderActivity.this, "Error", sError);
                     mDialog.addAcceptButton("OK", null);
-                    mDialog.show();
+
+                    if (statusCode != 401)
+                        mDialog.show();
                 }
 
 

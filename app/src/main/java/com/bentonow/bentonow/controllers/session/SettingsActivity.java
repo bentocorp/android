@@ -3,9 +3,7 @@ package com.bentonow.bentonow.controllers.session;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Telephony;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -29,11 +27,13 @@ import com.bentonow.bentonow.listener.ListenerDialog;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.ui.FontAwesomeButton;
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.apache.http.Header;
+import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -250,6 +250,33 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 DebugUtils.logError(TAG, "getUserInfo:  " + responseString);
+
+                DebugUtils.logError(TAG, "getUserInfo failed: " + responseString + " StatusCode: " + statusCode);
+                String sError;
+
+                try {
+                    sError = new JSONObject(responseString).getString("error");
+                } catch (Exception e) {
+                    sError = getString(R.string.error_no_internet_connection);
+                    DebugUtils.logError(TAG, "requestPromoCode(): " + e.getLocalizedMessage());
+                }
+
+                switch (statusCode) {
+                    case 0:// No internet Connection
+                        sError = getString(R.string.error_no_internet_connection);
+                        break;
+                    case 401:// Invalid Api Token
+                        WidgetsUtils.createShortToast("You session is expired, please LogIn again");
+
+                        if (!userDao.removeUser())
+                            userDao.clearAllData();
+
+                        onSignInPressed(null);
+                        break;
+                    default:
+                        Crashlytics.log(Log.ERROR, "SendOrderError", "Code " + statusCode + " : Response " + responseString + " : Parsing " + sError);
+                        break;
+                }
 
             }
 
