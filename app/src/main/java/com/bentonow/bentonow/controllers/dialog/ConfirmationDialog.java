@@ -35,7 +35,6 @@ public class ConfirmationDialog extends android.app.Dialog {
     View.OnClickListener onAcceptButtonClickListener;
     View.OnClickListener onCancelButtonClickListener;
 
-
     public ConfirmationDialog(Context context, String title, String message) {
         super(context, android.R.style.Theme_Translucent);
         this.context = context;// init Context
@@ -62,6 +61,7 @@ public class ConfirmationDialog extends android.app.Dialog {
 
         view = (RelativeLayout) findViewById(R.id.contentDialog);
         backView = (RelativeLayout) findViewById(R.id.dialog_rootView);
+
         backView.setOnTouchListener(new View.OnTouchListener() {
 
             @Override

@@ -27,16 +27,20 @@ public class ProgressDialog extends android.app.Dialog {
 
     int progressColor = -1;
 
-    public ProgressDialog(Context context, String title) {
+    private boolean bCancelable;
+
+    public ProgressDialog(Context context, String title, boolean bCancelable) {
         super(context, android.R.style.Theme_Translucent);
         this.title = title;
         this.context = context;
+        this.bCancelable = bCancelable;
     }
 
-    public ProgressDialog(Context context, int idTitle) {
+    public ProgressDialog(Context context, int idTitle, boolean bCancelable) {
         super(context, android.R.style.Theme_Translucent);
         this.title = context.getResources().getString(idTitle);
         this.context = context;
+        this.bCancelable = bCancelable;
     }
 
     public ProgressDialog(Context context, String title, int progressColor) {
@@ -54,19 +58,23 @@ public class ProgressDialog extends android.app.Dialog {
 
         view = (RelativeLayout) findViewById(R.id.contentDialog);
         backView = (RelativeLayout) findViewById(R.id.dialog_rootView);
-        backView.setOnTouchListener(new OnTouchListener() {
 
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getX() < view.getLeft()
-                        || event.getX() > view.getRight()
-                        || event.getY() > view.getBottom()
-                        || event.getY() < view.getTop()) {
-                    dismiss();
+        setCancelable(bCancelable);
+
+        if (bCancelable)
+            backView.setOnTouchListener(new OnTouchListener() {
+
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getX() < view.getLeft()
+                            || event.getX() > view.getRight()
+                            || event.getY() > view.getBottom()
+                            || event.getY() < view.getTop()) {
+                        dismiss();
+                    }
+                    return false;
                 }
-                return false;
-            }
-        });
+            });
 
         this.titleTextView = (TextView) findViewById(R.id.title);
         setTitle(title);

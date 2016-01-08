@@ -185,7 +185,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
             mDialog.addAcceptButton("OK", null);
             mDialog.show();
         } else {
-            showLoadingDialog(getString(R.string.processing_label));
+            showLoadingDialog(getString(R.string.processing_label), false);
 
             RequestParams params = new RequestParams();
             params.put("api_token", mCurrentUser.api_token);
@@ -334,7 +334,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
 
     public void onLetsEatPressed() {
         if (BentoNowUtils.isValidCompleteOrder(CompleteOrderActivity.this)) {
-            showLoadingDialog(getString(R.string.processing_label));
+            showLoadingDialog(getString(R.string.processing_label), false);
 
             mOrder.Stripe.stripeToken = mCurrentUser.stripe_token;
             mOrder.IdempotentToken = BentoNowUtils.getUUIDBento();
@@ -581,9 +581,9 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
         mProgressDialog = null;
     }
 
-    private void showLoadingDialog(String sText) {
+    private void showLoadingDialog(String sText, boolean bCancelable) {
         if (mProgressDialog == null || !mProgressDialog.isShowing()) {
-            mProgressDialog = new ProgressDialog(CompleteOrderActivity.this, sText);
+            mProgressDialog = new ProgressDialog(CompleteOrderActivity.this, sText, bCancelable);
             mProgressDialog.show();
         }
     }

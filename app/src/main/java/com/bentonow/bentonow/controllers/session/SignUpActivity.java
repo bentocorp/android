@@ -344,7 +344,7 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
         registerUser.phone = BentoNowUtils.getPhoneFromNumber(txt_phone.getText().toString());
         registerUser.password = txt_password.getText().toString();
 
-        mProgressDialog = new ProgressDialog(SignUpActivity.this, BackendText.get("sign-in-sign-up-link"));
+        mProgressDialog = new ProgressDialog(SignUpActivity.this, BackendText.get("sign-in-sign-up-link"), true);
         mProgressDialog.show();
 
         UserRequest.register(registerUser, new TextHttpResponseHandler() {
@@ -468,7 +468,7 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
             loginUser.email = user.getString("email");
             loginUser.fb_token = AccessToken.getCurrentAccessToken().getToken();
 
-            mProgressDialog = new ProgressDialog(SignUpActivity.this, BackendText.get("sign-in-sign-up-link"));
+            mProgressDialog = new ProgressDialog(SignUpActivity.this, BackendText.get("sign-in-sign-up-link"), true);
             mProgressDialog.show();
 
             UserRequest.login(loginUser, new TextHttpResponseHandler() {

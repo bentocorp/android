@@ -431,7 +431,7 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
             focused = R.id.txt_number;
             updateUI();
         } else {
-            mProgressDialog = new ProgressDialog(EnterCreditCardActivity.this, R.string.processing_label);
+            mProgressDialog = new ProgressDialog(EnterCreditCardActivity.this, R.string.processing_label, true);
             mProgressDialog.show();
 
             new Stripe().createToken(card, getResources().getString(R.string.stripe_key), new TokenCallback() {

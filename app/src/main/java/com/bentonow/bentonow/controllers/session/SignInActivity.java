@@ -266,7 +266,7 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
         loginUser.email = txt_email.getText().toString();
         loginUser.password = txt_password.getText().toString();
 
-        mProgressDialog = new ProgressDialog(SignInActivity.this, BackendText.get("sign-up-sign-in-link"));
+        mProgressDialog = new ProgressDialog(SignInActivity.this, BackendText.get("sign-up-sign-in-link"), true);
         mProgressDialog.show();
 
         UserRequest.login(loginUser, new TextHttpResponseHandler() {
@@ -376,7 +376,7 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
             loginUser.email = user.getString("email");
             loginUser.fb_token = AccessToken.getCurrentAccessToken().getToken();
 
-            mProgressDialog = new ProgressDialog(SignInActivity.this, BackendText.get("sign-up-sign-in-link"));
+            mProgressDialog = new ProgressDialog(SignInActivity.this, BackendText.get("sign-up-sign-in-link"), true);
             mProgressDialog.show();
 
             UserRequest.login(loginUser, new TextHttpResponseHandler() {
