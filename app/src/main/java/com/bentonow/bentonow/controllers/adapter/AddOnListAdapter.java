@@ -4,18 +4,16 @@
 package com.bentonow.bentonow.controllers.adapter;
 
 import android.app.Activity;
-import android.view.LayoutInflater;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.bentonow.bentonow.R;
-import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.ImageUtils;
 import com.bentonow.bentonow.dao.DishDao;
 import com.bentonow.bentonow.listener.ListenerAddOn;
-import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.ui.wrapper.AddOnWrapper;
 
@@ -56,7 +54,7 @@ public class AddOnListAdapter extends RecyclerView.Adapter<AddOnWrapper> {
         final DishModel mDish = aListDish.get(position);
 
         viewHolder.getTxtTitle().setText(mDish.name);
-        viewHolder.getTxtPrice().setText(String.format(mActivity.getString(R.string.money_main_format), BentoNowUtils.getDefaultPriceBento(mDish.price)));
+        viewHolder.getTxtPrice().setText(String.format(mActivity.getString(R.string.money_format), mDish.price));
         viewHolder.getTxtDescription().setText(mDish.description);
 
         if (viewHolder.getImgDish().getTag() == null || !viewHolder.getImgDish().getTag().equals(mDish.image1)) {

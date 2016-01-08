@@ -7,14 +7,10 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 
 import com.bentonow.bentonow.R;
-import com.bentonow.bentonow.Utils.BentoNowUtils;
-import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.dao.DishDao;
-import com.bentonow.bentonow.dao.OrderDao;
 import com.bentonow.bentonow.listener.ListenerCompleteOrder;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.DishModel;
-import com.bentonow.bentonow.model.Stock;
 import com.bentonow.bentonow.model.order.OrderItem;
 import com.bentonow.bentonow.ui.wrapper.ItemChildOrderWrapper;
 import com.bentonow.bentonow.ui.wrapper.ItemHeaderOrderWrapper;
@@ -74,11 +70,15 @@ public class ExpandableListOrderAdapter extends BaseExpandableListAdapter {
             case 0:
                 final OrderItem mOrder = aOrderList.get(childPosition);
                 viewHolder.getTxtName().setTextColor(mOrder.bIsSoldoOut ? mActivity.getResources().getColor(R.color.orange) : mActivity.getResources().getColor(R.color.btn_green));
-                viewHolder.getTxtPrice().setTextColor(mOrder.bIsSoldoOut ? mActivity.getResources().getColor(R.color.orange) : mActivity.getResources().getColor(R.color.dark_gray));
                 viewHolder.getTxtName().setText(mOrder.items.get(0).name);
-                viewHolder.getTxtPrice().setText("$" + BentoNowUtils.getNumberFromPrice(OrderDao.getPriceByOrder(mOrder)));
+
                 viewHolder.getBtnRemove().setVisibility(iSelectedOrder == childPosition ? View.VISIBLE : View.GONE);
                 viewHolder.getBtnEdit().setVisibility(bEditOrder && iSelectedOrder != childPosition ? View.VISIBLE : View.GONE);
+
+                viewHolder.getTxtPrice().setTextColor(mOrder.bIsSoldoOut ? mActivity.getResources().getColor(R.color.orange) : mActivity.getResources().getColor(R.color.dark_gray));
+                viewHolder.getTxtPrice().setText(String.format(mActivity.getString(R.string.money_format), mOrder.unit_price));
+                viewHolder.getTxtPrice().setVisibility(viewHolder.getBtnRemove().getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+
                 viewHolder.getBtnRemove().setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -105,11 +105,15 @@ public class ExpandableListOrderAdapter extends BaseExpandableListAdapter {
                 final DishModel mDish = aAddOnList.get(childPosition);
                 boolean bIsSoldOut = DishDao.isSoldOut(mDish, false);
                 viewHolder.getTxtName().setTextColor(bIsSoldOut ? mActivity.getResources().getColor(R.color.orange) : mActivity.getResources().getColor(R.color.btn_green));
-                viewHolder.getTxtPrice().setTextColor(bIsSoldOut ? mActivity.getResources().getColor(R.color.orange) : mActivity.getResources().getColor(R.color.dark_gray));
                 viewHolder.getTxtName().setText("(" + mDish.qty + "x) " + mDish.name);
-                viewHolder.getTxtPrice().setText("$" + DishDao.getDefaultPriceBento(mDish.price));
+
                 viewHolder.getBtnRemove().setVisibility(iSelectedAddOn == childPosition ? View.VISIBLE : View.GONE);
                 viewHolder.getBtnEdit().setVisibility(bEditAddOn && iSelectedAddOn != childPosition ? View.VISIBLE : View.GONE);
+
+                viewHolder.getTxtPrice().setTextColor(bIsSoldOut ? mActivity.getResources().getColor(R.color.orange) : mActivity.getResources().getColor(R.color.dark_gray));
+                viewHolder.getTxtPrice().setText(String.format(mActivity.getString(R.string.money_format), mDish.price));
+                viewHolder.getTxtPrice().setVisibility(viewHolder.getBtnRemove().getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+
                 viewHolder.getBtnRemove().setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

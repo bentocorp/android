@@ -71,7 +71,7 @@ public class AddOnActivity extends BaseFragmentActivity implements View.OnClickL
             DebugUtils.logError(TAG, ex);
         }
 
-        getActionbarLeftBtn().setImageResource(R.drawable.ic_ab_back);
+        getActionbarLeftBtn().setImageResource(R.drawable.ab_x_close);
 
         getMenuItemBuildBento().setVisibility(View.VISIBLE);
         getMenuItemBuildBento().setImageResource(R.drawable.ic_ab_bento_completed);
@@ -155,7 +155,7 @@ public class AddOnActivity extends BaseFragmentActivity implements View.OnClickL
                 }
                 break;
             case SUMMARY:
-                finish();
+                onBackPressed();
                 break;
         }
 
@@ -197,10 +197,10 @@ public class AddOnActivity extends BaseFragmentActivity implements View.OnClickL
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.actionbar_left_btn:
-                finish();
+                onBackPressed();
                 break;
             case R.id.button_accept:
-                finish();
+                onBackPressed();
                 break;
             case R.id.btn_finalize:
                 openSummaryScreen();
@@ -219,6 +219,13 @@ public class AddOnActivity extends BaseFragmentActivity implements View.OnClickL
         super.onStart();
         Intent intent = new Intent(this, BentoCustomerService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.none, R.anim.bottom_slide_out);
     }
 
     private ImageView getActionbarLeftBtn() {

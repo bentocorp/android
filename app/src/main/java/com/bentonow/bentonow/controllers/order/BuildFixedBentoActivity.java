@@ -266,6 +266,7 @@ public class BuildFixedBentoActivity extends BaseFragmentActivity implements Vie
                 Intent mAddOnActivity = new Intent(BuildFixedBentoActivity.this, AddOnActivity.class);
                 mAddOnActivity.putExtra(AddOnActivity.TAG_OPEN_BY, ConstantUtils.optOpenAddOn.BUILDER);
                 startActivity(mAddOnActivity);
+                overridePendingTransition(R.anim.bottom_slide_in, R.anim.none);
                 break;
             default:
 

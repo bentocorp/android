@@ -3,8 +3,8 @@
     android:id="@+id/base_relative_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/btn_green"
-    tools:context="com.bentonow.bentonow.controllers.errors.ErrorActivity">
+    android:background="@color/white"
+    tools:context=".controllers.errors.NextDayMenuActivity">
 
     <!-- bento_toolbar -->
     <LinearLayout
@@ -37,16 +37,13 @@
                 android:text="@string/main_dishes"
                 android:textColor="@color/white" />
 
-            <com.bentonow.bentonow.ui.BentoGridView
-                android:id="@+id/list_main"
+            <com.bentonow.bentonow.ui.NextListView
+                android:id="@+id/list_next_main"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/btn_green"
-                android:fillViewport="true"
-                android:numColumns="1"
-                tools:listitem="@layout/list_item_add">
-
-            </com.bentonow.bentonow.ui.BentoGridView>
+                android:background="@color/white"
+                android:dividerHeight="0dp"
+                tools:listitem="@layout/list_item_dish_next_main" />
 
             <TextView
                 android:layout_width="fill_parent"
@@ -58,13 +55,30 @@
                 android:textColor="@color/white" />
 
             <com.bentonow.bentonow.ui.BentoGridView
-                android:id="@+id/list_side"
+                android:id="@+id/grid_next_side"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/btn_green"
+                android:background="@color/white"
                 android:fillViewport="true"
                 android:numColumns="2"
-                tools:listitem="@layout/list_item_add"></com.bentonow.bentonow.ui.BentoGridView>
+                tools:listitem="@layout/list_item_add" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/gray"
+                android:gravity="center"
+                android:padding="@dimen/btn_padding"
+                android:text="@string/add_on_dishes"
+                android:textColor="@color/white" />
+
+            <com.bentonow.bentonow.ui.NextListView
+                android:id="@+id/list_next_add_on"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:dividerHeight="0dp"
+                tools:listitem="@layout/list_item_dish_next_main" />
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

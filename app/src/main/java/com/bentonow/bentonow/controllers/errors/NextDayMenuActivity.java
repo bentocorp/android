@@ -2,27 +2,20 @@ package com.bentonow.bentonow.controllers.errors;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
-import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
-import com.bentonow.bentonow.controllers.BentoApplication;
+import com.bentonow.bentonow.controllers.adapter.NextDayMainListAdapter;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
-import com.bentonow.bentonow.model.Settings;
-import com.bentonow.bentonow.ui.ItemHolder;
-import com.wsdcamp.list.LazyListAdapter;
-import com.wsdcamp.list.LazyListAdapterInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,10 +27,18 @@ public class NextDayMenuActivity extends BaseFragmentActivity implements View.On
 
     static final String TAG = "NextDayMenuActivity";
 
-    public DishModel currentSelectedDishModel = null;
+    private ListView mListMain;
+    private GridView gridSide;
+    private ListView mListAddOn;
 
-    LazyListAdapter mainAdapter;
-    LazyListAdapter sideAdapter;
+
+    private NextDayMainListAdapter mainAdapter;
+    private NextDayMainListAdapter sideAdapter;
+    private NextDayMainListAdapter addOnAdapter;
+
+    private List<DishModel> data_main;
+    private List<DishModel> data_side;
+    private List<DishModel> data_add_on;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,28 +54,40 @@ public class NextDayMenuActivity extends BaseFragmentActivity implements View.On
         if (menu == null) {
             onBackPressed();
         } else {
-            List<DishModel> data_main = new ArrayList<>();
-            List<DishModel> data_side = new ArrayList<>();
+            data_main = new ArrayList<>();
+            data_side = new ArrayList<>();
+            data_add_on = new ArrayList<>();
 
             for (DishModel dishModel : menu.dishModels) {
-                if (dishModel.type.equals("main")) {
-                    data_main.add(dishModel);
-                } else {
-                    data_side.add(dishModel);
+                switch (dishModel.type) {
+                    case "main":
+                        data_main.add(dishModel);
+                        break;
+                    case "side":
+                        data_side.add(dishModel);
+                        break;
+                    case "addon":
+                        data_add_on.add(dishModel);
+                        break;
+                    default:
+                        DebugUtils.logError(TAG, "Unknown Type: " + dishModel.type + " Dish: " + dishModel.name);
+                        break;
                 }
+
             }
 
-            mainAdapter = new LazyListAdapter(new MenuListAdapter(this, data_main));
-            sideAdapter = new LazyListAdapter(new MenuListAdapter(this, data_side));
+            getListMain().setAdapter(getMainAdapter());
+            getListAddOn().setAdapter(getAddOnAdapter());
+            getGridSide().setAdapter(getSideAdapter());
 
-            GridView list = (GridView) findViewById(R.id.list_main);
-            GridView grid = (GridView) findViewById(R.id.list_side);
+            getMainAdapter().addAll(data_main);
+            getSideAdapter().addAll(data_side);
+            getAddOnAdapter().addAll(data_add_on);
 
-            list.setAdapter(mainAdapter);
-            grid.setAdapter(sideAdapter);
+            getListMain().setOnItemClickListener(this);
+            getListAddOn().setOnItemClickListener(this);
+            getGridSide().setOnItemClickListener(this);
 
-            list.setOnItemClickListener(this);
-            grid.setOnItemClickListener(this);
         }
         initActionbar();
     }
@@ -99,16 +112,39 @@ public class NextDayMenuActivity extends BaseFragmentActivity implements View.On
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        currentSelectedDishModel = ((ItemHolder) view.getTag()).dishModel;
+        try {
+            DishModel mDish = (DishModel) parent.getAdapter().getItem(position);
+            DebugUtils.logDebug(TAG, "Type: " + mDish.type + " Name: " + mDish.name);
 
-        if (currentSelectedDishModel != null) {
-            DebugUtils.logDebug(TAG, "currentSelectedItem: " + currentSelectedDishModel.name);
-        } else {
-            DebugUtils.logDebug(TAG, "currentSelectedItem: null");
+            switch (mDish.type) {
+                case "main":
+                    getMainAdapter().setCurrentSelected(mDish);
+                    getSideAdapter().setCurrentSelected(null);
+                    getAddOnAdapter().setCurrentSelected(null);
+                    break;
+                case "side":
+                    getMainAdapter().setCurrentSelected(null);
+                    getSideAdapter().setCurrentSelected(mDish);
+                    getAddOnAdapter().setCurrentSelected(null);
+                    break;
+                case "addon":
+                    getMainAdapter().setCurrentSelected(null);
+                    getSideAdapter().setCurrentSelected(null);
+                    getAddOnAdapter().setCurrentSelected(mDish);
+                    break;
+                default:
+                    DebugUtils.logError(TAG, "Unknown Type: " + mDish.type + " Dish: " + mDish.name);
+                    break;
+            }
+
+            getSideAdapter().notifyDataSetChanged();
+            getAddOnAdapter().notifyDataSetChanged();
+            getMainAdapter().notifyDataSetChanged();
+
+        } catch (Exception ex) {
+            DebugUtils.logError(TAG, "OnClick");
         }
 
-        mainAdapter.notifyDataSetChanged();
-        sideAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -116,74 +152,40 @@ public class NextDayMenuActivity extends BaseFragmentActivity implements View.On
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
-    class MenuListAdapter implements LazyListAdapterInterface {
-        List<DishModel> data = new ArrayList<>();
-        NextDayMenuActivity context;
-        LayoutInflater inflater;
 
-        public MenuListAdapter(NextDayMenuActivity context, List<DishModel> data) {
-            this.context = context;
-            this.data = data;
-            inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        }
-
-        @Override
-        public int getCount() {
-            return data.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return null;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ItemHolder holder;
-
-            if (convertView == null) {
-                convertView = inflater.inflate(R.layout.list_item_add, null);
-
-                holder = new ItemHolder(
-                        context,
-                        convertView,
-                        R.id.img,
-                        R.id.txt_title,
-                        R.id.txt_description,
-                        R.id.img_sold_out,
-                        R.id.img_gradient,
-                        R.id.btn_add_to_bento,
-                        R.id.btn_added
-                );
-
-                convertView.setTag(holder);
-            } else {
-                holder = (ItemHolder) convertView.getTag();
-            }
-
-            holder.setData(data.get(position), false);
-
-            if (context.currentSelectedDishModel != null && holder.dishModel != null) {
-                holder.selected = context.currentSelectedDishModel.itemId == holder.dishModel.itemId;
-            }
-
-            holder.updateUI(false);
-            holder.btn_add_to_bento.setVisibility(View.GONE);
-            holder.btn_added.setVisibility(View.GONE);
-            holder.soldOut.setVisibility(View.GONE);
-
-            return convertView;
-        }
+    private NextDayMainListAdapter getMainAdapter() {
+        if (mainAdapter == null)
+            mainAdapter = new NextDayMainListAdapter(NextDayMenuActivity.this);
+        return mainAdapter;
     }
 
-   /* @Override
-    public void onBackPressed() {
-        BentoNowUtils.openErrorActivity(NextDayMenuActivity.this);
-        finish();
-    }*/
+    private NextDayMainListAdapter getSideAdapter() {
+        if (sideAdapter == null)
+            sideAdapter = new NextDayMainListAdapter(NextDayMenuActivity.this);
+        return sideAdapter;
+    }
+
+    private NextDayMainListAdapter getAddOnAdapter() {
+        if (addOnAdapter == null)
+            addOnAdapter = new NextDayMainListAdapter(NextDayMenuActivity.this);
+        return addOnAdapter;
+    }
+
+    private ListView getListMain() {
+        if (mListMain == null)
+            mListMain = (ListView) findViewById(R.id.list_next_main);
+        return mListMain;
+    }
+
+    private GridView getGridSide() {
+        if (gridSide == null)
+            gridSide = (GridView) findViewById(R.id.grid_next_side);
+        return gridSide;
+    }
+
+    private ListView getListAddOn() {
+        if (mListAddOn == null)
+            mListAddOn = (ListView) findViewById(R.id.list_next_add_on);
+        return mListAddOn;
+    }
 }

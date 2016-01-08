@@ -43,12 +43,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:onClick="onAddMainPressed"
                 android:orientation="vertical">
 
                 <RelativeLayout
                     android:layout_width="fill_parent"
                     android:layout_height="@dimen/main_menu_item_height"
                     android:layout_weight="1">
+
+
+                    <com.bentonow.bentonow.ui.BackendTextView
+                        android:id="@+id/txt_add_main"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:background="@null"
+                        android:gravity="center"
+                        android:text="@string/add_main_dish"
+                        android:textColor="@color/btn_green"
+                        android:textStyle="bold"
+                        app:key="build-main" />
 
                     <ImageView
                         android:id="@+id/img_main"
@@ -81,18 +96,6 @@
                             autofit:minTextSize="8sp" />
                     </RelativeLayout>
 
-                    <com.bentonow.bentonow.ui.BackendTextView
-                        android:id="@+id/btn_add_main"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_centerHorizontal="true"
-                        android:layout_centerVertical="true"
-                        android:background="@null"
-                        android:gravity="center"
-                        android:text="@string/add_main_dish"
-                        android:textColor="@color/btn_green"
-                        android:textStyle="bold"
-                        app:key="build-main" />
 
                     <ImageView
                         android:id="@+id/img_main_sold_out"
@@ -103,11 +106,7 @@
                         android:src="@drawable/banner_sold_out"
                         android:visibility="invisible" />
 
-                    <Button
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@null"
-                        android:onClick="onAddMainPressed" />
+
                 </RelativeLayout>
             </LinearLayout>
 
@@ -124,12 +123,26 @@
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
                     android:background="@drawable/btn_gray_square"
+                    android:onClick="onAddSide1Pressed"
                     android:orientation="vertical">
 
                     <RelativeLayout
                         android:layout_width="fill_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1">
+
+                        <com.bentonow.bentonow.ui.BackendTextView
+                            android:id="@+id/btn_add_side1"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_centerHorizontal="true"
+                            android:layout_centerVertical="true"
+                            android:background="@null"
+                            android:gravity="center"
+                            android:text="@string/add_side"
+                            android:textColor="@color/btn_green"
+                            android:textStyle="bold"
+                            app:key="build-side-1" />
 
                         <ImageView
                             android:id="@+id/img_side1"
@@ -162,18 +175,6 @@
                                 autofit:minTextSize="8sp" />
                         </RelativeLayout>
 
-                        <com.bentonow.bentonow.ui.BackendTextView
-                            android:id="@+id/btn_add_side1"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_centerHorizontal="true"
-                            android:layout_centerVertical="true"
-                            android:background="@null"
-                            android:gravity="center"
-                            android:text="@string/add_side"
-                            android:textColor="@color/btn_green"
-                            android:textStyle="bold"
-                            app:key="build-side-1" />
 
                         <ImageView
                             android:id="@+id/img_side1_sold_out"
@@ -184,11 +185,6 @@
                             android:src="@drawable/banner_sold_out"
                             android:visibility="invisible" />
 
-                        <Button
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@null"
-                            android:onClick="onAddSide1Pressed" />
                     </RelativeLayout>
                 </LinearLayout>
 
@@ -198,12 +194,27 @@
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
                     android:background="@drawable/btn_gray_square"
+                    android:onClick="onAddSide2Pressed"
                     android:orientation="vertical">
 
                     <RelativeLayout
                         android:layout_width="fill_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1">
+
+                        <com.bentonow.bentonow.ui.BackendTextView
+                            android:id="@+id/btn_add_side2"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_centerHorizontal="true"
+                            android:layout_centerVertical="true"
+                            android:background="@null"
+                            android:gravity="center"
+                            android:shadowColor="@color/btn_green"
+                            android:text="@string/add_side"
+                            android:textColor="@color/btn_green"
+                            android:textStyle="bold"
+                            app:key="build-side-2" />
 
                         <ImageView
                             android:id="@+id/img_side2"
@@ -236,19 +247,6 @@
                                 autofit:minTextSize="8sp" />
                         </RelativeLayout>
 
-                        <com.bentonow.bentonow.ui.BackendTextView
-                            android:id="@+id/btn_add_side2"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_centerHorizontal="true"
-                            android:layout_centerVertical="true"
-                            android:background="@null"
-                            android:gravity="center"
-                            android:shadowColor="@color/btn_green"
-                            android:text="@string/add_side"
-                            android:textColor="@color/btn_green"
-                            android:textStyle="bold"
-                            app:key="build-side-2" />
 
                         <ImageView
                             android:id="@+id/img_side2_sold_out"
@@ -259,11 +257,7 @@
                             android:src="@drawable/banner_sold_out"
                             android:visibility="invisible" />
 
-                        <Button
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@null"
-                            android:onClick="onAddSide2Pressed" />
+
                     </RelativeLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -281,12 +275,26 @@
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
                     android:background="@drawable/btn_build_side_3"
+                    android:onClick="onAddSide3Pressed"
                     android:orientation="vertical">
 
                     <RelativeLayout
                         android:layout_width="fill_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1">
+
+                        <com.bentonow.bentonow.ui.BackendTextView
+                            android:id="@+id/btn_add_side3"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_centerHorizontal="true"
+                            android:layout_centerVertical="true"
+                            android:background="@null"
+                            android:gravity="center"
+                            android:text="@string/add_side"
+                            android:textColor="@color/btn_green"
+                            android:textStyle="bold"
+                            app:key="build-side-3" />
 
                         <ImageView
                             android:id="@+id/img_side3"
@@ -319,18 +327,6 @@
                                 autofit:minTextSize="8sp" />
                         </RelativeLayout>
 
-                        <com.bentonow.bentonow.ui.BackendTextView
-                            android:id="@+id/btn_add_side3"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_centerHorizontal="true"
-                            android:layout_centerVertical="true"
-                            android:background="@null"
-                            android:gravity="center"
-                            android:text="@string/add_side"
-                            android:textColor="@color/btn_green"
-                            android:textStyle="bold"
-                            app:key="build-side-3" />
 
                         <ImageView
                             android:id="@+id/img_side3_sold_out"
@@ -341,11 +337,7 @@
                             android:src="@drawable/banner_sold_out"
                             android:visibility="invisible" />
 
-                        <Button
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@null"
-                            android:onClick="onAddSide3Pressed" />
+
                     </RelativeLayout>
                 </LinearLayout>
 
@@ -355,12 +347,26 @@
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
                     android:background="@drawable/btn_build_side_4"
+                    android:onClick="onAddSide4Pressed"
                     android:orientation="vertical">
 
                     <RelativeLayout
                         android:layout_width="fill_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1">
+
+                        <com.bentonow.bentonow.ui.BackendTextView
+                            android:id="@+id/btn_add_side4"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_centerHorizontal="true"
+                            android:layout_centerVertical="true"
+                            android:background="@null"
+                            android:gravity="center"
+                            android:text="@string/add_side"
+                            android:textColor="@color/btn_green"
+                            android:textStyle="bold"
+                            app:key="build-side-4" />
 
                         <ImageView
                             android:id="@+id/img_side4"
@@ -393,18 +399,6 @@
                                 autofit:minTextSize="8sp" />
                         </RelativeLayout>
 
-                        <com.bentonow.bentonow.ui.BackendTextView
-                            android:id="@+id/btn_add_side4"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_centerHorizontal="true"
-                            android:layout_centerVertical="true"
-                            android:background="@null"
-                            android:gravity="center"
-                            android:text="@string/add_side"
-                            android:textColor="@color/btn_green"
-                            android:textStyle="bold"
-                            app:key="build-side-4" />
 
                         <ImageView
                             android:id="@+id/img_side4_sold_out"
@@ -415,11 +409,7 @@
                             android:src="@drawable/banner_sold_out"
                             android:visibility="invisible" />
 
-                        <Button
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@null"
-                            android:onClick="onAddSide4Pressed" />
+
                     </RelativeLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -510,7 +500,7 @@
                 android:text="VIEW ADD-ONS"
                 android:textColor="@color/btn_green"
                 android:textSize="13sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
         </LinearLayout>
     </RelativeLayout>
