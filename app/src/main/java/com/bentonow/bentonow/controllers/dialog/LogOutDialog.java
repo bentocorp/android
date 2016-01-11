@@ -11,18 +11,19 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.ui.AutoFitTxtView;
 import com.bentonow.bentonow.ui.material.ButtonFlat;
 
 /**
  * Created by Jose Torres on 9/30/15.
  */
-public class ConfirmationDialog extends android.app.Dialog {
+public class LogOutDialog extends android.app.Dialog {
 
     Context context;
     View view;
     View backView;
     String message;
-    TextView messageTextView;
+    private AutoFitTxtView messageTextView;
     String title;
     TextView titleTextView;
 
@@ -35,7 +36,7 @@ public class ConfirmationDialog extends android.app.Dialog {
     View.OnClickListener onAcceptButtonClickListener;
     View.OnClickListener onCancelButtonClickListener;
 
-    public ConfirmationDialog(Context context, String title, String message) {
+    public LogOutDialog(Context context, String title, String message) {
         super(context, android.R.style.Theme_Translucent);
         this.context = context;// init Context
         this.message = message;
@@ -57,7 +58,7 @@ public class ConfirmationDialog extends android.app.Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.dialog_information);
+        setContentView(R.layout.log_out_dialog);
 
         view = (RelativeLayout) findViewById(R.id.contentDialog);
         backView = (RelativeLayout) findViewById(R.id.dialog_rootView);
@@ -83,7 +84,7 @@ public class ConfirmationDialog extends android.app.Dialog {
         } else
             setTitle(title);
 
-        this.messageTextView = (TextView) findViewById(R.id.message);
+        this.messageTextView = (AutoFitTxtView) findViewById(R.id.txt_message);
         setMessage(message);
 
         this.buttonAccept = (ButtonFlat) findViewById(R.id.button_accept);
@@ -132,6 +133,7 @@ public class ConfirmationDialog extends android.app.Dialog {
         this.message = message;
         messageTextView.setText(message);
     }
+
 
     public String getTitle() {
         return title;
@@ -201,7 +203,7 @@ public class ConfirmationDialog extends android.app.Dialog {
                 view.post(new Runnable() {
                     @Override
                     public void run() {
-                        ConfirmationDialog.super.dismiss();
+                        LogOutDialog.super.dismiss();
                     }
                 });
 

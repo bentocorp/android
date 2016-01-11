@@ -22,6 +22,7 @@ import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.dialog.EditPhoneDialog;
+import com.bentonow.bentonow.controllers.dialog.LogOutDialog;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.listener.ListenerDialog;
@@ -163,7 +164,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
     public void onLogoutPressed(View v) {
         DebugUtils.logDebug(TAG, "onLogoutPressed");
         action = "logout";
-        ConfirmationDialog mDialog = new ConfirmationDialog(SettingsActivity.this, "Confirmation", "Are you sure you want to log out ?");
+        LogOutDialog mDialog = new LogOutDialog(SettingsActivity.this, "Confirmation", "Are you sure you want to log out ?");
         mDialog.addAcceptButton("YES", SettingsActivity.this);
         mDialog.addCancelButton("NO", SettingsActivity.this);
         mDialog.show();
