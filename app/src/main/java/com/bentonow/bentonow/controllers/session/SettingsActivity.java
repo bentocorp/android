@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
+import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SocialNetworksUtil;
@@ -116,7 +117,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
 
 
         if (mCurrentUser != null && mCurrentUser.coupon_code != null && !mCurrentUser.coupon_code.isEmpty()) {
-            message = BackendText.get("share-precomposed-message").replace("%@", mCurrentUser.coupon_code).replace("http://apple.co/1FPEbWY", "https://bnc.lt/referrallink");
+            message = BackendText.get("share-precomposed-message").replace("%@", mCurrentUser.coupon_code).replace("http://apple.co/1FPEbWY", ConstantUtils.URL_INSTALL_ANDROID);
         }
     }
 
@@ -203,19 +204,11 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
     }
 
     public void onFacebookPressed(View v) {
+        if (!SocialNetworksUtil.postStatusFacebook(SettingsActivity.this, message, ConstantUtils.URL_INSTALL_ANDROID)) {
 
-        //SocialNetworksUtil.postStatusFacebook(SettingsActivity.this, message, url);
+            Toast.makeText(getApplicationContext(), "There is no facebook client installed.", Toast.LENGTH_SHORT).show();
 
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_SUBJECT, "Use my Bento promo code");
-        intent.putExtra(Intent.EXTRA_TEXT, message);
-
-
-        try {
-            startActivity(Intent.createChooser(intent, "Share..."));
-        } catch (android.content.ActivityNotFoundException ex) {
-            Toast.makeText(getApplicationContext(), "There is no email client installed.", Toast.LENGTH_SHORT).show();
+            onEmailPressed(v);
         }
     }
 

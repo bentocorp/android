@@ -9,6 +9,8 @@ public class ConstantUtils {
 
     public static final String TAG_OPEN_SCREEN = "Open_Screen_Via";
 
+    public static final String URL_INSTALL_ANDROID = "https://bnc.lt/referrallink";
+
     public enum optItemType {CUSTOM_BENTO_BOX, ADD_ON}
 
     public enum optOpenScreen {NORMAL, COMPLETE_ORDER, BUILD_BENTO, SUMMARY}

@@ -9,15 +9,12 @@ import android.content.pm.ResolveInfo;
 import android.content.pm.Signature;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.provider.Telephony;
 import android.support.v4.app.FragmentActivity;
 import android.util.Base64;
-import android.widget.Toast;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.controllers.BentoApplication;
-import com.facebook.share.model.ShareContent;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
 
@@ -76,10 +73,9 @@ public class SocialNetworksUtil {
         act.startActivity(pageIntent);
     }
 
-    public static void postStatusFacebook(FragmentActivity mActivity, String message, String sUrl) {
+    public static boolean postStatusFacebook(FragmentActivity mActivity, String message, String sUrl) {
         ShareDialog shareDialog = new ShareDialog(mActivity);
         if (ShareDialog.canShow(ShareLinkContent.class)) {
-
             ShareLinkContent linkContent = new ShareLinkContent.Builder()
                     .setContentTitle("Bento")
                     .setContentDescription(message)
@@ -87,7 +83,9 @@ public class SocialNetworksUtil {
                     .build();
 
             shareDialog.show(linkContent);
-        }
+            return true;
+        } else
+            return false;
     }
 
     public static void openTwitterUser(Activity act, String userId) {
