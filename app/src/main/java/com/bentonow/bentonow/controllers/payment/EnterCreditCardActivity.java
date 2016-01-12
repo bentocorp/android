@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
@@ -58,6 +57,9 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
 
     private UserDao userDao = new UserDao();
     private User mCurrentUser;
+    private String sNumber = "";
+    private String sCvc = "";
+    private String sDate = "";
 
     int focused = R.id.txt_number;
 
@@ -213,7 +215,9 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (txt_cvc.getText().length() == 0) {
+                sCvc = txt_cvc.getText().toString();
+
+                if (sCvc.isEmpty()) {
                     txt_date.requestFocus();
                     focused = R.id.txt_date;
                 }
@@ -237,62 +241,64 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
 
             @Override
             public void afterTextChanged(Editable editable) {
-                String charSequence = txt_date.getText().toString().replaceAll("[^0-9]", "");
+                sDate = txt_date.getText().toString().replaceAll("[^0-9]", "");
+
                 StringBuilder sb = null;
 
-                if (charSequence.length() == 0) {
-                    focused = R.id.txt_number;
-                } else if (oldLength != charSequence.length()) {
-                    oldLength = charSequence.length();
+                if (sDate.isEmpty()) {
+                    if (sNumber.length() != CreditCard.getNumberMaxLength(sNumber))
+                        focused = R.id.txt_number;
 
-                    if (charSequence.length() == 1) {
+                } else if (oldLength != sDate.length()) {
+                    oldLength = sDate.length();
+
+                    if (sDate.length() == 1) {
                         try {
-                            int month = Integer.parseInt(charSequence);
+                            int month = Integer.parseInt(sDate);
 
                             if (month > 1) {
-                                charSequence = "0" + charSequence;
+                                sDate = "0" + sDate;
                             }
                         } catch (Exception ignored) {
                         }
-                    } else if (charSequence.length() == 2) {
+                    } else if (sDate.length() == 2) {
                         try {
-                            int month = Integer.parseInt(charSequence);
+                            int month = Integer.parseInt(sDate);
                             if (month > 12) {
                                 DebugUtils.logDebug(TAG, "month: " + month);
-                                charSequence = charSequence.substring(0, 1);
-                                txt_date.setText(charSequence);
-                                txt_date.setSelection(charSequence.length());
+                                sDate = sDate.substring(0, 1);
+                                txt_date.setText(sDate);
+                                txt_date.setSelection(sDate.length());
                             }
                         } catch (Exception ignored) {
                         }
                     }
 
-                    if (charSequence.length() == 3) {
+                    if (sDate.length() == 3) {
                         try {
-                            int year = Integer.parseInt(charSequence.substring(2));
+                            int year = Integer.parseInt(sDate.substring(2));
 
                             if (year == 0) {
-                                charSequence = charSequence.substring(0, 2);
+                                sDate = sDate.substring(0, 2);
                             }
                         } catch (Exception ignored) {
                         }
-                    } else if (charSequence.length() == 4) {
+                    } else if (sDate.length() == 4) {
                         try {
-                            int year = Integer.parseInt(charSequence.substring(2));
+                            int year = Integer.parseInt(sDate.substring(2));
 
                             SimpleDateFormat sdf = new SimpleDateFormat("yy", Locale.US); // Just the year, with 2 digits
                             int currYear = Integer.parseInt(sdf.format(Calendar.getInstance().getTime()));
 
                             if (year < currYear) {
-                                charSequence = charSequence.substring(0, 3);
+                                sDate = sDate.substring(0, 3);
                             }
                         } catch (Exception ignored) {
                         }
                     }
 
-                    if (charSequence.length() >= 2) {
-                        sb = new StringBuilder(charSequence)
-                                .insert(2, "/");
+                    if (sDate.length() >= 2) {
+                        sb = new StringBuilder(sDate).insert(2, "/");
                     }
 
                     if (sb != null) {
@@ -339,19 +345,19 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
 
             @Override
             public void afterTextChanged(Editable editable) {
-                String charSequence = txt_number.getText().toString().replaceAll("[^0-9]", "");
+                sNumber = txt_number.getText().toString().replaceAll("[^0-9]", "");
 
-                if (oldLength != charSequence.length()) {
-                    oldLength = charSequence.length();
+                if (oldLength != sNumber.length()) {
+                    oldLength = sNumber.length();
 
-                    if (charSequence.length() > 1) {
+                    if (sNumber.length() > 1) {
                         txt_number.setTextColor(getResources().getColor(R.color.gray));
 
-                        if (charSequence.length() == CreditCard.getNumberMaxLength(charSequence)) {
+                        if (sNumber.length() == CreditCard.getNumberMaxLength(sNumber)) {
                             focused = R.id.txt_date;
                         }
 
-                        txt_number.setText(CreditCard.format(charSequence));
+                        txt_number.setText(CreditCard.format(sNumber));
                         txt_number.setSelection(txt_number.getText().length());
                     }
                 }
