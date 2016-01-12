@@ -339,6 +339,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
             mOrder.Stripe.stripeToken = mCurrentUser.stripe_token;
             mOrder.IdempotentToken = BentoNowUtils.getUUIDBento();
             mOrder.Platform = "Android";
+            mOrder.AppVersion = "1.20";
 
             mOrderDao.updateOrder(mOrder);
 

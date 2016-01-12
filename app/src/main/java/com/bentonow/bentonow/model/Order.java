@@ -2,10 +2,7 @@ package com.bentonow.bentonow.model;
 
 import android.location.Address;
 
-import com.bentonow.bentonow.Utils.AndroidUtil;
-import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
-import com.bentonow.bentonow.dao.OrderDao;
 import com.bentonow.bentonow.model.order.OrderDetails;
 import com.bentonow.bentonow.model.order.OrderEta;
 import com.bentonow.bentonow.model.order.OrderItem;
@@ -15,7 +12,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Order {
@@ -36,6 +32,7 @@ public class Order {
     public String CouponCode = null;
     public String IdempotentToken = null;
     public String Platform = null;
+    public String AppVersion = "";
     public String MenuType = "";
     public String MealName = "";
     public int order_pk = 0;

@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.v4.content.IntentCompat;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -27,12 +26,10 @@ import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Menu;
-import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.Stock;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.gson.Gson;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.apache.http.Header;
@@ -54,8 +51,14 @@ public class MainActivity extends BaseFragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (getCallingActivity() != null)
-            DebugUtils.logDebug(TAG, "callerActivity " + getCallingActivity());
+        if (!isTaskRoot()) {
+            final Intent intent = getIntent();
+            final String intentAction = intent.getAction();
+            if (intent != null && intent.hasCategory(Intent.CATEGORY_LAUNCHER) && intentAction != null && intentAction.equals(Intent.ACTION_MAIN)) {
+                finish();
+                return;
+            }
+        }
 
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, "open");
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.LOCATION, "");
