@@ -140,7 +140,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 DebugUtils.logError(TAG, "getUserInfo:  " + responseString);
-                WidgetsUtils.createShortToast(R.string.error_web_request);
+                WidgetsUtils.createShortToast(R.string.error_phone_request);
             }
 
             @SuppressWarnings("deprecation")
