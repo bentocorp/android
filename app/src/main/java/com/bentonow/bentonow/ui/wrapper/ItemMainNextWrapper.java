@@ -9,6 +9,7 @@ import android.widget.ImageView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.ui.AutoFitTxtView;
+import com.bentonow.bentonow.ui.material.ProgressBarCircularIndeterminate;
 
 
 public class ItemMainNextWrapper {
@@ -19,6 +20,7 @@ public class ItemMainNextWrapper {
     private ImageView img_gradient = null;
     private AutoFitTxtView txt_title = null;
     private AutoFitTxtView txt_description = null;
+    private ProgressBarCircularIndeterminate mProgressLoading;
 
     public ItemMainNextWrapper(View base) {
         this.view = base;
@@ -48,5 +50,10 @@ public class ItemMainNextWrapper {
         return txt_title;
     }
 
+    public ProgressBarCircularIndeterminate getProgressLoading() {
+        if (mProgressLoading == null)
+            mProgressLoading = (ProgressBarCircularIndeterminate) view.findViewById(R.id.progress_loading);
+        return mProgressLoading;
+    }
 
 }

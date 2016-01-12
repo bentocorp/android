@@ -9,6 +9,7 @@ import android.widget.ImageView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.ui.BackendAutoFitTextView;
+import com.bentonow.bentonow.ui.material.ProgressBarCircularIndeterminate;
 
 import me.grantland.widget.AutofitTextView;
 
@@ -23,6 +24,7 @@ public class ItemSideCustomWrapper {
     private AutofitTextView txt_description = null;
     private BackendAutoFitTextView btn_add_to_bento;
     private BackendAutoFitTextView btn_added;
+    private ProgressBarCircularIndeterminate mProgressLoading;
 
     public ItemSideCustomWrapper(View base) {
         this.view = base;
@@ -69,4 +71,11 @@ public class ItemSideCustomWrapper {
             btn_added = (BackendAutoFitTextView) view.findViewById(R.id.btn_added);
         return btn_added;
     }
+
+    public ProgressBarCircularIndeterminate getProgressLoading() {
+        if (mProgressLoading == null)
+            mProgressLoading = (ProgressBarCircularIndeterminate) view.findViewById(R.id.progress_loading);
+        return mProgressLoading;
+    }
+
 }
