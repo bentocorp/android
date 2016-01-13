@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -14,6 +13,7 @@ import android.widget.Toast;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.DebugUtils;
+import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.model.BackendText;
@@ -24,6 +24,8 @@ public class HelpActivity extends BaseFragmentActivity implements View.OnClickLi
     private WebView mWebBrowser;
     private TextView info_email;
     private TextView info_phone;
+
+    private String sScreen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,12 +55,16 @@ public class HelpActivity extends BaseFragmentActivity implements View.OnClickLi
         // BROWSER
         if (getIntent().getBooleanExtra("faq", false)) {
             loadDataInWebView(BackendText.get("faq-body"));
+            sScreen = "Viewed FAQ Screen";
         } else if (getIntent().getBooleanExtra("tos", false)) {
             loadDataInWebView(BackendText.get("terms-conditions-body"));
+            sScreen = "Viewed Terms and Conditions Screen";
         } else if (getIntent().getBooleanExtra("privacy", false)) {
             loadDataInWebView(BackendText.get("privacy-policy-body"));
+            sScreen = "Viewed Privacy Policy Screen";
         } else {
             onBackPressed();
+            sScreen = "";
         }
     }
 
@@ -119,6 +125,13 @@ public class HelpActivity extends BaseFragmentActivity implements View.OnClickLi
                 onBackPressed();
                 break;
         }
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        MixpanelUtils.track(sScreen);
+        super.onDestroy();
     }
 
     private WebView getWebBrowser() {

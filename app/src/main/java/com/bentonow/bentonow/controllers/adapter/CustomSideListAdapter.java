@@ -131,9 +131,6 @@ public class CustomSideListAdapter extends ArrayAdapter<DishModel> {
             viewHolder.getImgSoldOut().setVisibility(View.GONE);
         }
 
-        if (viewHolder.getBtnAddToBento() != null)
-            viewHolder.getBtnAddToBento().setVisibility(selected && !added ? View.VISIBLE : View.GONE);
-
         return convertView;
     }
 

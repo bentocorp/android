@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 
@@ -36,5 +37,12 @@ public class OrderConfirmedActivity extends BaseFragmentActivity implements View
     @Override
     public void onClick(View v) {
         onFaqPressed(null);
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        MixpanelUtils.track("Viewed Order Confirmation Screen");
+        super.onDestroy();
     }
 }

@@ -1,11 +1,11 @@
 package com.bentonow.bentonow.controllers.init;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
+import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.model.BackendText;
@@ -31,12 +31,21 @@ public class GettingStartedActivity extends BaseFragmentActivity {
 
         String title = BackendText.get("about-item-0").replace("$X", "$" + sPrice + "!");
 
+        MixpanelUtils.track("App Installed");
+
+
         getTxtTitle().setText(title);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        MixpanelUtils.track("Viewed Intro Screen");
+        super.onDestroy();
     }
 
     public void onGettingStartedPressed(View view) {

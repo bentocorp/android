@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -112,6 +111,9 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
         if (getIntent().getStringExtra("email") != null) {
             txt_email.setText(getIntent().getStringExtra("email"));
         }
+
+
+        MixpanelUtils.track("Began Registration");
 
         initActionbar();
         setupTextFields();
@@ -233,7 +235,10 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
 
             userDao.insertUser(registerUser);
 
+            MixpanelUtils.track("Logged In");
+
             MixpanelUtils.signUpUser(registerUser);
+            MixpanelUtils.track("Completed Registration");
 
             switch (optOpenScreen) {
                 case NORMAL:
@@ -504,6 +509,13 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
             mDialog.show();
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        MixpanelUtils.track("Viewed Register Screen");
+        super.onDestroy();
+    }
+
 
     private void dismissDialog() {
         if (mDialog != null)

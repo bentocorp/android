@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.DebugUtils;
+import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.adapter.CustomSideListAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
@@ -122,6 +123,11 @@ public class SelectSideCustomActivity extends BaseFragmentActivity implements Vi
         getListAdapter().notifyDataSetChanged();
     }
 
+    @Override
+    protected void onDestroy() {
+        MixpanelUtils.track("Viewed Choose Your Side Dish Screen");
+        super.onDestroy();
+    }
     private CustomSideListAdapter getListAdapter() {
         if (mListAdapter == null)
             mListAdapter = new CustomSideListAdapter(SelectSideCustomActivity.this, SelectSideCustomActivity.this);

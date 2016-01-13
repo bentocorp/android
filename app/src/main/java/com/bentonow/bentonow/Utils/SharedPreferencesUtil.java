@@ -25,6 +25,7 @@ public class SharedPreferencesUtil {
     public static final String IS_ORDER_SOLD_OUT = "IS_ORDER_SOLD_OUT"; //boolean
     public static final String IS_APP_IN_FRONT = "IS_THE_APP_IN_FRONT"; //boolean
     public static final String CURRENT_USER_ID = "CURRENT_USER_ID"; //long
+    public static final String USER_EMAIL = "USER_EMAIL"; //String
 
 
     /**

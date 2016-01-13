@@ -178,6 +178,18 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
         }
     }
 
+    private void trackPromoCode() {
+        try {
+            JSONObject params = new JSONObject();
+            params.put("code", mCurrentUser.coupon_code);
+            params.put("discount", mOrder.OrderDetails.coupon_discount_cents);
+            MixpanelUtils.track("Entered Promo Code", params);
+        } catch (Exception e) {
+            DebugUtils.logError(TAG, "track(): " + e.toString());
+        }
+
+    }
+
     void requestPromoCode(final String code) {
         DebugUtils.logDebug(TAG, "requestPromoCode " + code);
         if (code == null || code.isEmpty()) {
@@ -185,6 +197,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
             mDialog.addAcceptButton("OK", null);
             mDialog.show();
         } else {
+
             showLoadingDialog(getString(R.string.processing_label), false);
 
             RequestParams params = new RequestParams();
@@ -247,10 +260,13 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
                         DebugUtils.logError(TAG, "requestPromoCode(): " + e.getLocalizedMessage());
                     }
 
+
                     DebugUtils.logDebug(TAG, "discount " + discount);
 
                     mOrder.OrderDetails.coupon_discount_cents = discount;
                     mOrderDao.updateOrder(mOrder);
+
+                    trackPromoCode();
 
                     updateBentoUI(true);
                 }
@@ -307,12 +323,14 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
     }
 
     public void onChangeAddressPressed(View v) {
+        MixpanelUtils.track("Tapped On Change - Address");
         Intent intent = new Intent(this, DeliveryLocationActivity.class);
         intent.putExtra(ConstantUtils.TAG_OPEN_SCREEN, ConstantUtils.optOpenScreen.SUMMARY);
         startActivity(intent);
     }
 
     public void onChangeCreditCardPressed(View v) {
+        MixpanelUtils.track("Tapped On Change - Payment");
         startActivity(new Intent(this, EnterCreditCardActivity.class));
     }
 
@@ -333,6 +351,8 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
     }
 
     public void onLetsEatPressed() {
+        MixpanelUtils.track("Tapped On Let's Eat");
+
         if (BentoNowUtils.isValidCompleteOrder(CompleteOrderActivity.this)) {
             showLoadingDialog(getString(R.string.processing_label), false);
 
@@ -633,6 +653,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
 
     @Override
     public void onRemoveBento(int iPk) {
+        MixpanelUtils.track("Removed Bento");
         if (aOrder.size() == 1) {
             mDialog = new ConfirmationDialog(CompleteOrderActivity.this, null, BackendText.get("complete-remove-all-text"));
             mDialog.addAcceptButton(BackendText.get("complete-remove-all-confirmation-2"), new View.OnClickListener() {
@@ -720,6 +741,11 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        MixpanelUtils.track("Viewed Summary Screen");
+        super.onDestroy();
+    }
 
     private TextView getTxtDeliveryPrice() {
         if (txt_delivery_price == null)

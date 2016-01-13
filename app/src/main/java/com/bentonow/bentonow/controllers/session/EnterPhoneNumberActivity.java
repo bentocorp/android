@@ -173,25 +173,6 @@ public class EnterPhoneNumberActivity extends BaseFragmentActivity implements Vi
         return txt_phone.getText().length() == 16;
     }
 
-    //region onClick
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.actionbar_left_btn:
-                onBackPressed();
-                break;
-            case R.id.actionbar_right_btn:
-                BentoNowUtils.openFaqActivity(EnterPhoneNumberActivity.this);
-                break;
-            case R.id.text_privacy_policy:
-                BentoNowUtils.openPolicyActivity(EnterPhoneNumberActivity.this);
-                break;
-            case R.id.text_confirmation_terms:
-                BentoNowUtils.openTermAndConditionsActivity(EnterPhoneNumberActivity.this);
-                break;
-        }
-    }
 
     public void onDonePressed(View view) {
         if (!isValid())
@@ -235,6 +216,8 @@ public class EnterPhoneNumberActivity extends BaseFragmentActivity implements Vi
 
                     userDao.insertUser(mCurrentUser);
 
+                    MixpanelUtils.track("Logged In");
+
                     switch (optOpenScreen) {
                         case COMPLETE_ORDER:
                             if (BentoNowUtils.isValidCompleteOrder(EnterPhoneNumberActivity.this))
@@ -265,6 +248,30 @@ public class EnterPhoneNumberActivity extends BaseFragmentActivity implements Vi
             txt_phone.setTextColor(getResources().getColor(R.color.gray));
             img_phone.setImageResource(R.drawable.ic_signup_phone);
         }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.actionbar_left_btn:
+                onBackPressed();
+                break;
+            case R.id.actionbar_right_btn:
+                BentoNowUtils.openFaqActivity(EnterPhoneNumberActivity.this);
+                break;
+            case R.id.text_privacy_policy:
+                BentoNowUtils.openPolicyActivity(EnterPhoneNumberActivity.this);
+                break;
+            case R.id.text_confirmation_terms:
+                BentoNowUtils.openTermAndConditionsActivity(EnterPhoneNumberActivity.this);
+                break;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        MixpanelUtils.track("Viewed Phone Number Screen");
+        super.onDestroy();
     }
 
     private TextView getTextPrivacyPolicy() {

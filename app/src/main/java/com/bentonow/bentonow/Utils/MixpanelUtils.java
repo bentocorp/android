@@ -1,12 +1,8 @@
 package com.bentonow.bentonow.Utils;
 
-import android.location.Address;
-
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.controllers.BentoApplication;
-import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.User;
-import com.google.gson.Gson;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 import org.json.JSONObject;
@@ -29,6 +25,7 @@ public class MixpanelUtils {
 
     public static void track(String event, JSONObject params) {
         getMixpanelApi().track(event, params);
+        FacebookUtil.trackEvent(event);
     }
 
     public static void signUpUser(User mUser) {

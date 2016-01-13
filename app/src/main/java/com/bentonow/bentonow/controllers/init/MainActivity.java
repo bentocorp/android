@@ -167,8 +167,10 @@ public class MainActivity extends BaseFragmentActivity {
 
     void waitForUserLocation() {
         if (LocationUtils.isGpsEnable(MainActivity.this)) {
+            MixpanelUtils.track("Allow Location Services");
             getCurrentLocation();
         } else {
+            MixpanelUtils.track("Don't Allow Location Services");
             ConfirmationDialog mDialog = new ConfirmationDialog(MainActivity.this, "Enable GPS", "GPS is disabled in your device. Enable it?");
             mDialog.addAcceptButton("Yes", new View.OnClickListener() {
                 @Override

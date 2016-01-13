@@ -18,6 +18,7 @@ import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.CreditCard;
 import com.bentonow.bentonow.Utils.DebugUtils;
+import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
@@ -373,19 +374,6 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
         updateUI();
     }
 
-    //endregion
-
-    //region OnClick
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.actionbar_left_btn:
-                onBackPressed();
-                break;
-        }
-    }
-
     public void onClearPressed(View v) {
         txt_number.setText("");
         txt_date.setText("");
@@ -496,7 +484,20 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
         return 0;
     }
 
-    //endregion
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.actionbar_left_btn:
+                onBackPressed();
+                break;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        MixpanelUtils.track("Viewed Credit Card Screen");
+        super.onDestroy();
+    }
 
     private void dismissDialog() {
         if (mDialog != null)

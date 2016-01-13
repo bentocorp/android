@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
 
-import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
@@ -17,7 +16,8 @@ import com.bentonow.bentonow.dao.OrderDao;
 import com.bentonow.bentonow.service.BentoCustomerService;
 import com.facebook.appevents.AppEventsLogger;
 
-import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import org.json.JSONObject;
+
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class BaseFragmentActivity extends FragmentActivity {
@@ -32,6 +32,7 @@ public class BaseFragmentActivity extends FragmentActivity {
     protected BentoDao mBentoDao = new BentoDao();
     protected DishDao mDishDao = new DishDao();
 
+    protected long lStart, lEnd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +69,17 @@ public class BaseFragmentActivity extends FragmentActivity {
 
     }
 
+    protected void trackViewedScreen(String sScreen) {
+        lEnd = System.currentTimeMillis();
+        try {
+            JSONObject params = new JSONObject();
+            params.put("duration", (lEnd - lStart) / 1000);
+            MixpanelUtils.track(sScreen, params);
+        } catch (Exception e) {
+            DebugUtils.logError(TAG, e);
+        }
+    }
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
@@ -83,6 +95,7 @@ public class BaseFragmentActivity extends FragmentActivity {
 
     @Override
     protected void onStart() {
+        lStart = System.currentTimeMillis();
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_APP_IN_FRONT, true);
         super.onStart();
     }

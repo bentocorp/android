@@ -8,6 +8,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.adapter.CustomMainListAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
@@ -85,6 +86,7 @@ public class SelectMainCustomActivity extends BaseFragmentActivity implements Vi
         //if (currentSelectedItem.itemId == Order.current.OrderItems.get(orderIndex).items.get(0).itemId)
 
         //Order.current.OrderItems.get(orderIndex).items.set(0, null);
+        MixpanelUtils.track("Withdrew Main Dish");
 
         DishModel mDish = mDishDao.getEmptyDish(mOrder.OrderItems.get(orderIndex).order_pk);
         mDish.dish_pk = mOrder.OrderItems.get(orderIndex).items.get(0).dish_pk;
@@ -128,6 +130,12 @@ public class SelectMainCustomActivity extends BaseFragmentActivity implements Vi
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         getListAdapter().setCurrentSelected(getListAdapter().getItem(position));
         getListAdapter().notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onDestroy() {
+        MixpanelUtils.track("Viewed Choose Your Main Dish Screen");
+        super.onDestroy();
     }
 
     private CustomMainListAdapter getListAdapter() {

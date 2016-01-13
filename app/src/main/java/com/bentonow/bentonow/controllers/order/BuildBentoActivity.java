@@ -483,6 +483,12 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     }
 
     @Override
+    protected void onDestroy() {
+        trackViewedScreen("Viewed Custom Home Screen");
+        super.onDestroy();
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         if (mBound) {

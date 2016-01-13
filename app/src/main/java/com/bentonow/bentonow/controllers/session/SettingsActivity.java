@@ -320,6 +320,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
                     userDao.removeUser();
                     MixpanelUtils.clearPreferences();
                     updateUI();
+                    MixpanelUtils.track("Logged Out");
                 }
 
                 action = "";
@@ -346,6 +347,12 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.right_slide_in, R.anim.left_slide_out);
+    }
+
+    @Override
+    protected void onDestroy() {
+        MixpanelUtils.track(mCurrentUser == null ? "Viewed Signed Out Settings Screen" : "Viewed Signed In Settings Screen");
+        super.onDestroy();
     }
 
     private LinearLayout getLayoutContainerPhone() {

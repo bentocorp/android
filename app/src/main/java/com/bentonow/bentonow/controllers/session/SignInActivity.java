@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -183,6 +182,8 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
 
             MixpanelUtils.logInUser(mCurrentUser);
 
+            MixpanelUtils.track("Logged In");
+
             switch (optOpenScreen) {
                 case NORMAL:
                     onBackPressed();
@@ -316,6 +317,7 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
     }
 
     public void onForgotPassword(View view) {
+        MixpanelUtils.track("Tapped On Forgot Password");
         SocialNetworksUtil.openWebUrl(this, BackendText.get("forgot_password_url"));
     }
 
@@ -339,6 +341,12 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected void onDestroy() {
+        MixpanelUtils.track("Viewed Sign In Screen");
+        super.onDestroy();
     }
 
     @Override

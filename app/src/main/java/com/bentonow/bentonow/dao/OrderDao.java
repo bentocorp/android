@@ -6,7 +6,6 @@ import android.database.Cursor;
 import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
-import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.db.DBAdapter;
 import com.bentonow.bentonow.model.DishModel;
@@ -79,7 +78,6 @@ public class OrderDao {
     }
 
     public Order insertNewOrder(Order mOrder) {
-        MixpanelUtils.track("Began Building A Bento");
 
         dbAdapter.begginTransaction();
 
@@ -95,7 +93,6 @@ public class OrderDao {
     }
 
     public Order getNewOrder() {
-        MixpanelUtils.track("Began Building A Bento");
 
         Order mOrder = new Order();
         mOrder.OrderItems.add(mBentoDao.getNewBento(ConstantUtils.optItemType.CUSTOM_BENTO_BOX));

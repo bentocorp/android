@@ -5,7 +5,7 @@ import android.database.Cursor;
 
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
-import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
+import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.db.DBAdapter;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.order.OrderItem;
@@ -43,6 +43,8 @@ public class BentoDao {
     public boolean insertBento(OrderItem mOrder) {
         DebugUtils.logDebug(TAG, "Insert Bento");
 
+        MixpanelUtils.track("Began Building A Bento");
+
         dbAdapter.begginTransaction();
 
         ContentValues cValues = getContentValues(mOrder);
@@ -56,6 +58,8 @@ public class BentoDao {
     }
 
     public OrderItem getNewBento(ConstantUtils.optItemType optItemType) {
+        MixpanelUtils.track("Began Building A Bento");
+
         OrderItem mOrder = new OrderItem();
 
         mOrder.item_type = optItemType == ConstantUtils.optItemType.CUSTOM_BENTO_BOX ? "CustomerBentoBox" : "AddonList";

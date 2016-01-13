@@ -1,7 +1,6 @@
 package com.bentonow.bentonow.controllers.errors;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -14,7 +13,6 @@ import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
-import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.ui.BackendEditText;
 import com.bentonow.bentonow.web.request.UserRequest;
@@ -26,7 +24,6 @@ import com.google.android.gms.maps.model.PolygonOptions;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.apache.http.Header;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 
@@ -118,6 +115,12 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
     protected void onResume() {
         super.onResume();
         setupMap();
+    }
+
+    @Override
+    protected void onDestroy() {
+        MixpanelUtils.track("Viewed Out of Delivery Zone Screen");
+        super.onDestroy();
     }
 
     private void setupMap() {

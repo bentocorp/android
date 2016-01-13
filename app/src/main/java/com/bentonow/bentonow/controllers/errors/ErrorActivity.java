@@ -3,7 +3,6 @@ package com.bentonow.bentonow.controllers.errors;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -221,6 +220,15 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
         super.onStart();
         Intent intent = new Intent(this, BentoCustomerService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (Settings.status.equals("sold out"))
+            trackViewedScreen("Viewed Sold-out Screen");
+        else
+            trackViewedScreen("Viewed Closed Screen");
+        super.onDestroy();
     }
 
     @Override
