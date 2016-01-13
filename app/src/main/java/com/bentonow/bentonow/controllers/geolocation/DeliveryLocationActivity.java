@@ -1,12 +1,15 @@
 package com.bentonow.bentonow.controllers.geolocation;
 
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -72,7 +75,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class DeliveryLocationActivity extends BaseFragmentActivity implements GoogleMap.OnMapLoadedCallback, View.OnClickListener, AdapterView.OnItemClickListener, View.OnKeyListener,
+public class DeliveryLocationActivity extends BaseFragmentActivity implements GoogleMap.OnMapClickListener, View.OnClickListener, AdapterView.OnItemClickListener, View.OnKeyListener,
         TextView.OnEditorActionListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     public static final String TAG = "DeliveryLocationAct";
@@ -104,7 +107,9 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private ArrayList<AutoCompleteModel> resultList;
 
     private boolean bMovedMap;
-    private float previousZoomLevel = -1.0f;
+    private float previousZoomLevel = 17.7f;
+    private static final long SCROLL_TIME = 100L;
+    private long lastTouched = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,35 +145,19 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         mRequestingLocationUpdates = true;
         buildGoogleApiClient();
 
+        getGoogleMap().setOnMapClickListener(DeliveryLocationActivity.this);
         getMapFragment().setOnDragListener(new OnCustomDragListener() {
 
             @Override
             public void onDrag(MotionEvent motionEvent) {
                 switch (motionEvent.getAction()) {
-                    case MotionEvent.ACTION_MOVE:
-                        bMovedMap = true;
-                        break;
                     case MotionEvent.ACTION_DOWN:
+                        lastTouched = SystemClock.uptimeMillis();
                         break;
                     case MotionEvent.ACTION_UP:
-                        mLastLocations = getGoogleMap().getCameraPosition().target;
-
-                        if (bMovedMap) {
-                            bMovedMap = false;
-                            mOrderAddress = null;
-                            mLastOrderLocation = mLastLocations;
-
-                            if (mLastLocations != null) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        scanLocation(mLastLocations);
-                                    }
-                                });
-                            }
-                        } else {
-                            DebugUtils.logDebug(TAG, "Didn't Change position");
-                        }
+                        final long now = SystemClock.uptimeMillis();
+                        if (now - lastTouched > SCROLL_TIME)
+                            locationMapChanged(getGoogleMap().getCameraPosition().target, false);
 
                         break;
                     default:
@@ -180,11 +169,12 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         getGoogleMap().setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
+                DebugUtils.logDebug(TAG, "Camera Position: " + cameraPosition.zoom);
                 if (previousZoomLevel != cameraPosition.zoom) {
-                    bMovedMap = true;
+                    locationMapChanged(cameraPosition.target, false);
                 }
-
                 previousZoomLevel = cameraPosition.zoom;
+
             }
         });
 
@@ -241,7 +231,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
         DebugUtils.logDebug(TAG, "setup marker");
         LatLng point = null;
-        float zoom = 12f;
 
         if (mLastOrderLocation != null) {
             point = mLastOrderLocation;
@@ -253,35 +242,50 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             point = new LatLng(37.772492, -122.420262);
         } else {
             markerLocation(point);
-            zoom = 17f;
         }
 
-        getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(point, zoom));
-        getGoogleMap().setOnMapLoadedCallback(this);
+        getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(point, previousZoomLevel));
+    }
+
+
+    private void locationMapChanged(final LatLng latLng, final boolean bMovedMap) {
+        DebugUtils.logDebug(TAG, "locationMapChanged");
+        if (latLng != null) {
+            mLastLocations = latLng;
+            mOrderAddress = null;
+            mLastOrderLocation = latLng;
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    scanLocation(mLastLocations);
+                    if (bMovedMap)
+                        getGoogleMap().animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, previousZoomLevel));
+                }
+            });
+
+            updateUI();
+        }
     }
 
     @Override
-    public void onMapLoaded() {
-        DebugUtils.logDebug(TAG, "onMapLoaded()");
-        if (mLastOrderLocation != null) {
-            markerLocation(mLastOrderLocation);
-        } else if (mLastLocations != null) {
-            markerLocation(mLastLocations);
-        }
+    public void onMapClick(final LatLng latLng) {
+        locationMapChanged(latLng, true);
     }
 
     private void markerLocation(LatLng latLng) {
         mLastOrderLocation = latLng;
-        getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, getGoogleMap().getCameraPosition().zoom > 11f ? getGoogleMap().getCameraPosition().zoom : 17f));
+        getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, previousZoomLevel));
         scanLocation(latLng);
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void moveMapToCenter(LatLng mLocation, String sAddress) {
         mOrderAddress = LocationUtils.getAddressFromLocation(mLocation);
 
         if (mOrderAddress != null) {
             mLastOrderLocation = mLocation;
-            getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(mLocation, getGoogleMap().getCameraPosition().zoom > 11f ? getGoogleMap().getCameraPosition().zoom : 17f));
+            getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(mLocation, previousZoomLevel));
             if (AndroidUtil.isJellyBean())
                 getTxtAddress().setText(sAddress, false);
             else
@@ -295,6 +299,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void scanLocation(final LatLng mLocation) {
         getBtnClear().setVisibility(View.INVISIBLE);
         getProgressBar().setVisibility(View.VISIBLE);
@@ -338,7 +343,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
     }
 
-
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     public void onClearPressed(View view) {
         if (AndroidUtil.isJellyBean())
             getTxtAddress().setText("", false);
@@ -500,7 +505,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         }
     }
 
-
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     void setupAutocomplete() {
         getTxtAddress().setAdapter(new GooglePlacesAutocompleteAdapter(this, R.layout.listitem_locationaddress));
         if (AndroidUtil.isJellyBean())
@@ -600,6 +605,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void checkAddress(String sAddress) {
         // DebugUtils.logDebug(TAG, "checkAddress(): " + str);
         Geocoder geoCoderClick = new Geocoder(DeliveryLocationActivity.this, Locale.getDefault());

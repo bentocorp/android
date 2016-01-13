@@ -19,5 +19,6 @@ public class ConstantUtils {
 
     public enum optOpenAddOn {BUILDER, SUMMARY}
 
+    public enum optMapCamera {ANIMATE, MOVE}
 
 }

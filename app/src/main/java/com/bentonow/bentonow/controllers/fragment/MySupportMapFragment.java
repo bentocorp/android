@@ -29,4 +29,5 @@ public class MySupportMapFragment extends SupportMapFragment {
     public void setOnDragListener(OnCustomDragListener mOnDragListener) {
         mTouchView.setOnDragListener(mOnDragListener);
     }
+
 }
