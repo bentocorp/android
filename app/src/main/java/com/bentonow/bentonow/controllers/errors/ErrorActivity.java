@@ -43,7 +43,7 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
     private ImageView actionbar_left_btn;
     private ImageView actionbar_right_btn;
 
-    Menu mCurrentMenu;
+    private Menu mCurrentMenu;
 
     public static boolean bIsOpen;
 
@@ -188,16 +188,7 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
 
     @Override
     public void openErrorActivity() {
-        //SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, "closed");
-    }
-
-    @Override
-    public void openMainActivity() {
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
-
-        finish();
-        BentoNowUtils.openMainActivity(ErrorActivity.this);
     }
 
     @Override

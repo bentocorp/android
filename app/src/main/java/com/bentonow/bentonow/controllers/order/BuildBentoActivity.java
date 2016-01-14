@@ -53,25 +53,43 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     private AutoFitTxtView txtEta;
     private AutoFitTxtView btnAddOn;
     private ImageView imgMain;
+    private ImageView imgMain4;
     private ImageView imgSide1;
+    private ImageView imgSide14;
     private ImageView imgSide2;
+    private ImageView imgSide24;
     private ImageView imgSide3;
+    private ImageView imgSide34;
     private ImageView imgSide4;
     private ImageView imgMainSoldOut;
     private ImageView imgSide1SoldOut;
+    private ImageView imgSide14SoldOut;
     private ImageView imgSide2SoldOut;
+    private ImageView imgSide24SoldOut;
     private ImageView imgSide3SoldOut;
+    private ImageView imgSide34SoldOut;
     private ImageView imgSide4SoldOut;
+    private ImageView imgMainSoldOut4;
     private RelativeLayout containerMainTitle;
+    private RelativeLayout containerMainTitle4;
     private RelativeLayout containerSide1Title;
+    private RelativeLayout containerSide14Title;
     private RelativeLayout containerSide2Title;
+    private RelativeLayout containerSide24Title;
     private RelativeLayout containerSide3Title;
+    private RelativeLayout containerSide34Title;
     private RelativeLayout containerSide4Title;
+    private RelativeLayout layoutPodFive;
+    private RelativeLayout layoutPodFour;
 
     private TextView txtTitleMain;
+    private TextView txtTitleMain4;
     private TextView txtTitleSide1;
+    private TextView txtTitleSide14;
     private TextView txtTitleSide2;
+    private TextView txtTitleSide24;
     private TextView txtTitleSide3;
+    private TextView txtTitleSide34;
     private TextView txtTitleSide4;
 
     ConfirmationDialog mDialog;
@@ -118,7 +136,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                 mOrder.MealName = mMenu.meal_name;
                 mOrder.MenuType = mMenu.menu_type;
                 SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MEAL_NAME, mMenu.meal_name);
-                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MENU_TYPE, mMenu.menu_type);
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.POD_MODE, Settings.pod_mode);
 
                 mOrderDao.updateOrder(mOrder);
             }
@@ -196,64 +214,147 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     private void updateDishUI() {
         OrderItem item = mOrder.OrderItems.get(orderIndex);
 
-        if (item.items.get(0) == null || item.items.get(0).name.isEmpty()) {
-            getImgMain().setImageBitmap(null);
-            getTxtTitleMain().setText("");
-            getContainerMainTitle().setVisibility(View.GONE);
-            getImgMainSoldOut().setVisibility(View.GONE);
-        } else {
-            ImageUtils.initImageLoader().displayImage(item.items.get(0).image1, getImgMain(), ImageUtils.dishMainImageOptions());
-            getTxtTitleMain().setText(item.items.get(0).name);
-            getContainerMainTitle().setVisibility(View.VISIBLE);
-            getImgMainSoldOut().setVisibility(DishDao.isSoldOut(item.items.get(0), false) ? View.VISIBLE : View.GONE);
-        }
+        if (Settings.pod_mode.equals("5")) {
+            getLayoutPodFive().setVisibility(View.VISIBLE);
+            getLayoutPodFour().setVisibility(View.GONE);
 
-        if (item.items.get(1) == null || item.items.get(1).name.isEmpty()) {
-            getImgSide1().setImageBitmap(null);
-            getTxtTitleSide1().setText("");
-            getContainerSide1Title().setVisibility(View.GONE);
-            getImgSide1SoldOut().setVisibility(View.GONE);
-        } else {
-            ImageUtils.initImageLoader().displayImage(item.items.get(1).image1, getImgSide1(), ImageUtils.dishSideImageOptions());
-            getTxtTitleSide1().setText(item.items.get(1).name);
-            getContainerSide1Title().setVisibility(View.VISIBLE);
-            getImgSide1SoldOut().setVisibility(DishDao.isSoldOut(item.items.get(1), false) ? View.VISIBLE : View.GONE);
-        }
+            if (item.items.get(0) == null || item.items.get(0).name.isEmpty()) {
+                getImgMain().setImageBitmap(null);
+                getTxtTitleMain().setText("");
+                getContainerMainTitle().setVisibility(View.GONE);
+                getImgMainSoldOut().setVisibility(View.GONE);
+            } else {
+                if (getImgMain().getTag() == null || !getImgMain().getTag().equals(item.items.get(0).image1)) {
+                    ImageUtils.initImageLoader().displayImage(item.items.get(0).image1, getImgMain(), ImageUtils.dishMainImageOptions());
+                    getImgMain().setTag(item.items.get(0).image1);
+                }
+                getTxtTitleMain().setText(item.items.get(0).name);
+                getContainerMainTitle().setVisibility(View.VISIBLE);
+                getImgMainSoldOut().setVisibility(DishDao.isSoldOut(item.items.get(0), false) ? View.VISIBLE : View.GONE);
+            }
 
-        if (item.items.get(2) == null || item.items.get(2).name.isEmpty()) {
-            getImgSide2().setImageBitmap(null);
-            getTxtTitleSide2().setText("");
-            getContainerSide2Title().setVisibility(View.GONE);
-            getImgSide2SoldOut().setVisibility(View.GONE);
-        } else {
-            ImageUtils.initImageLoader().displayImage(item.items.get(2).image1, getImgSide2(), ImageUtils.dishSideImageOptions());
-            getTxtTitleSide2().setText(item.items.get(2).name);
-            getContainerSide2Title().setVisibility(View.VISIBLE);
-            getImgSide2SoldOut().setVisibility(DishDao.isSoldOut(item.items.get(2), false) ? View.VISIBLE : View.GONE);
-        }
+            if (item.items.get(1) == null || item.items.get(1).name.isEmpty()) {
+                getImgSide1().setImageBitmap(null);
+                getTxtTitleSide1().setText("");
+                getContainerSide1Title().setVisibility(View.GONE);
+                getImgSide1SoldOut().setVisibility(View.GONE);
+            } else {
+                if (getImgSide1().getTag() == null || !getImgSide1().getTag().equals(item.items.get(1).image1)) {
+                    ImageUtils.initImageLoader().displayImage(item.items.get(1).image1, getImgSide1(), ImageUtils.dishSideImageOptions());
+                    getImgSide1().setTag(item.items.get(1).image1);
+                }
+                getTxtTitleSide1().setText(item.items.get(1).name);
+                getContainerSide1Title().setVisibility(View.VISIBLE);
+                getImgSide1SoldOut().setVisibility(DishDao.isSoldOut(item.items.get(1), false) ? View.VISIBLE : View.GONE);
+            }
 
-        if (item.items.get(3) == null || item.items.get(3).name.isEmpty()) {
-            getImgSide3().setImageBitmap(null);
-            getTxtTitleSide3().setText("");
-            getContainerSide3Title().setVisibility(View.GONE);
-            getImgSide3SoldOut().setVisibility(View.GONE);
-        } else {
-            ImageUtils.initImageLoader().displayImage(item.items.get(3).image1, getImgSide3(), ImageUtils.dishSideImageOptions());
-            getTxtTitleSide3().setText(item.items.get(3).name);
-            getContainerSide3Title().setVisibility(View.VISIBLE);
-            getImgSide3SoldOut().setVisibility(DishDao.isSoldOut(item.items.get(3), false) ? View.VISIBLE : View.GONE);
-        }
+            if (item.items.get(2) == null || item.items.get(2).name.isEmpty()) {
+                getImgSide2().setImageBitmap(null);
+                getTxtTitleSide2().setText("");
+                getContainerSide2Title().setVisibility(View.GONE);
+                getImgSide2SoldOut().setVisibility(View.GONE);
+            } else {
+                if (getImgSide2().getTag() == null || !getImgSide2().getTag().equals(item.items.get(2).image1)) {
+                    ImageUtils.initImageLoader().displayImage(item.items.get(2).image1, getImgSide2(), ImageUtils.dishSideImageOptions());
+                    getImgSide2().setTag(item.items.get(2).image1);
+                }
+                getTxtTitleSide2().setText(item.items.get(2).name);
+                getContainerSide2Title().setVisibility(View.VISIBLE);
+                getImgSide2SoldOut().setVisibility(DishDao.isSoldOut(item.items.get(2), false) ? View.VISIBLE : View.GONE);
+            }
 
-        if (item.items.get(4) == null || item.items.get(4).name.isEmpty()) {
-            getImgSide4().setImageBitmap(null);
-            getTxtTitleSide4().setText("");
-            getContainerSide4Title().setVisibility(View.GONE);
-            getImgSide4SoldOut().setVisibility(View.GONE);
+            if (item.items.get(3) == null || item.items.get(3).name.isEmpty()) {
+                getImgSide3().setImageBitmap(null);
+                getTxtTitleSide3().setText("");
+                getContainerSide3Title().setVisibility(View.GONE);
+                getImgSide3SoldOut().setVisibility(View.GONE);
+            } else {
+                if (getImgSide3().getTag() == null || !getImgSide3().getTag().equals(item.items.get(3).image1)) {
+                    ImageUtils.initImageLoader().displayImage(item.items.get(3).image1, getImgSide3(), ImageUtils.dishSideImageOptions());
+                    getImgSide3().setTag(item.items.get(3).image1);
+                }
+                getTxtTitleSide3().setText(item.items.get(3).name);
+                getContainerSide3Title().setVisibility(View.VISIBLE);
+                getImgSide3SoldOut().setVisibility(DishDao.isSoldOut(item.items.get(3), false) ? View.VISIBLE : View.GONE);
+            }
+
+            if (item.items.get(4) == null || item.items.get(4).name.isEmpty()) {
+                getImgSide4().setImageBitmap(null);
+                getTxtTitleSide4().setText("");
+                getContainerSide4Title().setVisibility(View.GONE);
+                getImgSide4SoldOut().setVisibility(View.GONE);
+            } else {
+                if (getImgSide4().getTag() == null || !getImgSide4().getTag().equals(item.items.get(4).image1)) {
+                    ImageUtils.initImageLoader().displayImage(item.items.get(4).image1, getImgSide4(), ImageUtils.dishSideImageOptions());
+                    getImgSide4().setTag(item.items.get(3).image1);
+                }
+                getTxtTitleSide4().setText(item.items.get(4).name);
+                getContainerSide4Title().setVisibility(View.VISIBLE);
+                getImgSide4SoldOut().setVisibility(DishDao.isSoldOut(item.items.get(4), false) ? View.VISIBLE : View.GONE);
+            }
         } else {
-            ImageUtils.initImageLoader().displayImage(item.items.get(4).image1, getImgSide4(), ImageUtils.dishSideImageOptions());
-            getTxtTitleSide4().setText(item.items.get(4).name);
-            getContainerSide4Title().setVisibility(View.VISIBLE);
-            getImgSide4SoldOut().setVisibility(DishDao.isSoldOut(item.items.get(4), false) ? View.VISIBLE : View.GONE);
+            getLayoutPodFive().setVisibility(View.GONE);
+            getLayoutPodFour().setVisibility(View.VISIBLE);
+
+            if (item.items.get(0) == null || item.items.get(0).name.isEmpty()) {
+                getImgMain4().setImageBitmap(null);
+                getTxtTitleMain4().setText("");
+                getContainerMainTitle4().setVisibility(View.GONE);
+                getImgMainSoldOut4().setVisibility(View.GONE);
+            } else {
+                if (getImgMain4().getTag() == null || !getImgMain4().getTag().equals(item.items.get(0).image1)) {
+                    ImageUtils.initImageLoader().displayImage(item.items.get(0).image1, getImgMain4(), ImageUtils.dishMainImageOptions());
+                    getImgMain4().setTag(item.items.get(0).image1);
+                }
+                getTxtTitleMain4().setText(item.items.get(0).name);
+                getContainerMainTitle4().setVisibility(View.VISIBLE);
+                getImgMainSoldOut4().setVisibility(DishDao.isSoldOut(item.items.get(0), false) ? View.VISIBLE : View.GONE);
+            }
+
+            if (item.items.get(1) == null || item.items.get(1).name.isEmpty()) {
+                getImgSide14().setImageBitmap(null);
+                getTxtTitleSide14().setText("");
+                getContainerSide14Title().setVisibility(View.GONE);
+                getImgSide14SoldOut().setVisibility(View.GONE);
+            } else {
+                if (getImgSide14().getTag() == null || !getImgSide14().getTag().equals(item.items.get(1).image1)) {
+                    ImageUtils.initImageLoader().displayImage(item.items.get(1).image1, getImgSide14(), ImageUtils.dishSideImageOptions());
+                    getImgSide14().setTag(item.items.get(1).image1);
+                }
+                getTxtTitleSide14().setText(item.items.get(1).name);
+                getContainerSide14Title().setVisibility(View.VISIBLE);
+                getImgSide14SoldOut().setVisibility(DishDao.isSoldOut(item.items.get(1), false) ? View.VISIBLE : View.GONE);
+            }
+
+            if (item.items.get(2) == null || item.items.get(2).name.isEmpty()) {
+                getImgSide24().setImageBitmap(null);
+                getTxtTitleSide24().setText("");
+                getContainerSide24Title().setVisibility(View.GONE);
+                getImgSide24SoldOut().setVisibility(View.GONE);
+            } else {
+                if (getImgSide24().getTag() == null || !getImgSide24().getTag().equals(item.items.get(2).image1)) {
+                    ImageUtils.initImageLoader().displayImage(item.items.get(2).image1, getImgSide24(), ImageUtils.dishSideImageOptions());
+                    getImgSide24().setTag(item.items.get(2).image1);
+                }
+                getTxtTitleSide24().setText(item.items.get(2).name);
+                getContainerSide24Title().setVisibility(View.VISIBLE);
+                getImgSide24SoldOut().setVisibility(DishDao.isSoldOut(item.items.get(2), false) ? View.VISIBLE : View.GONE);
+            }
+
+            if (item.items.get(3) == null || item.items.get(3).name.isEmpty()) {
+                getImgSide34().setImageBitmap(null);
+                getTxtTitleSide34().setText("");
+                getContainerSide34Title().setVisibility(View.GONE);
+                getImgSide34SoldOut().setVisibility(View.GONE);
+            } else {
+                if (getImgSide34().getTag() == null || !getImgSide34().getTag().equals(item.items.get(3).image1)) {
+                    ImageUtils.initImageLoader().displayImage(item.items.get(3).image1, getImgSide34(), ImageUtils.dishSideImageOptions());
+                    getImgSide34().setTag(item.items.get(3).image1);
+                }
+                getTxtTitleSide34().setText(item.items.get(3).name);
+                getContainerSide34Title().setVisibility(View.VISIBLE);
+                getImgSide34SoldOut().setVisibility(DishDao.isSoldOut(item.items.get(3), false) ? View.VISIBLE : View.GONE);
+            }
         }
 
     }
@@ -262,10 +363,11 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         if (mOrder.OrderItems.get(orderIndex).items.get(0).name.isEmpty()) {
             mOrder.OrderItems.get(orderIndex).items.set(0, mDishDao.updateDishItem(mOrder.OrderItems.get(orderIndex).items.get(0), mDishDao.getFirstAvailable("main", null)));
         }
+        int iNumDish = mOrder.OrderItems.get(orderIndex).items.size();
 
-        int[] ids = new int[4];
+        int[] ids = new int[iNumDish - 1];
 
-        for (int i = 1; i < 5; ++i) {
+        for (int i = 1; i < iNumDish; ++i) {
             if (mOrder.OrderItems.get(orderIndex).items.get(i).name.isEmpty()) {
                 DishModel dishModel = mDishDao.getFirstAvailable("side", ids);
 
@@ -280,8 +382,8 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                 mOrder.OrderItems.get(orderIndex).items.set(i, mDishDao.updateDishItem(mOrder.OrderItems.get(orderIndex).items.get(i), dishModel));
             }
 
-            updateUI();
         }
+        updateUI();
     }
 
     private void openAddOnsActivity() {
@@ -312,10 +414,9 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                 break;
             case R.id.button_accept:
                 autocomplete();
-
-                if (mOrderDao.countCompletedOrders(mOrder) > 0) {
+                /*if (mOrderDao.countCompletedOrders(mOrder) > 0) {
                     onContinueOrderPressed();
-                }
+                }*/
                 break;
             case R.id.btn_cancel:
                 /*if (Order.current.OrderItems.size() > 1) {
@@ -394,29 +495,43 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         String sSoldOutItems = mOrderDao.calculateSoldOutItems(mOrder);
 
         if (!mBentoDao.isBentoComplete(mOrder.OrderItems.get(orderIndex))) {
-            if (mOrder.OrderItems.get(orderIndex).items.get(0) == null) {
+
+            for (int a = 0; a < mOrder.OrderItems.get(orderIndex).items.size(); a++) {
+
+                if (mOrder.OrderItems.get(orderIndex).items.get(a) == null || mOrder.OrderItems.get(orderIndex).items.get(a).name.isEmpty()) {
+                    if (a == 0)
+                        startActivity(new Intent(this, SelectMainCustomActivity.class));
+                    else {
+                        Intent intent = new Intent(this, SelectSideCustomActivity.class);
+                        intent.putExtra("orderIndex", orderIndex);
+                        intent.putExtra("itemIndex", a);
+                        startActivity(intent);
+                    }
+                    break;
+                }
+            }
+           /* if (mOrder.OrderItems.get(orderIndex).items.get(0) == null || mOrder.OrderItems.get(orderIndex).items.get(0).name.isEmpty()) {
                 startActivity(new Intent(this, SelectMainCustomActivity.class));
-            } else if (mOrder.OrderItems.get(orderIndex).items.get(1) == null) {
+            } else if (mOrder.OrderItems.get(orderIndex).items.get(1) == null || mOrder.OrderItems.get(orderIndex).items.get(1).name.isEmpty()) {
                 Intent intent = new Intent(this, SelectSideCustomActivity.class);
                 intent.putExtra("orderIndex", orderIndex);
                 intent.putExtra("itemIndex", 1);
-                startActivity(intent);
-            } else if (mOrder.OrderItems.get(orderIndex).items.get(2) == null) {
+            } else if (mOrder.OrderItems.get(orderIndex).items.get(2) == null || mOrder.OrderItems.get(orderIndex).items.get(2).name.isEmpty()) {
                 Intent intent = new Intent(this, SelectSideCustomActivity.class);
                 intent.putExtra("orderIndex", orderIndex);
                 intent.putExtra("itemIndex", 2);
                 startActivity(intent);
-            } else if (mOrder.OrderItems.get(orderIndex).items.get(3) == null) {
+            } else if (mOrder.OrderItems.get(orderIndex).items.get(3) == null || mOrder.OrderItems.get(orderIndex).items.get(3).name.isEmpty()) {
                 Intent intent = new Intent(this, SelectSideCustomActivity.class);
                 intent.putExtra("orderIndex", orderIndex);
                 intent.putExtra("itemIndex", 3);
                 startActivity(intent);
-            } else if (mOrder.OrderItems.get(orderIndex).items.get(4) == null) {
+            } else if (mOrder.OrderItems.get(orderIndex).items.get(4) == null || mOrder.OrderItems.get(orderIndex).items.get(4).name.isEmpty()) {
                 Intent intent = new Intent(this, SelectSideCustomActivity.class);
                 intent.putExtra("orderIndex", orderIndex);
                 intent.putExtra("itemIndex", 4);
                 startActivity(intent);
-            }
+            }*/
         } else if (!sSoldOutItems.isEmpty()) {
             updateUI();
             WidgetsUtils.createShortToast(String.format(getString(R.string.error_sold_out_items), sSoldOutItems));
@@ -451,21 +566,25 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     @Override
     public void openErrorActivity() {
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+        finish();
         BentoNowUtils.openErrorActivity(BuildBentoActivity.this);
-    }
-
-    @Override
-    public void openMainActivity() {
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
-        BentoNowUtils.openMainActivity(BuildBentoActivity.this);
     }
 
     @Override
     public void openBuildBentoActivity() {
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
 
-        finish();
-        BentoNowUtils.openBuildBentoActivity(BuildBentoActivity.this);
+        if (!SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.MEAL_NAME).isEmpty() &&
+                (!SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.MEAL_NAME).equals(mMenu.meal_name) ||
+                        !SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.POD_MODE).equals(Settings.pod_mode))) {
+            DebugUtils.logDebug(TAG, "Should change from MealName " + SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.MEAL_NAME) + " to " + mMenu.meal_name +
+                    " Should change from Pod Mode " + SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.POD_MODE) + " to " + Settings.pod_mode);
+
+            WidgetsUtils.createLongToast(R.string.error_restarting_app);
+
+            mOrderDao.cleanUp();
+            recreate();
+        }
     }
 
     @Override
@@ -547,10 +666,23 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         return imgSide1;
     }
 
+    private ImageView getImgSide14() {
+        if (imgSide14 == null)
+            imgSide14 = (ImageView) findViewById(R.id.img_side1_four);
+        return imgSide14;
+    }
+
     private ImageView getImgSide2() {
         if (imgSide2 == null)
             imgSide2 = (ImageView) findViewById(R.id.img_side2);
         return imgSide2;
+    }
+
+
+    private ImageView getImgSide24() {
+        if (imgSide24 == null)
+            imgSide24 = (ImageView) findViewById(R.id.img_side2_four);
+        return imgSide24;
     }
 
     private ImageView getImgSide3() {
@@ -559,10 +691,22 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         return imgSide3;
     }
 
+    private ImageView getImgSide34() {
+        if (imgSide34 == null)
+            imgSide34 = (ImageView) findViewById(R.id.img_side3_four);
+        return imgSide34;
+    }
+
     private ImageView getImgSide4() {
         if (imgSide4 == null)
             imgSide4 = (ImageView) findViewById(R.id.img_side4);
         return imgSide4;
+    }
+
+    private ImageView getImgMain4() {
+        if (imgMain4 == null)
+            imgMain4 = (ImageView) findViewById(R.id.img_main_four);
+        return imgMain4;
     }
 
     private ImageView getImgMainSoldOut() {
@@ -577,10 +721,23 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         return imgSide1SoldOut;
     }
 
+
+    private ImageView getImgSide14SoldOut() {
+        if (imgSide14SoldOut == null)
+            imgSide14SoldOut = (ImageView) findViewById(R.id.img_side1_sold_out_four);
+        return imgSide14SoldOut;
+    }
+
     private ImageView getImgSide2SoldOut() {
         if (imgSide2SoldOut == null)
             imgSide2SoldOut = (ImageView) findViewById(R.id.img_side2_sold_out);
         return imgSide2SoldOut;
+    }
+
+    private ImageView getImgSide24SoldOut() {
+        if (imgSide24SoldOut == null)
+            imgSide24SoldOut = (ImageView) findViewById(R.id.img_side2_sold_out_four);
+        return imgSide24SoldOut;
     }
 
     private ImageView getImgSide3SoldOut() {
@@ -589,10 +746,22 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         return imgSide3SoldOut;
     }
 
+    private ImageView getImgSide34SoldOut() {
+        if (imgSide34SoldOut == null)
+            imgSide34SoldOut = (ImageView) findViewById(R.id.img_side3_sold_out_four);
+        return imgSide34SoldOut;
+    }
+
     private ImageView getImgSide4SoldOut() {
         if (imgSide4SoldOut == null)
             imgSide4SoldOut = (ImageView) findViewById(R.id.img_side4_sold_out);
         return imgSide4SoldOut;
+    }
+
+    private ImageView getImgMainSoldOut4() {
+        if (imgMainSoldOut4 == null)
+            imgMainSoldOut4 = (ImageView) findViewById(R.id.img_main_sold_out_four);
+        return imgMainSoldOut4;
     }
 
     private TextView getTxtTitleMain() {
@@ -607,10 +776,22 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         return txtTitleSide1;
     }
 
+    private TextView getTxtTitleSide14() {
+        if (txtTitleSide14 == null)
+            txtTitleSide14 = (TextView) findViewById(R.id.txt_side1_title_four);
+        return txtTitleSide14;
+    }
+
     private TextView getTxtTitleSide2() {
         if (txtTitleSide2 == null)
             txtTitleSide2 = (TextView) findViewById(R.id.txt_side2_title);
         return txtTitleSide2;
+    }
+
+    private TextView getTxtTitleSide24() {
+        if (txtTitleSide24 == null)
+            txtTitleSide24 = (TextView) findViewById(R.id.txt_side2_title_four);
+        return txtTitleSide24;
     }
 
     private TextView getTxtTitleSide3() {
@@ -619,10 +800,23 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         return txtTitleSide3;
     }
 
+    private TextView getTxtTitleSide34() {
+        if (txtTitleSide34 == null)
+            txtTitleSide34 = (TextView) findViewById(R.id.txt_side3_title_four);
+        return txtTitleSide34;
+    }
+
+
     private TextView getTxtTitleSide4() {
         if (txtTitleSide4 == null)
             txtTitleSide4 = (TextView) findViewById(R.id.txt_side4_title);
         return txtTitleSide4;
+    }
+
+    private TextView getTxtTitleMain4() {
+        if (txtTitleMain4 == null)
+            txtTitleMain4 = (TextView) findViewById(R.id.txt_main_title_four);
+        return txtTitleMain4;
     }
 
     private RelativeLayout getContainerMainTitle() {
@@ -637,10 +831,22 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         return containerSide1Title;
     }
 
+    private RelativeLayout getContainerSide14Title() {
+        if (containerSide14Title == null)
+            containerSide14Title = (RelativeLayout) findViewById(R.id.container_side1_title_four);
+        return containerSide14Title;
+    }
+
     private RelativeLayout getContainerSide2Title() {
         if (containerSide2Title == null)
             containerSide2Title = (RelativeLayout) findViewById(R.id.container_side2_title);
         return containerSide2Title;
+    }
+
+    private RelativeLayout getContainerSide24Title() {
+        if (containerSide24Title == null)
+            containerSide24Title = (RelativeLayout) findViewById(R.id.container_side2_title_four);
+        return containerSide24Title;
     }
 
     private RelativeLayout getContainerSide3Title() {
@@ -649,11 +855,35 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         return containerSide3Title;
     }
 
+    private RelativeLayout getContainerSide34Title() {
+        if (containerSide34Title == null)
+            containerSide34Title = (RelativeLayout) findViewById(R.id.container_side3_title_four);
+        return containerSide34Title;
+    }
+
     private RelativeLayout getContainerSide4Title() {
         if (containerSide4Title == null)
             containerSide4Title = (RelativeLayout) findViewById(R.id.container_side4_title);
         return containerSide4Title;
     }
 
+    private RelativeLayout getContainerMainTitle4() {
+        if (containerMainTitle4 == null)
+            containerMainTitle4 = (RelativeLayout) findViewById(R.id.container_main_title_four);
+        return containerMainTitle4;
+    }
+
+    private RelativeLayout getLayoutPodFive() {
+        if (layoutPodFive == null)
+            layoutPodFive = (RelativeLayout) findViewById(R.id.layout_pod_five);
+        return layoutPodFive;
+    }
+
+
+    private RelativeLayout getLayoutPodFour() {
+        if (layoutPodFour == null)
+            layoutPodFour = (RelativeLayout) findViewById(R.id.layout_pod_four);
+        return layoutPodFour;
+    }
 
 }

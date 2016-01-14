@@ -323,7 +323,7 @@ public class BuildFixedBentoActivity extends BaseFragmentActivity implements Vie
                 mOrder.MealName = mMenu.meal_name;
                 mOrder.MenuType = mMenu.menu_type;
                 SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MEAL_NAME, mMenu.meal_name);
-                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MENU_TYPE, mMenu.menu_type);
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.POD_MODE, Settings.pod_mode);
 
                 mOrderDao.insertNewOrder(mOrder);
 
@@ -352,12 +352,6 @@ public class BuildFixedBentoActivity extends BaseFragmentActivity implements Vie
     public void openErrorActivity() {
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
         BentoNowUtils.openErrorActivity(BuildFixedBentoActivity.this);
-    }
-
-    @Override
-    public void openMainActivity() {
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
-        BentoNowUtils.openMainActivity(BuildFixedBentoActivity.this);
     }
 
     @Override

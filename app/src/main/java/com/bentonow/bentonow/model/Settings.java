@@ -1,8 +1,5 @@
 package com.bentonow.bentonow.model;
 
-import android.location.Address;
-import android.util.Log;
-
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
@@ -39,6 +36,7 @@ public class Settings {
     static public double sale_price;
     static public double tax_percent;
     static public String tzName = "";
+    static public String pod_mode = "";
     static public int min_version;
     static public int eta_min;
     static public int eta_max;
@@ -62,6 +60,7 @@ public class Settings {
             status = jsonSettings.getString("status");
             tzName = jsonSettings.getString("tzName");
             min_version = new JSONObject(data).getInt("android_min_version");
+            pod_mode = jsonSettings.getString("pod_mode");
 
             JSONObject jsonEta = new JSONObject(data).getJSONObject("eta");
             eta_min = jsonEta.getInt("eta_min");

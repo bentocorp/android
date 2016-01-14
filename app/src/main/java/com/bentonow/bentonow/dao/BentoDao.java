@@ -8,6 +8,7 @@ import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.db.DBAdapter;
 import com.bentonow.bentonow.model.DishModel;
+import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.order.OrderItem;
 
 import java.util.ArrayList;
@@ -59,6 +60,7 @@ public class BentoDao {
 
     public OrderItem getNewBento(ConstantUtils.optItemType optItemType) {
         MixpanelUtils.track("Began Building A Bento");
+        int iNumBento = Settings.pod_mode.equals("4") ? 4 : 5;
 
         OrderItem mOrder = new OrderItem();
 
@@ -76,7 +78,7 @@ public class BentoDao {
             case CUSTOM_BENTO_BOX:
                 DishDao mDishDao = new DishDao();
 
-                for (int a = 0; a < 5; a++) {
+                for (int a = 0; a < iNumBento; a++) {
                     DishModel mDish = mDishDao.getEmptyDish(mOrder.order_pk);
                     mOrder.items.add(mDish);
                 }

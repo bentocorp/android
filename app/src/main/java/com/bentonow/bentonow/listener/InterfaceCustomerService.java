@@ -6,7 +6,5 @@ package com.bentonow.bentonow.listener;
 public interface InterfaceCustomerService {
     void openErrorActivity();
 
-    void openMainActivity();
-
     void openBuildBentoActivity();
 }

@@ -33,6 +33,7 @@ import com.bentonow.bentonow.listener.ListenerCompleteOrder;
 import com.bentonow.bentonow.listener.ListenerDialog;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.DishModel;
+import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.Stock;
@@ -79,6 +80,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
     private UserDao userDao = new UserDao();
     private User mCurrentUser;
     private Order mOrder;
+    private Menu mMenu;
     private List<OrderItem> aOrder = new ArrayList<>();
     private List<DishModel> aAddOn = new ArrayList<>();
 
@@ -143,6 +145,8 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
 
     @Override
     protected void onResume() {
+        mMenu = Menu.get();
+
         mCurrentUser = userDao.getCurrentUser();
 
         getCurrentOrder();
@@ -700,21 +704,25 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
     @Override
     public void openErrorActivity() {
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
-        onBackPressed();
-    }
-
-    @Override
-    public void openMainActivity() {
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
-        BentoNowUtils.openMainActivity(CompleteOrderActivity.this);
+        finish();
+        BentoNowUtils.openErrorActivity(CompleteOrderActivity.this);
     }
 
     @Override
     public void openBuildBentoActivity() {
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
 
-        finish();
-        BentoNowUtils.openBuildBentoActivity(CompleteOrderActivity.this);
+        if (!SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.MEAL_NAME).isEmpty() &&
+                (!SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.MEAL_NAME).equals(mMenu.meal_name) ||
+                        !SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.POD_MODE).equals(Settings.pod_mode))) {
+            DebugUtils.logDebug(TAG, "Should change from MealName " + SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.MEAL_NAME) + " to " + mMenu.meal_name +
+                    " Should change from Pod Mode " + SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.POD_MODE) + " to " + Settings.pod_mode);
+
+            WidgetsUtils.createLongToast(R.string.error_restarting_app);
+            mOrderDao.cleanUp();
+            finish();
+            BentoNowUtils.openMainActivity(CompleteOrderActivity.this);
+        }
     }
 
     @Override

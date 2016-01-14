@@ -106,7 +106,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
     private ArrayList<AutoCompleteModel> resultList;
 
-    private boolean bMovedMap;
     private float previousZoomLevel = 17.7f;
     private static final long SCROLL_TIME = 100L;
     private long lastTouched = 0;
@@ -181,13 +180,9 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         if (mGoogleApiClient.isConnected() && optOpenScreen == ConstantUtils.optOpenScreen.NORMAL)
             startLocationUpdates();
 
+        updateUI();
+
         setupMap();
-
-        if (mLastLocations != null)
-            markerLocation(mLastLocations);
-        else
-            updateUI();
-
     }
 
 
@@ -223,11 +218,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
     private void setupMap() {
-        DebugUtils.logDebug(TAG, "setupMap()");
-        if (getGoogleMap() != null) return;
-
-        DebugUtils.logDebug(TAG, "get map fragment");
-        if (getMapFragment() == null) return;
+        previousZoomLevel = 17f;
 
         DebugUtils.logDebug(TAG, "setup marker");
         LatLng point = null;
@@ -240,11 +231,9 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
         if (point == null) {
             point = new LatLng(37.772492, -122.420262);
-        } else {
-            markerLocation(point);
         }
 
-        getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(point, previousZoomLevel));
+        markerLocation(point);
     }
 
 

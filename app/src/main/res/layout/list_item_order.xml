@@ -18,19 +18,23 @@
     <TextView
         android:id="@+id/txt_name"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
-        android:padding="@dimen/btn_padding"
-        android:text="@null"
+        android:gravity="center|left"
+        android:paddingLeft="@dimen/btn_padding"
+        android:paddingRight="@dimen/btn_padding"
+        android:text=""
         android:textAppearance="@style/SmallText"
         android:textColor="@color/btn_green" />
 
     <TextView
         android:id="@+id/txt_price"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/btn_padding"
-        android:text="@null"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:paddingLeft="@dimen/btn_padding"
+        android:paddingRight="@dimen/btn_padding"
+        android:text=""
         android:textAppearance="@style/SmallText"
         android:textColor="@color/black" />
 

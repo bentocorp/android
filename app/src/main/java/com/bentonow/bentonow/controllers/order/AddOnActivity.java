@@ -14,7 +14,6 @@ import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
-import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.adapter.AddOnListAdapter;
@@ -135,26 +134,17 @@ public class AddOnActivity extends BaseFragmentActivity implements View.OnClickL
     private void openSummaryScreen() {
         switch (optOpenBy) {
             case BUILDER:
-                if (SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.MENU_TYPE).equals("fixed")) {
-                    if (BentoNowUtils.isValidCompleteOrder(AddOnActivity.this)) {
-                        Intent intent = new Intent(AddOnActivity.this, CompleteOrderActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        finish();
-                        startActivity(intent);
-                    }
+                String sSoldOutItems = mOrderDao.calculateSoldOutItems(mOrder);
+                if (!sSoldOutItems.isEmpty()) {
+                    updateUI();
+                    WidgetsUtils.createShortToast(String.format(getString(R.string.error_sold_out_items), sSoldOutItems));
+                } else if (BentoNowUtils.isValidCompleteOrder(AddOnActivity.this)) {
+                    Intent intent = new Intent(AddOnActivity.this, CompleteOrderActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    finish();
+                    startActivity(intent);
                 } else {
-                    String sSoldOutItems = mOrderDao.calculateSoldOutItems(mOrder);
-                    if (!sSoldOutItems.isEmpty()) {
-                        updateUI();
-                        WidgetsUtils.createShortToast(String.format(getString(R.string.error_sold_out_items), sSoldOutItems));
-                    } else if (BentoNowUtils.isValidCompleteOrder(AddOnActivity.this)) {
-                        Intent intent = new Intent(AddOnActivity.this, CompleteOrderActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        finish();
-                        startActivity(intent);
-                    } else {
-                        finish();
-                    }
+                    finish();
                 }
                 break;
             case SUMMARY:

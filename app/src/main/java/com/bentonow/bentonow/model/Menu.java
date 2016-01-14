@@ -52,18 +52,30 @@ public class Menu {
             Gson gson = new Gson();
             Menu row;
 
-            if (menu.has("lunch")) {
-                row = gson.fromJson(menu.getJSONObject("lunch").getString("Menu"), Menu.class);
-                row.dishModels = gson.fromJson(menu.getJSONObject("lunch").getString("MenuItems"), new TypeToken<List<DishModel>>() {
-                }.getType());
-                list.add(row);
+            if (menu != null && menu.has("lunch")) {
+                JSONObject mLunch = menu.getJSONObject("lunch");
+                if (mLunch.has("Menu")) {
+                    row = gson.fromJson(mLunch.getString("Menu"), Menu.class);
+                    if (mLunch.has("MenuItems")) {
+                        row.dishModels = gson.fromJson(mLunch.getString("MenuItems"), new TypeToken<List<DishModel>>() {
+                        }.getType());
+                        list.add(row);
+                    }
+
+                }
             }
 
-            if (menu.has("dinner")) {
-                row = gson.fromJson(menu.getJSONObject("dinner").getString("Menu"), Menu.class);
-                row.dishModels = gson.fromJson(menu.getJSONObject("dinner").getString("MenuItems"), new TypeToken<List<DishModel>>() {
-                }.getType());
-                list.add(row);
+            if (menu != null && menu.has("dinner")) {
+                JSONObject mLunch = menu.getJSONObject("dinner");
+                if (mLunch.has("Menu")) {
+                    row = gson.fromJson(mLunch.getString("Menu"), Menu.class);
+                    if (mLunch.has("MenuItems")) {
+                        row.dishModels = gson.fromJson(mLunch.getString("MenuItems"), new TypeToken<List<DishModel>>() {
+                        }.getType());
+                        list.add(row);
+                    }
+
+                }
             }
         } catch (Exception e) {
             DebugUtils.logError(TAG, "setMenuWithString():" + e.getMessage());

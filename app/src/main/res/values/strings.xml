@@ -103,6 +103,7 @@
     <string name="tip_percentage">%.0f</string>
 
     <string name="error_loading_dishes">There is a problem loading the dishes, please try again later</string>
+    <string name="error_restarting_app">There was a change in the menu, please order again</string>
     <string name="error_send_order">There was a problem sending your order, please try again</string>
     <string name="error_sign_up_user">There was a problem, please try again</string>
     <string name="error_closed_title">We\'re currently closed!</string>

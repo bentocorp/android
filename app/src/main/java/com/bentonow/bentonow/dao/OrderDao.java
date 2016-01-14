@@ -445,7 +445,7 @@ public class OrderDao {
     public void cleanUp() {
         DebugUtils.logDebug(TAG, "Clean Up");
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MEAL_NAME, "");
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MENU_TYPE, "");
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.POD_MODE, "");
         OrderDao mOrderDao = new OrderDao();
         mOrderDao.clearAllData();
     }
