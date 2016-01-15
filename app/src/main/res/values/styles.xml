@@ -13,6 +13,8 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowBackground">@color/btn_green</item>
         <item name="android:windowDisablePreview">true</item>
+        <item name="android:dropDownSpinnerStyle">@style/SpinnerBento</item>
+        <item name="android:spinnerDropDownItemStyle">@style/SpinnerDropDownItemBento</item>
     </style>
 
     <style name="fullscreen" parent="AppTheme">
@@ -165,6 +167,7 @@
         <item name="android:textSize">@dimen/text_very_very_small</item>
         <item name="fontPath">fonts/OpenSans-Bold.ttf</item>
     </style>
+
     <style name="TxtAddOnTitle" parent="@android:style/Widget.TextView">
         <item name="android:textColor">#576070</item>
         <item name="android:textStyle">bold</item>
@@ -263,5 +266,16 @@
         <item name="android:background">@drawable/background_gray_rounded_corners</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_margin">@dimen/setting_ico_padd</item>
+    </style>
+
+    //Spinner
+
+    <style name="SpinnerBento" parent="android:Widget.Spinner">
+        <item name="android:background">@drawable/bento_spinner_background_holo_light</item>
+        <item name="android:dropDownSelector">@drawable/bento_list_selector_holo_light</item>
+    </style>
+
+    <style name="SpinnerDropDownItemBento" parent="android:Widget.DropDownItem.Spinner">
+        <item name="android:checkMark">@drawable/bento_btn_radio_holo_light</item>
     </style>
 </resources>

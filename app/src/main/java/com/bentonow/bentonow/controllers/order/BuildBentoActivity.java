@@ -5,9 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
@@ -42,16 +47,19 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
     static final String TAG = "BuildBentoActivity";
 
-    private ImageView actionbar_right_btn;
     private BackendButton btnContinue;
     private BackendAutoFitTextView btnAddAnotherBento;
-    private TextView actionbar_right_badge;
+    private TextView txtNumBento;
     private LinearLayout layoutAddOns;
 
     private int orderIndex;
     private AutoFitTxtView txtPromoName;
     private AutoFitTxtView txtEta;
     private AutoFitTxtView btnAddOn;
+    private AutoFitTxtView txtDateTimeToolbar;
+    private ImageView actionbarLeftBtn;
+    private ImageView actionbarRightBtn;
+
     private ImageView imgMain;
     private ImageView imgMain4;
     private ImageView imgSide1;
@@ -70,6 +78,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     private ImageView imgSide34SoldOut;
     private ImageView imgSide4SoldOut;
     private ImageView imgMainSoldOut4;
+    private ImageView imgDropDownUp;
     private RelativeLayout containerMainTitle;
     private RelativeLayout containerMainTitle4;
     private RelativeLayout containerSide1Title;
@@ -81,6 +90,9 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     private RelativeLayout containerSide4Title;
     private RelativeLayout layoutPodFive;
     private RelativeLayout layoutPodFour;
+    private FrameLayout layoutDateTime;
+    private LinearLayout containerDateTime;
+    private LinearLayout containerDateTimeSelection;
 
     private TextView txtTitleMain;
     private TextView txtTitleMain4;
@@ -92,6 +104,10 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     private TextView txtTitleSide34;
     private TextView txtTitleSide4;
 
+    private Spinner spinnerDate;
+    private Spinner spinnerTime;
+
+
     ConfirmationDialog mDialog;
 
     private Menu mMenu;
@@ -99,7 +115,8 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     private Order mOrder;
 
     private boolean bSawAddOns = false;
-    boolean bHasAddOns = false;
+    private boolean bHasAddOns = false;
+    private boolean bShowDateTime = false;
     //private static Tweak<Boolean> showBanner = MixpanelAPI.booleanTweak("Show Banner", false);
     private static Tweak<Boolean> showAddons = MixpanelAPI.booleanTweak("Show AddOns", false);
 
@@ -110,14 +127,21 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         setContentView(R.layout.activity_build_bento);
 
         getBtnContinue().setOnClickListener(this);
-
-        actionbar_right_btn = (ImageView) findViewById(R.id.actionbar_right_btn);
-        actionbar_right_badge = (TextView) findViewById(R.id.actionbar_right_badge);
-
-        initActionbar();
+        getActionbarLeftBtn().setOnClickListener(this);
+        getActionbarRightBtn().setOnClickListener(this);
+        getLayoutDateTime().setOnClickListener(this);
 
         getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), BentoNowUtils.getDefaultPriceBento(DishDao.getLowestMainPrice())));
         getTxtEta().setText(String.format(getString(R.string.build_bento_eta), Settings.eta_min + "-" + Settings.eta_max));
+
+        String[] aDay = new String[]{"Today", "Mon, Jan 18", "Tue, Jan 19", "Wed, Jan 20", "Thu, Jan 18", "Fri, Jan 18", "Sat, Jan 18", "Sun, Jan 18"};
+        String[] aTime = new String[]{"11:30 - 12:00", "01:30 - 02:00", "02:30 - 03:00", "03:30 - 04:00", "04:30 - 05:00", "05:30 - 06:00", "06:30 - 07:00", "07:30 - 08:00"};
+        ArrayAdapter<String> mAdapterDay = new ArrayAdapter<>(BuildBentoActivity.this, android.R.layout.simple_spinner_item, aDay);
+        ArrayAdapter<String> mAdapterTime = new ArrayAdapter<>(BuildBentoActivity.this, android.R.layout.simple_spinner_item, aTime);
+        mAdapterDay.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mAdapterTime.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        getSpinnerDate().setAdapter(mAdapterDay);
+        getSpinnerTime().setAdapter(mAdapterTime);
 
         DebugUtils.logDebug(TAG, "Create: ");
     }
@@ -164,19 +188,6 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         super.onResume();
     }
 
-    private void initActionbar() {
-        TextView actionbar_title = (TextView) findViewById(R.id.actionbar_title);
-        actionbar_title.setText(BackendText.get("build-title"));
-
-        ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
-        actionbar_left_btn.setImageResource(R.drawable.ic_ab_user);
-        actionbar_left_btn.setOnClickListener(this);
-
-        actionbar_right_btn = (ImageView) findViewById(R.id.actionbar_right_btn);
-        actionbar_right_btn.setImageResource(R.drawable.ic_ab_bento);
-        actionbar_right_btn.setOnClickListener(this);
-    }
-
     public void updateUI() {
 
         updateDishUI();
@@ -198,13 +209,13 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         }
 
         if (mOrderDao.countCompletedOrders(mOrder) == 0) {
-            actionbar_right_badge.setVisibility(View.GONE);
-            actionbar_right_badge.setText("0");
-            actionbar_right_btn.setImageResource(R.drawable.ic_ab_bento);
+            getTxtNumBento().setVisibility(View.GONE);
+            getTxtNumBento().setText("0");
+            getActionbarRightBtn().setImageResource(R.drawable.ic_ab_bento);
         } else {
-            actionbar_right_badge.setVisibility(View.VISIBLE);
-            actionbar_right_badge.setText(mOrderDao.countCompletedOrders(mOrder) + "");
-            actionbar_right_btn.setImageResource(R.drawable.ic_ab_bento_completed);
+            getTxtNumBento().setVisibility(View.VISIBLE);
+            getTxtNumBento().setText(mOrderDao.countCompletedOrders(mOrder) + "");
+            getActionbarRightBtn().setImageResource(R.drawable.ic_ab_bento_completed);
         }
 
 
@@ -401,45 +412,35 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                 BentoNowUtils.openSettingsActivity(BuildBentoActivity.this);
                 break;
             case R.id.actionbar_right_btn:
-                // if (Order.current.OrderItems.get(orderIndex).isComplete()) {
-                if (mBentoDao.isBentoComplete(mOrder.OrderItems.get(orderIndex))) {
-                    onContinueOrderPressed();
-                } else {
-                    mDialog = new ConfirmationDialog(BuildBentoActivity.this, null, BackendText.get("build-not-complete-text"));
-                    mDialog.addAcceptButton(BackendText.get("build-not-complete-confirmation-2"), BuildBentoActivity.this);
-                    mDialog.addCancelButton(BackendText.get("build-not-complete-confirmation-1"), BuildBentoActivity.this);
+                if (!bShowDateTime)
+                    if (mBentoDao.isBentoComplete(mOrder.OrderItems.get(orderIndex))) {
+                        onContinueOrderPressed();
+                    } else {
+                        mDialog = new ConfirmationDialog(BuildBentoActivity.this, null, BackendText.get("build-not-complete-text"));
+                        mDialog.addAcceptButton(BackendText.get("build-not-complete-confirmation-2"), BuildBentoActivity.this);
+                        mDialog.addCancelButton(BackendText.get("build-not-complete-confirmation-1"), BuildBentoActivity.this);
 
-                    mDialog.show();
-                }
+                        mDialog.show();
+                    }
                 break;
             case R.id.button_accept:
-                autocomplete();
-                /*if (mOrderDao.countCompletedOrders(mOrder) > 0) {
-                    onContinueOrderPressed();
-                }*/
-                break;
-            case R.id.btn_cancel:
-                /*if (Order.current.OrderItems.size() > 1) {
-                    Order.current.OrderItems.remove(orderIndex);
-                    orderIndex = Order.current.OrderItems.size() - 1;
-                    onContinueOrderPressed();
-                }
-                if (mOrder.OrderItems.size() > 1) {
-                    mBentoDao.removeBento(mOrder.OrderItems.get(orderIndex).order_pk);
-                    mOrder.OrderItems.remove(orderIndex);
-                    orderIndex = Order.current.OrderItems.size() - 1;
-                    onContinueOrderPressed();
-                }
-                */
+                if (!bShowDateTime)
+                    autocomplete();
                 break;
             case R.id.btn_continue:
-                onContinueOrderPressed();
+                if (!bShowDateTime)
+                    onContinueOrderPressed();
                 break;
             case R.id.btn_add_on_add_on:
-                openAddOnsActivity();
+                if (!bShowDateTime)
+                    openAddOnsActivity();
                 break;
             case R.id.btn_add_another_bento:
-                onAddAnotherBentoPressed();
+                if (!bShowDateTime)
+                    onAddAnotherBentoPressed();
+                break;
+            case R.id.layout_date_time:
+                setDateTime();
                 break;
             default:
                 DebugUtils.logError(TAG, String.valueOf(v.getId()));
@@ -448,37 +449,47 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     }
 
     public void onAddMainPressed(View view) {
-        Intent intent = new Intent(this, SelectMainCustomActivity.class);
-        intent.putExtra("orderIndex", orderIndex);
-        startActivity(intent);
+        if (!bShowDateTime) {
+            Intent intent = new Intent(this, SelectMainCustomActivity.class);
+            intent.putExtra("orderIndex", orderIndex);
+            startActivity(intent);
+        }
     }
 
     public void onAddSide1Pressed(View view) {
-        Intent intent = new Intent(this, SelectSideCustomActivity.class);
-        intent.putExtra("orderIndex", orderIndex);
-        intent.putExtra("itemIndex", 1);
-        startActivity(intent);
+        if (!bShowDateTime) {
+            Intent intent = new Intent(this, SelectSideCustomActivity.class);
+            intent.putExtra("orderIndex", orderIndex);
+            intent.putExtra("itemIndex", 1);
+            startActivity(intent);
+        }
     }
 
     public void onAddSide2Pressed(View view) {
-        Intent intent = new Intent(this, SelectSideCustomActivity.class);
-        intent.putExtra("orderIndex", orderIndex);
-        intent.putExtra("itemIndex", 2);
-        startActivity(intent);
+        if (!bShowDateTime) {
+            Intent intent = new Intent(this, SelectSideCustomActivity.class);
+            intent.putExtra("orderIndex", orderIndex);
+            intent.putExtra("itemIndex", 2);
+            startActivity(intent);
+        }
     }
 
     public void onAddSide3Pressed(View view) {
-        Intent intent = new Intent(this, SelectSideCustomActivity.class);
-        intent.putExtra("orderIndex", orderIndex);
-        intent.putExtra("itemIndex", 3);
-        startActivity(intent);
+        if (!bShowDateTime) {
+            Intent intent = new Intent(this, SelectSideCustomActivity.class);
+            intent.putExtra("orderIndex", orderIndex);
+            intent.putExtra("itemIndex", 3);
+            startActivity(intent);
+        }
     }
 
     public void onAddSide4Pressed(View view) {
-        Intent intent = new Intent(this, SelectSideCustomActivity.class);
-        intent.putExtra("orderIndex", orderIndex);
-        intent.putExtra("itemIndex", 4);
-        startActivity(intent);
+        if (!bShowDateTime) {
+            Intent intent = new Intent(this, SelectSideCustomActivity.class);
+            intent.putExtra("orderIndex", orderIndex);
+            intent.putExtra("itemIndex", 4);
+            startActivity(intent);
+        }
     }
 
     public void onAddAnotherBentoPressed() {
@@ -510,28 +521,6 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                     break;
                 }
             }
-           /* if (mOrder.OrderItems.get(orderIndex).items.get(0) == null || mOrder.OrderItems.get(orderIndex).items.get(0).name.isEmpty()) {
-                startActivity(new Intent(this, SelectMainCustomActivity.class));
-            } else if (mOrder.OrderItems.get(orderIndex).items.get(1) == null || mOrder.OrderItems.get(orderIndex).items.get(1).name.isEmpty()) {
-                Intent intent = new Intent(this, SelectSideCustomActivity.class);
-                intent.putExtra("orderIndex", orderIndex);
-                intent.putExtra("itemIndex", 1);
-            } else if (mOrder.OrderItems.get(orderIndex).items.get(2) == null || mOrder.OrderItems.get(orderIndex).items.get(2).name.isEmpty()) {
-                Intent intent = new Intent(this, SelectSideCustomActivity.class);
-                intent.putExtra("orderIndex", orderIndex);
-                intent.putExtra("itemIndex", 2);
-                startActivity(intent);
-            } else if (mOrder.OrderItems.get(orderIndex).items.get(3) == null || mOrder.OrderItems.get(orderIndex).items.get(3).name.isEmpty()) {
-                Intent intent = new Intent(this, SelectSideCustomActivity.class);
-                intent.putExtra("orderIndex", orderIndex);
-                intent.putExtra("itemIndex", 3);
-                startActivity(intent);
-            } else if (mOrder.OrderItems.get(orderIndex).items.get(4) == null || mOrder.OrderItems.get(orderIndex).items.get(4).name.isEmpty()) {
-                Intent intent = new Intent(this, SelectSideCustomActivity.class);
-                intent.putExtra("orderIndex", orderIndex);
-                intent.putExtra("itemIndex", 4);
-                startActivity(intent);
-            }*/
         } else if (!sSoldOutItems.isEmpty()) {
             updateUI();
             WidgetsUtils.createShortToast(String.format(getString(R.string.error_sold_out_items), sSoldOutItems));
@@ -560,6 +549,47 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         } catch (Exception e) {
             DebugUtils.logError(TAG, "track(): " + e.toString());
         }
+    }
+
+    private void setDateTime() {
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (!bShowDateTime) {
+                    bShowDateTime = true;
+                    getImgDropDownUp().setImageResource(R.drawable.ic_action_navigation_arrow_drop_up);
+                    getContainerDateTime().setVisibility(View.VISIBLE);
+                    Animation dateInAnimation = AnimationUtils.loadAnimation(BuildBentoActivity.this, R.anim.date_time_in);
+                    getContainerDateTimeSelection().startAnimation(dateInAnimation);
+
+                } else {
+                    bShowDateTime = false;
+                    getImgDropDownUp().setImageResource(R.drawable.ic_action_navigation_arrow_drop_down);
+                    Animation dateOutAnimation = AnimationUtils.loadAnimation(BuildBentoActivity.this, R.anim.top_slide_out);
+                    dateOutAnimation.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    getContainerDateTime().setVisibility(View.GONE);
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+                        }
+                    });
+                    getContainerDateTimeSelection().startAnimation(dateOutAnimation);
+                }
+            }
+        });
     }
 
 
@@ -652,6 +682,18 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         if (layoutAddOns == null)
             layoutAddOns = (LinearLayout) findViewById(R.id.layout_add_ons);
         return layoutAddOns;
+    }
+
+    private ImageView getActionbarLeftBtn() {
+        if (actionbarLeftBtn == null)
+            actionbarLeftBtn = (ImageView) findViewById(R.id.actionbar_left_btn);
+        return actionbarLeftBtn;
+    }
+
+    private ImageView getActionbarRightBtn() {
+        if (actionbarRightBtn == null)
+            actionbarRightBtn = (ImageView) findViewById(R.id.actionbar_right_btn);
+        return actionbarRightBtn;
     }
 
     private ImageView getImgMain() {
@@ -762,6 +804,18 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         if (imgMainSoldOut4 == null)
             imgMainSoldOut4 = (ImageView) findViewById(R.id.img_main_sold_out_four);
         return imgMainSoldOut4;
+    }
+
+    private ImageView getImgDropDownUp() {
+        if (imgDropDownUp == null)
+            imgDropDownUp = (ImageView) findViewById(R.id.img_drop_down_up);
+        return imgDropDownUp;
+    }
+
+    private TextView getTxtNumBento() {
+        if (txtNumBento == null)
+            txtNumBento = (TextView) findViewById(R.id.actionbar_right_badge);
+        return txtNumBento;
     }
 
     private TextView getTxtTitleMain() {
@@ -879,11 +933,46 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         return layoutPodFive;
     }
 
-
     private RelativeLayout getLayoutPodFour() {
         if (layoutPodFour == null)
             layoutPodFour = (RelativeLayout) findViewById(R.id.layout_pod_four);
         return layoutPodFour;
+    }
+
+    private FrameLayout getLayoutDateTime() {
+        if (layoutDateTime == null)
+            layoutDateTime = (FrameLayout) findViewById(R.id.layout_date_time);
+        return layoutDateTime;
+    }
+
+    private LinearLayout getContainerDateTime() {
+        if (containerDateTime == null)
+            containerDateTime = (LinearLayout) findViewById(R.id.container_date_time);
+        return containerDateTime;
+    }
+
+    private LinearLayout getContainerDateTimeSelection() {
+        if (containerDateTimeSelection == null)
+            containerDateTimeSelection = (LinearLayout) findViewById(R.id.container_date_time_selection);
+        return containerDateTimeSelection;
+    }
+
+    private Spinner getSpinnerDate() {
+        if (spinnerDate == null)
+            spinnerDate = (Spinner) findViewById(R.id.spinner_date);
+        return spinnerDate;
+    }
+
+    private Spinner getSpinnerTime() {
+        if (spinnerTime == null)
+            spinnerTime = (Spinner) findViewById(R.id.spinner_time);
+        return spinnerTime;
+    }
+
+    private AutoFitTxtView getTxtDateTimeToolbar() {
+        if (txtDateTimeToolbar == null)
+            txtDateTimeToolbar = (AutoFitTxtView) findViewById(R.id.txt_date_time_toolbar);
+        return txtDateTimeToolbar;
     }
 
 }

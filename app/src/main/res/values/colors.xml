@@ -13,6 +13,7 @@
     <color name="red">#e66633</color>
     <color name="black">#000000</color>
     <color name="black_60">#99000000</color>
+    <color name="black_70">#C8000000</color>
     <color name="blue">#3b5998</color>
     <color name="blue_20">#323b5998</color>
     <color name="actionbar_title_color">#4f5055</color>
