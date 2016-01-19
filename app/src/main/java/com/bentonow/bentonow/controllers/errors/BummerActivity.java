@@ -13,7 +13,7 @@ import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
-import com.bentonow.bentonow.model.Settings;
+import com.bentonow.bentonow.dao.SettingsDao;
 import com.bentonow.bentonow.ui.BackendEditText;
 import com.bentonow.bentonow.web.request.UserRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -133,7 +133,7 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
 
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.772492, -122.420262), zoom));
         PolygonOptions rectOptions = new PolygonOptions();
-        for (String aServiceArea_dinner : Settings.getServiceArea()) {
+        for (String aServiceArea_dinner : SettingsDao.getServiceArea()) {
             String[] loc = aServiceArea_dinner.split(",");
             double lat = Double.valueOf(loc[1]);
             double lng = Double.valueOf(loc[0]);

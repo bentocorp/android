@@ -13,6 +13,7 @@ import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.adapter.DishFixGridListAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.dao.DishDao;
+import com.bentonow.bentonow.dao.MenuDao;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.ui.GridViewHeader;
@@ -48,7 +49,7 @@ public class SelectSideFixActivity extends BaseFragmentActivity implements View.
         } else
             initToolbar();
 
-        Menu menu = Menu.get();
+        Menu menu = MenuDao.get();
 
         if (menu == null) {
             ConfirmationDialog mDialog = new ConfirmationDialog(SelectSideFixActivity.this, "Error", "There is no current menu to show");

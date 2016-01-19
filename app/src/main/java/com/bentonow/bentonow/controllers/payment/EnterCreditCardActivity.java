@@ -22,9 +22,9 @@ import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
+import com.bentonow.bentonow.dao.IosCopyDao;
+import com.bentonow.bentonow.dao.SettingsDao;
 import com.bentonow.bentonow.dao.UserDao;
-import com.bentonow.bentonow.model.BackendText;
-import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.ui.BackendButton;
 import com.stripe.android.Stripe;
@@ -101,7 +101,7 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
 
     private void initActionbar() {
         TextView actionbar_title = (TextView) findViewById(R.id.actionbar_title);
-        actionbar_title.setText(BackendText.get("complete-enter-credit-card"));
+        actionbar_title.setText(IosCopyDao.get("complete-enter-credit-card"));
 
         ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
         actionbar_left_btn.setImageResource(R.drawable.ab_x_close);
@@ -111,7 +111,7 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
     void updateUI() {
         btn_save.setBackgroundResource(isValid() ? R.drawable.bg_green_cornered : R.drawable.btn_dark_gray);
 
-        getTxtBentoPrice().setText(BentoNowUtils.getNumberFromPrice(Settings.price));
+        getTxtBentoPrice().setText(BentoNowUtils.getNumberFromPrice(SettingsDao.getCurrent().price));
 
         txt_number.setVisibility(focused == R.id.txt_number ? View.VISIBLE : View.GONE);
         txt_last4.setVisibility(focused == R.id.txt_number ? View.GONE : View.VISIBLE);

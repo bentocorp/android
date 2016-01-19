@@ -24,6 +24,7 @@ import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.dialog.EditPhoneDialog;
 import com.bentonow.bentonow.controllers.dialog.LogOutDialog;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
+import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.listener.ListenerDialog;
 import com.bentonow.bentonow.model.BackendText;
@@ -118,7 +119,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
 
 
         if (mCurrentUser != null && mCurrentUser.coupon_code != null && !mCurrentUser.coupon_code.isEmpty()) {
-            message = BackendText.get("share-precomposed-message").replace("%@", mCurrentUser.coupon_code).replace("http://apple.co/1FPEbWY", ConstantUtils.URL_INSTALL_ANDROID);
+            message = IosCopyDao.get("share-precomposed-message").replace("%@", mCurrentUser.coupon_code).replace("http://apple.co/1FPEbWY", ConstantUtils.URL_INSTALL_ANDROID);
         }
     }
 

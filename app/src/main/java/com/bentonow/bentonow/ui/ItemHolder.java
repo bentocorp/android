@@ -9,6 +9,7 @@ import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.ImageUtils;
 import com.bentonow.bentonow.dao.DishDao;
+import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.DishModel;
 
@@ -114,7 +115,7 @@ public class ItemHolder {
 
             if (btn_add_to_bento != null) {
                 if (!dishDao.canBeAdded(dishModel)) {
-                    btn_add_to_bento.setText(BackendText.get("reached-max-button"));
+                    btn_add_to_bento.setText(IosCopyDao.get("reached-max-button"));
                 } else if (DishDao.isSoldOut(dishModel, countCurrent)) {
                     btn_add_to_bento.setText("Sold Out");
 
@@ -125,7 +126,7 @@ public class ItemHolder {
                             soldOut.setVisibility(View.GONE);
 
                 } else
-                    btn_add_to_bento.setText(BackendText.get("build-main-add-button-1"));
+                    btn_add_to_bento.setText(IosCopyDao.get("build-main-add-button-1"));
             }
 
             if (img_gradient != null)

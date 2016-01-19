@@ -19,6 +19,7 @@ import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
+import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.User;
@@ -96,7 +97,7 @@ public class EnterPhoneNumberActivity extends BaseFragmentActivity implements Vi
 
     void initActionbar() {
         TextView actionbar_title = (TextView) findViewById(R.id.actionbar_title);
-        actionbar_title.setText(BackendText.get("phone-confirmation-title"));
+        actionbar_title.setText(IosCopyDao.get("phone-confirmation-title"));
 
         ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
         actionbar_left_btn.setImageResource(R.drawable.ic_ab_back);

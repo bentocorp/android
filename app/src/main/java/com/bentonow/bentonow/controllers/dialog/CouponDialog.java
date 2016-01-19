@@ -12,8 +12,8 @@ import android.widget.EditText;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.Utils.DebugUtils;
+import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.listener.ListenerDialog;
-import com.bentonow.bentonow.model.BackendText;
 
 public class CouponDialog extends Dialog implements View.OnClickListener {
 
@@ -32,9 +32,9 @@ public class CouponDialog extends Dialog implements View.OnClickListener {
 
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        getBtnAccept().setText(BackendText.get("complete-promo-button"));
-        getBtnCancel().setText(BackendText.get("complete-promo-cancel"));
-        getEditCoupon().setHint(BackendText.get("complete-promo-input-text"));
+        getBtnAccept().setText(IosCopyDao.get("complete-promo-button"));
+        getBtnCancel().setText(IosCopyDao.get("complete-promo-cancel"));
+        getEditCoupon().setHint(IosCopyDao.get("complete-promo-input-text"));
 
         getBtnAccept().setOnClickListener(this);
         getBtnCancel().setOnClickListener(this);

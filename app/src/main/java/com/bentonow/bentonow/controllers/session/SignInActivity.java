@@ -23,6 +23,7 @@ import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
+import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.User;
@@ -206,7 +207,7 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
 
     void initActionbar() {
         TextView actionbar_title = (TextView) findViewById(R.id.actionbar_title);
-        actionbar_title.setText(BackendText.get("sign-in-title"));
+        actionbar_title.setText(IosCopyDao.get("sign-in-title"));
 
         ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
         actionbar_left_btn.setImageResource(R.drawable.ic_ab_back);
@@ -267,7 +268,7 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
         loginUser.email = txt_email.getText().toString();
         loginUser.password = txt_password.getText().toString();
 
-        mProgressDialog = new ProgressDialog(SignInActivity.this, BackendText.get("sign-up-sign-in-link"), true);
+        mProgressDialog = new ProgressDialog(SignInActivity.this, IosCopyDao.get("sign-up-sign-in-link"), true);
         mProgressDialog.show();
 
         UserRequest.login(loginUser, new TextHttpResponseHandler() {
@@ -318,7 +319,7 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
 
     public void onForgotPassword(View view) {
         MixpanelUtils.track("Tapped On Forgot Password");
-        SocialNetworksUtil.openWebUrl(this, BackendText.get("forgot_password_url"));
+        SocialNetworksUtil.openWebUrl(this, IosCopyDao.get("forgot_password_url"));
     }
 
     @Override
@@ -384,7 +385,7 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
             loginUser.email = user.getString("email");
             loginUser.fb_token = AccessToken.getCurrentAccessToken().getToken();
 
-            mProgressDialog = new ProgressDialog(SignInActivity.this, BackendText.get("sign-up-sign-in-link"), true);
+            mProgressDialog = new ProgressDialog(SignInActivity.this, IosCopyDao.get("sign-up-sign-in-link"), true);
             mProgressDialog.show();
 
             UserRequest.login(loginUser, new TextHttpResponseHandler() {

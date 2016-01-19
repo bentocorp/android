@@ -99,8 +99,8 @@ public class OrderDao {
         mOrder.OrderItems.add(mBentoDao.getNewBento(ConstantUtils.optItemType.ADD_ON));
 
         OrderEta mOrderEta = new OrderEta();
-        mOrderEta.max = String.valueOf(Settings.eta_max);
-        mOrderEta.min = String.valueOf(Settings.eta_min);
+        mOrderEta.max = String.valueOf(MenuDao.eta_max);
+        mOrderEta.min = String.valueOf(MenuDao.eta_min);
 
         mOrder.Eta = mOrderEta;
 
@@ -328,7 +328,7 @@ public class OrderDao {
 
     public void calculateOrder(Order mOrder) {
         double items_total = 0;
-        double delivery_fee = Settings.delivery_price;
+        double delivery_fee = SettingsDao.getCurrent().delivery_price;
         double pre_coupon_subtotal;
         double post_coupon_subtotal;
         double coupon_discount;
@@ -338,7 +338,7 @@ public class OrderDao {
         double subtotal;
         double tip;
         double total;
-        double tax_percent = Settings.tax_percent;
+        double tax_percent = SettingsDao.getCurrent().tax_percent;
         double total_w_o_coupon;
 
         coupon_discount = mOrder.OrderDetails.coupon_discount_cents / 100;
@@ -385,7 +385,7 @@ public class OrderDao {
 
 
         mOrder.OrderDetails.coupon_discount_cents = (int) Math.round(coupon_discount * 100);
-        mOrder.OrderDetails.delivery_price = Settings.delivery_price;
+        mOrder.OrderDetails.delivery_price = SettingsDao.getCurrent().delivery_price;
         mOrder.OrderDetails.items_total = AndroidUtil.round(items_total, 2);
         mOrder.OrderDetails.subtotal = AndroidUtil.round(subtotal, 2);
         mOrder.OrderDetails.tax_cents = AndroidUtil.round(tax, 2) * 100;
@@ -401,7 +401,7 @@ public class OrderDao {
         DebugUtils.logDebug(TAG, "Coupon (Promo) Discount: " + coupon_discount);
         DebugUtils.logDebug(TAG, "Tax w/o coupon: " + tax_w_o_coupon);
         DebugUtils.logDebug(TAG, "Tax: " + tax);
-        DebugUtils.logDebug(TAG, "Tax double: " + Settings.tax_percent);
+        DebugUtils.logDebug(TAG, "Tax double: " + SettingsDao.getCurrent().tax_percent);
         DebugUtils.logDebug(TAG, "Subtotal w/o coupon: " + subtotal_w_o_coupon);
         DebugUtils.logDebug(TAG, "Subtotal: " + subtotal);
         DebugUtils.logDebug(TAG, "Tip: " + tip);

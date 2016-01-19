@@ -14,8 +14,8 @@ import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.ImageUtils;
 import com.bentonow.bentonow.dao.DishDao;
+import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.listener.ListenerCustomDish;
-import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.ui.wrapper.ItemMainCustomWrapper;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -143,13 +143,13 @@ public class CustomMainListAdapter extends ArrayAdapter<DishModel> {
         });
 
         if (!mDishDao.canBeAdded(mDish)) {
-            viewHolder.getBtnAddToBento().setText(BackendText.get("reached-max-button"));
+            viewHolder.getBtnAddToBento().setText(IosCopyDao.get("reached-max-button"));
             viewHolder.getImgSoldOut().setVisibility(View.GONE);
         } else if (DishDao.isSoldOut(mDish, true)) {
             viewHolder.getBtnAddToBento().setText("Sold Out");
             viewHolder.getImgSoldOut().setVisibility(View.VISIBLE);
         } else {
-            viewHolder.getBtnAddToBento().setText(BackendText.get("build-main-add-button-1"));
+            viewHolder.getBtnAddToBento().setText(IosCopyDao.get("build-main-add-button-1"));
             viewHolder.getImgSoldOut().setVisibility(View.GONE);
         }
 

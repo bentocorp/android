@@ -7,6 +7,7 @@ import android.util.TypedValue;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.model.BackendText;
 
 import me.grantland.widget.AutofitHelper;
@@ -36,7 +37,7 @@ public class BackendAutoFitTextView extends TextView implements AutofitHelper.On
 
         try {
             String key = a.getString(R.styleable.BackendTextView_key);
-            setText(BackendText.get(key));
+            setText(IosCopyDao.get(key));
         } finally {
             a.recycle();
         }

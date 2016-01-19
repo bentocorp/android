@@ -19,6 +19,7 @@ import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.adapter.AddOnListAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.dao.DishDao;
+import com.bentonow.bentonow.dao.MenuDao;
 import com.bentonow.bentonow.listener.ListenerAddOn;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
@@ -84,7 +85,7 @@ public class AddOnActivity extends BaseFragmentActivity implements View.OnClickL
         getListAddOn().setHasFixedSize(true);
         getListAddOn().setAdapter(getListAdapter());
 
-        mMenu = Menu.get();
+        mMenu = MenuDao.get();
         mBento = mBentoDao.getAddOnBento();
 
         updateUI();

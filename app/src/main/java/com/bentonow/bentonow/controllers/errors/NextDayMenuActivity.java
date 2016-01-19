@@ -14,6 +14,7 @@ import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.adapter.NextDayMainListAdapter;
+import com.bentonow.bentonow.dao.MenuDao;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
 
@@ -49,7 +50,7 @@ public class NextDayMenuActivity extends BaseFragmentActivity implements View.On
 
         MixpanelUtils.track("Previewed Today's Menu");
 
-        Menu menu = Menu.getNext();
+        Menu menu = MenuDao.getNext();
 
         if (menu == null) {
             onBackPressed();

@@ -8,8 +8,8 @@ import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
-import com.bentonow.bentonow.model.BackendText;
-import com.bentonow.bentonow.model.Settings;
+import com.bentonow.bentonow.dao.IosCopyDao;
+import com.bentonow.bentonow.dao.SettingsDao;
 import com.bentonow.bentonow.ui.AutoFitTxtView;
 
 
@@ -29,7 +29,7 @@ public class GettingStartedActivity extends BaseFragmentActivity {
 
         sPrice = BentoNowUtils.getDefaultPriceBento(0);
 
-        String title = BackendText.get("about-item-0").replace("$X", "$" + sPrice + "!");
+        String title = IosCopyDao.get("about-item-0").replace("$X", "$" + sPrice + "!");
 
         MixpanelUtils.track("App Installed");
 
@@ -50,7 +50,7 @@ public class GettingStartedActivity extends BaseFragmentActivity {
 
     public void onGettingStartedPressed(View view) {
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.APP_FIRST_RUN, true);
-        if (!Settings.status.equals("open")) {
+        if (!SettingsDao.getCurrent().status.equals("open")) {
             finish();
             BentoNowUtils.openErrorActivity(this);
         } else {

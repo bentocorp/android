@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.widget.EditText;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.model.BackendText;
 
 public class BackendEditText extends EditText {
@@ -40,7 +41,7 @@ public class BackendEditText extends EditText {
 
         try {
             String key = a.getString(R.styleable.BackendTextView_key);
-            setHint(BackendText.get(key));
+            setHint(IosCopyDao.get(key));
         } finally {
             a.recycle();
         }

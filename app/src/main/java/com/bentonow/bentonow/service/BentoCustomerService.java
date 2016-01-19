@@ -10,11 +10,11 @@ import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
+import com.bentonow.bentonow.dao.MenuDao;
+import com.bentonow.bentonow.dao.SettingsDao;
 import com.bentonow.bentonow.listener.InterfaceCustomerService;
-import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Menu;
-import com.bentonow.bentonow.model.Settings;
-import com.bentonow.bentonow.model.Stock;
+import com.bentonow.bentonow.parse.InitParse;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.apache.http.Header;
@@ -46,22 +46,19 @@ public class BentoCustomerService extends Service {
 
     private void saveNewData(String responseString) {
         try {
-            Stock.set(responseString);
-            BackendText.set(responseString);
-            Settings.set(responseString);
-            Menu.set(responseString);
+            InitParse.parseInitTwo(responseString);
 
 //            if (iNumTimesRequest > 2)
 //                Settings.pod_mode = "4";
 
-            Menu mMenu = Menu.get();
+            Menu mMenu = MenuDao.get();
 
             boolean bHasMenu = mMenu != null;
             boolean bIsConnected = mListener != null;
 
             if (BentoNowUtils.isLastVersionApp(this)) {
                 if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_APP_IN_FRONT))
-                    switch (Settings.status) {
+                    switch (SettingsDao.getCurrent().status) {
                         case "open":
                             if (bIsConnected) {
                                 if (bHasMenu)
@@ -79,10 +76,10 @@ public class BentoCustomerService extends Service {
 
             }
 
-            if (!Settings.status.equals(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS)))
-                DebugUtils.logDebug(TAG, "Should change from: " + SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS) + " to " + Settings.status);
+            if (!SettingsDao.getCurrent().equals(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS)))
+                DebugUtils.logDebug(TAG, "Should change from: " + SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS) + " to " + SettingsDao.getCurrent().status);
 
-            DebugUtils.logDebug(TAG, "New Data: " + "Status: " + Settings.status + " HasMenu: " + bHasMenu + " Listener: " + bIsConnected + " Pod: " + Settings.pod_mode);
+            DebugUtils.logDebug(TAG, "New Data: " + "Status: " + SettingsDao.getCurrent().status + " HasMenu: " + bHasMenu + " Listener: " + bIsConnected + " Pod: " + SettingsDao.getCurrent().pod_mode);
 
         } catch (Exception ex) {
             DebugUtils.logError(TAG, ex);
@@ -93,7 +90,7 @@ public class BentoCustomerService extends Service {
         if (bSendRequest || !cCheckStatus) {
             bSendRequest = false;
 
-            BentoRestClient.get("/init/" + BentoNowUtils.getTodayDate(), null, new TextHttpResponseHandler() {
+            BentoRestClient.get(BentoRestClient.getInit2Url(), null, new TextHttpResponseHandler() {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                     DebugUtils.logError(TAG, "Cannot loadData Has Listener: " + (mListener != null));

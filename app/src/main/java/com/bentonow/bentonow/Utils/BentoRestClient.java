@@ -1,9 +1,9 @@
 package com.bentonow.bentonow.Utils;
 
-import android.util.Log;
-
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.controllers.BentoApplication;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -97,4 +97,17 @@ public class BentoRestClient {
     private static String getAbsoluteUrl(String relativeUrl) {
         return BASE_URL + relativeUrl;
     }
+
+    public static String getInitUrl() {
+        return "/init/" + BentoNowUtils.getTodayDate();
+    }
+
+    public static String getInit2Url() {
+        LatLng location = new Gson().fromJson(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.LOCATION), LatLng.class);
+        if (location == null)
+            return getInitUrl();
+        else
+            return "/init2?date=" + BentoNowUtils.getTodayDateInit2() + "&copy=1&gatekeeper=1&lat=" + location.latitude + "&long=" + location.longitude;
+    }
+
 }

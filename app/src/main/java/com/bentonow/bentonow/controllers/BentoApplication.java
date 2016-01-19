@@ -2,26 +2,17 @@ package com.bentonow.bentonow.controllers;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
-import android.location.Address;
 import android.os.Handler;
 import android.support.multidex.MultiDex;
 
 import com.bentonow.bentonow.R;
-import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
-import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.listener.InterfaceWebRequest;
-import com.bentonow.bentonow.model.Settings;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
-import com.google.android.gms.maps.model.LatLng;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 import io.fabric.sdk.android.Fabric;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
@@ -33,7 +24,6 @@ public class BentoApplication extends Application {
 
     private Handler mHandler = new Handler();
     private UserDao userDao = new UserDao();
-
 
 
     @Override
@@ -48,8 +38,6 @@ public class BentoApplication extends Application {
                         .setFontAttrId(R.attr.fontPath)
                         .build()
         );
-
-        Settings.load();
 
         try {
             MixpanelUtils.logInUser(userDao.getCurrentUser());

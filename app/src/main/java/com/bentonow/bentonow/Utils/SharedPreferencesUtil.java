@@ -18,7 +18,6 @@ public class SharedPreferencesUtil {
     public static final String STORE_STATUS = "store_status"; //String
     public static final String LOCATION = "location"; //String
     public static final String ADDRESS = "address"; //String
-    public static final String BACKENDTEXT = "backendText"; //String
     public static final String UUID_BENTO = "UUID_BENTO"; //String
     public static final String POD_MODE = "POD_MODE"; //String
     public static final String MEAL_NAME = "MEAL_NAME"; //String
@@ -26,6 +25,15 @@ public class SharedPreferencesUtil {
     public static final String IS_APP_IN_FRONT = "IS_THE_APP_IN_FRONT"; //boolean
     public static final String CURRENT_USER_ID = "CURRENT_USER_ID"; //long
     public static final String USER_EMAIL = "USER_EMAIL"; //String
+
+    //DATA FROM SERVER
+    public static final String BACKENDTEXT = "backendText"; //String
+    public static final String STATUS_ALL = "status_all"; //String
+    public static final String SETTINGS = "settings"; //String
+    public static final String MEALS = "meals"; //String
+    public static final String MENU_TODAY = "menu_today"; //String
+    public static final String MENU_NEXT = "menu_next"; //String
+    public static final String GATE_KEEPER = "gate_keeper"; //String
 
 
     /**

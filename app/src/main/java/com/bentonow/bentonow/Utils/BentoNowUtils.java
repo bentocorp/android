@@ -3,7 +3,6 @@ package com.bentonow.bentonow.Utils;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
-import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.animation.Animation;
@@ -11,7 +10,6 @@ import android.view.animation.RotateAnimation;
 
 import com.bentonow.bentonow.BuildConfig;
 import com.bentonow.bentonow.R;
-import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.controllers.errors.ErrorActivity;
 import com.bentonow.bentonow.controllers.errors.ErrorVersionActivity;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
@@ -24,12 +22,11 @@ import com.bentonow.bentonow.controllers.payment.EnterCreditCardActivity;
 import com.bentonow.bentonow.controllers.session.EnterPhoneNumberActivity;
 import com.bentonow.bentonow.controllers.session.SettingsActivity;
 import com.bentonow.bentonow.controllers.session.SignInActivity;
+import com.bentonow.bentonow.dao.MenuDao;
 import com.bentonow.bentonow.dao.OrderDao;
+import com.bentonow.bentonow.dao.SettingsDao;
 import com.bentonow.bentonow.dao.UserDao;
-import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Menu;
-import com.bentonow.bentonow.model.Order;
-import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.User;
 import com.facebook.GraphResponse;
 import com.google.android.gms.maps.model.LatLng;
@@ -49,10 +46,12 @@ import java.util.UUID;
 public class BentoNowUtils {
 
     private static final String TAG = "BentoNowUtils";
+    public static Menu mMenu;
 
     public static final SimpleDateFormat sdfBento = new SimpleDateFormat("yyyyMMdd");
+    public static final SimpleDateFormat sdfBentoInit2 = new SimpleDateFormat("yyyy-MM-dd");
     public static final boolean B_APPIUM_TESTING = false;
-    public static final boolean B_KOKUSHO_TESTING = true;
+    public static final boolean B_KOKUSHO_TESTING = false;
 
     public static int getCurrentTime() {
         if (BuildConfig.DEBUG && BentoNowUtils.B_KOKUSHO_TESTING)
@@ -79,6 +78,11 @@ public class BentoNowUtils {
         return sdfBento.format(mToday.getTime());
     }
 
+    public static String getTodayDateInit2() {
+        Calendar mToday = Calendar.getInstance();
+        return sdfBentoInit2.format(mToday.getTime());
+    }
+
     public static String getTomorrowDate() {
         Calendar cDate = Calendar.getInstance();
         cDate.add(Calendar.DATE, 1);
@@ -97,7 +101,7 @@ public class BentoNowUtils {
     }
 
     public static void openBuildBentoActivity(FragmentActivity mContext) {
-        Menu mCurrentMenu = Menu.get();
+        Menu mCurrentMenu = MenuDao.get();
 
         mContext.finish();
 
@@ -241,7 +245,7 @@ public class BentoNowUtils {
     }
 
     public static boolean isLastVersionApp(Context mContext) {
-        if (Settings.min_version != 0 && (Settings.min_version > BuildConfig.VERSION_CODE)) {
+        if (MenuDao.min_version != 0 && (MenuDao.min_version > BuildConfig.VERSION_CODE)) {
             Intent intent = new Intent(mContext, ErrorVersionActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(intent);
@@ -277,7 +281,7 @@ public class BentoNowUtils {
             sPrice = sPrice.replace(".00", "");
         } catch (Exception ex) {
             DebugUtils.logError("getNumberFromPrice()", ex);
-            sPrice = String.valueOf(Settings.price);
+            sPrice = String.valueOf(SettingsDao.getCurrent().price);
         }
 
         return sPrice;
@@ -285,7 +289,7 @@ public class BentoNowUtils {
 
     public static String getDefaultPriceBento(double dPrice) {
         if (dPrice <= 0)
-            return getNumberFromPrice(Settings.price);
+            return getNumberFromPrice(SettingsDao.getCurrent().price);
         else
             return getNumberFromPrice(dPrice);
     }
@@ -308,7 +312,7 @@ public class BentoNowUtils {
 
             bIsValid = false;
             // } else if (LocationUtils.mCurrentLocation == null || !Settings.isInServiceArea(LocationUtils.mCurrentLocation) || BentoApplication.address == null || BentoApplication.location == null) {
-        } else if (mLocation == null || !Settings.isInServiceArea(mLocation) || mAddress == null) {
+        } else if (mLocation == null || !SettingsDao.isInServiceArea(mLocation) || mAddress == null) {
             // WidgetsUtils.createShortToast(mContext.getString(R.string.error_no_valid_delivery_address));
 
             Intent intent = new Intent(mContext, DeliveryLocationActivity.class);

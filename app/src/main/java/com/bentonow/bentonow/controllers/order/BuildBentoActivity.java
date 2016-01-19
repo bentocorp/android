@@ -26,13 +26,14 @@ import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.dao.DishDao;
+import com.bentonow.bentonow.dao.IosCopyDao;
+import com.bentonow.bentonow.dao.MenuDao;
+import com.bentonow.bentonow.dao.SettingsDao;
+import com.bentonow.bentonow.dao.StockDao;
 import com.bentonow.bentonow.listener.InterfaceCustomerService;
-import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
-import com.bentonow.bentonow.model.Settings;
-import com.bentonow.bentonow.model.Stock;
 import com.bentonow.bentonow.model.order.OrderItem;
 import com.bentonow.bentonow.service.BentoCustomerService;
 import com.bentonow.bentonow.ui.AutoFitTxtView;
@@ -132,7 +133,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         getLayoutDateTime().setOnClickListener(this);
 
         getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), BentoNowUtils.getDefaultPriceBento(DishDao.getLowestMainPrice())));
-        getTxtEta().setText(String.format(getString(R.string.build_bento_eta), Settings.eta_min + "-" + Settings.eta_max));
+        getTxtEta().setText(String.format(getString(R.string.build_bento_eta), MenuDao.eta_min + "-" + MenuDao.eta_max));
 
         String[] aDay = new String[]{"Today", "Mon, Jan 18", "Tue, Jan 19", "Wed, Jan 20", "Thu, Jan 18", "Fri, Jan 18", "Sat, Jan 18", "Sun, Jan 18"};
         String[] aTime = new String[]{"11:30 - 12:00", "01:30 - 02:00", "02:30 - 03:00", "03:30 - 04:00", "04:30 - 05:00", "05:30 - 06:00", "06:30 - 07:00", "07:30 - 08:00"};
@@ -148,7 +149,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
     @Override
     protected void onResume() {
-        mMenu = Menu.get();
+        mMenu = MenuDao.get();
 
         if (mMenu == null) {
             openErrorActivity();
@@ -160,7 +161,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                 mOrder.MealName = mMenu.meal_name;
                 mOrder.MenuType = mMenu.menu_type;
                 SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MEAL_NAME, mMenu.meal_name);
-                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.POD_MODE, Settings.pod_mode);
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.POD_MODE, SettingsDao.getCurrent().pod_mode);
 
                 mOrderDao.updateOrder(mOrder);
             }
@@ -192,16 +193,16 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
         updateDishUI();
 
-        if (mBentoDao.isBentoComplete(mOrder.OrderItems.get(orderIndex)) && !Stock.isSold()) {
+        if (mBentoDao.isBentoComplete(mOrder.OrderItems.get(orderIndex)) && !StockDao.isSold()) {
             getBtnContinue().setBackgroundColor(getResources().getColor(R.color.btn_green));
-            getBtnContinue().setText(BackendText.get("build-button-2"));
+            getBtnContinue().setText(IosCopyDao.get("build-button-2"));
             getBtnAddAnotherBento().setTextColor(getResources().getColor(R.color.btn_green));
             getBtnAddAnotherBento().setOnClickListener(this);
             getBtnAddOn().setTextColor(getResources().getColor(R.color.btn_green));
             getBtnAddOn().setOnClickListener(this);
         } else {
             getBtnContinue().setBackgroundColor(getResources().getColor(R.color.gray));
-            getBtnContinue().setText(BackendText.get("build-button-1"));
+            getBtnContinue().setText(IosCopyDao.get("build-button-1"));
             getBtnAddAnotherBento().setTextColor(getResources().getColor(R.color.btn_green_trans));
             getBtnAddAnotherBento().setOnClickListener(null);
             getBtnAddOn().setTextColor(getResources().getColor(R.color.btn_green_trans));
@@ -225,7 +226,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     private void updateDishUI() {
         OrderItem item = mOrder.OrderItems.get(orderIndex);
 
-        if (Settings.pod_mode.equals("5")) {
+        if (SettingsDao.getCurrent().pod_mode.equals("5")) {
             getLayoutPodFive().setVisibility(View.VISIBLE);
             getLayoutPodFour().setVisibility(View.GONE);
 
@@ -416,9 +417,9 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                     if (mBentoDao.isBentoComplete(mOrder.OrderItems.get(orderIndex))) {
                         onContinueOrderPressed();
                     } else {
-                        mDialog = new ConfirmationDialog(BuildBentoActivity.this, null, BackendText.get("build-not-complete-text"));
-                        mDialog.addAcceptButton(BackendText.get("build-not-complete-confirmation-2"), BuildBentoActivity.this);
-                        mDialog.addCancelButton(BackendText.get("build-not-complete-confirmation-1"), BuildBentoActivity.this);
+                        mDialog = new ConfirmationDialog(BuildBentoActivity.this, null, IosCopyDao.get("build-not-complete-text"));
+                        mDialog.addAcceptButton(IosCopyDao.get("build-not-complete-confirmation-2"), BuildBentoActivity.this);
+                        mDialog.addCancelButton(IosCopyDao.get("build-not-complete-confirmation-1"), BuildBentoActivity.this);
 
                         mDialog.show();
                     }
@@ -595,20 +596,20 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
     @Override
     public void openErrorActivity() {
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, SettingsDao.getCurrent().status);
         finish();
         BentoNowUtils.openErrorActivity(BuildBentoActivity.this);
     }
 
     @Override
     public void openBuildBentoActivity() {
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, SettingsDao.getCurrent().status);
 
         if (!SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.MEAL_NAME).isEmpty() &&
                 (!SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.MEAL_NAME).equals(mMenu.meal_name) ||
-                        !SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.POD_MODE).equals(Settings.pod_mode))) {
+                        !SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.POD_MODE).equals(SettingsDao.getCurrent().pod_mode))) {
             DebugUtils.logDebug(TAG, "Should change from MealName " + SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.MEAL_NAME) + " to " + mMenu.meal_name +
-                    " Should change from Pod Mode " + SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.POD_MODE) + " to " + Settings.pod_mode);
+                    " Should change from Pod Mode " + SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.POD_MODE) + " to " + SettingsDao.getCurrent().pod_mode);
 
             WidgetsUtils.createLongToast(R.string.error_restarting_app);
 

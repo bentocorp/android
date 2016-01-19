@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
-import com.bentonow.bentonow.model.BackendText;
+import com.bentonow.bentonow.dao.IosCopyDao;
 
 public class BackendTextView extends TextView {
 
@@ -32,7 +32,7 @@ public class BackendTextView extends TextView {
         init(context, attrs);
     }
 
-    void init (Context context, AttributeSet attrs) {
+    void init(Context context, AttributeSet attrs) {
         TypedArray a = context.getTheme().obtainStyledAttributes(
                 attrs,
                 R.styleable.BackendTextView,
@@ -40,7 +40,7 @@ public class BackendTextView extends TextView {
 
         try {
             String key = a.getString(R.styleable.BackendTextView_key);
-            setText(BackendText.get(key));
+            setText(IosCopyDao.get(key));
         } finally {
             a.recycle();
         }

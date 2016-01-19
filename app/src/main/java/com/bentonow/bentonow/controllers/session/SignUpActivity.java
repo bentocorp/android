@@ -22,6 +22,7 @@ import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
+import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.User;
@@ -262,7 +263,7 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
 
     void initActionbar() {
         TextView actionbar_title = (TextView) findViewById(R.id.actionbar_title);
-        actionbar_title.setText(BackendText.get("sign-up-title"));
+        actionbar_title.setText(IosCopyDao.get("sign-up-title"));
 
         ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
         actionbar_left_btn.setImageResource(R.drawable.ic_ab_back);
@@ -349,7 +350,7 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
         registerUser.phone = BentoNowUtils.getPhoneFromNumber(txt_phone.getText().toString());
         registerUser.password = txt_password.getText().toString();
 
-        mProgressDialog = new ProgressDialog(SignUpActivity.this, BackendText.get("sign-in-sign-up-link"), true);
+        mProgressDialog = new ProgressDialog(SignUpActivity.this, IosCopyDao.get("sign-in-sign-up-link"), true);
         mProgressDialog.show();
 
         UserRequest.register(registerUser, new TextHttpResponseHandler() {
@@ -473,7 +474,7 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
             loginUser.email = user.getString("email");
             loginUser.fb_token = AccessToken.getCurrentAccessToken().getToken();
 
-            mProgressDialog = new ProgressDialog(SignUpActivity.this, BackendText.get("sign-in-sign-up-link"), true);
+            mProgressDialog = new ProgressDialog(SignUpActivity.this, IosCopyDao.get("sign-in-sign-up-link"), true);
             mProgressDialog.show();
 
             UserRequest.login(loginUser, new TextHttpResponseHandler() {

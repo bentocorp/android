@@ -8,8 +8,8 @@ import android.widget.BaseExpandableListAdapter;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.dao.DishDao;
+import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.listener.ListenerCompleteOrder;
-import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.order.OrderItem;
 import com.bentonow.bentonow.ui.wrapper.ItemChildOrderWrapper;
@@ -221,11 +221,11 @@ public class ExpandableListOrderAdapter extends BaseExpandableListAdapter {
 
         if (groupPosition == 0) {
             viewHolder.getBtnDelete().setTextColor(bEditOrder ? mActivity.getResources().getColor(R.color.orange) : mActivity.getResources().getColor(R.color.btn_green));
-            viewHolder.getBtnDelete().setText(bEditOrder ? BackendText.get("complete-done") : BackendText.get("complete-edit"));
+            viewHolder.getBtnDelete().setText(bEditOrder ? IosCopyDao.get("complete-done") : IosCopyDao.get("complete-edit"));
             viewHolder.getBtnDelete().setVisibility(aOrderList.size() > 0 ? View.VISIBLE : View.INVISIBLE);
         } else {
             viewHolder.getBtnDelete().setTextColor(bEditAddOn ? mActivity.getResources().getColor(R.color.orange) : mActivity.getResources().getColor(R.color.btn_green));
-            viewHolder.getBtnDelete().setText(bEditAddOn ? BackendText.get("complete-done") : BackendText.get("complete-edit"));
+            viewHolder.getBtnDelete().setText(bEditAddOn ? IosCopyDao.get("complete-done") : IosCopyDao.get("complete-edit"));
             viewHolder.getBtnDelete().setVisibility(aAddOnList.size() > 0 ? View.VISIBLE : View.INVISIBLE);
         }
 

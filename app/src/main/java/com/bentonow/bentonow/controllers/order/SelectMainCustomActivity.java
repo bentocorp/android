@@ -13,6 +13,7 @@ import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.adapter.CustomMainListAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.dao.DishDao;
+import com.bentonow.bentonow.dao.MenuDao;
 import com.bentonow.bentonow.listener.ListenerCustomDish;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
@@ -39,7 +40,7 @@ public class SelectMainCustomActivity extends BaseFragmentActivity implements Vi
 
         initActionbar();
 
-        Menu menu = Menu.get();
+        Menu menu = MenuDao.get();
 
         if (menu == null) {
             ConfirmationDialog mDialog = new ConfirmationDialog(SelectMainCustomActivity.this, "Error", "There is no current menu to show");

@@ -16,7 +16,7 @@ import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
-import com.bentonow.bentonow.model.BackendText;
+import com.bentonow.bentonow.dao.IosCopyDao;
 
 public class HelpActivity extends BaseFragmentActivity implements View.OnClickListener {
 
@@ -54,13 +54,13 @@ public class HelpActivity extends BaseFragmentActivity implements View.OnClickLi
 
         // BROWSER
         if (getIntent().getBooleanExtra("faq", false)) {
-            loadDataInWebView(BackendText.get("faq-body"));
+            loadDataInWebView(IosCopyDao.get("faq-body"));
             sScreen = "Viewed FAQ Screen";
         } else if (getIntent().getBooleanExtra("tos", false)) {
-            loadDataInWebView(BackendText.get("terms-conditions-body"));
+            loadDataInWebView(IosCopyDao.get("terms-conditions-body"));
             sScreen = "Viewed Terms and Conditions Screen";
         } else if (getIntent().getBooleanExtra("privacy", false)) {
-            loadDataInWebView(BackendText.get("privacy-policy-body"));
+            loadDataInWebView(IosCopyDao.get("privacy-policy-body"));
             sScreen = "Viewed Privacy Policy Screen";
         } else {
             onBackPressed();
@@ -72,11 +72,11 @@ public class HelpActivity extends BaseFragmentActivity implements View.OnClickLi
         TextView actionbar_title = (TextView) findViewById(R.id.actionbar_title);
 
         if (getIntent().getBooleanExtra("faq", false)) {
-            actionbar_title.setText(BackendText.get("faq-title"));
+            actionbar_title.setText(IosCopyDao.get("faq-title"));
         } else if (getIntent().getBooleanExtra("tos", false)) {
-            actionbar_title.setText(BackendText.get("terms-conditions-title"));
+            actionbar_title.setText(IosCopyDao.get("terms-conditions-title"));
         } else if (getIntent().getBooleanExtra("privacy", false)) {
-            actionbar_title.setText(BackendText.get("privacy-policy-title"));
+            actionbar_title.setText(IosCopyDao.get("privacy-policy-title"));
         }
 
         ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);

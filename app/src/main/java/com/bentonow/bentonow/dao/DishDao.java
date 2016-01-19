@@ -8,7 +8,6 @@ import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.db.DBAdapter;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
-import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.Stock;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -414,7 +413,7 @@ public class DishDao {
 
 
     public static boolean isSoldOut(DishModel mDishModel, boolean countCurrent) {
-        return Stock.isSold(mDishModel.itemId, countCurrent);
+        return StockDao.isSold(mDishModel.itemId, countCurrent);
     }
 
     public boolean canBeAdded(DishModel mDishModel) {
@@ -427,7 +426,7 @@ public class DishDao {
     }
 
     public DishModel getFirstAvailable(String type, int[] tryExcludeIds) {
-        Menu menu = Menu.get();
+        Menu menu = MenuDao.get();
 
         if (menu != null) {
             List<DishModel> aDishes = new ArrayList<>();
@@ -464,8 +463,8 @@ public class DishDao {
     public static double getLowestMainPrice() {
         double dMinPrice = 0;
 
-        if (Menu.get() != null) {
-            for (DishModel dishModel : Menu.get().dishModels)
+        if (MenuDao.get() != null) {
+            for (DishModel dishModel : MenuDao.get().dishModels)
                 if (dishModel.type.equals("main")) {
                     dishModel.price = DishDao.getDefaultPriceBento(dishModel.price);
                     if (dMinPrice == 0)
@@ -483,7 +482,7 @@ public class DishDao {
 
     public static double getDefaultPriceBento(double dPrice) {
         if (dPrice <= 0)
-            return Settings.price;
+            return SettingsDao.getCurrent().price;
         else
             return dPrice;
     }

@@ -19,13 +19,14 @@ import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.adapter.BuildBentoFixListAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.dao.DishDao;
+import com.bentonow.bentonow.dao.IosCopyDao;
+import com.bentonow.bentonow.dao.MenuDao;
+import com.bentonow.bentonow.dao.SettingsDao;
 import com.bentonow.bentonow.listener.InterfaceCustomerService;
 import com.bentonow.bentonow.listener.ListenerMainDishFix;
-import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
-import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.order.OrderItem;
 import com.bentonow.bentonow.service.BentoCustomerService;
 import com.bentonow.bentonow.ui.AutoFitTxtView;
@@ -74,7 +75,7 @@ public class BuildFixedBentoActivity extends BaseFragmentActivity implements Vie
 
         setContentView(R.layout.activity_build_fix_bento);
 
-        getTxtToolbarTitle().setText(BackendText.get("build-title"));
+        getTxtToolbarTitle().setText(IosCopyDao.get("build-title"));
 
         getActionbarLeftBtn().setImageResource(R.drawable.ic_ab_user);
         getMenuItemBuildBento().setImageResource(R.drawable.ic_ab_bento);
@@ -86,7 +87,7 @@ public class BuildFixedBentoActivity extends BaseFragmentActivity implements Vie
         getListBento().setAdapter(getAdapterListBento());
 
         getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), BentoNowUtils.getDefaultPriceBento(DishDao.getLowestMainPrice())));
-        getTxtEta().setText(String.format(getString(R.string.build_bento_eta), Settings.eta_min + "-" + Settings.eta_max));
+        getTxtEta().setText(String.format(getString(R.string.build_bento_eta), MenuDao.eta_min + "-" + MenuDao.eta_max));
 
         DebugUtils.logDebug(TAG, "Create: ");
 
@@ -127,7 +128,7 @@ public class BuildFixedBentoActivity extends BaseFragmentActivity implements Vie
                     getTxtToolbarBadge().setVisibility(View.VISIBLE);
                     getTxtToolbarBadge().setText(String.valueOf(iCompleteOrders));
                     getButtonComplete().setBackgroundColor(getResources().getColor(R.color.btn_green));
-                    getButtonComplete().setText(BackendText.get("build-button-2"));
+                    getButtonComplete().setText(IosCopyDao.get("build-button-2"));
                     getButtonComplete().setOnClickListener(BuildFixedBentoActivity.this);
                     getBtnAddOn().setBackgroundColor(getResources().getColor(R.color.btn_green));
                     getBtnAddOn().setOnClickListener(BuildFixedBentoActivity.this);
@@ -135,7 +136,7 @@ public class BuildFixedBentoActivity extends BaseFragmentActivity implements Vie
                 } else {
                     getTxtToolbarBadge().setVisibility(View.INVISIBLE);
                     getButtonComplete().setBackgroundColor(getResources().getColor(R.color.gray));
-                    getButtonComplete().setText(BackendText.get("build-button-1"));
+                    getButtonComplete().setText(IosCopyDao.get("build-button-1"));
                     getButtonComplete().setOnClickListener(null);
                     getBtnAddOn().setBackgroundColor(getResources().getColor(R.color.gray));
                     getBtnAddOn().setOnClickListener(null);
@@ -275,9 +276,9 @@ public class BuildFixedBentoActivity extends BaseFragmentActivity implements Vie
                 if (!mOrder.OrderItems.isEmpty()) {
                     onContinueOrderPressed();
                 } else {
-                    ConfirmationDialog mDialog = new ConfirmationDialog(BuildFixedBentoActivity.this, null, BackendText.get("build-not-complete-text"));
-                    mDialog.addAcceptButton(BackendText.get("build-not-complete-confirmation-2"), BuildFixedBentoActivity.this);
-                    mDialog.addCancelButton(BackendText.get("build-not-complete-confirmation-1"), BuildFixedBentoActivity.this);
+                    ConfirmationDialog mDialog = new ConfirmationDialog(BuildFixedBentoActivity.this, null, IosCopyDao.get("build-not-complete-text"));
+                    mDialog.addAcceptButton(IosCopyDao.get("build-not-complete-confirmation-2"), BuildFixedBentoActivity.this);
+                    mDialog.addCancelButton(IosCopyDao.get("build-not-complete-confirmation-1"), BuildFixedBentoActivity.this);
                     mDialog.show();
                 }
                 break;
@@ -312,10 +313,10 @@ public class BuildFixedBentoActivity extends BaseFragmentActivity implements Vie
 
     @Override
     protected void onResume() {
-        mMenu = Menu.get();
+        mMenu = MenuDao.get();
         mOrder = mOrderDao.getCurrentOrder();
 
-        if (mMenu == null || !Settings.status.equals("open")) {
+        if (mMenu == null || !SettingsDao.getCurrent().status.equals("open")) {
             openErrorActivity();
         } else {
             if (mOrder == null) {
@@ -323,7 +324,7 @@ public class BuildFixedBentoActivity extends BaseFragmentActivity implements Vie
                 mOrder.MealName = mMenu.meal_name;
                 mOrder.MenuType = mMenu.menu_type;
                 SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MEAL_NAME, mMenu.meal_name);
-                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.POD_MODE, Settings.pod_mode);
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.POD_MODE, SettingsDao.getCurrent().pod_mode);
 
                 mOrderDao.insertNewOrder(mOrder);
 
@@ -350,13 +351,13 @@ public class BuildFixedBentoActivity extends BaseFragmentActivity implements Vie
 
     @Override
     public void openErrorActivity() {
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, SettingsDao.getCurrent().status);
         BentoNowUtils.openErrorActivity(BuildFixedBentoActivity.this);
     }
 
     @Override
     public void openBuildBentoActivity() {
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, SettingsDao.getCurrent().status);
         finish();
         BentoNowUtils.openBuildBentoActivity(BuildFixedBentoActivity.this);
 

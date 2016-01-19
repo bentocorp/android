@@ -24,10 +24,10 @@ import com.bentonow.bentonow.Utils.SocialNetworksUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
-import com.bentonow.bentonow.model.BackendText;
+import com.bentonow.bentonow.dao.MenuDao;
+import com.bentonow.bentonow.dao.SettingsDao;
 import com.bentonow.bentonow.model.Menu;
-import com.bentonow.bentonow.model.Settings;
-import com.bentonow.bentonow.model.Stock;
+import com.bentonow.bentonow.parse.InitParse;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.loopj.android.http.TextHttpResponseHandler;
@@ -132,12 +132,9 @@ public class MainActivity extends BaseFragmentActivity {
     void set(final String responseString) {
         DebugUtils.logDebug(TAG, "set");
 
-        BackendText.set(responseString);
-        Menu.set(responseString);
-        Stock.set(responseString);
-        Settings.set(responseString);
+        InitParse.parseInitTwo(responseString);
 
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, SettingsDao.getCurrent().status);
 
         checkAppStatus();
     }
@@ -152,7 +149,7 @@ public class MainActivity extends BaseFragmentActivity {
                 finish();
                 startActivity(intent);
             } else {
-                if (!Settings.status.equals("open")) {
+                if (!SettingsDao.getCurrent().status.equals("open")) {
                     BentoNowUtils.openErrorActivity(this);
                     finish();
                 } else {
@@ -230,15 +227,15 @@ public class MainActivity extends BaseFragmentActivity {
     }
 
     void goNext() {
-        Menu mCurrentMenu = Menu.get();
+        Menu mCurrentMenu = MenuDao.get();
 
-        if (mCurrentMenu == null || !Settings.status.equals("open")) {
-            if (Settings.status.equals("open"))
+        if (mCurrentMenu == null || !SettingsDao.getCurrent().status.equals("open")) {
+            if (SettingsDao.getCurrent().status.equals("open"))
                 SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, "closed");
 
             BentoNowUtils.openErrorActivity(this);
             DebugUtils.logDebug(TAG, "goNext ErrorActivity");
-        } else if (Settings.isInServiceArea(LocationUtils.mCurrentLocation)) {
+        } else if (SettingsDao.isInServiceArea(LocationUtils.mCurrentLocation)) {
             BentoNowUtils.openBuildBentoActivity(this);
             DebugUtils.logDebug(TAG, "goNext BuildBentoActivity");
         } else {

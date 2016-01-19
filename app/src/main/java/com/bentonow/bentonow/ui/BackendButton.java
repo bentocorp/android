@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.widget.Button;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.model.BackendText;
 
 public class BackendButton extends Button {
@@ -39,7 +40,7 @@ public class BackendButton extends Button {
 
         try {
             String key = a.getString(R.styleable.BackendTextView_key);
-            setText(BackendText.get(key));
+            setText(IosCopyDao.get(key));
         } finally {
             a.recycle();
         }

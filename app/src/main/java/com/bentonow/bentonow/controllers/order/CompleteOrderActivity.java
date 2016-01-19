@@ -27,18 +27,19 @@ import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.payment.EnterCreditCardActivity;
 import com.bentonow.bentonow.controllers.session.SignInActivity;
+import com.bentonow.bentonow.dao.IosCopyDao;
+import com.bentonow.bentonow.dao.MenuDao;
+import com.bentonow.bentonow.dao.SettingsDao;
 import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.listener.InterfaceCustomerService;
 import com.bentonow.bentonow.listener.ListenerCompleteOrder;
 import com.bentonow.bentonow.listener.ListenerDialog;
-import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
-import com.bentonow.bentonow.model.Settings;
-import com.bentonow.bentonow.model.Stock;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.order.OrderItem;
+import com.bentonow.bentonow.parse.InitParse;
 import com.bentonow.bentonow.service.BentoCustomerService;
 import com.bentonow.bentonow.ui.BackendButton;
 import com.crashlytics.android.Crashlytics;
@@ -113,7 +114,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
 
     private void initActionbar() {
         TextView actionbar_title = (TextView) findViewById(R.id.actionbar_title);
-        actionbar_title.setText(BackendText.get("complete-title"));
+        actionbar_title.setText(IosCopyDao.get("complete-title"));
 
         ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
         actionbar_left_btn.setImageResource(R.drawable.ic_ab_back);
@@ -145,7 +146,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
 
     @Override
     protected void onResume() {
-        mMenu = Menu.get();
+        mMenu = MenuDao.get();
 
         mCurrentUser = userDao.getCurrentUser();
 
@@ -435,12 +436,12 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
                         case 410:
                             action = "sold_out";
                             SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_ORDER_SOLD_OUT, true);
-                            Stock.set(responseString);
+                            InitParse.parseOutOfStock(responseString);
                             error += mOrderDao.calculateSoldOutItems(mOrder);
                             break;
                         case 423:
                             action = "closed";
-                            error = BackendText.get("closed-title");
+                            error = IosCopyDao.get("closed-title");
                             break;
                         default:
                             Crashlytics.log(Log.ERROR, "SendOrderError", "Code " + statusCode + " : Response " + responseString + " : Parsing " + error);
@@ -512,7 +513,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
             getLayoutWrapperDiscount().setVisibility(View.VISIBLE);
             container_discount.setVisibility(View.VISIBLE);
         } else {
-            getBtnAddPromoCode().setText(BackendText.get("complete-add-promo"));
+            getBtnAddPromoCode().setText(IosCopyDao.get("complete-add-promo"));
             getBtnAddPromoCode().setTextColor(getResources().getColor(R.color.btn_green));
             getLayoutWrapperDiscount().setVisibility(View.GONE);
             container_discount.setVisibility(View.GONE);
@@ -559,10 +560,10 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
 
 /*        if (edit) {
             btn_delete.setTextColor(getResources().getColor(R.color.btn_green));
-            btn_delete.setText(BackendText.get("complete-done"));
+            btn_delete.setText(IosCopyDao.get("complete-done"));
         } else {
             btn_delete.setTextColor(getResources().getColor(R.color.orange));
-            btn_delete.setText(BackendText.get("complete-edit"));
+            btn_delete.setText(IosCopyDao.get("complete-edit"));
         }*/
     }
 
@@ -659,14 +660,14 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
     public void onRemoveBento(int iPk) {
         MixpanelUtils.track("Removed Bento");
         if (aOrder.size() == 1) {
-            mDialog = new ConfirmationDialog(CompleteOrderActivity.this, null, BackendText.get("complete-remove-all-text"));
-            mDialog.addAcceptButton(BackendText.get("complete-remove-all-confirmation-2"), new View.OnClickListener() {
+            mDialog = new ConfirmationDialog(CompleteOrderActivity.this, null, IosCopyDao.get("complete-remove-all-text"));
+            mDialog.addAcceptButton(IosCopyDao.get("complete-remove-all-confirmation-2"), new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     emptyOrders();
                 }
             });
-            mDialog.addCancelButton(BackendText.get("complete-remove-all-confirmation-1"), null);
+            mDialog.addCancelButton(IosCopyDao.get("complete-remove-all-confirmation-1"), null);
             mDialog.show();
         } else {
             int idOrder = -1;
@@ -703,20 +704,20 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
 
     @Override
     public void openErrorActivity() {
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, SettingsDao.getCurrent().status);
         finish();
         BentoNowUtils.openErrorActivity(CompleteOrderActivity.this);
     }
 
     @Override
     public void openBuildBentoActivity() {
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, SettingsDao.getCurrent().status);
 
         if (!SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.MEAL_NAME).isEmpty() &&
                 (!SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.MEAL_NAME).equals(mMenu.meal_name) ||
-                        !SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.POD_MODE).equals(Settings.pod_mode))) {
+                        !SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.POD_MODE).equals(SettingsDao.getCurrent().pod_mode))) {
             DebugUtils.logDebug(TAG, "Should change from MealName " + SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.MEAL_NAME) + " to " + mMenu.meal_name +
-                    " Should change from Pod Mode " + SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.POD_MODE) + " to " + Settings.pod_mode);
+                    " Should change from Pod Mode " + SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.POD_MODE) + " to " + SettingsDao.getCurrent().pod_mode);
 
             WidgetsUtils.createLongToast(R.string.error_restarting_app);
             mOrderDao.cleanUp();

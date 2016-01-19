@@ -60,7 +60,7 @@ public class BentoDao {
 
     public OrderItem getNewBento(ConstantUtils.optItemType optItemType) {
         MixpanelUtils.track("Began Building A Bento");
-        int iNumBento = Settings.pod_mode.equals("4") ? 4 : 5;
+        int iNumBento = SettingsDao.getCurrent().pod_mode.equals("4") ? 4 : 5;
 
         OrderItem mOrder = new OrderItem();
 

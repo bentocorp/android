@@ -237,6 +237,20 @@
         <item name="android:gravity">center</item>
     </style>
 
+    <style name="TextViewMenuDateName" parent="@android:style/Widget.TextView">
+        <item name="android:textSize">18sp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColor">@color/green_promo</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+    <style name="TextViewMenuDateTitle" parent="@android:style/Widget.TextView">
+        <item name="android:textSize">15sp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
 
     <style name="EditTextPhone">
         <item name="android:textCursorDrawable">@null</item>

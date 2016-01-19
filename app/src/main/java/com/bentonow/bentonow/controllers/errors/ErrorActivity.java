@@ -17,10 +17,11 @@ import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
+import com.bentonow.bentonow.dao.IosCopyDao;
+import com.bentonow.bentonow.dao.MenuDao;
+import com.bentonow.bentonow.dao.SettingsDao;
 import com.bentonow.bentonow.listener.InterfaceCustomerService;
-import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.Menu;
-import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.service.BentoCustomerService;
 import com.bentonow.bentonow.web.request.UserRequest;
 import com.loopj.android.http.TextHttpResponseHandler;
@@ -65,20 +66,20 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
     protected void onResume() {
         bIsOpen = true;
 
-        mCurrentMenu = Menu.getNext();
+        mCurrentMenu = MenuDao.getNext();
 
         Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE);
 
-        if (Settings.status.equals("sold out")) {
-            getTxtTitle().setText(BackendText.get("sold-out-title"));
-            getTxtDescription().setText(BackendText.get("sold-out-text"));
+        if (SettingsDao.getCurrent().status.equals("sold out")) {
+            getTxtTitle().setText(IosCopyDao.get("sold-out-title"));
+            getTxtDescription().setText(IosCopyDao.get("sold-out-text"));
         } else {
-            getTxtTitle().setText(BackendText.get("closed-title"));
+            getTxtTitle().setText(IosCopyDao.get("closed-title"));
             if (hour >= 2000) {
-                getTxtDescription().setText(BackendText.get("closed-text-latenight"));
+                getTxtDescription().setText(IosCopyDao.get("closed-text-latenight"));
             } else {
-                getTxtDescription().setText(BackendText.get("closed-text"));
+                getTxtDescription().setText(IosCopyDao.get("closed-text"));
             }
 
         }
@@ -96,7 +97,7 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
             DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 
             if (mCurrentMenu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate())) {
-                getBtnNextDayMenu().setText(BackendText.get("closed-sneak-preview-button"));
+                getBtnNextDayMenu().setText(IosCopyDao.get("closed-sneak-preview-button"));
             } else {
                 try {
                     String day = new SimpleDateFormat("EEEE", Locale.ENGLISH).format(format.parse(mCurrentMenu.for_date));
@@ -134,7 +135,7 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
             mDialog.addAcceptButton("OK", null);
             mDialog.show();
         } else {
-            UserRequest.requestCoupon(getEditTxtEmail().getText().toString(), Settings.status, new TextHttpResponseHandler() {
+            UserRequest.requestCoupon(getEditTxtEmail().getText().toString(), SettingsDao.getCurrent().status, new TextHttpResponseHandler() {
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
@@ -147,7 +148,7 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    String message = Settings.status.equals("sold out") ? BackendText.get("sold-out-confirmation-text") : BackendText.get("closed-confirmation-text");
+                    String message = SettingsDao.getCurrent().status.equals("sold out") ? IosCopyDao.get("sold-out-confirmation-text") : IosCopyDao.get("closed-confirmation-text");
                     DebugUtils.logDebug(TAG, responseString);
                     getEditTxtEmail().setText("");
 
@@ -160,7 +161,7 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
     }
 
     public void onNextDayMenuPressed(View view) {
-        if (Menu.getNext() == null)
+        if (MenuDao.getNext() == null)
             return;
 
         Intent intent = new Intent(ErrorActivity.this, NextDayMenuActivity.class);
@@ -188,12 +189,12 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
 
     @Override
     public void openErrorActivity() {
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, SettingsDao.getCurrent().status);
     }
 
     @Override
     public void openBuildBentoActivity() {
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, Settings.status);
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, SettingsDao.getCurrent().status);
 
         finish();
         BentoNowUtils.openBuildBentoActivity(ErrorActivity.this);
@@ -215,7 +216,7 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
 
     @Override
     protected void onDestroy() {
-        if (Settings.status.equals("sold out"))
+        if (SettingsDao.getCurrent().status.equals("sold out"))
             trackViewedScreen("Viewed Sold-out Screen");
         else
             trackViewedScreen("Viewed Closed Screen");

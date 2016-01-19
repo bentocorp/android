@@ -42,11 +42,11 @@ import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
 import com.bentonow.bentonow.controllers.errors.BummerActivity;
 import com.bentonow.bentonow.controllers.fragment.MySupportMapFragment;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
+import com.bentonow.bentonow.dao.IosCopyDao;
+import com.bentonow.bentonow.dao.SettingsDao;
 import com.bentonow.bentonow.listener.ListenerWebRequest;
 import com.bentonow.bentonow.listener.OnCustomDragListener;
 import com.bentonow.bentonow.model.AutoCompleteModel;
-import com.bentonow.bentonow.model.BackendText;
-import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.ui.BackendTextView;
 import com.bentonow.bentonow.web.request.RequestGetPlaceDetail;
 import com.google.android.gms.common.ConnectionResult;
@@ -359,9 +359,9 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
     public void onHelpPressed(View view) {
-        ConfirmationDialog mDialog = new ConfirmationDialog(DeliveryLocationActivity.this, null, BackendText.get("delivery-agree-message"));
-        mDialog.addAcceptButton(BackendText.get("delivery-agree-confirmation-2"), DeliveryLocationActivity.this);
-        mDialog.addCancelButton(BackendText.get("delivery-agree-confirmation-1"), DeliveryLocationActivity.this);
+        ConfirmationDialog mDialog = new ConfirmationDialog(DeliveryLocationActivity.this, null, IosCopyDao.get("delivery-agree-message"));
+        mDialog.addAcceptButton(IosCopyDao.get("delivery-agree-confirmation-2"), DeliveryLocationActivity.this);
+        mDialog.addCancelButton(IosCopyDao.get("delivery-agree-confirmation-1"), DeliveryLocationActivity.this);
         mDialog.show();
     }
 
@@ -392,7 +392,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
         DebugUtils.logDebug(TAG, "onContinuePressed OK");
 
-        boolean isInDeliveryArea = Settings.isInServiceArea(mLastOrderLocation);
+        boolean isInDeliveryArea = SettingsDao.isInServiceArea(mLastOrderLocation);
 
         DebugUtils.logDebug(TAG, "onContinuePressed isInDeliveryArea " + (isInDeliveryArea ? "YES" : "NO"));
 
