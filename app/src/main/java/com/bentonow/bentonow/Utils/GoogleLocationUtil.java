@@ -5,8 +5,6 @@ import android.os.Bundle;
 
 import com.bentonow.bentonow.BuildConfig;
 import com.bentonow.bentonow.controllers.BentoApplication;
-import com.bentonow.bentonow.model.Order;
-import com.bentonow.bentonow.model.User;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -25,14 +23,15 @@ public class GoogleLocationUtil {
     private static GoogleApiClient mGoogleApiClient;
 
 
-    public static synchronized GoogleApiClient getGoogleApiClient() {
+    public static synchronized GoogleApiClient getGoogleApiClient(final boolean bStartLocationUpdates) {
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(BentoApplication.instance)
                     .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
                         @Override
                         public void onConnected(Bundle bundle) {
                             DebugUtils.logDebug(TAG, "buildGoogleApiClient() onConnected:");
-                            startLocationUpdates();
+                            if (bStartLocationUpdates)
+                                startLocationUpdates();
                         }
 
                         @Override
@@ -54,27 +53,24 @@ public class GoogleLocationUtil {
     }
 
     public static void startLocationUpdates() {
-        if (getGoogleApiClient().isConnected())
-            LocationServices.FusedLocationApi.requestLocationUpdates(getGoogleApiClient(), getLocationRequest(), new LocationListener() {
+        if (getGoogleApiClient(true).isConnected())
+            LocationServices.FusedLocationApi.requestLocationUpdates(getGoogleApiClient(true), getLocationRequest(), new LocationListener() {
                 @Override
                 public void onLocationChanged(Location mLocation) {
                     DebugUtils.logDebug(TAG, "startLocationUpdates", "onLocationChanged() " + mLocation.toString());
 
-                    if (BuildConfig.DEBUG && BentoNowUtils.B_KOKUSHO_TESTING) {
-                        LocationUtils.mCurrentLocation = new LatLng(37.76573527907957, -122.41834457963704);
-                    } else {
-                        LocationUtils.mCurrentLocation = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
-                    }
-
-                    // Order.address = LocationUtils.getAddressFromLocation(mLocation);
+                    if (BuildConfig.DEBUG && BentoNowUtils.B_KOKUSHO_TESTING)
+                        BentoNowUtils.saveOrderLocation(new LatLng(37.76573527907957, -122.41834457963704));
+                    else
+                        BentoNowUtils.saveOrderLocation(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()));
 
                 }
             });
     }
 
     public static void stopLocationUpdates() {
-        if (getGoogleApiClient().isConnected())
-            LocationServices.FusedLocationApi.removeLocationUpdates(getGoogleApiClient(), new LocationListener() {
+        if (getGoogleApiClient(false).isConnected())
+            LocationServices.FusedLocationApi.removeLocationUpdates(getGoogleApiClient(true), new LocationListener() {
                 @Override
                 public void onLocationChanged(Location mLocation) {
                     DebugUtils.logDebug(TAG, "stopLocationUpdates() onLocationChanged: " + mLocation.toString());
@@ -96,19 +92,17 @@ public class GoogleLocationUtil {
 
     public static Location getCurrentLocation() {
         Location mCurrentLocation = null;
-        if (getGoogleApiClient().isConnected())
-            mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(getGoogleApiClient());
+        if (getGoogleApiClient(false).isConnected())
+            mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(getGoogleApiClient(false));
 
         return mCurrentLocation;
     }
 
     public static void setAppiumLocation(boolean bLunch) {
         if (bLunch)
-            LocationUtils.mCurrentLocation = new LatLng(37.784741, -122.402802);
+            BentoNowUtils.saveOrderLocation(new LatLng(37.784741, -122.402802));
         else
-            LocationUtils.mCurrentLocation = new LatLng(37.767780, -122.414818);
-
-        // Order.address = LocationUtils.getAddressFromLocation(LocationUtils.mCurrentLocation);
+            BentoNowUtils.saveOrderLocation(new LatLng(37.767780, -122.414818));
 
     }
 }

@@ -29,6 +29,7 @@ import android.widget.TextView;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
+import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.LocationUtils;
@@ -43,10 +44,12 @@ import com.bentonow.bentonow.controllers.errors.BummerActivity;
 import com.bentonow.bentonow.controllers.fragment.MySupportMapFragment;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.dao.IosCopyDao;
+import com.bentonow.bentonow.dao.MenuDao;
 import com.bentonow.bentonow.dao.SettingsDao;
 import com.bentonow.bentonow.listener.ListenerWebRequest;
 import com.bentonow.bentonow.listener.OnCustomDragListener;
 import com.bentonow.bentonow.model.AutoCompleteModel;
+import com.bentonow.bentonow.parse.InitParse;
 import com.bentonow.bentonow.ui.BackendTextView;
 import com.bentonow.bentonow.web.request.RequestGetPlaceDetail;
 import com.google.android.gms.common.ConnectionResult;
@@ -59,8 +62,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
+import com.loopj.android.http.TextHttpResponseHandler;
 import com.wsdcamp.anim.FadeInOut;
 
+import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -98,7 +103,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private GoogleApiClient mGoogleApiClient;
     private Location mCurrentLocation;
     private LocationRequest mLocationRequest;
-    private LatLng mLastLocations;
     private LatLng mLastOrderLocation;
     private Address mOrderAddress;
 
@@ -127,13 +131,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         initActionbar();
         setupAutocomplete();
 
-        mLastLocations = LocationUtils.mCurrentLocation;
-
-        try {
-            mLastOrderLocation = new Gson().fromJson(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.LOCATION), LatLng.class);
-        } catch (Exception ex) {
-            mLastOrderLocation = null;
-        }
+        mLastOrderLocation = BentoNowUtils.getOrderLocation();
 
         try {
             mOrderAddress = new Gson().fromJson(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.ADDRESS), Address.class);
@@ -177,9 +175,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             }
         });
 
-        if (mGoogleApiClient.isConnected() && optOpenScreen == ConstantUtils.optOpenScreen.NORMAL)
-            startLocationUpdates();
-
         updateUI();
 
         setupMap();
@@ -213,7 +208,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             getBtnContinue().setBackgroundColor(getResources().getColor(R.color.gray));
         }
 
-        // btn_current_location.setVisibility(User.location != null ? View.VISIBLE : View.GONE);
         getBtnClear().setVisibility(getTxtAddress().getText().length() > 0 ? View.VISIBLE : View.GONE);
     }
 
@@ -225,8 +219,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
         if (mLastOrderLocation != null) {
             point = mLastOrderLocation;
-        } else if (mLastLocations != null) {
-            point = mLastLocations;
         }
 
         if (point == null) {
@@ -240,14 +232,13 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private void locationMapChanged(final LatLng latLng, final boolean bMovedMap) {
         DebugUtils.logDebug(TAG, "locationMapChanged");
         if (latLng != null) {
-            mLastLocations = latLng;
-            mOrderAddress = null;
             mLastOrderLocation = latLng;
+            mOrderAddress = null;
 
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    scanLocation(mLastLocations);
+                    scanLocation(latLng);
                     if (bMovedMap)
                         getGoogleMap().animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, previousZoomLevel));
                 }
@@ -349,9 +340,9 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
     private void updateCurrentLocation() {
-        if (mLastLocations == null || getGoogleMap() == null)
+        if (mLastOrderLocation == null || getGoogleMap() == null)
             return;
-        markerLocation(mLastLocations);
+        markerLocation(mLastOrderLocation);
     }
 
     public void onAgreePressed(View view) {
@@ -385,40 +376,25 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         return bIsValid;
     }
 
-    public void onContinuePressed(View view) {
+    public void getMenusByLocation() {
 
-        if (!isValidLocation())
-            return;
+        DebugUtils.logDebug(TAG, "onContinuePressed isInDeliveryArea " + (MenuDao.gateKeeper.isInAnyZone() ? "YES" : "NO"));
 
-        DebugUtils.logDebug(TAG, "onContinuePressed OK");
-
-        boolean isInDeliveryArea = SettingsDao.isInServiceArea(mLastOrderLocation);
-
-        DebugUtils.logDebug(TAG, "onContinuePressed isInDeliveryArea " + (isInDeliveryArea ? "YES" : "NO"));
-
-        if (isInDeliveryArea) {
-            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.LOCATION, new Gson().toJson(mLastOrderLocation));
-            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ADDRESS, new Gson().toJson(mOrderAddress));
-
-            LocationUtils.mCurrentLocation = mLastOrderLocation;
-
-            switch (optOpenScreen) {
-                case NORMAL:
-                    onBackPressed();
-                    break;
-                case COMPLETE_ORDER:
-                    if (BentoNowUtils.isValidCompleteOrder(DeliveryLocationActivity.this))
-                        BentoNowUtils.openCompleteOrderActivity(DeliveryLocationActivity.this);
-                    break;
-                case BUILD_BENTO:
-                    BentoNowUtils.openBuildBentoActivity(DeliveryLocationActivity.this);
-                    break;
-                case SUMMARY:
-                    onBackPressed();
-                    break;
+        if (MenuDao.gateKeeper.isInAnyZone()) {
+            if (MenuDao.gateKeeper.isHasServices())
+                changeAppState(MenuDao.gateKeeper.getAppState());
+            else {
+                if (MenuDao.gateKeeper.isOnDemand() && SettingsDao.getCurrent().status.equals("open") && MenuDao.get() != null) {
+                    Intent intent = new Intent(DeliveryLocationActivity.this, BummerActivity.class);
+                    intent.putExtra(BummerActivity.TAG_INVALID_ADDRESS, LocationUtils.getCustomAddress(mOrderAddress));
+                    startActivity(intent);
+                } else {
+                    changeAppState("closed_wall");
+                }
             }
-            finish();
         } else {
+            changeAppState(MenuDao.gateKeeper.getAppState());
+
             try {
                 JSONObject params = new JSONObject();
                 params.put("address", LocationUtils.getCustomAddress(mOrderAddress));
@@ -426,11 +402,74 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            Intent intent = new Intent(DeliveryLocationActivity.this, BummerActivity.class);
-            intent.putExtra(BummerActivity.TAG_INVALID_ADDRESS, LocationUtils.getCustomAddress(mOrderAddress));
-            startActivity(intent);
         }
+    }
+
+    public void onContinuePressed(View view) {
+        if (!isValidLocation())
+            return;
+
+        showCustomDialog(R.string.processing_label);
+        BentoRestClient.get(BentoRestClient.getInit2Url(mLastOrderLocation), null, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                DebugUtils.logError(TAG, "Cannot loadData: " + responseString);
+                onFinish();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                onFinish();
+
+                InitParse.parseInitTwo(responseString);
+                getMenusByLocation();
+
+            }
+
+            @Override
+            public void onFinish() {
+                dismissDialog();
+            }
+        });
+    }
+
+    private void changeAppState(String sAppState) {
+        switch (sAppState) {
+            case "map,no_service_wall":
+                Intent intent = new Intent(DeliveryLocationActivity.this, BummerActivity.class);
+                intent.putExtra(BummerActivity.TAG_INVALID_ADDRESS, LocationUtils.getCustomAddress(mOrderAddress));
+                startActivity(intent);
+                break;
+            case "build":
+                BentoNowUtils.saveOrderLocation(mLastOrderLocation);
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ADDRESS, new Gson().toJson(mOrderAddress));
+
+                switch (optOpenScreen) {
+                    case NORMAL:
+                        onBackPressed();
+                        break;
+                    case COMPLETE_ORDER:
+                        if (BentoNowUtils.isValidCompleteOrder(DeliveryLocationActivity.this))
+                            BentoNowUtils.openCompleteOrderActivity(DeliveryLocationActivity.this);
+                        break;
+                    case BUILD_BENTO:
+                        BentoNowUtils.openBuildBentoActivity(DeliveryLocationActivity.this);
+                        break;
+                    case SUMMARY:
+                        onBackPressed();
+                        break;
+                }
+                finish();
+                break;
+            case "closed_wall":
+                BentoNowUtils.openErrorActivity(DeliveryLocationActivity.this);
+                finish();
+                break;
+            default:
+                DebugUtils.logError(TAG, "Unknown State: " + MenuDao.gateKeeper.getAppState());
+                break;
+        }
+
     }
 
 
@@ -559,13 +598,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
     private void getExactLocationByPlaceId(final String sAddress, final String sPlaceId) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mProgressDialog = new ProgressDialog(DeliveryLocationActivity.this, R.string.searching_label, true);
-                mProgressDialog.show();
-            }
-        });
+        showCustomDialog(R.string.searching_label);
+
         BentoApplication.instance.webRequest(new RequestGetPlaceDetail(sPlaceId, new ListenerWebRequest() {
             @Override
             public void onError(String sError, int statusCode) {
@@ -621,16 +655,24 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
     private void dismissDialog() {
-        if (mProgressDialog != null) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mProgressDialog != null)
                     mProgressDialog.dismiss();
-                }
-            });
-        }
+            }
+        });
     }
 
+    private void showCustomDialog(final int idLabel) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mProgressDialog = new ProgressDialog(DeliveryLocationActivity.this, idLabel, true);
+                mProgressDialog.show();
+            }
+        });
+    }
 
     protected void startLocationUpdates() {
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, getLocationRequest(), this);
@@ -726,10 +768,9 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     public void onConnected(Bundle bundle) {
         DebugUtils.logDebug("buildGoogleApiClient", "onConnected:");
 
-        if (optOpenScreen == ConstantUtils.optOpenScreen.NORMAL) {
+        if (optOpenScreen == ConstantUtils.optOpenScreen.BUILD_BENTO) {
             mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             if (mCurrentLocation != null) {
-                mLastLocations = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
 
                 runOnUiThread(new Runnable() {
                     @Override
@@ -759,7 +800,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     public void onLocationChanged(Location location) {
         DebugUtils.logDebug("buildGoogleApiClient", "onLocationChanged:");
         mCurrentLocation = location;
-        mLastLocations = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+        mLastOrderLocation = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
 
         runOnUiThread(new Runnable() {
             @Override

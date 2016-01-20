@@ -1,15 +1,16 @@
 package com.bentonow.bentonow.controllers.init;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
 import com.bentonow.bentonow.R;
-import com.bentonow.bentonow.Utils.BentoNowUtils;
+import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
+import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.dao.IosCopyDao;
-import com.bentonow.bentonow.dao.SettingsDao;
 import com.bentonow.bentonow.ui.AutoFitTxtView;
 
 
@@ -27,12 +28,7 @@ public class GettingStartedActivity extends BaseFragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_getting_started);
 
-        sPrice = BentoNowUtils.getDefaultPriceBento(0);
-
-        String title = IosCopyDao.get("about-item-0").replace("$X", "$" + sPrice + "!");
-
-        MixpanelUtils.track("App Installed");
-
+        String title = IosCopyDao.get("about-item-0");
 
         getTxtTitle().setText(title);
     }
@@ -50,13 +46,11 @@ public class GettingStartedActivity extends BaseFragmentActivity {
 
     public void onGettingStartedPressed(View view) {
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.APP_FIRST_RUN, true);
-        if (!SettingsDao.getCurrent().status.equals("open")) {
-            finish();
-            BentoNowUtils.openErrorActivity(this);
-        } else {
-            finish();
-            BentoNowUtils.openBuildBentoActivity(this);
-        }
+        Intent intent = new Intent(this, DeliveryLocationActivity.class);
+        intent.putExtra(ConstantUtils.TAG_OPEN_SCREEN, ConstantUtils.optOpenScreen.BUILD_BENTO);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        finish();
+        startActivity(intent);
     }
 
     private AutoFitTxtView getTxtTitle() {

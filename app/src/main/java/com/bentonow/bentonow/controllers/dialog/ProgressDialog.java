@@ -6,7 +6,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.Window;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -121,6 +120,8 @@ public class ProgressDialog extends android.app.Dialog {
 
     @Override
     public void dismiss() {
+        ProgressDialog.super.dismiss();
+      /*
         Animation anim = AnimationUtils.loadAnimation(context, R.anim.dialog_main_hide_amination);
         anim.setAnimationListener(new Animation.AnimationListener() {
 
@@ -149,7 +150,7 @@ public class ProgressDialog extends android.app.Dialog {
             view.startAnimation(anim);
 
         if (backView != null)
-            backView.startAnimation(backAnim);
+            backView.startAnimation(backAnim);*/
     }
 
 

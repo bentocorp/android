@@ -99,7 +99,7 @@ public class BentoRestClient {
     }
 
     public static String getInitUrl() {
-        return "/init/" + BentoNowUtils.getTodayDate();
+        return "/init2?date=" + BentoNowUtils.getTodayDateInit2();
     }
 
     public static String getInit2Url() {
@@ -108,6 +108,13 @@ public class BentoRestClient {
             return getInitUrl();
         else
             return "/init2?date=" + BentoNowUtils.getTodayDateInit2() + "&copy=1&gatekeeper=1&lat=" + location.latitude + "&long=" + location.longitude;
+    }
+
+    public static String getInit2Url(LatLng mLocation) {
+        if (mLocation == null)
+            return getInitUrl();
+        else
+            return "/init2?date=" + BentoNowUtils.getTodayDateInit2() + "&copy=1&gatekeeper=1&lat=" + mLocation.latitude + "&long=" + mLocation.longitude;
     }
 
 }

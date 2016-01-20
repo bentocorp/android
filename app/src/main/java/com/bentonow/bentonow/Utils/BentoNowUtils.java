@@ -368,4 +368,20 @@ public class BentoNowUtils {
         return mAddress.getThoroughfare() + ", " + mAddress.getSubThoroughfare();
     }
 
+    public static LatLng getOrderLocation() {
+        LatLng mOrderLocation = null;
+
+        String sLocation = SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.LOCATION);
+        try {
+            mOrderLocation = new Gson().fromJson(sLocation, LatLng.class);
+        } catch (Exception ex) {
+            DebugUtils.logError(TAG, "getOrderLocation: " + ex.toString());
+        }
+        return mOrderLocation;
+    }
+
+    public static void saveOrderLocation(LatLng mLocation) {
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.LOCATION, new Gson().toJson(mLocation));
+    }
+
 }

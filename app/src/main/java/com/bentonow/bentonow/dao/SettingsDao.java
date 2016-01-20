@@ -60,6 +60,7 @@ public class SettingsDao {
     public static void refreshData() {
         if (mSettings == null) {
             try {
+                mSettings = new Settings();
                 InitParse.parseSettings(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.SETTINGS));
             } catch (Exception ex) {
                 DebugUtils.logDebug(TAG, "refreshData: " + ex.toString());

@@ -27,7 +27,6 @@ import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.listener.ListenerDialog;
-import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.ui.FontAwesomeButton;
 import com.crashlytics.android.Crashlytics;
@@ -82,6 +81,9 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
         super.onResume();
 
         mCurrentUser = userDao.getCurrentUser();
+
+
+        DebugUtils.logDebug(TAG, "Api Token: " + mCurrentUser.api_token);
 
         updateUI();
 
