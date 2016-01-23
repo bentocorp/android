@@ -45,7 +45,6 @@ import com.bentonow.bentonow.controllers.fragment.MySupportMapFragment;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.dao.MenuDao;
-import com.bentonow.bentonow.dao.SettingsDao;
 import com.bentonow.bentonow.listener.ListenerWebRequest;
 import com.bentonow.bentonow.listener.OnCustomDragListener;
 import com.bentonow.bentonow.model.AutoCompleteModel;
@@ -376,24 +375,14 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         return bIsValid;
     }
 
-    public void getMenusByLocation() {
+    private void getMenusByLocation() {
+        DebugUtils.logDebug(TAG, "onContinuePressed AppState " + MenuDao.gateKeeper.getAppState());
+        BentoNowUtils.saveOrderLocation(mLastOrderLocation);
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, MenuDao.gateKeeper.getAppState());
 
-        DebugUtils.logDebug(TAG, "onContinuePressed isInDeliveryArea " + (MenuDao.gateKeeper.isInAnyZone() ? "YES" : "NO"));
-
-        if (MenuDao.gateKeeper.isInAnyZone()) {
-            if (MenuDao.gateKeeper.isHasServices())
-                changeAppState(MenuDao.gateKeeper.getAppState());
-            else {
-                if (MenuDao.gateKeeper.isOnDemand() && SettingsDao.getCurrent().status.equals("open") && MenuDao.get() != null) {
-                    Intent intent = new Intent(DeliveryLocationActivity.this, BummerActivity.class);
-                    intent.putExtra(BummerActivity.TAG_INVALID_ADDRESS, LocationUtils.getCustomAddress(mOrderAddress));
-                    startActivity(intent);
-                } else {
-                    changeAppState("closed_wall");
-                }
-            }
-        } else {
-            changeAppState(MenuDao.gateKeeper.getAppState());
+        if (MenuDao.gateKeeper.getAppState().contains("map,no_service")) {
+            Intent intent = new Intent(DeliveryLocationActivity.this, BummerActivity.class);
+            startActivity(intent);
 
             try {
                 JSONObject params = new JSONObject();
@@ -402,7 +391,35 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        } else if (MenuDao.gateKeeper.getAppState().contains("build")) {
+
+            switch (optOpenScreen) {
+                case NORMAL:
+                    onBackPressed();
+                    break;
+                case COMPLETE_ORDER:
+                    if (BentoNowUtils.isValidCompleteOrder(DeliveryLocationActivity.this))
+                        BentoNowUtils.openCompleteOrderActivity(DeliveryLocationActivity.this);
+                    break;
+                case BUILD_BENTO:
+                    BentoNowUtils.openBuildBentoActivity(DeliveryLocationActivity.this);
+                    break;
+                case SUMMARY:
+                    onBackPressed();
+                    break;
+            }
+            finish();
+        } else if (MenuDao.gateKeeper.getAppState().contains("closed_wall")) {
+            BentoNowUtils.openErrorActivity(DeliveryLocationActivity.this);
+            finish();
+        } else if (MenuDao.gateKeeper.getAppState().contains("sold")) {
+            BentoNowUtils.openErrorActivity(DeliveryLocationActivity.this);
+            finish();
+        } else {
+            DebugUtils.logError(TAG, "Unknown State: " + MenuDao.gateKeeper.getAppState());
         }
+
+
     }
 
     public void onContinuePressed(View view) {
@@ -433,49 +450,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         });
     }
 
-    private void changeAppState(String sAppState) {
-        switch (sAppState) {
-            case "map,no_service_wall":
-                Intent intent = new Intent(DeliveryLocationActivity.this, BummerActivity.class);
-                intent.putExtra(BummerActivity.TAG_INVALID_ADDRESS, LocationUtils.getCustomAddress(mOrderAddress));
-                startActivity(intent);
-                break;
-            case "build":
-                BentoNowUtils.saveOrderLocation(mLastOrderLocation);
-                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ADDRESS, new Gson().toJson(mOrderAddress));
-
-                switch (optOpenScreen) {
-                    case NORMAL:
-                        onBackPressed();
-                        break;
-                    case COMPLETE_ORDER:
-                        if (BentoNowUtils.isValidCompleteOrder(DeliveryLocationActivity.this))
-                            BentoNowUtils.openCompleteOrderActivity(DeliveryLocationActivity.this);
-                        break;
-                    case BUILD_BENTO:
-                        BentoNowUtils.openBuildBentoActivity(DeliveryLocationActivity.this);
-                        break;
-                    case SUMMARY:
-                        onBackPressed();
-                        break;
-                }
-                finish();
-                break;
-            case "closed_wall":
-                BentoNowUtils.openErrorActivity(DeliveryLocationActivity.this);
-                finish();
-                break;
-            default:
-                DebugUtils.logError(TAG, "Unknown State: " + MenuDao.gateKeeper.getAppState());
-                break;
-        }
-
-    }
-
-
-    //***
-    //Autocomplete
-    //***
 
     class GooglePlacesAutocompleteAdapter extends ArrayAdapter<String> implements Filterable {
 

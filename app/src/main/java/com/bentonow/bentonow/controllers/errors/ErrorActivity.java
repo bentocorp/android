@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
+import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
@@ -188,16 +189,27 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
     }
 
     @Override
-    public void openErrorActivity() {
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, SettingsDao.getCurrent().status);
+    public void onMapNoService() {
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, MenuDao.gateKeeper.getAppState());
+        finish();
+        BentoNowUtils.openDeliveryLocationScreen(ErrorActivity.this, ConstantUtils.optOpenScreen.BUILD_BENTO);
     }
 
     @Override
-    public void openBuildBentoActivity() {
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, SettingsDao.getCurrent().status);
-
+    public void onBuild() {
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, MenuDao.gateKeeper.getAppState());
         finish();
         BentoNowUtils.openBuildBentoActivity(ErrorActivity.this);
+    }
+
+    @Override
+    public void onClosedWall() {
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, MenuDao.gateKeeper.getAppState());
+    }
+
+    @Override
+    public void onSold() {
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, MenuDao.gateKeeper.getAppState());
     }
 
     @Override

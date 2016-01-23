@@ -703,15 +703,15 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
     }
 
     @Override
-    public void openErrorActivity() {
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, SettingsDao.getCurrent().status);
+    public void onMapNoService() {
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, MenuDao.gateKeeper.getAppState());
         finish();
-        BentoNowUtils.openErrorActivity(CompleteOrderActivity.this);
+        BentoNowUtils.openDeliveryLocationScreen(CompleteOrderActivity.this, ConstantUtils.optOpenScreen.BUILD_BENTO);
     }
 
     @Override
-    public void openBuildBentoActivity() {
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, SettingsDao.getCurrent().status);
+    public void onBuild() {
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, MenuDao.gateKeeper.getAppState());
 
         if (!SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.MEAL_NAME).isEmpty() &&
                 (!SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.MEAL_NAME).equals(mMenu.meal_name) ||
@@ -724,6 +724,20 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
             finish();
             BentoNowUtils.openMainActivity(CompleteOrderActivity.this);
         }
+    }
+
+    @Override
+    public void onClosedWall() {
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, MenuDao.gateKeeper.getAppState());
+        finish();
+        BentoNowUtils.openErrorActivity(CompleteOrderActivity.this);
+    }
+
+    @Override
+    public void onSold() {
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, MenuDao.gateKeeper.getAppState());
+        finish();
+        BentoNowUtils.openErrorActivity(CompleteOrderActivity.this);
     }
 
     @Override
@@ -802,5 +816,4 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
             mExpandableAdapter = new ExpandableListOrderAdapter(CompleteOrderActivity.this, CompleteOrderActivity.this);
         return mExpandableAdapter;
     }
-
 }

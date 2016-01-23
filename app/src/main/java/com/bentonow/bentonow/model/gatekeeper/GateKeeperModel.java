@@ -10,11 +10,11 @@ public class GateKeeperModel {
     private boolean onDemand;
     private boolean orderAhead;
     private boolean hasServices;
-    private boolean availableServicesOndemand;
-    private MealTypeModel mealTypes;
+    private AvailableServicesModel mAvailableServices = new AvailableServicesModel();
+    private MealTypeModel mealTypes = new MealTypeModel();
     private String appState = "";
     private String CurrentMealType = "";
-    private AppOnDemandWidgetModel appOnDemandWidget;
+    private AppOnDemandWidgetModel appOnDemandWidget = new AppOnDemandWidgetModel();
 
 
     public boolean isInAnyZone() {
@@ -49,12 +49,12 @@ public class GateKeeperModel {
         this.hasServices = hasServices;
     }
 
-    public boolean isAvailableServicesOndemand() {
-        return availableServicesOndemand;
+    public AvailableServicesModel getAvailableServices() {
+        return mAvailableServices;
     }
 
-    public void setAvailableServicesOndemand(boolean availableServicesOndemand) {
-        this.availableServicesOndemand = availableServicesOndemand;
+    public void setAvailableServices(AvailableServicesModel mAvailableServices) {
+        this.mAvailableServices = mAvailableServices;
     }
 
     public MealTypeModel getMealTypes() {

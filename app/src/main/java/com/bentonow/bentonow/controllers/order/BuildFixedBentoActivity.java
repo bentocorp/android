@@ -22,7 +22,6 @@ import com.bentonow.bentonow.dao.DishDao;
 import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.dao.MenuDao;
 import com.bentonow.bentonow.dao.SettingsDao;
-import com.bentonow.bentonow.listener.InterfaceCustomerService;
 import com.bentonow.bentonow.listener.ListenerMainDishFix;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
@@ -42,7 +41,7 @@ import java.util.ArrayList;
  * @author José Torres Fuentes
  */
 
-public class BuildFixedBentoActivity extends BaseFragmentActivity implements View.OnClickListener, ListenerMainDishFix, InterfaceCustomerService {
+public class BuildFixedBentoActivity extends BaseFragmentActivity implements View.OnClickListener, ListenerMainDishFix {
 
     static final String TAG = "BuildFixedBentoActivity";
 
@@ -162,7 +161,7 @@ public class BuildFixedBentoActivity extends BaseFragmentActivity implements Vie
 
         if (orderItem.items.get(0).name.isEmpty()) {
             if (mDish == null)
-                mDish = mDishDao.getFirstAvailable("main", null);
+                mDish = mDishDao.getFirstAvailable(mMenu, "main", null);
         }
 
         mDishDao.updateDishItem(orderItem.items.get(0), mDish);
@@ -233,7 +232,7 @@ public class BuildFixedBentoActivity extends BaseFragmentActivity implements Vie
             DishModel dishModel;
 
             for (int i = 1; i < 5; ++i) {
-                dishModel = mDishDao.getFirstAvailable("side", ids);
+                dishModel = mDishDao.getFirstAvailable(mMenu, "side", ids);
 
                 if (dishModel == null)
                     continue;
@@ -317,7 +316,7 @@ public class BuildFixedBentoActivity extends BaseFragmentActivity implements Vie
         mOrder = mOrderDao.getCurrentOrder();
 
         if (mMenu == null || !SettingsDao.getCurrent().status.equals("open")) {
-            openErrorActivity();
+
         } else {
             if (mOrder == null) {
                 mOrder = new Order();
@@ -346,28 +345,6 @@ public class BuildFixedBentoActivity extends BaseFragmentActivity implements Vie
         }
 
         super.onResume();
-    }
-
-
-    @Override
-    public void openErrorActivity() {
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, SettingsDao.getCurrent().status);
-        BentoNowUtils.openErrorActivity(BuildFixedBentoActivity.this);
-    }
-
-    @Override
-    public void openBuildBentoActivity() {
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, SettingsDao.getCurrent().status);
-        finish();
-        BentoNowUtils.openBuildBentoActivity(BuildFixedBentoActivity.this);
-
-    }
-
-    @Override
-    public void onConnectService() {
-        DebugUtils.logDebug(TAG, "Service Connected");
-        mBentoService.setServiceListener(BuildFixedBentoActivity.this);
-
     }
 
     @Override

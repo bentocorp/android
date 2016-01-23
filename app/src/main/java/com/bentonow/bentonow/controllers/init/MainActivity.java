@@ -123,40 +123,50 @@ public class MainActivity extends BaseFragmentActivity {
         DebugUtils.logDebug(TAG, "checkAppStatus");
 
         if (BentoNowUtils.isLastVersionApp(MainActivity.this)) {
-            if (!SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.APP_FIRST_RUN)) {
-                MixpanelUtils.track("App Installed");
-                Intent intent = new Intent(this, GettingStartedActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                finish();
-                startActivity(intent);
+            if (LocationUtils.isGpsEnable(MainActivity.this)) {
+                MixpanelUtils.track("Allow Location Services");
+                openNextScren();
             } else {
-                if (LocationUtils.isGpsEnable(MainActivity.this)) {
-                    MixpanelUtils.track("Allow Location Services");
-                    Intent intent = new Intent(this, DeliveryLocationActivity.class);
-                    intent.putExtra(ConstantUtils.TAG_OPEN_SCREEN, ConstantUtils.optOpenScreen.BUILD_BENTO);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                    finish();
-                    startActivity(intent);
-                } else {
-                    MixpanelUtils.track("Don't Allow Location Services");
-                    if (mConfirmationDialog == null || !mConfirmationDialog.isShowing()) {
-                        mConfirmationDialog = new ConfirmationDialog(MainActivity.this, "Enable GPS", "GPS is disabled in your device. Enable it?");
-                        mConfirmationDialog.addAcceptButton("Yes", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent callGPSSettingIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                                startActivity(callGPSSettingIntent);
-                            }
-                        });
-                        mConfirmationDialog.addCancelButton("No", null);
-                        mConfirmationDialog.show();
-                    }
+                MixpanelUtils.track("Don't Allow Location Services");
+                if (mConfirmationDialog == null || !mConfirmationDialog.isShowing()) {
+                    mConfirmationDialog = new ConfirmationDialog(MainActivity.this, "Enable GPS", "GPS is disabled in your device. Enable it?");
+                    mConfirmationDialog.addAcceptButton("Yes", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent callGPSSettingIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                            startActivity(callGPSSettingIntent);
+                        }
+                    });
+                    mConfirmationDialog.addCancelButton("No", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            openNextScren();
+                        }
+                    });
+                    mConfirmationDialog.show();
                 }
             }
+
         } else {
             finish();
         }
 
+    }
+
+    private void openNextScren() {
+        if (!SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.APP_FIRST_RUN)) {
+            MixpanelUtils.track("App Installed");
+            Intent intent = new Intent(this, GettingStartedActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            finish();
+            startActivity(intent);
+        } else {
+            Intent intent = new Intent(this, DeliveryLocationActivity.class);
+            intent.putExtra(ConstantUtils.TAG_OPEN_SCREEN, ConstantUtils.optOpenScreen.BUILD_BENTO);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            finish();
+            startActivity(intent);
+        }
     }
 
     private void trackAppOpen() {

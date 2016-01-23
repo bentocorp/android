@@ -19,7 +19,6 @@ import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.adapter.AddOnListAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.dao.DishDao;
-import com.bentonow.bentonow.dao.MenuDao;
 import com.bentonow.bentonow.listener.ListenerAddOn;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
@@ -65,6 +64,8 @@ public class AddOnActivity extends BaseFragmentActivity implements View.OnClickL
 
         getTxtToolbarTitle().setText("Choose Add-Ons");
 
+        mMenu = getIntent().getParcelableExtra(Menu.TAG);
+
         try {
             optOpenBy = (ConstantUtils.optOpenAddOn) getIntent().getExtras().get(TAG_OPEN_BY);
         } catch (Exception ex) {
@@ -85,7 +86,6 @@ public class AddOnActivity extends BaseFragmentActivity implements View.OnClickL
         getListAddOn().setHasFixedSize(true);
         getListAddOn().setAdapter(getListAdapter());
 
-        mMenu = MenuDao.get();
         mBento = mBentoDao.getAddOnBento();
 
         updateUI();

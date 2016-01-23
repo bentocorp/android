@@ -10,15 +10,16 @@ import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.MealModel;
 import com.bentonow.bentonow.model.Menu;
+import com.bentonow.bentonow.model.OrderAheadModel;
 import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.Stock;
 import com.bentonow.bentonow.model.gatekeeper.AppOnDemandWidgetModel;
-import com.bentonow.bentonow.model.gatekeeper.GateKeeperModel;
 import com.bentonow.bentonow.model.gatekeeper.Hash;
-import com.bentonow.bentonow.model.gatekeeper.MealTypeModel;
+import com.bentonow.bentonow.model.menu.TimesModel;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -43,6 +44,8 @@ public class InitParse {
         String sSettings;
         String sMeals;
         JSONObject jsonInit;
+
+
         try {
             jsonInit = new JSONObject(sData);
         } catch (Exception ex) {
@@ -268,40 +271,89 @@ public class InitParse {
 
         try {
             JSONObject jsonGateKeeper = new JSONObject(sGateKeeper);
-            MenuDao.gateKeeper = new GateKeeperModel();
-
-            MenuDao.gateKeeper.setIsInAnyZone(jsonGateKeeper.getBoolean("isInAnyZone"));
-            MenuDao.gateKeeper.setHasServices(jsonGateKeeper.getBoolean("hasService"));
-            MenuDao.gateKeeper.setAppState(jsonGateKeeper.getString("appState"));
-            MenuDao.gateKeeper.setCurrentMealType(jsonGateKeeper.getString("CurrentMealType"));
-
-            JSONObject jsonMyZones = new JSONObject(jsonGateKeeper.getString("MyZones"));
-
-            MenuDao.gateKeeper.setOnDemand(jsonMyZones.getBoolean("OnDemand"));
-            MenuDao.gateKeeper.setOrderAhead(jsonMyZones.getBoolean("OrderAhead"));
-
-            JSONObject jsonServices = new JSONObject(jsonGateKeeper.getString("AvailableServices"));
-
-            MenuDao.gateKeeper.setAvailableServicesOndemand(jsonServices.getBoolean("OnDemand"));
-
-            JSONObject jsonMealType = new JSONObject(jsonGateKeeper.getString("MealTypes"));
-            JSONObject jsonHash = new JSONObject(jsonMealType.getString("hash"));
-
-            MealTypeModel mMealType = new MealTypeModel();
-
             Gson gson = new Gson();
 
-            mMealType.setTwo(gson.fromJson(jsonHash.getString("2"), Hash.class));
-            mMealType.setThree(gson.fromJson(jsonHash.getString("3"), Hash.class));
-            mMealType.setOrdering((ArrayList<String>) gson.fromJson(jsonMealType.getString("ordering"), new TypeToken<ArrayList<String>>() {
-            }.getType()));
+            if (jsonGateKeeper.has("isInAnyZone"))
+                MenuDao.gateKeeper.setIsInAnyZone(jsonGateKeeper.getBoolean("isInAnyZone"));
+            if (jsonGateKeeper.has("hasService"))
+                MenuDao.gateKeeper.setHasServices(jsonGateKeeper.getBoolean("hasService"));
+            if (jsonGateKeeper.has("appState"))
+                MenuDao.gateKeeper.setAppState(jsonGateKeeper.getString("appState"));
+            if (jsonGateKeeper.has("CurrentMealType"))
+                MenuDao.gateKeeper.setCurrentMealType(jsonGateKeeper.getString("CurrentMealType"));
 
-            MenuDao.gateKeeper.setMealTypes(mMealType);
-            MenuDao.gateKeeper.setAppOnDemandWidget(gson.fromJson(jsonGateKeeper.getString("appOnDemandWidget"), AppOnDemandWidgetModel.class));
+            if (jsonGateKeeper.has("MyZones")) {
+                JSONObject jsonMyZones = new JSONObject(jsonGateKeeper.getString("MyZones"));
 
-            if (MenuDao.gateKeeper != null)
-                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.GATE_KEEPER, sGateKeeper);
+                if (jsonMyZones.has("OnDemand"))
+                    MenuDao.gateKeeper.setOnDemand(jsonMyZones.getBoolean("OnDemand"));
 
+                if (jsonMyZones.has("OrderAhead"))
+                    MenuDao.gateKeeper.setOrderAhead(jsonMyZones.getBoolean("OrderAhead"));
+            }
+
+            if (jsonGateKeeper.has("MealTypes")) {
+                JSONObject jsonMealType = new JSONObject(jsonGateKeeper.getString("MealTypes"));
+
+                if (jsonMealType.has("MealTypes")) {
+                    JSONObject jsonHash = new JSONObject(jsonMealType.getString("hash"));
+
+                    if (jsonHash.has("2"))
+                        MenuDao.gateKeeper.getMealTypes().setTwo(gson.fromJson(jsonHash.getString("2"), Hash.class));
+                    if (jsonHash.has("3"))
+                        MenuDao.gateKeeper.getMealTypes().setThree(gson.fromJson(jsonHash.getString("3"), Hash.class));
+                }
+
+                if (jsonMealType.has("ordering"))
+                    MenuDao.gateKeeper.getMealTypes().setOrdering((ArrayList<String>) gson.fromJson(jsonMealType.getString("ordering"), new TypeToken<ArrayList<String>>() {
+                    }.getType()));
+            }
+
+            if (jsonGateKeeper.has("appOnDemandWidget"))
+                MenuDao.gateKeeper.setAppOnDemandWidget(gson.fromJson(jsonGateKeeper.getString("appOnDemandWidget"), AppOnDemandWidgetModel.class));
+
+
+            if (jsonGateKeeper.has("AvailableServices")) {
+                JSONObject jsonServices = new JSONObject(jsonGateKeeper.getString("AvailableServices"));
+
+                if (jsonServices.has("OnDemand"))
+                    MenuDao.gateKeeper.getAvailableServices().OnDemand = (jsonServices.getBoolean("OnDemand"));
+
+                if (jsonServices.has("OrderAhead")) {
+                    OrderAheadModel mOrderAhead = new OrderAheadModel();
+                    JSONObject jsonOrderAhead = new JSONObject(jsonServices.getString("OrderAhead"));
+                    if (jsonOrderAhead.has("availableMenus")) {
+                        JSONObject jsonAvailableMenus = new JSONObject(jsonOrderAhead.getString("availableMenus"));
+
+                        if (jsonAvailableMenus.has("menus")) {
+                            JSONArray jsonMenus = jsonAvailableMenus.getJSONArray("menus");
+
+                            for (int a = 0; a < jsonMenus.length(); a++) {
+                                JSONObject jsonMenu = jsonMenus.getJSONObject(a);
+                                if (jsonMenu.has("Menu")) {
+                                    Menu mMenu = gson.fromJson(jsonMenu.getString("Menu"), Menu.class);
+                                    if (jsonMenu.has("MenuItems"))
+                                        mMenu.dishModels = gson.fromJson(jsonMenu.getString("MenuItems"), new TypeToken<List<DishModel>>() {
+                                        }.getType());
+                                    if (jsonMenu.has("Times")) {
+                                        ArrayList<TimesModel> listTime = gson.fromJson(jsonMenu.getString("Times"), new TypeToken<List<TimesModel>>() {
+                                        }.getType());
+                                        for (int b = 0; b < listTime.size(); b++) {
+                                            if (listTime.get(b).available)
+                                                mMenu.listTimeModel.add(listTime.get(b));
+                                        }
+                                    }
+                                    mOrderAhead.availableMenus.add(mMenu);
+                                }
+                            }
+                        }
+                    }
+
+                    MenuDao.gateKeeper.getAvailableServices().mOrderAhead = mOrderAhead;
+                }
+
+
+            }
 
         } catch (Exception ex) {
             DebugUtils.logError(TAG, "GateKeeper Error: " + ex.toString());

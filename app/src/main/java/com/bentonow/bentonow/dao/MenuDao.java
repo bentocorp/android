@@ -7,6 +7,8 @@ import com.bentonow.bentonow.model.MealModel;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.gatekeeper.GateKeeperModel;
 import com.bentonow.bentonow.parse.InitParse;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,9 +25,9 @@ public class MenuDao {
     public static int min_version;
     static public int eta_min;
     static public int eta_max;
-    static public GateKeeperModel gateKeeper;
-    static public MealModel lunch;
-    static public MealModel dinner;
+    static public GateKeeperModel gateKeeper = new GateKeeperModel();
+    static public MealModel lunch = new MealModel();
+    static public MealModel dinner = new MealModel();
     public static List<Menu> list = new ArrayList<>();
 
 
@@ -57,7 +59,7 @@ public class MenuDao {
 
     static public Menu getNext() {
         refreshData();
-        
+
         try {
             String sMenuType = currentMenuType();
             int lunchTime = Integer.parseInt(lunch.startTime.replace(":", ""));
@@ -130,6 +132,27 @@ public class MenuDao {
         return "";
     }
 
+    public static boolean hasNewMenus(ArrayList<String> aMenusId) {
+        aMenusId.removeAll(getCurrentMenuIds());
+        return !aMenusId.isEmpty();
+    }
+
+    public static ArrayList<String> getCurrentMenuIds() {
+        ArrayList<String> aNewMenus = new ArrayList<>();
+
+        Menu mMenu = get();
+        if (mMenu != null)
+            aNewMenus.add(mMenu.meal_name);
+
+        if (gateKeeper != null && gateKeeper.getAvailableServices() != null && gateKeeper.getAvailableServices().mOrderAhead != null)
+            for (Menu mOAMenu : gateKeeper.getAvailableServices().mOrderAhead.availableMenus)
+                aNewMenus.add(mOAMenu.menu_id);
+
+        DebugUtils.logDebug(TAG, "Menus: " + aNewMenus.toString());
+
+        return aNewMenus;
+    }
+
     public static void refreshData() {
         if (MenuDao.dinner == null || MenuDao.lunch == null)
             try {
@@ -141,5 +164,9 @@ public class MenuDao {
 
     }
 
+    public static Menu cloneMenu(Menu mMenu) {
+        Gson gson = new GsonBuilder().serializeNulls().create();
+        return gson.fromJson(gson.toJson(mMenu), Menu.class);
+    }
 
 }

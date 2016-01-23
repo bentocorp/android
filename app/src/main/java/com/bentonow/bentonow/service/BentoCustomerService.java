@@ -13,7 +13,6 @@ import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.dao.MenuDao;
 import com.bentonow.bentonow.dao.SettingsDao;
 import com.bentonow.bentonow.listener.InterfaceCustomerService;
-import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.parse.InitParse;
 import com.loopj.android.http.TextHttpResponseHandler;
 
@@ -51,35 +50,28 @@ public class BentoCustomerService extends Service {
 //            if (iNumTimesRequest > 2)
 //                Settings.pod_mode = "4";
 
-            Menu mMenu = MenuDao.get();
 
-            boolean bHasMenu = mMenu != null;
             boolean bIsConnected = mListener != null;
 
             if (BentoNowUtils.isLastVersionApp(this)) {
-                if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_APP_IN_FRONT))
-                    switch (SettingsDao.getCurrent().status) {
-                        case "open":
-                            if (bIsConnected) {
-                                if (bHasMenu)
-                                    mListener.openBuildBentoActivity();
-                                else
-                                    mListener.openErrorActivity();
-                            }
-                            break;
-                        case "sold out":
-                        case "closed":
-                            if (bIsConnected)
-                                mListener.openErrorActivity();
-                            break;
-                    }
+                if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_APP_IN_FRONT) && mListener != null)
+                    if (MenuDao.gateKeeper.getAppState().contains("map,no_service"))
+                        mListener.onMapNoService();
+                    else if (MenuDao.gateKeeper.getAppState().contains("build"))
+                        mListener.onBuild();
+                    else if (MenuDao.gateKeeper.getAppState().contains("closed_wall"))
+                        mListener.onClosedWall();
+                    else if (MenuDao.gateKeeper.getAppState().contains("sold"))
+                        mListener.onSold();
+                    else
+                        DebugUtils.logError(TAG, "Unknown State: " + MenuDao.gateKeeper.getAppState());
 
             }
 
-            if (!SettingsDao.getCurrent().equals(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS)))
-                DebugUtils.logDebug(TAG, "Should change from: " + SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS) + " to " + SettingsDao.getCurrent().status);
+            if (!MenuDao.gateKeeper.getAppState().equals(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS)))
+                DebugUtils.logDebug(TAG, "Should change from: " + SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.STORE_STATUS) + " to " + MenuDao.gateKeeper.getAppState());
 
-            DebugUtils.logDebug(TAG, "New Data: " + "Status: " + SettingsDao.getCurrent().status + " HasMenu: " + bHasMenu + " Listener: " + bIsConnected + " Pod: " + SettingsDao.getCurrent().pod_mode);
+            DebugUtils.logDebug(TAG, "New Data: " + "Status: " + MenuDao.gateKeeper.getAppState() + " Listener: " + bIsConnected + " Pod: " + SettingsDao.getCurrent().pod_mode);
 
         } catch (Exception ex) {
             DebugUtils.logError(TAG, ex);
@@ -119,7 +111,7 @@ public class BentoCustomerService extends Service {
     }
 
     private void startTimerTask() {
-        getHandler().postDelayed(getLoadingTask(), 1000 * 30);
+        getHandler().postDelayed(getLoadingTask(), 1000 * 60);
     }
 
     public void disconnectBentoService() {

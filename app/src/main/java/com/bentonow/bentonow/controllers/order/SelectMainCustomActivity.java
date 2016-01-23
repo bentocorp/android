@@ -13,7 +13,6 @@ import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.adapter.CustomMainListAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.dao.DishDao;
-import com.bentonow.bentonow.dao.MenuDao;
 import com.bentonow.bentonow.listener.ListenerCustomDish;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
@@ -40,9 +39,9 @@ public class SelectMainCustomActivity extends BaseFragmentActivity implements Vi
 
         initActionbar();
 
-        Menu menu = MenuDao.get();
+        Menu mMenu = getIntent().getParcelableExtra(Menu.TAG);
 
-        if (menu == null) {
+        if (mMenu == null) {
             ConfirmationDialog mDialog = new ConfirmationDialog(SelectMainCustomActivity.this, "Error", "There is no current menu to show");
             mDialog.addAcceptButton("OK", SelectMainCustomActivity.this);
             mDialog.show();
@@ -59,7 +58,7 @@ public class SelectMainCustomActivity extends BaseFragmentActivity implements Vi
 
             ArrayList<DishModel> aSoldDish = new ArrayList<>();
 
-            for (DishModel dishModel : menu.dishModels) {
+            for (DishModel dishModel : mMenu.dishModels) {
                 if (dishModel.type.equals("main")) {
                     if (DishDao.isSoldOut(dishModel, true))
                         aSoldDish.add(dishModel);

@@ -51,7 +51,7 @@ public class BentoNowUtils {
     public static final SimpleDateFormat sdfBento = new SimpleDateFormat("yyyyMMdd");
     public static final SimpleDateFormat sdfBentoInit2 = new SimpleDateFormat("yyyy-MM-dd");
     public static final boolean B_APPIUM_TESTING = false;
-    public static final boolean B_KOKUSHO_TESTING = false;
+    public static final boolean B_KOKUSHO_TESTING = true;
 
     public static int getCurrentTime() {
         if (BuildConfig.DEBUG && BentoNowUtils.B_KOKUSHO_TESTING)
@@ -139,6 +139,13 @@ public class BentoNowUtils {
             OrderDao mOrderDao = new OrderDao();
             mOrderDao.cleanUp();
         }
+    }
+
+    public static void openDeliveryLocationScreen(FragmentActivity mContext, ConstantUtils.optOpenScreen optOpenScreen) {
+        Intent intent = new Intent(mContext, DeliveryLocationActivity.class);
+        intent.putExtra(ConstantUtils.TAG_OPEN_SCREEN, optOpenScreen);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        mContext.startActivity(intent);
     }
 
     public static void openCompleteOrderActivity(Context mContext) {
@@ -382,6 +389,35 @@ public class BentoNowUtils {
 
     public static void saveOrderLocation(LatLng mLocation) {
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.LOCATION, new Gson().toJson(mLocation));
+    }
+
+    public static String getTimeWithAmPm(String sHour, boolean bAddAmPm) {
+        String sNewHour = sHour;
+        try {
+            String[] sArrayFinish = sHour.split(":");
+            int iHour = Integer.parseInt(sArrayFinish[0]);
+            sNewHour = sArrayFinish[0];
+
+            if (bAddAmPm)
+                if (iHour > 11)
+                    sNewHour += " PM";
+                else
+                    sNewHour += " AM";
+        } catch (Exception ex) {
+            DebugUtils.logError(ex);
+        }
+
+        return sNewHour;
+    }
+
+    public static String getDayTimeSelected(Menu mMenu) {
+        String sDateTime = "";
+        for (int a = 0; a < mMenu.listTimeModel.size(); a++) {
+            if (mMenu.listTimeModel.get(a).isSelected)
+                sDateTime = mMenu.day_text + ", " + mMenu.meal_name + ", " + getTimeWithAmPm(mMenu.listTimeModel.get(a).start, false) + " - " + getTimeWithAmPm(mMenu.listTimeModel.get(a).end, true);
+        }
+
+        return sDateTime;
     }
 
 }

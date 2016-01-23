@@ -8,7 +8,6 @@ import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.db.DBAdapter;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
-import com.bentonow.bentonow.model.Stock;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -425,14 +424,12 @@ public class DishDao {
         return bCanBeAdded;
     }
 
-    public DishModel getFirstAvailable(String type, int[] tryExcludeIds) {
-        Menu menu = MenuDao.get();
-
-        if (menu != null) {
+    public DishModel getFirstAvailable(Menu mMenu, String type, int[] tryExcludeIds) {
+        if (mMenu != null) {
             List<DishModel> aDishes = new ArrayList<>();
 
-            for (int a = 0; a < menu.dishModels.size(); a++) {
-                aDishes.add(DishDao.clone(menu.dishModels.get(a)));
+            for (int a = 0; a < mMenu.dishModels.size(); a++) {
+                aDishes.add(DishDao.clone(mMenu.dishModels.get(a)));
             }
 
             Collections.shuffle(aDishes);

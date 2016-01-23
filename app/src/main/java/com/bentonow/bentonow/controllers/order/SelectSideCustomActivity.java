@@ -14,7 +14,6 @@ import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.adapter.CustomSideListAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.dao.DishDao;
-import com.bentonow.bentonow.dao.MenuDao;
 import com.bentonow.bentonow.listener.ListenerCustomDish;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
@@ -42,11 +41,11 @@ public class SelectSideCustomActivity extends BaseFragmentActivity implements Vi
 
         initActionbar();
 
-        Menu menu = MenuDao.get();
+        Menu mMenu = getIntent().getParcelableExtra(Menu.TAG);
 
         mOrder = mOrderDao.getCurrentOrder();
 
-        if (menu == null) {
+        if (mMenu == null) {
             ConfirmationDialog mDialog = new ConfirmationDialog(SelectSideCustomActivity.this, null, "There is no current menu to show");
             mDialog.addAcceptButton("OK", SelectSideCustomActivity.this);
             mDialog.show();
@@ -62,7 +61,7 @@ public class SelectSideCustomActivity extends BaseFragmentActivity implements Vi
 
             ArrayList<DishModel> aSoldDish = new ArrayList<>();
 
-            for (DishModel dishModel : menu.dishModels) {
+            for (DishModel dishModel : mMenu.dishModels) {
                 if (dishModel.type.equals("side"))
                     if (DishDao.isSoldOut(dishModel, true))
                         aSoldDish.add(dishModel);
@@ -129,6 +128,7 @@ public class SelectSideCustomActivity extends BaseFragmentActivity implements Vi
         MixpanelUtils.track("Viewed Choose Your Side Dish Screen");
         super.onDestroy();
     }
+
     private CustomSideListAdapter getListAdapter() {
         if (mListAdapter == null)
             mListAdapter = new CustomSideListAdapter(SelectSideCustomActivity.this, SelectSideCustomActivity.this);
