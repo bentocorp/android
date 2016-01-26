@@ -10,7 +10,6 @@ import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.db.DBAdapter;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Order;
-import com.bentonow.bentonow.model.Settings;
 import com.bentonow.bentonow.model.order.OrderAddress;
 import com.bentonow.bentonow.model.order.OrderDetails;
 import com.bentonow.bentonow.model.order.OrderEta;
@@ -59,6 +58,13 @@ public class OrderDao {
     private static final String MEAL_NAME = "MealName";
     private static final String ETA_MIN = "EtaMin";
     private static final String ETA_MAX = "EtaMax";
+    private static final String ORDER_TYPE = "order_type";
+    private static final String KITCHEN = "kitchen";
+    private static final String ORDER_AHEAD_ZONE = "OrderAheadZone";
+    private static final String FOR_DATE = "for_date";
+    private static final String SCHEDULED_WINDOW_START = "scheduled_window_start";
+    private static final String SCHEDULED_WINDOW_END = "scheduled_window_end";
+    private static final String MENU_ID = "MenuId";
 
 
     public static final String QUERY_TABLE = "" + "CREATE TABLE " + TABLE_NAME + " (" + ID_PK + " INTEGER PRIMARY KEY autoincrement, "
@@ -66,12 +72,13 @@ public class OrderDao {
             + ORDER_DETAIL_TOTAL_CENTS + " REAL, " + ORDER_DETAIL_DELIVERY_PRICE + " REAL, " + ORDER_DETAIL_ITEMS_TOTAL + " REAL, " + ORDER_DETAIL_TAX_PERCENTAGE + " REAL, " + ORDER_DETAIL_SUBTOTAL + " REAL, " + ORDER_DETAIL_TOTAL_CENTS_WITHOUT_COUPON + " REAL, "
             + ORDER_ADDRESS_NUMBER + " STRING, " + ORDER_ADDRESS_STREET + " STRING, " + ORDER_ADDRESS_CITY + " STRING, " + ORDER_ADDRESS_STATE + " STRING, " + ORDER_ADDRESS_ZIP + " STRING, "
             + ORDER_LOCATION_LAT + " REAL, " + ORDER_LOCATION_LNG + " REAL," + ORDER_STRIPE_STRIPE_TOKEN + " STRING," + COUPON_CODE + " STRING," + IDEMPOTENT_TOKEN + " STRING," + PLATFORM + " STRING,"
-            + MENU_TYPE + " STRING," + MEAL_NAME + " STRING," + ETA_MIN + " STRING," + ETA_MAX + " STRING);";
+            + MENU_TYPE + " STRING," + MEAL_NAME + " STRING," + ETA_MIN + " STRING," + ETA_MAX + " STRING," + ORDER_TYPE + " STRING," + KITCHEN + " STRING," + ORDER_AHEAD_ZONE + " STRING," + FOR_DATE + " STRING,"
+            + SCHEDULED_WINDOW_START + " STRING," + SCHEDULED_WINDOW_END + " STRING," + MENU_ID + " STRING);";
 
     public final static String[] FIELDS = {ID_PK, CURRENT_ORDER_ITEM, ORDER_DETAIL_COUPON_DISCOUNT_CENTS, ORDER_DETAIL_TIP_PERCENTAGE, ORDER_DETAIL_TAX_CENTS, ORDER_DETAIL_TIP_CENTS, ORDER_DETAIL_TOTAL_CENTS,
             ORDER_DETAIL_DELIVERY_PRICE, ORDER_DETAIL_ITEMS_TOTAL, ORDER_DETAIL_TAX_PERCENTAGE, ORDER_DETAIL_SUBTOTAL, ORDER_DETAIL_TOTAL_CENTS_WITHOUT_COUPON, ORDER_ADDRESS_NUMBER,
             ORDER_ADDRESS_STREET, ORDER_ADDRESS_CITY, ORDER_ADDRESS_STATE, ORDER_ADDRESS_ZIP, ORDER_LOCATION_LAT, ORDER_LOCATION_LNG, ORDER_STRIPE_STRIPE_TOKEN, COUPON_CODE, IDEMPOTENT_TOKEN, PLATFORM, MENU_TYPE,
-            MEAL_NAME, ETA_MIN, ETA_MAX};
+            MEAL_NAME, ETA_MIN, ETA_MAX, ORDER_TYPE, KITCHEN, ORDER_AHEAD_ZONE, FOR_DATE, SCHEDULED_WINDOW_START, SCHEDULED_WINDOW_END, MENU_ID};
 
     public OrderDao() {
         dbAdapter = new DBAdapter();
@@ -92,11 +99,18 @@ public class OrderDao {
         return mOrder;
     }
 
-    public Order getNewOrder() {
+    public Order getNewOrder(boolean bIsOrderAhead) {
 
         Order mOrder = new Order();
         mOrder.OrderItems.add(mBentoDao.getNewBento(ConstantUtils.optItemType.CUSTOM_BENTO_BOX));
         mOrder.OrderItems.add(mBentoDao.getNewBento(ConstantUtils.optItemType.ADD_ON));
+
+        if (!bIsOrderAhead) {
+            mOrder.order_type = "2";
+            mOrder.kitchen = MenuDao.gateKeeper.getAvailableServices().mOrderAhead.kitchen;
+            mOrder.OrderAheadZone = MenuDao.gateKeeper.getAvailableServices().mOrderAhead.zone;
+        } else
+            mOrder.order_type = "1";
 
         OrderEta mOrderEta = new OrderEta();
         mOrderEta.max = String.valueOf(MenuDao.eta_max);
@@ -110,7 +124,7 @@ public class OrderDao {
 
         mOrder.order_pk = (int) dbAdapter.insert(TABLE_NAME, cValues);
 
-        DebugUtils.logDebug(TAG, "New Order: " + mOrder.order_pk);
+        DebugUtils.logDebug(TAG, "New Order: " + mOrder.order_pk + " OrderType: " + (mOrder.order_type.equals("2") ? "Order Ahead" : "On Demand"));
 
         dbAdapter.setTransacctionSuccesfull();
 
@@ -155,6 +169,13 @@ public class OrderDao {
             int _MEAL_NAME = cursor.getColumnIndex(MEAL_NAME);
             int _ETA_MIN = cursor.getColumnIndex(ETA_MIN);
             int _ETA_MAX = cursor.getColumnIndex(ETA_MAX);
+            int _ORDER_TYPE = cursor.getColumnIndex(ORDER_TYPE);
+            int _KITCHEN = cursor.getColumnIndex(KITCHEN);
+            int _ORDER_AHEAD_ZONE = cursor.getColumnIndex(ORDER_AHEAD_ZONE);
+            int _FOR_DATE = cursor.getColumnIndex(FOR_DATE);
+            int _SCHEDULED_WINDOW_START = cursor.getColumnIndex(SCHEDULED_WINDOW_START);
+            int _SCHEDULED_WINDOW_END = cursor.getColumnIndex(SCHEDULED_WINDOW_END);
+            int _MENU_ID = cursor.getColumnIndex(MENU_ID);
 
 
             cursor.moveToFirst();
@@ -167,6 +188,13 @@ public class OrderDao {
                 mOrder.Platform = (cursor.getString(_PLATFORM));
                 mOrder.MenuType = (cursor.getString(_MENU_TYPE));
                 mOrder.MealName = (cursor.getString(_MEAL_NAME));
+                mOrder.order_type = (cursor.getString(_ORDER_TYPE));
+                mOrder.kitchen = (cursor.getString(_KITCHEN));
+                mOrder.OrderAheadZone = (cursor.getString(_ORDER_AHEAD_ZONE));
+                mOrder.for_date = (cursor.getString(_FOR_DATE));
+                mOrder.scheduled_window_start = (cursor.getString(_SCHEDULED_WINDOW_START));
+                mOrder.scheduled_window_end = (cursor.getString(_SCHEDULED_WINDOW_END));
+                mOrder.MenuId = (cursor.getString(_MENU_ID));
 
                 OrderDetails mOrderDetail = new OrderDetails();
                 mOrderDetail.coupon_discount_cents = (cursor.getInt(_ORDER_DETAIL_COUPON_DISCOUNT_CENTS));
@@ -197,7 +225,6 @@ public class OrderDao {
                 OrderEta mOrderEta = new OrderEta();
                 mOrderEta.max = (cursor.getString(_ETA_MAX));
                 mOrderEta.min = (cursor.getString(_ETA_MIN));
-
 
                 mOrderDetail.address = mOrderAddress;
                 mOrderDetail.coords = mOrderLocation;
@@ -271,6 +298,13 @@ public class OrderDao {
         cValues.put(MEAL_NAME, mOrder.MealName == null ? "" : mOrder.MealName);
         cValues.put(ETA_MAX, mOrder.Eta == null || mOrder.Eta.max == null ? "" : mOrder.Eta.max);
         cValues.put(ETA_MIN, mOrder.Eta == null || mOrder.Eta.min == null ? "" : mOrder.Eta.min);
+        cValues.put(ORDER_TYPE, mOrder.order_type == null ? "" : mOrder.order_type);
+        cValues.put(KITCHEN, mOrder.kitchen == null ? "" : mOrder.kitchen);
+        cValues.put(ORDER_AHEAD_ZONE, mOrder.OrderAheadZone == null ? "" : mOrder.OrderAheadZone);
+        cValues.put(FOR_DATE, mOrder.for_date == null ? "" : mOrder.for_date);
+        cValues.put(SCHEDULED_WINDOW_START, mOrder.scheduled_window_start == null ? "" : mOrder.scheduled_window_start);
+        cValues.put(SCHEDULED_WINDOW_END, mOrder.scheduled_window_end == null ? "" : mOrder.scheduled_window_end);
+        cValues.put(MENU_ID, mOrder.MenuId == null ? "" : mOrder.MenuId);
         return cValues;
     }
 
@@ -296,13 +330,14 @@ public class OrderDao {
     }
 
 
-    public String calculateSoldOutItems(Order mOrder) {
+    public String calculateSoldOutItems(Order mOrder, boolean bIsMenuOD) {
         String sSoldOutItems = "";
+        DishDao mDishDao = new DishDao();
 
         for (int a = 0; a < mOrder.OrderItems.size(); a++) {
             boolean bIsSoldOut = false;
             for (DishModel mDishModel : mOrder.OrderItems.get(a).items) {
-                if (mDishModel != null && mDishModel.name != null && !sSoldOutItems.contains(mDishModel.name) && DishDao.isSoldOut(mDishModel, false)) {
+                if (mDishModel != null && mDishModel.name != null && !sSoldOutItems.contains(mDishModel.name) && mDishDao.isSoldOut(mDishModel, false, bIsMenuOD)) {
                     bIsSoldOut = true;
                     sSoldOutItems += "\n- " + mDishModel.name;
                     DebugUtils.logDebug("calculateSoldOutItems:", mDishModel.name);
@@ -314,21 +349,22 @@ public class OrderDao {
         return sSoldOutItems;
     }
 
-    public static boolean isSoldOutOrder(OrderItem mOrder) {
+   /* public static boolean isSoldOutOrder(OrderItem mOrder) {
         boolean bIsSoldOut = false;
+        DishDao mDishDao = new DishDao();
         for (DishModel mDishModel : mOrder.items) {
-            if (DishDao.isSoldOut(mDishModel, false)) {
+            if (mDishDao.isSoldOut(mDishModel, false)) {
                 bIsSoldOut = true;
                 DebugUtils.logDebug("calculateSoldOutItems:", mDishModel.name);
             }
         }
 
         return bIsSoldOut;
-    }
+    }*/
 
     public void calculateOrder(Order mOrder) {
         double items_total = 0;
-        double delivery_fee = SettingsDao.getCurrent().delivery_price;
+        double delivery_fee;
         double pre_coupon_subtotal;
         double post_coupon_subtotal;
         double coupon_discount;
@@ -342,6 +378,7 @@ public class OrderDao {
         double total_w_o_coupon;
 
         coupon_discount = mOrder.OrderDetails.coupon_discount_cents / 100;
+        delivery_fee = mOrder.OrderDetails.delivery_price;
 
         for (int a = 0; a < mOrder.OrderItems.size(); a++) {
             if (mOrder.OrderItems.get(a).item_type.equals("CustomerBentoBox")) {
@@ -385,7 +422,6 @@ public class OrderDao {
 
 
         mOrder.OrderDetails.coupon_discount_cents = (int) Math.round(coupon_discount * 100);
-        mOrder.OrderDetails.delivery_price = SettingsDao.getCurrent().delivery_price;
         mOrder.OrderDetails.items_total = AndroidUtil.round(items_total, 2);
         mOrder.OrderDetails.subtotal = AndroidUtil.round(subtotal, 2);
         mOrder.OrderDetails.tax_cents = AndroidUtil.round(tax, 2) * 100;

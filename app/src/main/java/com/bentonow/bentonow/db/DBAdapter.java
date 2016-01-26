@@ -23,8 +23,8 @@ import com.bentonow.bentonow.dao.UserDao;
 public class DBAdapter {
 
     private static final String DATA_BASE_NAME = "BentoNow.db";
-    // private static int mDbVersion = 3;
-    private static int mDbVersion = 7;
+    // private static int mDbVersion = 8;
+    private static int mDbVersion = 11;
     private SQLiteDatabase mDb;
     private DatabaseHelper mDbHelper;
 

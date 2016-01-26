@@ -34,10 +34,14 @@ public class ExpandableListOrderAdapter extends BaseExpandableListAdapter {
     private int iSelectedAddOn = -1;
     private boolean bEditOrder;
     private boolean bEditAddOn;
+    private boolean bIsMenuOD;
+    private DishDao mDishDao;
 
-    public ExpandableListOrderAdapter(FragmentActivity mActivity, ListenerCompleteOrder mListener) {
+    public ExpandableListOrderAdapter(FragmentActivity mActivity, boolean bIsMenuOD, ListenerCompleteOrder mListener) {
         this.mActivity = mActivity;
         this.mListener = mListener;
+        this.bIsMenuOD = bIsMenuOD;
+        mDishDao = new DishDao();
     }
 
     @Override
@@ -103,9 +107,9 @@ public class ExpandableListOrderAdapter extends BaseExpandableListAdapter {
                 break;
             case 1:
                 final DishModel mDish = aAddOnList.get(childPosition);
-                boolean bIsSoldOut = DishDao.isSoldOut(mDish, false);
+                boolean bIsSoldOut = mDishDao.isSoldOut(mDish, false, bIsMenuOD);
                 viewHolder.getTxtName().setTextColor(bIsSoldOut ? mActivity.getResources().getColor(R.color.orange) : mActivity.getResources().getColor(R.color.btn_green));
-                viewHolder.getTxtName().setText("(" + mDish.qty + "x) " + mDish.name);
+                viewHolder.getTxtName().setText("(" + mDish.count_max + "x) " + mDish.name);
 
                 viewHolder.getBtnRemove().setVisibility(iSelectedAddOn == childPosition ? View.VISIBLE : View.GONE);
                 viewHolder.getBtnEdit().setVisibility(bEditAddOn && iSelectedAddOn != childPosition ? View.VISIBLE : View.GONE);

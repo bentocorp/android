@@ -322,6 +322,11 @@ public class InitParse {
                 if (jsonServices.has("OrderAhead")) {
                     OrderAheadModel mOrderAhead = new OrderAheadModel();
                     JSONObject jsonOrderAhead = new JSONObject(jsonServices.getString("OrderAhead"));
+
+                    mOrderAhead.kitchen = jsonOrderAhead.getString("kitchen");
+                    mOrderAhead.zone = jsonOrderAhead.getString("zone");
+
+
                     if (jsonOrderAhead.has("availableMenus")) {
                         JSONObject jsonAvailableMenus = new JSONObject(jsonOrderAhead.getString("availableMenus"));
 

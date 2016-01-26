@@ -53,7 +53,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CompleteOrderActivity extends BaseFragmentActivity implements View.OnClickListener, InterfaceCustomerService, ListenerCompleteOrder {
+
     private static final String TAG = "CompleteOrderActivity";
+    private static final String TAG_ORDER_TYPE = "Order Type";
 
     private TextView txt_address;
     private TextView txt_credit_card;
@@ -87,6 +89,8 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
 
     private ExpandableListOrderAdapter mExpandableAdapter;
     private String action = "";
+
+    private boolean bIsMenuOD = false;
 
 
     @Override
@@ -123,6 +127,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
 
     private void getCurrentOrder() {
         mOrder = mOrderDao.getCurrentOrder();
+        bIsMenuOD = !mOrder.order_type.equals("2");
 
         aOrder = new ArrayList<>();
 
@@ -437,7 +442,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
                             action = "sold_out";
                             SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_ORDER_SOLD_OUT, true);
                             InitParse.parseOutOfStock(responseString);
-                            error += mOrderDao.calculateSoldOutItems(mOrder);
+                            error += mOrderDao.calculateSoldOutItems(mOrder, bIsMenuOD);
                             break;
                         case 423:
                             action = "closed";
@@ -813,7 +818,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
 
     private ExpandableListOrderAdapter getExpandableListAdapter() {
         if (mExpandableAdapter == null)
-            mExpandableAdapter = new ExpandableListOrderAdapter(CompleteOrderActivity.this, CompleteOrderActivity.this);
+            mExpandableAdapter = new ExpandableListOrderAdapter(CompleteOrderActivity.this, bIsMenuOD, CompleteOrderActivity.this);
         return mExpandableAdapter;
     }
 }

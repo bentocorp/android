@@ -60,7 +60,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.gson.Gson;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.wsdcamp.anim.FadeInOut;
 
@@ -131,12 +130,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         setupAutocomplete();
 
         mLastOrderLocation = BentoNowUtils.getOrderLocation();
-
-        try {
-            mOrderAddress = new Gson().fromJson(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.ADDRESS), Address.class);
-        } catch (Exception ex) {
-            mOrderAddress = null;
-        }
 
         mRequestingLocationUpdates = true;
         buildGoogleApiClient();
@@ -377,7 +370,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
     private void getMenusByLocation() {
         DebugUtils.logDebug(TAG, "onContinuePressed AppState " + MenuDao.gateKeeper.getAppState());
-        BentoNowUtils.saveOrderLocation(mLastOrderLocation);
+        BentoNowUtils.saveOrderLocation(mLastOrderLocation, mOrderAddress);
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, MenuDao.gateKeeper.getAppState());
 
         if (MenuDao.gateKeeper.getAppState().contains("map,no_service")) {

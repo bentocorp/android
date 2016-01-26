@@ -16,7 +16,6 @@ import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.controllers.init.MainActivity;
 import com.bentonow.bentonow.controllers.order.BuildBentoActivity;
-import com.bentonow.bentonow.controllers.order.BuildFixedBentoActivity;
 import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
 import com.bentonow.bentonow.controllers.payment.EnterCreditCardActivity;
 import com.bentonow.bentonow.controllers.session.EnterPhoneNumberActivity;
@@ -28,6 +27,7 @@ import com.bentonow.bentonow.dao.SettingsDao;
 import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.User;
+import com.bentonow.bentonow.model.menu.TimesModel;
 import com.facebook.GraphResponse;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
@@ -102,21 +102,13 @@ public class BentoNowUtils {
 
     public static void openBuildBentoActivity(FragmentActivity mContext) {
         Menu mCurrentMenu = MenuDao.get();
-
         mContext.finish();
 
-        Intent iBuildBento;
-        if (mCurrentMenu != null)
-            if (mCurrentMenu.menu_type.equals(ConstantUtils.sFixed)) {
-                iBuildBento = new Intent(mContext, BuildFixedBentoActivity.class);
-                iBuildBento.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                mContext.startActivity(iBuildBento);
-            } else {
-                iBuildBento = new Intent(mContext, BuildBentoActivity.class);
-                iBuildBento.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                mContext.startActivity(iBuildBento);
-            }
-        else
+        if (mCurrentMenu != null) {
+            Intent iBuildBento = new Intent(mContext, BuildBentoActivity.class);
+            iBuildBento.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            mContext.startActivity(iBuildBento);
+        } else
             openErrorActivity(mContext);
     }
 
@@ -307,9 +299,14 @@ public class BentoNowUtils {
 
         UserDao userDao = new UserDao();
         User mUser = userDao.getCurrentUser();
-
-        LatLng mLocation = new Gson().fromJson(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.LOCATION), LatLng.class);
-        Address mAddress = new Gson().fromJson(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.ADDRESS), Address.class);
+        LatLng mLocation = null;
+        Address mAddress = null;
+        try {
+            mLocation = new Gson().fromJson(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.LOCATION), LatLng.class);
+            mAddress = new Gson().fromJson(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.ADDRESS), Address.class);
+        } catch (Exception ex) {
+            DebugUtils.logDebug(TAG, ex);
+        }
 
         if (mUser == null) {
             // WidgetsUtils.createShortToast(R.string.error_no_user_log_in);
@@ -319,7 +316,7 @@ public class BentoNowUtils {
 
             bIsValid = false;
             // } else if (LocationUtils.mCurrentLocation == null || !Settings.isInServiceArea(LocationUtils.mCurrentLocation) || BentoApplication.address == null || BentoApplication.location == null) {
-        } else if (mLocation == null || !SettingsDao.isInServiceArea(mLocation) || mAddress == null) {
+        } else if (mLocation == null || mAddress == null) {
             // WidgetsUtils.createShortToast(mContext.getString(R.string.error_no_valid_delivery_address));
 
             Intent intent = new Intent(mContext, DeliveryLocationActivity.class);
@@ -387,8 +384,9 @@ public class BentoNowUtils {
         return mOrderLocation;
     }
 
-    public static void saveOrderLocation(LatLng mLocation) {
+    public static void saveOrderLocation(LatLng mLocation, Address mAddress) {
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.LOCATION, new Gson().toJson(mLocation));
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ADDRESS, new Gson().toJson(mAddress));
     }
 
     public static String getTimeWithAmPm(String sHour, boolean bAddAmPm) {
@@ -418,6 +416,18 @@ public class BentoNowUtils {
         }
 
         return sDateTime;
+    }
+
+    public static double getDeliveryPriceByTime(TimesModel mTime) {
+        double dDeliveryPrice = SettingsDao.getCurrent().delivery_price;
+
+        try {
+            dDeliveryPrice = Double.parseDouble(mTime.delivery_price);
+        } catch (Exception ex) {
+            DebugUtils.logError(TAG, ex);
+        }
+
+        return dDeliveryPrice;
     }
 
 }

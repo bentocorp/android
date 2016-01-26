@@ -56,6 +56,8 @@ public class AddOnActivity extends BaseFragmentActivity implements View.OnClickL
 
     private ConstantUtils.optOpenAddOn optOpenBy;
 
+    private boolean bIsMenuOD;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,7 +110,7 @@ public class AddOnActivity extends BaseFragmentActivity implements View.OnClickL
 
             for (DishModel dishModel : mMenu.dishModels)
                 if (dishModel.type.equals("addon"))
-                    if (DishDao.isSoldOut(dishModel, true))
+                    if (mDishDao.isSoldOut(dishModel, true, bIsMenuOD))
                         aSoldDish.add(dishModel);
                     else {
                         dishModel.bento_pk = mBento.order_pk;
@@ -124,6 +126,8 @@ public class AddOnActivity extends BaseFragmentActivity implements View.OnClickL
 
     private void updateUI() {
         mOrder = mOrderDao.getCurrentOrder();
+        bIsMenuOD = !mOrder.order_type.equals("2");
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -135,7 +139,7 @@ public class AddOnActivity extends BaseFragmentActivity implements View.OnClickL
     private void openSummaryScreen() {
         switch (optOpenBy) {
             case BUILDER:
-                String sSoldOutItems = mOrderDao.calculateSoldOutItems(mOrder);
+                String sSoldOutItems = mOrderDao.calculateSoldOutItems(mOrder, bIsMenuOD);
                 if (!sSoldOutItems.isEmpty()) {
                     updateUI();
                     WidgetsUtils.createShortToast(String.format(getString(R.string.error_sold_out_items), sSoldOutItems));
@@ -263,7 +267,7 @@ public class AddOnActivity extends BaseFragmentActivity implements View.OnClickL
 
     private AddOnListAdapter getListAdapter() {
         if (mAdapter == null)
-            mAdapter = new AddOnListAdapter(AddOnActivity.this, AddOnActivity.this);
+            mAdapter = new AddOnListAdapter(AddOnActivity.this, bIsMenuOD, AddOnActivity.this);
         return mAdapter;
     }
 }

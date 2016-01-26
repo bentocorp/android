@@ -32,13 +32,15 @@ public class AddOnListAdapter extends RecyclerView.Adapter<AddOnWrapper> {
     private int iDishSelected = -1;
     private DishDao mDishDao = new DishDao();
     public ArrayList<DishModel> aListDish = new ArrayList<>();
+    private boolean bIsMenuOD;
 
     /**
      * @param context
      */
-    public AddOnListAdapter(Activity context, ListenerAddOn mListener) {
+    public AddOnListAdapter(Activity context, boolean bIsMenuOD, ListenerAddOn mListener) {
         this.mActivity = context;
         this.mListener = mListener;
+        this.bIsMenuOD = bIsMenuOD;
     }
 
 
@@ -100,7 +102,7 @@ public class AddOnListAdapter extends RecyclerView.Adapter<AddOnWrapper> {
             viewHolder.getImgRemoveDish().setImageResource(R.drawable.ic_action_content_remove_circle_outline);
             viewHolder.getImgAddDish().setOnClickListener(null);
         } else */
-        if (!mDishDao.canBeAdded(mDish) || DishDao.isSoldOut(mDish, true)) {
+        if (!mDishDao.canBeAdded(mDish) || mDishDao.isSoldOut(mDish, true, bIsMenuOD)) {
             viewHolder.getImgSoldOut().setVisibility(View.VISIBLE);
             viewHolder.getImgGradient().setVisibility(View.VISIBLE);
             //   viewHolder.getImgAddDish().setImageResource(R.drawable.ic_action_content_add_circle_outline_gray);

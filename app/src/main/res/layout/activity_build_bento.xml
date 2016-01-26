@@ -133,6 +133,7 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/layout_status"
         android:paddingLeft="10dp"
+        android:visibility="gone"
         android:paddingRight="10dp"
         android:paddingTop="10dp">
 
@@ -495,8 +496,7 @@
         android:layout_below="@+id/layout_status"
         android:paddingLeft="25dp"
         android:paddingRight="25dp"
-        android:paddingTop="10dp"
-        android:visibility="gone">
+        android:paddingTop="10dp">
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -514,7 +514,7 @@
                 android:orientation="vertical">
 
                 <RelativeLayout
-                    android:layout_width="fill_parent"
+                    android:layout_width="match_parent"
                     android:layout_height="@dimen/main_menu_item_height"
                     android:layout_weight="1">
 
@@ -599,7 +599,7 @@
                         android:layout_weight="1">
 
                         <com.bentonow.bentonow.ui.BackendTextView
-                            android:id="@+id/btn_add_side1"
+                            android:id="@+id/txt_add_side1"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_centerHorizontal="true"
@@ -670,7 +670,7 @@
                         android:layout_weight="1">
 
                         <com.bentonow.bentonow.ui.BackendTextView
-                            android:id="@+id/btn_add_side2"
+                            android:id="@+id/txt_add_side2"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_centerHorizontal="true"
@@ -751,7 +751,7 @@
                         android:layout_weight="1">
 
                         <com.bentonow.bentonow.ui.BackendTextView
-                            android:id="@+id/btn_add_side3"
+                            android:id="@+id/txt_add_side3"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_centerHorizontal="true"
@@ -823,7 +823,7 @@
                         android:layout_weight="1">
 
                         <com.bentonow.bentonow.ui.BackendTextView
-                            android:id="@+id/btn_add_side4"
+                            android:id="@+id/txt_add_side4"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_centerHorizontal="true"
@@ -964,7 +964,8 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/ActionBarContainer"
         android:background="@color/black_70"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
 
         <LinearLayout

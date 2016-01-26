@@ -35,13 +35,15 @@ public class DishDao {
     private static final String IMAGE1 = "image1";
     private static final String MAX_PER_ORDER = "max_per_order";
     private static final String PRICE = "price";
+    private static final String QTY = "qty";
     private static final String BENTO_PK = "bento_pk";
 
     public static final String QUERY_TABLE = "" + "CREATE TABLE " + TABLE_NAME + " (" + ID_PK + " INTEGER PRIMARY KEY autoincrement, "
-            + ITEM_ID + " INTEGER, " + NAME + " TEXT, " + DESCRIPTION + " TEXT, " + TYPE + " TEXT, " + IMAGE1 + " TEXT," + MAX_PER_ORDER + " INTEGER, " + BENTO_PK + " INTEGER, " + PRICE + " REAL);";
+            + ITEM_ID + " INTEGER, " + NAME + " TEXT, " + DESCRIPTION + " TEXT, " + TYPE + " TEXT, " + IMAGE1 + " TEXT," + MAX_PER_ORDER + " TEXT, " + BENTO_PK + " INTEGER, " + PRICE + " REAL,"
+            + QTY + " TEXT);";
 
     public final static String[] FIELDS = {ID_PK, ITEM_ID, NAME, DESCRIPTION, TYPE, IMAGE1,
-            MAX_PER_ORDER, BENTO_PK, PRICE};
+            MAX_PER_ORDER, BENTO_PK, PRICE, QTY};
 
 
     public DishDao() {
@@ -99,6 +101,7 @@ public class DishDao {
             int _MAX_PER_ORDER = cursor.getColumnIndex(MAX_PER_ORDER);
             int _PRICE = cursor.getColumnIndex(PRICE);
             int _BENTO_PK = cursor.getColumnIndex(BENTO_PK);
+            int _QTY = cursor.getColumnIndex(QTY);
 
 
             cursor.moveToFirst();
@@ -110,10 +113,11 @@ public class DishDao {
                 mDish.description = (cursor.getString(_DESCRIPTION));
                 mDish.type = (cursor.getString(_TYPE));
                 mDish.image1 = (cursor.getString(_IMAGE1));
-                mDish.max_per_order = (cursor.getInt(_MAX_PER_ORDER));
+                mDish.max_per_order = (cursor.getString(_MAX_PER_ORDER));
                 mDish.price = (cursor.getDouble(_PRICE));
                 mDish.unit_price = (cursor.getDouble(_PRICE));
                 mDish.bento_pk = (cursor.getInt(_BENTO_PK));
+                mDish.qty = (cursor.getString(_QTY));
                 mListDish.add(mDish);
 
                 cursor.moveToNext();
@@ -164,6 +168,7 @@ public class DishDao {
             int _MAX_PER_ORDER = cursor.getColumnIndex(MAX_PER_ORDER);
             int _PRICE = cursor.getColumnIndex(PRICE);
             int _BENTO_PK = cursor.getColumnIndex(BENTO_PK);
+            int _QTY = cursor.getColumnIndex(QTY);
 
 
             cursor.moveToFirst();
@@ -175,17 +180,18 @@ public class DishDao {
                 mDish.description = (cursor.getString(_DESCRIPTION));
                 mDish.type = (cursor.getString(_TYPE));
                 mDish.image1 = (cursor.getString(_IMAGE1));
-                mDish.max_per_order = (cursor.getInt(_MAX_PER_ORDER));
+                mDish.max_per_order = (cursor.getString(_MAX_PER_ORDER));
                 mDish.price = (cursor.getDouble(_PRICE));
                 mDish.unit_price = (cursor.getDouble(_PRICE));
                 mDish.bento_pk = (cursor.getInt(_BENTO_PK));
-                mDish.qty = 1;
+                mDish.qty = (cursor.getString(_QTY));
+                mDish.count_max = 1;
 
                 boolean bAdded = false;
                 for (int a = 0; a < mListDish.size(); a++) {
                     if (mListDish.get(a).itemId == mDish.itemId) {
                         bAdded = true;
-                        mListDish.get(a).qty = mListDish.get(a).qty + 1;
+                        mListDish.get(a).count_max = mListDish.get(a).count_max + 1;
                         break;
                     }
                 }
@@ -270,6 +276,7 @@ public class DishDao {
             int _MAX_PER_ORDER = cursor.getColumnIndex(MAX_PER_ORDER);
             int _PRICE = cursor.getColumnIndex(PRICE);
             int _BENTO_PK = cursor.getColumnIndex(BENTO_PK);
+            int _QTY = cursor.getColumnIndex(QTY);
 
 
             cursor.moveToFirst();
@@ -281,10 +288,11 @@ public class DishDao {
                 mDish.description = (cursor.getString(_DESCRIPTION));
                 mDish.type = (cursor.getString(_TYPE));
                 mDish.image1 = (cursor.getString(_IMAGE1));
-                mDish.max_per_order = (cursor.getInt(_MAX_PER_ORDER));
+                mDish.max_per_order = (cursor.getString(_MAX_PER_ORDER));
                 mDish.price = (cursor.getDouble(_PRICE));
                 mDish.unit_price = (cursor.getDouble(_PRICE));
                 mDish.bento_pk = (cursor.getInt(_BENTO_PK));
+                mDish.qty = (cursor.getString(_QTY));
                 cursor.moveToNext();
             }
 
@@ -403,20 +411,47 @@ public class DishDao {
         cValues.put(DESCRIPTION, mDish.description == null ? "" : mDish.description);
         cValues.put(TYPE, mDish.type == null ? "" : mDish.type);
         cValues.put(IMAGE1, mDish.image1 == null ? "" : mDish.image1);
-        cValues.put(MAX_PER_ORDER, mDish.max_per_order);
+        cValues.put(MAX_PER_ORDER, mDish.max_per_order == null ? "" : mDish.max_per_order);
         cValues.put(PRICE, mDish.price);
         cValues.put(BENTO_PK, mDish.bento_pk);
+        cValues.put(QTY, mDish.qty == null ? "" : mDish.qty);
 
         return cValues;
     }
 
 
-    public static boolean isSoldOut(DishModel mDishModel, boolean countCurrent) {
-        return StockDao.isSold(mDishModel.itemId, countCurrent);
+    public boolean isSoldOut(DishModel mDishModel, boolean countCurrent, boolean bIsOD) {
+        return bIsOD ? StockDao.isSold(mDishModel.itemId, countCurrent) : isDishSoldOut(mDishModel, countCurrent);
+    }
+
+
+    public boolean isDishSoldOut(DishModel mDishModel, boolean countCurrent) {
+        int iCurrent = countCurrent ? 1 : 0;
+        int iQty;
+
+        try {
+            iQty = Integer.parseInt(mDishModel.qty);
+        } catch (Exception ex) {
+            DebugUtils.logError(TAG, ex);
+            iQty = 0;
+        }
+        int iCurrentStock = iQty - (countItemsById(mDishModel.itemId) + iCurrent);
+
+        if (iCurrentStock < 0) {
+            DebugUtils.logDebug(TAG, "isSold: " + mDishModel.itemId + ": " + " QTY:" + mDishModel.qty + " Stock:" + iCurrentStock);
+            return true;
+        } else
+            return false;
     }
 
     public boolean canBeAdded(DishModel mDishModel) {
-        boolean bCanBeAdded = mDishModel.max_per_order > countItemsById(mDishModel.itemId);
+        int iMaxPerOrder;
+        try {
+            iMaxPerOrder = Integer.parseInt(mDishModel.max_per_order);
+        } catch (Exception ex) {
+            iMaxPerOrder = 99;
+        }
+        boolean bCanBeAdded = iMaxPerOrder > countItemsById(mDishModel.itemId);
 
         if (!bCanBeAdded)
             DebugUtils.logDebug(TAG, "canNotBeAdded " + mDishModel.name + " : Max Per Order:" + mDishModel.max_per_order);
@@ -424,7 +459,7 @@ public class DishDao {
         return bCanBeAdded;
     }
 
-    public DishModel getFirstAvailable(Menu mMenu, String type, int[] tryExcludeIds) {
+    public DishModel getFirstAvailable(Menu mMenu, String type, int[] tryExcludeIds, boolean bIsOD) {
         if (mMenu != null) {
             List<DishModel> aDishes = new ArrayList<>();
 
@@ -438,13 +473,13 @@ public class DishDao {
                 String ids = Arrays.toString(tryExcludeIds);
 
                 for (DishModel dishModel : aDishes) {
-                    if (dishModel.type.equals(type) && !isSoldOut(dishModel, true) && canBeAdded(dishModel) && !ids.contains("" + dishModel.itemId))
+                    if (dishModel.type.equals(type) && !isSoldOut(dishModel, true, bIsOD) && canBeAdded(dishModel) && !ids.contains("" + dishModel.itemId))
                         return dishModel;
                 }
             }
 
             for (DishModel dishModel : aDishes) {
-                if (dishModel.type.equals(type) && !isSoldOut(dishModel, true) && canBeAdded(dishModel))
+                if (dishModel.type.equals(type) && !isSoldOut(dishModel, true, bIsOD) && canBeAdded(dishModel))
                     return dishModel;
             }
         }

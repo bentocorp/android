@@ -1,5 +1,6 @@
 package com.bentonow.bentonow.Utils;
 
+import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
 
@@ -11,6 +12,8 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+
+import java.util.Locale;
 
 /**
  * Created by Jose Torres on 10/1/15.
@@ -60,9 +63,9 @@ public class GoogleLocationUtil {
                     DebugUtils.logDebug(TAG, "startLocationUpdates", "onLocationChanged() " + mLocation.toString());
 
                     if (BuildConfig.DEBUG && BentoNowUtils.B_KOKUSHO_TESTING)
-                        BentoNowUtils.saveOrderLocation(new LatLng(37.76573527907957, -122.41834457963704));
+                        BentoNowUtils.saveOrderLocation(new LatLng(37.76573527907957, -122.41834457963704), new Address(Locale.US));
                     else
-                        BentoNowUtils.saveOrderLocation(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()));
+                        BentoNowUtils.saveOrderLocation(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()), new Address(Locale.US));
 
                 }
             });
@@ -100,9 +103,9 @@ public class GoogleLocationUtil {
 
     public static void setAppiumLocation(boolean bLunch) {
         if (bLunch)
-            BentoNowUtils.saveOrderLocation(new LatLng(37.784741, -122.402802));
+            BentoNowUtils.saveOrderLocation(new LatLng(37.784741, -122.402802), new Address(Locale.US));
         else
-            BentoNowUtils.saveOrderLocation(new LatLng(37.767780, -122.414818));
+            BentoNowUtils.saveOrderLocation(new LatLng(37.767780, -122.414818), new Address(Locale.US));
 
     }
 }

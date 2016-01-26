@@ -38,11 +38,13 @@ import com.bentonow.bentonow.listener.InterfaceCustomerService;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
+import com.bentonow.bentonow.model.menu.TimesModel;
 import com.bentonow.bentonow.model.order.OrderItem;
 import com.bentonow.bentonow.service.BentoCustomerService;
 import com.bentonow.bentonow.ui.AutoFitTxtView;
 import com.bentonow.bentonow.ui.BackendAutoFitTextView;
 import com.bentonow.bentonow.ui.BackendButton;
+import com.bentonow.bentonow.ui.BackendTextView;
 import com.bentonow.bentonow.ui.material.ButtonFlat;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.mixpanel.android.mpmetrics.Tweak;
@@ -56,6 +58,12 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     static final String TAG = "BuildBentoActivity";
 
     private BackendButton btnContinue;
+    private BackendTextView txtAddMain;
+    private BackendTextView txtAddSide1;
+    private BackendTextView txtAddSide2;
+    private BackendTextView txtAddSide3;
+    private BackendTextView txtAddSide4;
+
     private BackendAutoFitTextView btnAddAnotherBento;
     private TextView txtNumBento;
     private LinearLayout layoutAddOns;
@@ -190,9 +198,10 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         mOrder = mOrderDao.getCurrentOrder();
 
         if (mOrder == null) {
-            mOrder = mOrderDao.getNewOrder();
+            mOrder = mOrderDao.getNewOrder(bIsMenuOD);
             mOrder.MealName = mMenu.meal_name;
             mOrder.MenuType = mMenu.menu_type;
+            mOrder.MenuId = mMenu.menu_id;
             SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MEAL_NAME, mMenu.meal_name);
             SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.POD_MODE, SettingsDao.getCurrent().pod_mode);
 
@@ -255,6 +264,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         getSpinnerTimeAdapter().clear();
 
         getLayoutWidgetSeparator().setVisibility(MenuDao.gateKeeper.getAppOnDemandWidget() != null && MenuDao.gateKeeper.isOrderAhead() ? View.VISIBLE : View.GONE);
+
         if (MenuDao.gateKeeper.getAppOnDemandWidget() != null) {
             getWrapperOd().setVisibility(View.VISIBLE);
             getTxtOdTitle().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getTitle());
@@ -272,14 +282,18 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         if (MenuDao.gateKeeper.isOnDemand() && MenuDao.gateKeeper.getAppOnDemandWidget() != null && MenuDao.gateKeeper.getAppOnDemandWidget().isSelected() && MenuDao.get() != null) {
             bIsMenuOD = true;
             mMenu = MenuDao.get();
+            createOrder();
             getTxtDateTimeToolbar().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getTitle());
             getRadioBtnOD().setChecked(true);
             getRadioBtnOA().setChecked(false);
         } else {
             bIsMenuOD = false;
+            MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(0).listTimeModel.get(0).isSelected = true;
             mMenu = MenuDao.cloneMenu(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(0));
-            updateDayTimeOASpinner(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(0));
-            getTxtDateTimeToolbar().setText(BentoNowUtils.getDayTimeSelected(mMenu));
+            createOrder();
+            updateDayOASpinner(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(0));
+            updateTimeOASpinner(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(0).listTimeModel.get(0));
+            getTxtDateTimeToolbar().setText(BentoNowUtils.getDayTimeSelected(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(0)));
             getRadioBtnOD().setChecked(false);
             getRadioBtnOA().setChecked(true);
         }
@@ -287,7 +301,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         getSpinnerDate().setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                updateDayTimeOASpinner(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(i));
+                updateDayOASpinner(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(i));
             }
 
             @Override
@@ -297,14 +311,14 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         });
         getSpinnerTime().setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+            public void onItemSelected(AdapterView<?> adapterView, View view, int iPosition, long l) {
                 for (int a = 0; a < mOAPreselectedMenu.listTimeModel.size(); a++) {
-                    if (a == i) {
+                    if (a == iPosition) {
                         mOAPreselectedMenu.listTimeModel.get(a).isSelected = true;
+                        updateTimeOASpinner(mOAPreselectedMenu.listTimeModel.get(a));
                     } else
                         mOAPreselectedMenu.listTimeModel.get(a).isSelected = false;
                 }
-
                 getTxtOaTitle().setText(BentoNowUtils.getDayTimeSelected(mOAPreselectedMenu));
             }
 
@@ -341,7 +355,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         });
     }
 
-    private void updateDayTimeOASpinner(Menu mNewMenu) {
+    private void updateDayOASpinner(Menu mNewMenu) {
         if (mOAMenu == null) {
             mOAMenu = MenuDao.cloneMenu(mNewMenu);
             mOAMenu.listTimeModel.get(0).isSelected = true;
@@ -349,13 +363,23 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                 mMenu = MenuDao.cloneMenu(mOAMenu);
         }
 
+        mOrder.for_date = mNewMenu.for_date;
+        mOrderDao.updateOrder(mOrder);
         mOAPreselectedMenu = MenuDao.cloneMenu(mNewMenu);
-        mOAPreselectedMenu.listTimeModel.get(0).isSelected = true;
         getSpinnerTimeAdapter().clear();
         getSpinnerTimeAdapter().addAll(mOAPreselectedMenu.listTimeModel);
         getSpinnerTimeAdapter().notifyDataSetChanged();
         getTxtOaTitle().setText(BentoNowUtils.getDayTimeSelected(mOAPreselectedMenu));
     }
+
+    private void updateTimeOASpinner(TimesModel mTimeModel) {
+        mOrder.scheduled_window_start = mTimeModel.start;
+        mOrder.scheduled_window_end = mTimeModel.end;
+        mOrder.OrderDetails.delivery_price = BentoNowUtils.getDeliveryPriceByTime(mTimeModel);
+        DebugUtils.logDebug(TAG, "On Update Time : " + mOrder.scheduled_window_start + " - " + mOrder.scheduled_window_end);
+        mOrderDao.updateOrder(mOrder);
+    }
+
 
     private void restartWidget() {
         runOnUiThread(new Runnable() {
@@ -395,6 +419,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
             if (item.items.get(0) == null || item.items.get(0).name.isEmpty()) {
                 getImgMain().setImageBitmap(null);
                 getTxtTitleMain().setText("");
+                getTxtAddMain().setVisibility(View.VISIBLE);
                 getContainerMainTitle().setVisibility(View.GONE);
                 getImgMainSoldOut().setVisibility(View.GONE);
             } else {
@@ -403,13 +428,15 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                     getImgMain().setTag(item.items.get(0).image1);
                 }
                 getTxtTitleMain().setText(item.items.get(0).name);
+                getTxtAddMain().setVisibility(View.GONE);
                 getContainerMainTitle().setVisibility(View.VISIBLE);
-                getImgMainSoldOut().setVisibility(DishDao.isSoldOut(item.items.get(0), false) ? View.VISIBLE : View.GONE);
+                getImgMainSoldOut().setVisibility(mDishDao.isSoldOut(item.items.get(0), false, bIsMenuOD) ? View.VISIBLE : View.GONE);
             }
 
             if (item.items.get(1) == null || item.items.get(1).name.isEmpty()) {
                 getImgSide1().setImageBitmap(null);
                 getTxtTitleSide1().setText("");
+                getTxtAddSide1().setVisibility(View.VISIBLE);
                 getContainerSide1Title().setVisibility(View.GONE);
                 getImgSide1SoldOut().setVisibility(View.GONE);
             } else {
@@ -418,13 +445,15 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                     getImgSide1().setTag(item.items.get(1).image1);
                 }
                 getTxtTitleSide1().setText(item.items.get(1).name);
+                getTxtAddSide1().setVisibility(View.GONE);
                 getContainerSide1Title().setVisibility(View.VISIBLE);
-                getImgSide1SoldOut().setVisibility(DishDao.isSoldOut(item.items.get(1), false) ? View.VISIBLE : View.GONE);
+                getImgSide1SoldOut().setVisibility(mDishDao.isSoldOut(item.items.get(1), false, bIsMenuOD) ? View.VISIBLE : View.GONE);
             }
 
             if (item.items.get(2) == null || item.items.get(2).name.isEmpty()) {
                 getImgSide2().setImageBitmap(null);
                 getTxtTitleSide2().setText("");
+                getTxtAddSide2().setVisibility(View.VISIBLE);
                 getContainerSide2Title().setVisibility(View.GONE);
                 getImgSide2SoldOut().setVisibility(View.GONE);
             } else {
@@ -432,14 +461,16 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                     ImageUtils.initImageLoader().displayImage(item.items.get(2).image1, getImgSide2(), ImageUtils.dishSideImageOptions());
                     getImgSide2().setTag(item.items.get(2).image1);
                 }
+                getTxtAddSide2().setVisibility(View.GONE);
                 getTxtTitleSide2().setText(item.items.get(2).name);
                 getContainerSide2Title().setVisibility(View.VISIBLE);
-                getImgSide2SoldOut().setVisibility(DishDao.isSoldOut(item.items.get(2), false) ? View.VISIBLE : View.GONE);
+                getImgSide2SoldOut().setVisibility(mDishDao.isSoldOut(item.items.get(2), false, bIsMenuOD) ? View.VISIBLE : View.GONE);
             }
 
             if (item.items.get(3) == null || item.items.get(3).name.isEmpty()) {
                 getImgSide3().setImageBitmap(null);
                 getTxtTitleSide3().setText("");
+                getTxtAddSide3().setVisibility(View.VISIBLE);
                 getContainerSide3Title().setVisibility(View.GONE);
                 getImgSide3SoldOut().setVisibility(View.GONE);
             } else {
@@ -448,13 +479,15 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                     getImgSide3().setTag(item.items.get(3).image1);
                 }
                 getTxtTitleSide3().setText(item.items.get(3).name);
+                getTxtAddSide3().setVisibility(View.GONE);
                 getContainerSide3Title().setVisibility(View.VISIBLE);
-                getImgSide3SoldOut().setVisibility(DishDao.isSoldOut(item.items.get(3), false) ? View.VISIBLE : View.GONE);
+                getImgSide3SoldOut().setVisibility(mDishDao.isSoldOut(item.items.get(3), false, bIsMenuOD) ? View.VISIBLE : View.GONE);
             }
 
             if (item.items.get(4) == null || item.items.get(4).name.isEmpty()) {
                 getImgSide4().setImageBitmap(null);
                 getTxtTitleSide4().setText("");
+                getTxtAddSide4().setVisibility(View.VISIBLE);
                 getContainerSide4Title().setVisibility(View.GONE);
                 getImgSide4SoldOut().setVisibility(View.GONE);
             } else {
@@ -462,9 +495,10 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                     ImageUtils.initImageLoader().displayImage(item.items.get(4).image1, getImgSide4(), ImageUtils.dishSideImageOptions());
                     getImgSide4().setTag(item.items.get(3).image1);
                 }
+                getTxtAddSide4().setVisibility(View.GONE);
                 getTxtTitleSide4().setText(item.items.get(4).name);
                 getContainerSide4Title().setVisibility(View.VISIBLE);
-                getImgSide4SoldOut().setVisibility(DishDao.isSoldOut(item.items.get(4), false) ? View.VISIBLE : View.GONE);
+                getImgSide4SoldOut().setVisibility(mDishDao.isSoldOut(item.items.get(4), false, bIsMenuOD) ? View.VISIBLE : View.GONE);
             }
         } else {
             getLayoutPodFive().setVisibility(View.GONE);
@@ -482,7 +516,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                 }
                 getTxtTitleMain4().setText(item.items.get(0).name);
                 getContainerMainTitle4().setVisibility(View.VISIBLE);
-                getImgMainSoldOut4().setVisibility(DishDao.isSoldOut(item.items.get(0), false) ? View.VISIBLE : View.GONE);
+                getImgMainSoldOut4().setVisibility(mDishDao.isSoldOut(item.items.get(0), false, bIsMenuOD) ? View.VISIBLE : View.GONE);
             }
 
             if (item.items.get(1) == null || item.items.get(1).name.isEmpty()) {
@@ -497,7 +531,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                 }
                 getTxtTitleSide14().setText(item.items.get(1).name);
                 getContainerSide14Title().setVisibility(View.VISIBLE);
-                getImgSide14SoldOut().setVisibility(DishDao.isSoldOut(item.items.get(1), false) ? View.VISIBLE : View.GONE);
+                getImgSide14SoldOut().setVisibility(mDishDao.isSoldOut(item.items.get(1), false, bIsMenuOD) ? View.VISIBLE : View.GONE);
             }
 
             if (item.items.get(2) == null || item.items.get(2).name.isEmpty()) {
@@ -512,7 +546,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                 }
                 getTxtTitleSide24().setText(item.items.get(2).name);
                 getContainerSide24Title().setVisibility(View.VISIBLE);
-                getImgSide24SoldOut().setVisibility(DishDao.isSoldOut(item.items.get(2), false) ? View.VISIBLE : View.GONE);
+                getImgSide24SoldOut().setVisibility(mDishDao.isSoldOut(item.items.get(2), false, bIsMenuOD) ? View.VISIBLE : View.GONE);
             }
 
             if (item.items.get(3) == null || item.items.get(3).name.isEmpty()) {
@@ -527,7 +561,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                 }
                 getTxtTitleSide34().setText(item.items.get(3).name);
                 getContainerSide34Title().setVisibility(View.VISIBLE);
-                getImgSide34SoldOut().setVisibility(DishDao.isSoldOut(item.items.get(3), false) ? View.VISIBLE : View.GONE);
+                getImgSide34SoldOut().setVisibility(mDishDao.isSoldOut(item.items.get(3), false, bIsMenuOD) ? View.VISIBLE : View.GONE);
             }
         }
 
@@ -535,7 +569,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
     void autocomplete() {
         if (mOrder.OrderItems.get(orderIndex).items.get(0).name.isEmpty()) {
-            mOrder.OrderItems.get(orderIndex).items.set(0, mDishDao.updateDishItem(mOrder.OrderItems.get(orderIndex).items.get(0), mDishDao.getFirstAvailable(mMenu, "main", null)));
+            mOrder.OrderItems.get(orderIndex).items.set(0, mDishDao.updateDishItem(mOrder.OrderItems.get(orderIndex).items.get(0), mDishDao.getFirstAvailable(mMenu, "main", null, bIsMenuOD)));
         }
         int iNumDish = mOrder.OrderItems.get(orderIndex).items.size();
 
@@ -543,7 +577,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
         for (int i = 1; i < iNumDish; ++i) {
             if (mOrder.OrderItems.get(orderIndex).items.get(i).name.isEmpty()) {
-                DishModel dishModel = mDishDao.getFirstAvailable(mMenu, "side", ids);
+                DishModel dishModel = mDishDao.getFirstAvailable(mMenu, "side", ids, bIsMenuOD);
 
                 if (dishModel == null)
                     continue;
@@ -715,6 +749,20 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     }
 
     public void onAddAnotherBentoPressed() {
+        if (SettingsDao.getCurrent().pod_mode.equals("5")) {
+            getImgMain().setTag(null);
+            getImgSide1().setTag(null);
+            getImgSide2().setTag(null);
+            getImgSide3().setTag(null);
+            getImgSide4().setTag(null);
+        } else {
+            getImgMain4().setTag(null);
+            getImgSide14().setTag(null);
+            getImgSide24().setTag(null);
+            getImgSide34().setTag(null);
+        }
+
+
         mOrder.OrderItems.add(mBentoDao.getNewBento(ConstantUtils.optItemType.CUSTOM_BENTO_BOX));
         mOrder.currentOrderItem = orderIndex = mOrder.OrderItems.size() - 1;
 
@@ -724,8 +772,8 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     }
 
     public void onContinueOrderPressed() {
-
-        String sSoldOutItems = mOrderDao.calculateSoldOutItems(mOrder);
+        String sSoldOutItems = mOrderDao.calculateSoldOutItems(mOrder, bIsMenuOD);
+        mOrderDao.updateOrder(mOrder);
 
         if (!mBentoDao.isBentoComplete(mOrder.OrderItems.get(orderIndex))) {
 
@@ -748,13 +796,12 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         } else if (!sSoldOutItems.isEmpty()) {
             updateUI();
             WidgetsUtils.createShortToast(String.format(getString(R.string.error_sold_out_items), sSoldOutItems));
+            // if (bHasAddOns && showAddons.get() && !bSawAddOns) {
+        } else if (bHasAddOns && !bSawAddOns) {
+            openAddOnsActivity();
         } else if (BentoNowUtils.isValidCompleteOrder(BuildBentoActivity.this)) {
-            if (bHasAddOns && showAddons.get() && !bSawAddOns) {
-                openAddOnsActivity();
-            } else {
-                track();
-                BentoNowUtils.openCompleteOrderActivity(BuildBentoActivity.this);
-            }
+            track();
+            BentoNowUtils.openCompleteOrderActivity(BuildBentoActivity.this);
         }
     }
 
@@ -951,6 +998,36 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         if (btnContinue == null)
             btnContinue = (BackendButton) findViewById(R.id.btn_continue);
         return btnContinue;
+    }
+
+    private BackendTextView getTxtAddMain() {
+        if (txtAddMain == null)
+            txtAddMain = (BackendTextView) findViewById(R.id.txt_add_main);
+        return txtAddMain;
+    }
+
+    private BackendTextView getTxtAddSide1() {
+        if (txtAddSide1 == null)
+            txtAddSide1 = (BackendTextView) findViewById(R.id.txt_add_side1);
+        return txtAddSide1;
+    }
+
+    private BackendTextView getTxtAddSide2() {
+        if (txtAddSide2 == null)
+            txtAddSide2 = (BackendTextView) findViewById(R.id.txt_add_side2);
+        return txtAddSide2;
+    }
+
+    private BackendTextView getTxtAddSide3() {
+        if (txtAddSide3 == null)
+            txtAddSide3 = (BackendTextView) findViewById(R.id.txt_add_side3);
+        return txtAddSide3;
+    }
+
+    private BackendTextView getTxtAddSide4() {
+        if (txtAddSide4 == null)
+            txtAddSide4 = (BackendTextView) findViewById(R.id.txt_add_side4);
+        return txtAddSide4;
     }
 
     private BackendAutoFitTextView getBtnAddAnotherBento() {

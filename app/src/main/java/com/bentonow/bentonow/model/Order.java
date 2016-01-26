@@ -35,6 +35,13 @@ public class Order {
     public String AppVersion = "";
     public String MenuType = "";
     public String MealName = "";
+    public String order_type = "";
+    public String kitchen = "";
+    public String OrderAheadZone = "";
+    public String for_date = "";
+    public String scheduled_window_start = "";
+    public String scheduled_window_end = "";
+    public String MenuId = "";
     public int order_pk = 0;
 
 

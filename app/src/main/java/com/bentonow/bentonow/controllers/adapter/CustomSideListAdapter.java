@@ -15,7 +15,6 @@ import com.bentonow.bentonow.Utils.ImageUtils;
 import com.bentonow.bentonow.dao.DishDao;
 import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.listener.ListenerCustomDish;
-import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.ui.wrapper.ItemSideCustomWrapper;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -31,14 +30,16 @@ public class CustomSideListAdapter extends ArrayAdapter<DishModel> {
     private DishModel mCurrentAdded;
     private DishModel mCurrentSelected;
     private DishDao dishDao;
+    private boolean bIsMenuOD;
 
     /**
      * @param context
      */
-    public CustomSideListAdapter(Activity context, ListenerCustomDish mListener) {
+    public CustomSideListAdapter(Activity context, boolean bIsMenuOD, ListenerCustomDish mListener) {
         super(context, 0);
         this.mActivity = context;
         this.mListener = mListener;
+        this.bIsMenuOD = bIsMenuOD;
         dishDao = new DishDao();
     }
 
@@ -125,7 +126,7 @@ public class CustomSideListAdapter extends ArrayAdapter<DishModel> {
         if (!dishDao.canBeAdded(mDish)) {
             viewHolder.getBtnAddToBento().setText(IosCopyDao.get("reached-max-button"));
             viewHolder.getImgSoldOut().setVisibility(View.GONE);
-        } else if (dishDao.isSoldOut(mDish, true)) {
+        } else if (dishDao.isSoldOut(mDish, true, bIsMenuOD)) {
             viewHolder.getBtnAddToBento().setText("Sold Out");
             viewHolder.getImgSoldOut().setVisibility(View.VISIBLE);
         } else {

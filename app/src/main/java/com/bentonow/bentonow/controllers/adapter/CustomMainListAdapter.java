@@ -31,14 +31,16 @@ public class CustomMainListAdapter extends ArrayAdapter<DishModel> {
     private DishModel mCurrentAdded;
     private DishModel mCurrentSelected;
     private DishDao mDishDao;
+    private boolean bIsMenuOD;
 
     /**
      * @param context
      */
-    public CustomMainListAdapter(Activity context, ListenerCustomDish mListener) {
+    public CustomMainListAdapter(Activity context, boolean bIsMenuOD, ListenerCustomDish mListener) {
         super(context, 0);
         this.mActivity = context;
         this.mListener = mListener;
+        this.bIsMenuOD = bIsMenuOD;
         mDishDao = new DishDao();
     }
 
@@ -145,7 +147,7 @@ public class CustomMainListAdapter extends ArrayAdapter<DishModel> {
         if (!mDishDao.canBeAdded(mDish)) {
             viewHolder.getBtnAddToBento().setText(IosCopyDao.get("reached-max-button"));
             viewHolder.getImgSoldOut().setVisibility(View.GONE);
-        } else if (DishDao.isSoldOut(mDish, true)) {
+        } else if (mDishDao.isSoldOut(mDish, true, bIsMenuOD)) {
             viewHolder.getBtnAddToBento().setText("Sold Out");
             viewHolder.getImgSoldOut().setVisibility(View.VISIBLE);
         } else {

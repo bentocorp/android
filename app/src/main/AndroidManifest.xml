@@ -54,9 +54,6 @@
             android:name=".controllers.order.BuildBentoActivity"
             android:screenOrientation="portrait"></activity>
         <activity
-            android:name=".controllers.order.BuildFixedBentoActivity"
-            android:screenOrientation="portrait"></activity>
-        <activity
             android:name=".controllers.geolocation.DeliveryLocationActivity"
             android:screenOrientation="portrait"></activity>
         <activity
@@ -67,9 +64,6 @@
             android:screenOrientation="portrait"></activity>
         <activity
             android:name=".controllers.order.SelectSideCustomActivity"
-            android:screenOrientation="portrait"></activity>
-        <activity
-            android:name=".controllers.order.SelectSideFixActivity"
             android:screenOrientation="portrait"></activity>
         <activity
             android:name=".controllers.order.AddOnActivity"
@@ -137,7 +131,7 @@
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
 
-                <category android:name="com.bentonow.bentonow.stage" />
+                <category android:name="com.bentonow.bentonow" />
             </intent-filter>
         </receiver>
 
