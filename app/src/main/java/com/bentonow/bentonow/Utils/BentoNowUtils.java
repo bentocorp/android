@@ -10,6 +10,7 @@ import android.view.animation.RotateAnimation;
 
 import com.bentonow.bentonow.BuildConfig;
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.controllers.errors.ErrorActivity;
 import com.bentonow.bentonow.controllers.errors.ErrorVersionActivity;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
@@ -26,6 +27,7 @@ import com.bentonow.bentonow.dao.OrderDao;
 import com.bentonow.bentonow.dao.SettingsDao;
 import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.model.Menu;
+import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.menu.TimesModel;
 import com.facebook.GraphResponse;
@@ -46,7 +48,6 @@ import java.util.UUID;
 public class BentoNowUtils {
 
     private static final String TAG = "BentoNowUtils";
-    public static Menu mMenu;
 
     public static final SimpleDateFormat sdfBento = new SimpleDateFormat("yyyyMMdd");
     public static final SimpleDateFormat sdfBentoInit2 = new SimpleDateFormat("yyyy-MM-dd");
@@ -389,34 +390,54 @@ public class BentoNowUtils {
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ADDRESS, new Gson().toJson(mAddress));
     }
 
-    public static String getTimeWithAmPm(String sHour, boolean bAddAmPm) {
-        String sNewHour = sHour;
+    public static String getDayTimeSelected(Order mOrder) {
+        String sDateTime;
+        Calendar mCal = Calendar.getInstance();
+        SimpleDateFormat formatOrderDate = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat formatOrderTitle = new SimpleDateFormat("EEE MM/dd");
         try {
-            String[] sArrayFinish = sHour.split(":");
-            int iHour = Integer.parseInt(sArrayFinish[0]);
-            sNewHour = sArrayFinish[0];
-
-            if (bAddAmPm)
-                if (iHour > 11)
-                    sNewHour += " PM";
-                else
-                    sNewHour += " AM";
+            mCal.setTime(formatOrderDate.parse(mOrder.for_date));
+            String sDate = formatOrderTitle.format(mCal.getTime());
+            sDate = sDate.replace(".", "");
+            String sMeal = mOrder.MealName.contains("lunch") ? "Lunch" : "Dinner";
+            sDateTime = BentoApplication.instance.getString(R.string.build_bento_toolbar_title_oa, sDate, sMeal, getDateHuman(mOrder.scheduled_window_start), getDateHuman(mOrder.scheduled_window_end));
         } catch (Exception ex) {
-            DebugUtils.logError(ex);
+            DebugUtils.logError(TAG, ex);
+            sDateTime = BentoApplication.instance.getString(R.string.build_bento_toolbar_title_oa, mOrder.for_date, mOrder.MealName, getDateHuman(mOrder.scheduled_window_start), getDateHuman(mOrder.scheduled_window_end));
         }
-
-        return sNewHour;
+        return sDateTime;
     }
 
     public static String getDayTimeSelected(Menu mMenu) {
-        String sDateTime = "";
-        for (int a = 0; a < mMenu.listTimeModel.size(); a++) {
-            if (mMenu.listTimeModel.get(a).isSelected)
-                sDateTime = mMenu.day_text + ", " + mMenu.meal_name + ", " + getTimeWithAmPm(mMenu.listTimeModel.get(a).start, false) + " - " + getTimeWithAmPm(mMenu.listTimeModel.get(a).end, true);
-        }
+        String sDateTime;
+        Calendar mCal = Calendar.getInstance();
+        SimpleDateFormat formatOrderDate = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat formatOrderTitle = new SimpleDateFormat("EEE MM/dd");
+        String sStarts = "";
+        String sFinish = "";
+        String sMeal = mMenu.meal_name.contains("lunch") ? "Lunch" : "Dinner";
 
+        try {
+            mCal.setTime(formatOrderDate.parse(mMenu.for_date));
+            String sDate = formatOrderTitle.format(mCal.getTime());
+            sDate = sDate.replace(".", "");
+
+            for (TimesModel mTime : mMenu.listTimeModel) {
+                if (mTime.isSelected) {
+                    sStarts = getDateHuman(mTime.start);
+                    sFinish = getDateHuman(mTime.end);
+                }
+            }
+
+
+            sDateTime = BentoApplication.instance.getString(R.string.build_bento_toolbar_title_oa, sDate, sMeal, sStarts, sFinish);
+        } catch (Exception ex) {
+            DebugUtils.logError(TAG, ex);
+            sDateTime = BentoApplication.instance.getString(R.string.build_bento_toolbar_title_oa, mMenu.for_date, sMeal, sStarts, sFinish);
+        }
         return sDateTime;
     }
+
 
     public static double getDeliveryPriceByTime(TimesModel mTime) {
         double dDeliveryPrice = SettingsDao.getCurrent().delivery_price;
@@ -428,6 +449,84 @@ public class BentoNowUtils {
         }
 
         return dDeliveryPrice;
+    }
+
+    public static String getDateHuman(String sDate) {
+        SimpleDateFormat formatTime = new SimpleDateFormat("h:mm a");
+        String[] aTime = sDate.split(":");
+        String sHumanTime;
+        try {
+            Calendar mCalToday = Calendar.getInstance();
+            mCalToday.set(Calendar.HOUR_OF_DAY, Integer.parseInt(aTime[0]));
+            mCalToday.set(Calendar.MINUTE, Integer.parseInt(aTime[1]));
+            sHumanTime = formatTime.format(mCalToday.getTime());
+            sHumanTime = sHumanTime.replace(":00", "");
+        } catch (Exception ex) {
+            DebugUtils.logDebug(TAG, ex);
+            sHumanTime = sDate;
+        }
+        return sHumanTime;
+    }
+
+    public static Calendar getCalendarByTime(String sTime) {
+        String[] aTime = sTime.split(":");
+        Calendar mCalTime = Calendar.getInstance();
+        try {
+            mCalTime.set(Calendar.HOUR_OF_DAY, Integer.parseInt(aTime[0]));
+            mCalTime.set(Calendar.MINUTE, Integer.parseInt(aTime[1]));
+        } catch (Exception ex) {
+            DebugUtils.logDebug(TAG, ex);
+        }
+        return mCalTime;
+    }
+
+    public static int showOATimer(Menu mMenu) {
+        long lSeconds = 0;
+        if (MenuDao.gateKeeper != null && MenuDao.gateKeeper.getAvailableServices() != null && MenuDao.gateKeeper.getAvailableServices().mOrderAhead != null
+                && !MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.isEmpty()) {
+            if (mMenu.menu_id.equals(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(0).menu_id)) {
+                if (MenuDao.gateKeeper.getMealTypes() != null) {
+                    if (mMenu.meal_type.equals("2") || MenuDao.gateKeeper.getMealTypes().getTwo() != null) {
+                        Calendar mCutOf = getCalendarByTime(MenuDao.gateKeeper.getMealTypes().getTwo().getOaCutoff());
+                        Calendar mNow = Calendar.getInstance();
+                        DebugUtils.logDebug(TAG, "Hour Cut OFF: " + mCutOf.get(Calendar.HOUR_OF_DAY) + ":" + mCutOf.get(Calendar.MINUTE));
+                        DebugUtils.logDebug(TAG, "Hour Now: " + mNow.get(Calendar.HOUR_OF_DAY) + ":" + mNow.get(Calendar.MINUTE));
+                        if (mCutOf.after(mNow)) {
+                            lSeconds = (mCutOf.getTimeInMillis() - mNow.getTimeInMillis()) / 1000;
+                            try {
+                                long lSecCutOff = Long.parseLong(SettingsDao.getCurrent().oa_countdown_remaining_mins);
+                                lSecCutOff = lSecCutOff * 60 * 1000;
+                                if (lSecCutOff > lSeconds)
+                                    lSeconds = 0;
+                            } catch (Exception ex) {
+                                DebugUtils.logError(TAG, ex);
+                            }
+                        } else
+                            lSeconds = -1;
+                    } else if (MenuDao.gateKeeper.getMealTypes().getThree() != null) {
+                        Calendar mCutOf = getCalendarByTime(MenuDao.gateKeeper.getMealTypes().getThree().getOaCutoff());
+                        Calendar mNow = Calendar.getInstance();
+                        DebugUtils.logDebug(TAG, "Hour Cut OFF: " + mCutOf.get(Calendar.HOUR_OF_DAY) + ":" + mCutOf.get(Calendar.MINUTE));
+                        DebugUtils.logDebug(TAG, "Hour Now: " + mNow.get(Calendar.HOUR_OF_DAY) + ":" + mNow.get(Calendar.MINUTE));
+                        if (mCutOf.after(mNow)) {
+                            lSeconds = (mCutOf.getTimeInMillis() - mNow.getTimeInMillis()) / 5;
+                            try {
+                                long lSecCutOff = Long.parseLong(SettingsDao.getCurrent().oa_countdown_remaining_mins);
+                                lSecCutOff = lSecCutOff * 1000;
+                                if (lSecCutOff > lSeconds)
+                                    lSeconds = 0;
+                            } catch (Exception ex) {
+                                DebugUtils.logError(TAG, ex);
+                            }
+                        } else
+                            lSeconds = -1;
+                    }
+                }
+            }
+        }
+
+        DebugUtils.logDebug(TAG, "Seconds Remaining: " + lSeconds);
+        return (int) lSeconds;
     }
 
 }

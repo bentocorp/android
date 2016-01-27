@@ -89,40 +89,46 @@
 
     </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/layout_status"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
+        android:layout_height="25dp"
         android:layout_below="@+id/ActionBarContainer"
-        android:background="@color/green_promo"
-        android:orientation="horizontal"
-        android:weightSum="100">
+        android:background="@color/green_promo">
 
         <com.bentonow.bentonow.ui.AutoFitTxtView
             android:id="@+id/txt_promo_name"
             style="@style/TxtBentoPromo"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_centerInParent="true"
-            android:layout_weight="50"
-            android:gravity="center" />
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_toLeftOf="@+id/img_divider_status"
+            android:gravity="center"
+            android:text="aasdasd" />
 
-        <LinearLayout
+        <ImageView
+            android:id="@+id/img_divider_status"
             android:layout_width="1dp"
             android:layout_height="match_parent"
-            android:layout_margin="2dp"
-            android:layout_marginTop="2dp"
-            android:background="@color/white"></LinearLayout>
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:background="@color/white"
+            android:visibility="gone" />
 
         <com.bentonow.bentonow.ui.AutoFitTxtView
             android:id="@+id/txt_promo_eta"
             style="@style/TxtBentoPromo"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_centerInParent="true"
-            android:layout_weight="50"
-            android:gravity="center" />
-    </LinearLayout>
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/img_divider_status"
+            android:gravity="center"
+            android:text="aasdasd"
+            android:visibility="gone" />
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/layout_pod_four"
@@ -133,9 +139,9 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/layout_status"
         android:paddingLeft="10dp"
-        android:visibility="gone"
         android:paddingRight="10dp"
-        android:paddingTop="10dp">
+        android:paddingTop="10dp"
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -1174,7 +1180,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@color/primary"
-                    android:text="Cancel" />
+                    android:text="Cancel"
+                    android:visibility="gone" />
 
                 <com.bentonow.bentonow.ui.material.ButtonFlat
                     android:id="@+id/button_accept_widget"

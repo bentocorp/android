@@ -15,6 +15,7 @@ public class Settings {
     public double tax_percent;
     public String tzName = "";
     public String pod_mode = "";
+    public String oa_countdown_remaining_mins = "";
 
 
 }

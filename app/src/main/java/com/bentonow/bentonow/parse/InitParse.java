@@ -194,6 +194,7 @@ public class InitParse {
             SettingsDao.mSettings.status = jsonSettings.getString("status");
             SettingsDao.mSettings.tzName = jsonSettings.getString("tzName");
             SettingsDao.mSettings.pod_mode = jsonSettings.getString("pod_mode");
+            SettingsDao.mSettings.oa_countdown_remaining_mins = jsonSettings.getString("oa_countdown_remaining_mins");
 
 
         } catch (Exception ex) {
@@ -295,13 +296,17 @@ public class InitParse {
             if (jsonGateKeeper.has("MealTypes")) {
                 JSONObject jsonMealType = new JSONObject(jsonGateKeeper.getString("MealTypes"));
 
-                if (jsonMealType.has("MealTypes")) {
+                if (jsonMealType.has("hash")) {
                     JSONObject jsonHash = new JSONObject(jsonMealType.getString("hash"));
 
-                    if (jsonHash.has("2"))
+                    if (jsonHash.has("2")) {
                         MenuDao.gateKeeper.getMealTypes().setTwo(gson.fromJson(jsonHash.getString("2"), Hash.class));
-                    if (jsonHash.has("3"))
+                        MenuDao.gateKeeper.getMealTypes().getTwo().setOaCutoff("20:35:00");
+                    }
+                    if (jsonHash.has("3")) {
                         MenuDao.gateKeeper.getMealTypes().setThree(gson.fromJson(jsonHash.getString("3"), Hash.class));
+                        MenuDao.gateKeeper.getMealTypes().getThree().setOaCutoff("20:35:00");
+                    }
                 }
 
                 if (jsonMealType.has("ordering"))

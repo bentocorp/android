@@ -492,21 +492,19 @@ public class DishDao {
         return gson.fromJson(gson.toJson(mDishModel), DishModel.class);
     }
 
-    public static double getLowestMainPrice() {
+    public static double getLowestMainPrice(Menu mMenu) {
         double dMinPrice = 0;
 
-        if (MenuDao.get() != null) {
-            for (DishModel dishModel : MenuDao.get().dishModels)
-                if (dishModel.type.equals("main")) {
-                    dishModel.price = DishDao.getDefaultPriceBento(dishModel.price);
-                    if (dMinPrice == 0)
+        for (DishModel dishModel : mMenu.dishModels)
+            if (dishModel.type.equals("main")) {
+                dishModel.price = DishDao.getDefaultPriceBento(dishModel.price);
+                if (dMinPrice == 0)
+                    dMinPrice = dishModel.price;
+                else {
+                    if (dMinPrice > dishModel.price)
                         dMinPrice = dishModel.price;
-                    else {
-                        if (dMinPrice > dishModel.price)
-                            dMinPrice = dishModel.price;
-                    }
                 }
-        }
+            }
 
         return dMinPrice;
     }

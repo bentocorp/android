@@ -53,11 +53,11 @@ android {
     productFlavors {
         production {
             applicationId "com.bentonow.bentonow"
-            versionName '1.21-rc3'
+            versionName '1.21-rc4'
         }
         stage {
             applicationId "com.bentonow.bentonow.stage"
-            versionName '1.21-rc3-dev'
+            versionName '1.21-rc4-dev'
         }
     }
 

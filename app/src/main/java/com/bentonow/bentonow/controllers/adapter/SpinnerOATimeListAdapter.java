@@ -53,7 +53,7 @@ public class SpinnerOATimeListAdapter extends ArrayAdapter<TimesModel> {
         } else
             viewHolder = (ItemSpinnerTimeWrapper) convertView.getTag();
 
-        viewHolder.getTxtOaTime().setText(BentoNowUtils.getTimeWithAmPm(mTime.start, false) + " - " + BentoNowUtils.getTimeWithAmPm(mTime.end, true));
+        viewHolder.getTxtOaTime().setText(BentoNowUtils.getDateHuman(mTime.start) + " - " + BentoNowUtils.getDateHuman(mTime.end));
 
         return convertView;
     }

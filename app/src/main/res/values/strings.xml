@@ -31,6 +31,7 @@
     <string name="title_activity_complete_order">CompleteOrderActivity</string>
     <string name="title_activity_order_confirmed">OrderConfirmedActivity</string>
     <string name="title_activity_enter_credit_card">EnterCreditCardActivity</string>
+    <string name="build_bento_toolbar_title_oa">%1$s, %2$s, %3$s - %4$s</string>
 
 
     <string name="edit_hint_enter_phone">Enter your phone number</string>
