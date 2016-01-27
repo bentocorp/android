@@ -28,31 +28,32 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        tools:context="com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity"
-        android:layout_alignParentStart="true"
+        android:layout_above="@+id/linearLayout5"
+        android:layout_alignParentLeft="true"
         android:layout_below="@+id/ActionBarContainer"
-        android:layout_above="@+id/linearLayout5" />
+        tools:context="com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity" />
 
 
     <LinearLayout
+        android:id="@+id/linearLayout5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/footer_container"
-        android:layout_alignParentStart="true"
-        android:orientation="vertical"
-        android:id="@+id/linearLayout5">
+        android:layout_alignParentLeft="true"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="wrap_content"
             android:background="@color/white"
             android:orientation="horizontal">
 
-            <TextView
+            <com.bentonow.bentonow.ui.AutoFitTxtView
                 android:id="@+id/txt_address"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:maxLines="2"
                 android:padding="@dimen/btn_padding"
                 android:text="@null" />
 
@@ -60,9 +61,8 @@
                 android:id="@+id/btn_change"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
+                android:layout_gravity="center"
                 android:background="@null"
                 android:onClick="onChangePressed"
                 android:padding="@dimen/btn_padding"

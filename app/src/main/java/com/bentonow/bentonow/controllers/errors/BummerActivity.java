@@ -14,6 +14,7 @@ import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.dao.SettingsDao;
+import com.bentonow.bentonow.ui.AutoFitTxtView;
 import com.bentonow.bentonow.ui.BackendEditText;
 import com.bentonow.bentonow.web.request.UserRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -32,11 +33,11 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
     public static final String TAG = "BummerActivity";
     public static final String TAG_INVALID_ADDRESS = "invalid_address";
 
-    EditText txt_email;
-    private TextView txtAddress;
-    GoogleMap map;
+    private EditText txt_email;
+    private AutoFitTxtView txtAddress;
+    private GoogleMap map;
 
-    String sCurrentLocation = "";
+    private String sCurrentLocation = "";
 
 
     @Override
@@ -147,9 +148,9 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
     }
 
 
-    private TextView getTxtAddress() {
+    private AutoFitTxtView getTxtAddress() {
         if (txtAddress == null)
-            txtAddress = (TextView) findViewById(R.id.txt_address);
+            txtAddress = (AutoFitTxtView) findViewById(R.id.txt_address);
         return txtAddress;
     }
 }

@@ -474,59 +474,57 @@ public class BentoNowUtils {
         try {
             mCalTime.set(Calendar.HOUR_OF_DAY, Integer.parseInt(aTime[0]));
             mCalTime.set(Calendar.MINUTE, Integer.parseInt(aTime[1]));
+            mCalTime.set(Calendar.SECOND, 0);
         } catch (Exception ex) {
             DebugUtils.logDebug(TAG, ex);
         }
         return mCalTime;
     }
 
-    public static int showOATimer(Menu mMenu) {
+    public static long showOATimer(Menu mMenu) {
         long lSeconds = 0;
-        if (MenuDao.gateKeeper != null && MenuDao.gateKeeper.getAvailableServices() != null && MenuDao.gateKeeper.getAvailableServices().mOrderAhead != null
-                && !MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.isEmpty()) {
-            if (mMenu.menu_id.equals(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(0).menu_id)) {
-                if (MenuDao.gateKeeper.getMealTypes() != null) {
-                    if (mMenu.meal_type.equals("2") || MenuDao.gateKeeper.getMealTypes().getTwo() != null) {
-                        Calendar mCutOf = getCalendarByTime(MenuDao.gateKeeper.getMealTypes().getTwo().getOaCutoff());
-                        Calendar mNow = Calendar.getInstance();
-                        DebugUtils.logDebug(TAG, "Hour Cut OFF: " + mCutOf.get(Calendar.HOUR_OF_DAY) + ":" + mCutOf.get(Calendar.MINUTE));
-                        DebugUtils.logDebug(TAG, "Hour Now: " + mNow.get(Calendar.HOUR_OF_DAY) + ":" + mNow.get(Calendar.MINUTE));
-                        if (mCutOf.after(mNow)) {
-                            lSeconds = (mCutOf.getTimeInMillis() - mNow.getTimeInMillis()) / 1000;
-                            try {
-                                long lSecCutOff = Long.parseLong(SettingsDao.getCurrent().oa_countdown_remaining_mins);
-                                lSecCutOff = lSecCutOff * 60 * 1000;
-                                if (lSecCutOff > lSeconds)
-                                    lSeconds = 0;
-                            } catch (Exception ex) {
-                                DebugUtils.logError(TAG, ex);
-                            }
-                        } else
-                            lSeconds = -1;
-                    } else if (MenuDao.gateKeeper.getMealTypes().getThree() != null) {
-                        Calendar mCutOf = getCalendarByTime(MenuDao.gateKeeper.getMealTypes().getThree().getOaCutoff());
-                        Calendar mNow = Calendar.getInstance();
-                        DebugUtils.logDebug(TAG, "Hour Cut OFF: " + mCutOf.get(Calendar.HOUR_OF_DAY) + ":" + mCutOf.get(Calendar.MINUTE));
-                        DebugUtils.logDebug(TAG, "Hour Now: " + mNow.get(Calendar.HOUR_OF_DAY) + ":" + mNow.get(Calendar.MINUTE));
-                        if (mCutOf.after(mNow)) {
-                            lSeconds = (mCutOf.getTimeInMillis() - mNow.getTimeInMillis()) / 5;
-                            try {
-                                long lSecCutOff = Long.parseLong(SettingsDao.getCurrent().oa_countdown_remaining_mins);
-                                lSecCutOff = lSecCutOff * 1000;
-                                if (lSecCutOff > lSeconds)
-                                    lSeconds = 0;
-                            } catch (Exception ex) {
-                                DebugUtils.logError(TAG, ex);
-                            }
-                        } else
-                            lSeconds = -1;
+        if (mMenu.menu_id.equals(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(0).menu_id)) {
+            if (MenuDao.gateKeeper.getMealTypes() != null) {
+                if (mMenu.meal_type.equals("2") || MenuDao.gateKeeper.getMealTypes().getTwo() != null) {
+                    Calendar mCutOf = getCalendarByTime(MenuDao.gateKeeper.getMealTypes().getTwo().getOaCutoff());
+                    Calendar mNow = Calendar.getInstance();
+                    DebugUtils.logDebug(TAG, "Hour Cut OFF: " + mCutOf.get(Calendar.HOUR_OF_DAY) + ":" + mCutOf.get(Calendar.MINUTE));
+                    DebugUtils.logDebug(TAG, "Hour Now: " + mNow.get(Calendar.HOUR_OF_DAY) + ":" + mNow.get(Calendar.MINUTE));
+                    if (mCutOf.after(mNow)) {
+                        lSeconds = (mCutOf.getTimeInMillis() - mNow.getTimeInMillis());
+                        try {
+                            long lSecCutOff = Long.parseLong(SettingsDao.getCurrent().oa_countdown_remaining_mins);
+                            lSecCutOff = lSecCutOff * 60 * 1000;
+                            DebugUtils.logDebug(TAG, "Milliseconds Dif: " + lSecCutOff);
+                            if (lSecCutOff < lSeconds)
+                                lSeconds = 0;
+                        } catch (Exception ex) {
+                            DebugUtils.logError(TAG, ex);
+                        }
+                    }
+                } else if (MenuDao.gateKeeper.getMealTypes().getThree() != null) {
+                    Calendar mCutOf = getCalendarByTime(MenuDao.gateKeeper.getMealTypes().getThree().getOaCutoff());
+                    Calendar mNow = Calendar.getInstance();
+                    DebugUtils.logDebug(TAG, "Hour Cut OFF: " + mCutOf.get(Calendar.HOUR_OF_DAY) + ":" + mCutOf.get(Calendar.MINUTE));
+                    DebugUtils.logDebug(TAG, "Hour Now: " + mNow.get(Calendar.HOUR_OF_DAY) + ":" + mNow.get(Calendar.MINUTE));
+                    if (mCutOf.after(mNow)) {
+                        lSeconds = (mCutOf.getTimeInMillis() - mNow.getTimeInMillis()) / 5;
+                        try {
+                            long lSecCutOff = Long.parseLong(SettingsDao.getCurrent().oa_countdown_remaining_mins);
+                            lSecCutOff = lSecCutOff * 1000;
+                            if (lSecCutOff > lSeconds)
+                                lSeconds = 0;
+                        } catch (Exception ex) {
+                            DebugUtils.logError(TAG, ex);
+                        }
                     }
                 }
             }
         }
 
+
         DebugUtils.logDebug(TAG, "Seconds Remaining: " + lSeconds);
-        return (int) lSeconds;
+        return lSeconds;
     }
 
 }

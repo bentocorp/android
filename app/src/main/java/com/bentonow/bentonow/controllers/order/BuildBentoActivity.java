@@ -4,6 +4,7 @@ package com.bentonow.bentonow.controllers.order;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.view.View;
 import android.view.animation.Animation;
@@ -53,8 +54,7 @@ import com.mixpanel.android.mpmetrics.Tweak;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 public class BuildBentoActivity extends BaseFragmentActivity implements View.OnClickListener, InterfaceCustomerService {
 
@@ -151,8 +151,9 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     private Order mOrder;
     private ArrayList<String> aMenusId = new ArrayList<>();
     private Handler mHandler = new Handler();
-    private Timer mTimer = new Timer();
+    private CountDownTimer mCountDown;
 
+    private long lMilliSecondsRemaining;
     private boolean bSawAddOns = false;
     private boolean bHasAddOns = false;
     private boolean bShowDateTime = false;
@@ -236,7 +237,13 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         getTxtEta().setVisibility(bIsMenuOD ? View.VISIBLE : View.GONE);
         getImgDividerStatus().setVisibility(bIsMenuOD ? View.VISIBLE : View.GONE);
         getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), BentoNowUtils.getDefaultPriceBento(DishDao.getLowestMainPrice(mMenu))));
-        setOAHashTimer(BentoNowUtils.showOATimer(mMenu));
+
+        if (!bIsMenuOD && bIsMenuAlreadySelected && mMenu.menu_id.equals(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(0).menu_id))
+            setOAHashTimer(BentoNowUtils.showOATimer(mMenu));
+        else if (mCountDown != null) {
+            mCountDown.cancel();
+            mCountDown = null;
+        }
 
         if (mBentoDao.isBentoComplete(mOrder.OrderItems.get(orderIndex)) && !StockDao.isSold()) {
             getBtnContinue().setBackgroundColor(getResources().getColor(R.color.btn_green));
@@ -922,52 +929,40 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         });
     }
 
-    private void setOAHashTimer(final int lSeconds) {
-        if (!bIsMenuOD)
-            switch (lSeconds) {
-                case -1:
-                    finish();
-                    BentoNowUtils.openMainActivity(BuildBentoActivity.this);
-                    break;
-                case 0:
-                    if (mTimer != null) {
-                        mTimer.cancel();
-                        mTimer = null;
-                    }
-                    break;
-                default:
-                    if (mTimer != null)
-                        mTimer = new Timer();
+    private void setOAHashTimer(final long lMilliSeconds) {
+        if (lMilliSeconds == 0) {
+            if (mCountDown != null) {
+                mCountDown.cancel();
+                mCountDown = null;
+            }
+        } else {
+            if (mCountDown != null)
+                mCountDown.cancel();
+            lMilliSecondsRemaining = lMilliSeconds;
 
-                    TimerTask doAsynchronousTask = new TimerTask() {
-                        @Override
-                        public void run() {
-                            mHandler.post(new Runnable() {
-                                @SuppressWarnings("unchecked")
-                                public void run() {
-                                    try {
-                                        setOAHashTimer(BentoNowUtils.showOATimer(mMenu));
-                                    } catch (Exception e) {
-                                        DebugUtils.logError(TAG, e);
-                                    }
-                                }
-                            });
-                        }
-                    };
-                    mTimer.schedule(doAsynchronousTask, 1000, 1000);
-
+            mCountDown = new CountDownTimer(lMilliSeconds, 1000) {
+                @Override
+                public void onTick(long l) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            getBtnContinue().setText("Seconds Remaining: " + lSeconds);
+                            getBtnContinue().setText("Seconds Remaining: " + String.format("%d min, %d sec",
+                                    TimeUnit.MILLISECONDS.toMinutes(lMilliSecondsRemaining),
+                                    TimeUnit.MILLISECONDS.toSeconds(lMilliSecondsRemaining) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(lMilliSecondsRemaining))));
                         }
-                    });
 
-                    break;
-            }
-        else if (mTimer != null) {
-            mTimer.cancel();
-            mTimer = null;
+                    });
+                    lMilliSecondsRemaining = lMilliSecondsRemaining - 1000;
+                }
+
+                @Override
+                public void onFinish() {
+                    finish();
+                    BentoNowUtils.openMainActivity(BuildBentoActivity.this);
+                }
+            };
+
+            mCountDown.start();
         }
     }
 
@@ -1042,6 +1037,11 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
             mBentoService.setServiceListener(null);
             unbindService(mConnection);
             mBound = false;
+        }
+
+        if (mCountDown != null) {
+            mCountDown.cancel();
+            mCountDown = null;
         }
     }
 

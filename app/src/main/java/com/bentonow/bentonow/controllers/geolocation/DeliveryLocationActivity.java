@@ -374,12 +374,13 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, MenuDao.gateKeeper.getAppState());
 
         if (MenuDao.gateKeeper.getAppState().contains("map,no_service")) {
-            Intent intent = new Intent(DeliveryLocationActivity.this, BummerActivity.class);
-            startActivity(intent);
+            Intent mIntentBummer = new Intent(DeliveryLocationActivity.this, BummerActivity.class);
+            mIntentBummer.putExtra(BummerActivity.TAG_INVALID_ADDRESS, getTxtAddress().getText().toString());
+            startActivity(mIntentBummer);
 
             try {
                 JSONObject params = new JSONObject();
-                params.put("address", LocationUtils.getCustomAddress(mOrderAddress));
+                params.put("address", getTxtAddress().getText().toString());
                 MixpanelUtils.track("Selected address outside of service area", params);
             } catch (Exception e) {
                 e.printStackTrace();

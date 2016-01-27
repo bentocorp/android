@@ -30,6 +30,7 @@ import java.util.List;
  */
 public class InitParse {
     private static final String TAG = "InitParse";
+    private static final String timeForce = "09:50:00";
 
     private static long init, now;
 
@@ -301,11 +302,11 @@ public class InitParse {
 
                     if (jsonHash.has("2")) {
                         MenuDao.gateKeeper.getMealTypes().setTwo(gson.fromJson(jsonHash.getString("2"), Hash.class));
-                        MenuDao.gateKeeper.getMealTypes().getTwo().setOaCutoff("20:35:00");
+                        MenuDao.gateKeeper.getMealTypes().getTwo().setOaCutoff(timeForce);
                     }
                     if (jsonHash.has("3")) {
                         MenuDao.gateKeeper.getMealTypes().setThree(gson.fromJson(jsonHash.getString("3"), Hash.class));
-                        MenuDao.gateKeeper.getMealTypes().getThree().setOaCutoff("20:35:00");
+                        MenuDao.gateKeeper.getMealTypes().getTwo().setOaCutoff(timeForce);
                     }
                 }
 
