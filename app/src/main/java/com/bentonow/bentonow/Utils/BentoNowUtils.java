@@ -400,10 +400,12 @@ public class BentoNowUtils {
             String sDate = formatOrderTitle.format(mCal.getTime());
             sDate = sDate.replace(".", "");
             String sMeal = mOrder.MealName.contains("lunch") ? "Lunch" : "Dinner";
-            sDateTime = BentoApplication.instance.getString(R.string.build_bento_toolbar_title_oa, sDate, sMeal, getDateHuman(mOrder.scheduled_window_start), getDateHuman(mOrder.scheduled_window_end));
+            sDateTime = BentoApplication.instance.getString(R.string.build_bento_toolbar_title_oa, sDate, sMeal, getDateHuman(mOrder.scheduled_window_start, false),
+                    getDateHuman(mOrder.scheduled_window_end, true));
         } catch (Exception ex) {
             DebugUtils.logError(TAG, ex);
-            sDateTime = BentoApplication.instance.getString(R.string.build_bento_toolbar_title_oa, mOrder.for_date, mOrder.MealName, getDateHuman(mOrder.scheduled_window_start), getDateHuman(mOrder.scheduled_window_end));
+            sDateTime = BentoApplication.instance.getString(R.string.build_bento_toolbar_title_oa, mOrder.for_date, mOrder.MealName, getDateHuman(mOrder.scheduled_window_start, false),
+                    getDateHuman(mOrder.scheduled_window_end, true));
         }
         return sDateTime;
     }
@@ -424,8 +426,8 @@ public class BentoNowUtils {
 
             for (TimesModel mTime : mMenu.listTimeModel) {
                 if (mTime.isSelected) {
-                    sStarts = getDateHuman(mTime.start);
-                    sFinish = getDateHuman(mTime.end);
+                    sStarts = getDateHuman(mTime.start, false);
+                    sFinish = getDateHuman(mTime.end, true);
                 }
             }
 
@@ -434,6 +436,25 @@ public class BentoNowUtils {
         } catch (Exception ex) {
             DebugUtils.logError(TAG, ex);
             sDateTime = BentoApplication.instance.getString(R.string.build_bento_toolbar_title_oa, mMenu.for_date, sMeal, sStarts, sFinish);
+        }
+        return sDateTime;
+    }
+
+    public static String getDaySelected(Menu mMenu) {
+        String sDateTime;
+        Calendar mCal = Calendar.getInstance();
+        SimpleDateFormat formatOrderDate = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat formatOrderTitle = new SimpleDateFormat("EEE MM/dd");
+        String sMeal = mMenu.meal_name.contains("lunch") ? "Lunch" : "Dinner";
+
+        try {
+            mCal.setTime(formatOrderDate.parse(mMenu.for_date));
+            String sDate = formatOrderTitle.format(mCal.getTime());
+            sDate = sDate.replace(".", "");
+            sDateTime = BentoApplication.instance.getString(R.string.build_bento_spinner_item_oa, sDate, sMeal);
+        } catch (Exception ex) {
+            DebugUtils.logError(TAG, ex);
+            sDateTime = BentoApplication.instance.getString(R.string.build_bento_spinner_item_oa, mMenu.for_date, sMeal);
         }
         return sDateTime;
     }
@@ -451,8 +472,8 @@ public class BentoNowUtils {
         return dDeliveryPrice;
     }
 
-    public static String getDateHuman(String sDate) {
-        SimpleDateFormat formatTime = new SimpleDateFormat("h:mm a");
+    public static String getDateHuman(String sDate, boolean bShowAm) {
+        SimpleDateFormat formatTime = new SimpleDateFormat(bShowAm ? "h:mm a" : "h:mm");
         String[] aTime = sDate.split(":");
         String sHumanTime;
         try {

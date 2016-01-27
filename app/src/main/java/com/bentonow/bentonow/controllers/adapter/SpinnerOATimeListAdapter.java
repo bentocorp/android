@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.model.menu.TimesModel;
+import com.bentonow.bentonow.ui.wrapper.ItemSpinnerTimeSelectedWrapper;
 import com.bentonow.bentonow.ui.wrapper.ItemSpinnerTimeWrapper;
 
 /**
@@ -21,6 +22,7 @@ import com.bentonow.bentonow.ui.wrapper.ItemSpinnerTimeWrapper;
 public class SpinnerOATimeListAdapter extends ArrayAdapter<TimesModel> {
 
     private Activity mActivity;
+    public int iSelectedPosition = 0;
 
     /**
      * @param context
@@ -32,7 +34,7 @@ public class SpinnerOATimeListAdapter extends ArrayAdapter<TimesModel> {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        return getCustomView(position, convertView, parent);
+        return getCustomViewSelector(position, convertView, parent);
     }
 
     @Override
@@ -40,7 +42,7 @@ public class SpinnerOATimeListAdapter extends ArrayAdapter<TimesModel> {
         return getCustomView(position, convertView, parent);
     }
 
-    public View getCustomView(int position, View convertView, ViewGroup parent) {
+    public View getCustomViewSelector(int position, View convertView, ViewGroup parent) {
 
         final ItemSpinnerTimeWrapper viewHolder;
         final TimesModel mTime = getItem(position);
@@ -53,9 +55,27 @@ public class SpinnerOATimeListAdapter extends ArrayAdapter<TimesModel> {
         } else
             viewHolder = (ItemSpinnerTimeWrapper) convertView.getTag();
 
-        viewHolder.getTxtOaTime().setText(BentoNowUtils.getDateHuman(mTime.start) + " - " + BentoNowUtils.getDateHuman(mTime.end));
+        viewHolder.getTxtOaTime().setText(BentoNowUtils.getDateHuman(mTime.start, false) + "-" + BentoNowUtils.getDateHuman(mTime.end, true));
 
         return convertView;
     }
 
+    public View getCustomView(final int position, View convertView, ViewGroup parent) {
+
+        final ItemSpinnerTimeSelectedWrapper viewHolder;
+        final TimesModel mTime = getItem(position);
+
+        if (convertView == null) {
+            LayoutInflater mInflater = mActivity.getLayoutInflater();
+            convertView = mInflater.inflate(R.layout.spinner_item_time_selected, parent, false);
+            viewHolder = new ItemSpinnerTimeSelectedWrapper(convertView);
+            convertView.setTag(viewHolder);
+        } else
+            viewHolder = (ItemSpinnerTimeSelectedWrapper) convertView.getTag();
+
+        viewHolder.getTxtOaTime().setText(BentoNowUtils.getDateHuman(mTime.start, false) + "-" + BentoNowUtils.getDateHuman(mTime.end, true));
+        viewHolder.getImgSelector().setVisibility(iSelectedPosition == position ? View.VISIBLE : View.GONE);
+
+        return convertView;
+    }
 }

@@ -9,16 +9,15 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
-import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
@@ -30,6 +29,7 @@ import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.adapter.SpinnerOADayListAdapter;
 import com.bentonow.bentonow.controllers.adapter.SpinnerOATimeListAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
+import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.dao.DishDao;
 import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.dao.MenuDao;
@@ -44,7 +44,6 @@ import com.bentonow.bentonow.model.order.OrderItem;
 import com.bentonow.bentonow.service.BentoCustomerService;
 import com.bentonow.bentonow.ui.AutoFitTxtView;
 import com.bentonow.bentonow.ui.BackendAutoFitTextView;
-import com.bentonow.bentonow.ui.BackendButton;
 import com.bentonow.bentonow.ui.BackendTextView;
 import com.bentonow.bentonow.ui.material.ButtonFlat;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
@@ -53,19 +52,18 @@ import com.mixpanel.android.mpmetrics.Tweak;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 public class BuildBentoActivity extends BaseFragmentActivity implements View.OnClickListener, InterfaceCustomerService {
 
     static final String TAG = "BuildBentoActivity";
 
-    private BackendButton btnContinue;
     private BackendTextView txtAddMain;
     private BackendTextView txtAddSide1;
     private BackendTextView txtAddSide2;
     private BackendTextView txtAddSide3;
     private BackendTextView txtAddSide4;
 
+    private BackendAutoFitTextView btnContinue;
     private BackendAutoFitTextView btnAddAnotherBento;
     private TextView txtNumBento;
     private LinearLayout layoutAddOns;
@@ -115,9 +113,9 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     private RelativeLayout layoutPodFour;
     private RelativeLayout containerDateTime;
     private FrameLayout layoutDateTime;
-    private FrameLayout layoutWidgetSeparator;
     private FrameLayout containerCancelWidget;
     private LinearLayout containerDateTimeSelection;
+    private LinearLayout containerSpinnerDayTimeOa;
 
     private TextView txtTitleMain;
     private TextView txtTitleMain4;
@@ -129,13 +127,12 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     private TextView txtTitleSide34;
     private TextView txtTitleSide4;
     private TextView txtOdTitle;
-    private TextView txtOaTitle;
 
     private Spinner spinnerDate;
     private Spinner spinnerTime;
 
-    private RadioButton radioBtnOD;
-    private RadioButton radioBtnOA;
+    private ImageView checkBoxOD;
+    private ImageView checkBoxOA;
 
     private ButtonFlat buttonCancel;
     private ButtonFlat buttonAccept;
@@ -158,6 +155,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     private boolean bShowDateTime = false;
     private boolean bIsMenuOD = false;
     private boolean bIsMenuAlreadySelected = false;
+    private boolean bIsAsapChecked = false;
     //private static Tweak<Boolean> showBanner = MixpanelAPI.booleanTweak("Show Banner", false);
     private static Tweak<Boolean> showAddons = MixpanelAPI.booleanTweak("Show AddOns", false);
 
@@ -174,6 +172,8 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         getButtonCancel().setOnClickListener(this);
         getButtonAccept().setOnClickListener(this);
         getContainerCancelWidget().setOnClickListener(this);
+        getCheckBoxOD().setOnClickListener(this);
+        getCheckBoxOA().setOnClickListener(this);
 
         getTxtEta().setText(String.format(getString(R.string.build_bento_eta), MenuDao.eta_min + "-" + MenuDao.eta_max));
 
@@ -282,8 +282,6 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         getSpinnerDayAdapter().clear();
         getSpinnerTimeAdapter().clear();
 
-        getLayoutWidgetSeparator().setVisibility(MenuDao.gateKeeper.getAppOnDemandWidget() != null && MenuDao.gateKeeper.isOrderAhead() ? View.VISIBLE : View.GONE);
-
         if (MenuDao.gateKeeper.getAppOnDemandWidget() != null) {
             getWrapperOd().setVisibility(View.VISIBLE);
             getTxtOdTitle().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getTitle());
@@ -303,8 +301,6 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
             mMenu = MenuDao.get();
             createOrder();
             getTxtDateTimeToolbar().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getTitle());
-            getRadioBtnOD().setChecked(true);
-            getRadioBtnOA().setChecked(false);
         } else {
             bIsMenuOD = false;
             mMenu = MenuDao.cloneMenu(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(0));
@@ -313,14 +309,16 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
             mOrder.for_date = mMenu.for_date;
             updateTimeOrder(mMenu.listTimeModel.get(0));
             getTxtDateTimeToolbar().setText(BentoNowUtils.getDayTimeSelected(mOrder));
-            getRadioBtnOD().setChecked(false);
-            getRadioBtnOA().setChecked(true);
         }
+
+        bIsAsapChecked = bIsMenuOD ? true : false;
+        updateWidgetSelection();
 
         getSpinnerDate().setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 updateDayOASpinner(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(i), 0);
+                getSpinnerDayAdapter().iSelectedPosition = i;
             }
 
             @Override
@@ -337,43 +335,12 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                     } else
                         mOAPreselectedMenu.listTimeModel.get(a).isSelected = false;
                 }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        getTxtOaTitle().setText(BentoNowUtils.getDayTimeSelected(mOAPreselectedMenu));
-                    }
-                });
+                getSpinnerTimeAdapter().iSelectedPosition = iPosition;
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
 
-            }
-        });
-        getRadioBtnOA().setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            getRadioBtnOD().setChecked(false);
-                        }
-                    });
-                }
-            }
-        });
-        getRadioBtnOD().setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            getRadioBtnOA().setChecked(false);
-                        }
-                    });
-                }
             }
         });
 
@@ -393,7 +360,6 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
             public void run() {
                 getSpinnerTimeAdapter().notifyDataSetChanged();
                 getSpinnerTime().setSelection(iTimePosition, true);
-                getTxtOaTitle().setText(BentoNowUtils.getDayTimeSelected(mOAPreselectedMenu));
             }
         });
     }
@@ -412,12 +378,10 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
             runOnUiThread(new Runnable() {
                               @Override
                               public void run() {
-                                  if (bIsMenuOD) {
-                                      getRadioBtnOD().setChecked(true);
-                                      getRadioBtnOA().setChecked(false);
-                                  } else {
-                                      getRadioBtnOD().setChecked(false);
-                                      getRadioBtnOA().setChecked(true);
+                                  bIsAsapChecked = bIsMenuOD ? true : false;
+                                  updateWidgetSelection();
+
+                                  if (!bIsMenuOD) {
                                       for (int a = 0; a < MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.size(); a++) {
                                           if (MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(a).menu_id.equals(mMenu.menu_id)) {
                                               getSpinnerDate().setSelection(a, false);
@@ -679,11 +643,11 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                     setDateTime(true, true);
                 } else {
                     if (bIsMenuOD) {
-                        if (getRadioBtnOA().isChecked()) {
+                        if (!bIsAsapChecked) {
                             bChangeMenu = true;
                         }
                     } else {
-                        if (getRadioBtnOD().isChecked()) {
+                        if (bIsAsapChecked) {
                             bChangeMenu = true;
                         } else {
                             if (!mMenu.menu_id.equals(mOAPreselectedMenu.menu_id)) {
@@ -726,6 +690,18 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
             case R.id.container_cancel_widget:
                 setDateTime(true, true);
                 restartWidget();
+                break;
+            case R.id.checkbox_od:
+                if (!bIsAsapChecked) {
+                    bIsAsapChecked = true;
+                    updateWidgetSelection();
+                }
+                break;
+            case R.id.checkbox_oa:
+                if (bIsAsapChecked) {
+                    bIsAsapChecked = false;
+                    updateWidgetSelection();
+                }
                 break;
             default:
                 DebugUtils.logError(TAG, String.valueOf(v.getId()));
@@ -836,7 +812,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
     private void forceChangeMenu() {
         DebugUtils.logDebug(TAG, "The menu has to be Changed");
-        bIsMenuOD = getRadioBtnOD().isChecked();
+        bIsMenuOD = bIsAsapChecked ? true : false;
 
         runOnUiThread(new Runnable() {
             @Override
@@ -950,9 +926,8 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            getBtnContinue().setText(sContinueBtn + " - TIME REMAINING " + String.format("%d:%d",
-                                    TimeUnit.MILLISECONDS.toMinutes(lMilliSecondsRemaining),
-                                    TimeUnit.MILLISECONDS.toSeconds(lMilliSecondsRemaining) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(lMilliSecondsRemaining))));
+                            getBtnContinue().setText(getString(R.string.build_bento_btn_time_oa, sContinueBtn, IosCopyDao.get("oa-countdown-label"),
+                                    AndroidUtil.getMinFromMillis(lMilliSecondsRemaining), AndroidUtil.getSecondsFromMillis(lMilliSecondsRemaining)));
                         }
 
                     });
@@ -960,13 +935,37 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
                 @Override
                 public void onFinish() {
+                    Intent intent = new Intent(BuildBentoActivity.this, DeliveryLocationActivity.class);
+                    intent.putExtra(ConstantUtils.TAG_OPEN_SCREEN, ConstantUtils.optOpenScreen.BUILD_BENTO);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     finish();
-                    BentoNowUtils.openMainActivity(BuildBentoActivity.this);
+                    startActivity(intent);
                 }
             };
 
             mCountDown.start();
         }
+    }
+
+    private void updateWidgetSelection() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (bIsAsapChecked) {
+                    getCheckBoxOD().setBackgroundDrawable(getResources().getDrawable(R.drawable.bento_btn_check_on_holo_light));
+                    getCheckBoxOA().setBackgroundDrawable(getResources().getDrawable(R.drawable.bento_btn_check_off_holo_light));
+                    getTxtOdTitle().setVisibility(View.VISIBLE);
+                    getTxtOdDescription().setVisibility(View.VISIBLE);
+                    getContainerSpinnerDayTimeOa().setVisibility(View.GONE);
+                } else {
+                    getCheckBoxOD().setBackgroundDrawable(getResources().getDrawable(R.drawable.bento_btn_check_off_holo_light));
+                    getCheckBoxOA().setBackgroundDrawable(getResources().getDrawable(R.drawable.bento_btn_check_on_holo_light));
+                    getTxtOdTitle().setVisibility(View.GONE);
+                    getTxtOdDescription().setVisibility(View.GONE);
+                    getContainerSpinnerDayTimeOa().setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 
     @Override
@@ -1073,9 +1072,9 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         return txtOdDescription;
     }
 
-    private BackendButton getBtnContinue() {
+    private BackendAutoFitTextView getBtnContinue() {
         if (btnContinue == null)
-            btnContinue = (BackendButton) findViewById(R.id.btn_continue);
+            btnContinue = (BackendAutoFitTextView) findViewById(R.id.btn_continue);
         return btnContinue;
     }
 
@@ -1322,12 +1321,6 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         return txtOdTitle;
     }
 
-    private TextView getTxtOaTitle() {
-        if (txtOaTitle == null)
-            txtOaTitle = (TextView) findViewById(R.id.txt_oa_title);
-        return txtOaTitle;
-    }
-
     private RelativeLayout getContainerMainTitle() {
         if (containerMainTitle == null)
             containerMainTitle = (RelativeLayout) findViewById(R.id.container_main_title);
@@ -1400,12 +1393,6 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         return layoutDateTime;
     }
 
-    private FrameLayout getLayoutWidgetSeparator() {
-        if (layoutWidgetSeparator == null)
-            layoutWidgetSeparator = (FrameLayout) findViewById(R.id.layout_widget_separator);
-        return layoutWidgetSeparator;
-    }
-
     private FrameLayout getContainerCancelWidget() {
         if (containerCancelWidget == null)
             containerCancelWidget = (FrameLayout) findViewById(R.id.container_cancel_widget);
@@ -1422,6 +1409,12 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         if (containerDateTimeSelection == null)
             containerDateTimeSelection = (LinearLayout) findViewById(R.id.container_date_time_selection);
         return containerDateTimeSelection;
+    }
+
+    private LinearLayout getContainerSpinnerDayTimeOa() {
+        if (containerSpinnerDayTimeOa == null)
+            containerSpinnerDayTimeOa = (LinearLayout) findViewById(R.id.container_spinner_day_time_oa);
+        return containerSpinnerDayTimeOa;
     }
 
     private LinearLayout getWrapperOd() {
@@ -1448,16 +1441,16 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         return spinnerTime;
     }
 
-    private RadioButton getRadioBtnOD() {
-        if (radioBtnOD == null)
-            radioBtnOD = (RadioButton) findViewById(R.id.radio_od);
-        return radioBtnOD;
+    private ImageView getCheckBoxOD() {
+        if (checkBoxOD == null)
+            checkBoxOD = (ImageView) findViewById(R.id.checkbox_od);
+        return checkBoxOD;
     }
 
-    private RadioButton getRadioBtnOA() {
-        if (radioBtnOA == null)
-            radioBtnOA = (RadioButton) findViewById(R.id.radio_oa);
-        return radioBtnOA;
+    private ImageView getCheckBoxOA() {
+        if (checkBoxOA == null)
+            checkBoxOA = (ImageView) findViewById(R.id.checkbox_oa);
+        return checkBoxOA;
     }
 
     private SpinnerOATimeListAdapter getSpinnerTimeAdapter() {

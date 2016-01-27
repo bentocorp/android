@@ -15,6 +15,7 @@
         <item name="android:windowDisablePreview">true</item>
         <item name="android:dropDownSpinnerStyle">@style/SpinnerBento</item>
         <item name="android:spinnerDropDownItemStyle">@style/SpinnerDropDownItemBento</item>
+        <item name="android:checkboxStyle">@style/CheckBoxbento</item>
     </style>
 
     <style name="fullscreen" parent="AppTheme">
@@ -291,5 +292,9 @@
 
     <style name="SpinnerDropDownItemBento" parent="android:Widget.DropDownItem.Spinner">
         <item name="android:checkMark">@drawable/bento_btn_radio_holo_light</item>
+    </style>
+
+    <style name="CheckBoxbento" parent="android:Widget.CompoundButton.CheckBox">
+        <item name="android:button">@drawable/bento_btn_check_holo_light</item>
     </style>
 </resources>

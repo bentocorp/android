@@ -952,7 +952,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true">
 
-        <com.bentonow.bentonow.ui.BackendButton
+        <com.bentonow.bentonow.ui.BackendAutoFitTextView
             android:id="@+id/btn_continue"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -970,8 +970,7 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/ActionBarContainer"
         android:background="@color/black_70"
-        android:orientation="horizontal"
-        android:visibility="gone">
+        android:orientation="horizontal">
 
 
         <LinearLayout
@@ -992,22 +991,6 @@
                 android:layout_marginBottom="6dp"
                 android:orientation="horizontal"
                 android:weightSum="100">
-
-                <FrameLayout
-                    android:layout_width="0dp"
-                    android:layout_height="30dp"
-                    android:layout_weight="10">
-
-                    <RadioButton
-                        android:id="@+id/radio_od"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_gravity="center|left"
-                        android:background="@drawable/bento_btn_radio_holo_light"
-                        android:button="@android:color/transparent"
-                        android:checked="true" />
-
-                </FrameLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -1045,17 +1028,22 @@
 
                 </LinearLayout>
 
+                <FrameLayout
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight="10">
+
+                    <ImageView
+                        android:id="@+id/checkbox_od"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center|right"
+                        android:background="@drawable/bento_btn_check_on_holo_light"
+                        android:checked="true" />
+
+                </FrameLayout>
 
             </LinearLayout>
-
-            <FrameLayout
-                android:id="@+id/layout_widget_separator"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginBottom="5dp"
-                android:layout_marginLeft="60dp"
-                android:layout_marginRight="60dp"
-                android:background="@color/green_promo" />
 
             <LinearLayout
                 android:id="@+id/wrapper_oa"
@@ -1065,25 +1053,11 @@
                 android:orientation="horizontal"
                 android:weightSum="100">
 
-                <FrameLayout
-                    android:layout_width="0dp"
-                    android:layout_height="30dp"
-                    android:layout_weight="10">
-
-                    <RadioButton
-                        android:id="@+id/radio_oa"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_gravity="center|left"
-                        android:background="@drawable/bento_btn_radio_holo_light"
-                        android:button="@android:color/transparent" />
-
-                </FrameLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="85"
+                    android:layout_weight="90"
                     android:orientation="vertical">
 
                     <com.bentonow.bentonow.ui.AutoFitTxtView
@@ -1092,21 +1066,8 @@
                         android:layout_height="30dp"
                         android:text="Choose your time" />
 
-                    <TextView
-                        android:id="@+id/txt_oa_title"
-                        style="@style/TextViewMenuDateTitle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginBottom="3dp"
-                        android:layout_marginTop="3dp"
-                        android:layout_weight="80"
-                        android:text="Today, Lunch" />
-
                     <LinearLayout
-                        android:id="@+id/linearLayout3"
+                        android:id="@+id/container_spinner_day_time_oa"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_above="@+id/wrapper_valid_date"
@@ -1124,14 +1085,6 @@
                             android:orientation="vertical"
                             android:paddingRight="10dp">
 
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="sans-serif-light"
-                                android:text="Day"
-                                android:textColor="@color/black"
-                                android:textSize="15sp" />
-
                             <Spinner
                                 android:id="@+id/spinner_date"
                                 android:layout_width="match_parent"
@@ -1146,14 +1099,6 @@
                             android:orientation="vertical"
                             android:paddingLeft="10dp">
 
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="sans-serif-light"
-                                android:text="Time"
-                                android:textColor="@color/black"
-                                android:textSize="15sp" />
-
                             <Spinner
                                 android:id="@+id/spinner_time"
                                 android:layout_width="match_parent"
@@ -1163,6 +1108,22 @@
                     </LinearLayout>
 
                 </LinearLayout>
+
+
+                <FrameLayout
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight="10">
+
+                    <ImageView
+                        android:id="@+id/checkbox_oa"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center|right"
+                        android:background="@drawable/bento_btn_check_on_holo_light"
+                        android:checked="true" />
+
+                </FrameLayout>
             </LinearLayout>
 
             <LinearLayout
