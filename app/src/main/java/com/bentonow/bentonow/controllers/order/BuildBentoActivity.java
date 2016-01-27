@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Handler;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -150,9 +149,9 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     private Menu mOAPreselectedMenu;
     private Order mOrder;
     private ArrayList<String> aMenusId = new ArrayList<>();
-    private Handler mHandler = new Handler();
     private CountDownTimer mCountDown;
 
+    private String sContinueBtn;
     private long lMilliSecondsRemaining;
     private boolean bSawAddOns = false;
     private boolean bHasAddOns = false;
@@ -181,9 +180,10 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         getSpinnerDate().setAdapter(getSpinnerDayAdapter());
         getSpinnerTime().setAdapter(getSpinnerTimeAdapter());
 
+        sContinueBtn = IosCopyDao.get("build-title");
+
         updateWidget();
 
-        DebugUtils.logDebug(TAG, "Create: ");
     }
 
     @Override
@@ -248,6 +248,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         if (mBentoDao.isBentoComplete(mOrder.OrderItems.get(orderIndex)) && !StockDao.isSold()) {
             getBtnContinue().setBackgroundColor(getResources().getColor(R.color.btn_green));
             getBtnContinue().setText(IosCopyDao.get("build-button-2"));
+            sContinueBtn = IosCopyDao.get("build-button-2");
             getBtnAddAnotherBento().setTextColor(getResources().getColor(R.color.btn_green));
             getBtnAddAnotherBento().setOnClickListener(this);
             getBtnAddOn().setTextColor(getResources().getColor(R.color.btn_green));
@@ -255,6 +256,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         } else {
             getBtnContinue().setBackgroundColor(getResources().getColor(R.color.gray));
             getBtnContinue().setText(IosCopyDao.get("build-button-1"));
+            sContinueBtn = IosCopyDao.get("build-title");
             getBtnAddAnotherBento().setTextColor(getResources().getColor(R.color.btn_green_trans));
             getBtnAddAnotherBento().setOnClickListener(null);
             getBtnAddOn().setTextColor(getResources().getColor(R.color.btn_green_trans));
@@ -943,16 +945,17 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
             mCountDown = new CountDownTimer(lMilliSeconds, 1000) {
                 @Override
                 public void onTick(long l) {
+                    lMilliSecondsRemaining = lMilliSecondsRemaining - 1000;
+
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            getBtnContinue().setText("Seconds Remaining: " + String.format("%d min, %d sec",
+                            getBtnContinue().setText(sContinueBtn + " - TIME REMAINING " + String.format("%d:%d",
                                     TimeUnit.MILLISECONDS.toMinutes(lMilliSecondsRemaining),
                                     TimeUnit.MILLISECONDS.toSeconds(lMilliSecondsRemaining) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(lMilliSecondsRemaining))));
                         }
 
                     });
-                    lMilliSecondsRemaining = lMilliSecondsRemaining - 1000;
                 }
 
                 @Override

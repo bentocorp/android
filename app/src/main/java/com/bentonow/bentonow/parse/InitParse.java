@@ -30,7 +30,7 @@ import java.util.List;
  */
 public class InitParse {
     private static final String TAG = "InitParse";
-    private static final String timeForce = "09:50:00";
+    private static final String timeForce = "12:18:00";
 
     private static long init, now;
 
