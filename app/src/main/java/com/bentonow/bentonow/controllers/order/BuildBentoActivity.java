@@ -77,6 +77,8 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     private AutoFitTxtView btnAddOn;
     private AutoFitTxtView txtDateTimeToolbar;
     private AutoFitTxtView txtOdDescription;
+    private AutoFitTxtView txtOaHeader;
+    private AutoFitTxtView txtOdHeader;
     private ImageView actionbarLeftBtn;
     private ImageView actionbarRightBtn;
 
@@ -237,6 +239,8 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         getTxtEta().setVisibility(bIsMenuOD ? View.VISIBLE : View.GONE);
         getImgDividerStatus().setVisibility(bIsMenuOD ? View.VISIBLE : View.GONE);
         getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), BentoNowUtils.getDefaultPriceBento(DishDao.getLowestMainPrice(mMenu))));
+        getTxtOdHeader().setTextColor(getResources().getColor(bIsMenuOD ? R.color.primary : R.color.black));
+        getTxtOaHeader().setTextColor(getResources().getColor(bIsMenuOD ? R.color.black : R.color.primary));
 
         if (!bIsMenuOD && bIsMenuAlreadySelected && mMenu.menu_id.equals(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(0).menu_id))
             setOAHashTimer(BentoNowUtils.showOATimer(mMenu));
@@ -1070,6 +1074,18 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         if (txtOdDescription == null)
             txtOdDescription = (AutoFitTxtView) findViewById(R.id.txt_date_time_description);
         return txtOdDescription;
+    }
+
+    private AutoFitTxtView getTxtOaHeader() {
+        if (txtOaHeader == null)
+            txtOaHeader = (AutoFitTxtView) findViewById(R.id.txt_oa_header);
+        return txtOaHeader;
+    }
+
+    private AutoFitTxtView getTxtOdHeader() {
+        if (txtOdHeader == null)
+            txtOdHeader = (AutoFitTxtView) findViewById(R.id.txt_od_header);
+        return txtOdHeader;
     }
 
     private BackendAutoFitTextView getBtnContinue() {
