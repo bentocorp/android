@@ -4,6 +4,7 @@ package com.bentonow.bentonow.controllers.order;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.View;
 import android.widget.ExpandableListView;
@@ -12,6 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.ConstantUtils;
@@ -24,8 +26,6 @@ import com.bentonow.bentonow.controllers.adapter.ExpandableListOrderAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.dialog.CouponDialog;
 import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
-import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
-import com.bentonow.bentonow.controllers.payment.EnterCreditCardActivity;
 import com.bentonow.bentonow.controllers.session.SignInActivity;
 import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.dao.MenuDao;
@@ -86,10 +86,12 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
     private Menu mMenu;
     private List<OrderItem> aOrder = new ArrayList<>();
     private List<DishModel> aAddOn = new ArrayList<>();
+    private CountDownTimer mCountDown;
 
     private ExpandableListOrderAdapter mExpandableAdapter;
-    private String action = "";
 
+    private String action = "";
+    private long lMilliSecondsRemaining;
     private boolean bIsMenuOD = false;
 
 
@@ -112,6 +114,8 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
         container_discount = findViewById(R.id.container_discount);
 
         getExpandableListOrder().setAdapter(getExpandableListAdapter());
+
+        mMenu = getIntent().getParcelableExtra(Menu.TAG);
 
         initActionbar();
     }
@@ -151,8 +155,6 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
 
     @Override
     protected void onResume() {
-        mMenu = MenuDao.get();
-
         mCurrentUser = userDao.getCurrentUser();
 
         getCurrentOrder();
@@ -162,6 +164,9 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
             emptyOrders();
         } else
             updateBentoUI(false);
+
+        if (!SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_ORDER_AHEAD_MENU))
+            setOAHashTimer(BentoNowUtils.showOATimer(mMenu));
 
         super.onResume();
     }
@@ -300,7 +305,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
                         break;
                     case "credit_card":
                         WidgetsUtils.createShortToast(R.string.error_no_credit_card);
-                        startActivity(new Intent(this, EnterCreditCardActivity.class));
+                        onChangeCreditCardPressed(null);
                         break;
                     case "sign_in":
                         WidgetsUtils.createShortToast(R.string.error_no_user_log_in);
@@ -334,14 +339,12 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
 
     public void onChangeAddressPressed(View v) {
         MixpanelUtils.track("Tapped On Change - Address");
-        Intent intent = new Intent(this, DeliveryLocationActivity.class);
-        intent.putExtra(ConstantUtils.TAG_OPEN_SCREEN, ConstantUtils.optOpenScreen.SUMMARY);
-        startActivity(intent);
+        BentoNowUtils.openDeliveryLocationScreen(this, ConstantUtils.optOpenScreen.SUMMARY);
     }
 
     public void onChangeCreditCardPressed(View v) {
         MixpanelUtils.track("Tapped On Change - Payment");
-        startActivity(new Intent(this, EnterCreditCardActivity.class));
+        BentoNowUtils.openCreditCardActivity(CompleteOrderActivity.this, ConstantUtils.optOpenScreen.NORMAL);
     }
 
     public void onMinusTipPressed(View v) {
@@ -626,6 +629,42 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
         overridePendingTransition(R.anim.bottom_slide_in, R.anim.none);
     }
 
+    private void setOAHashTimer(final long lMilliSeconds) {
+        if (lMilliSeconds == 0) {
+            if (mCountDown != null) {
+                mCountDown.cancel();
+                mCountDown = null;
+            }
+        } else {
+            if (mCountDown != null)
+                mCountDown.cancel();
+            lMilliSecondsRemaining = lMilliSeconds;
+
+            mCountDown = new CountDownTimer(lMilliSeconds, 1000) {
+                @Override
+                public void onTick(long l) {
+                    lMilliSecondsRemaining = lMilliSecondsRemaining - 1000;
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getBtnOnLetsEatPressed().setText(getString(R.string.build_bento_btn_time_oa, IosCopyDao.get("complete-button"), IosCopyDao.get("oa-countdown-label"),
+                                    AndroidUtil.getMinFromMillis(lMilliSecondsRemaining), AndroidUtil.getSecondsFromMillis(lMilliSecondsRemaining)));
+                        }
+
+                    });
+                }
+
+                @Override
+                public void onFinish() {
+                    finish();
+                    BentoNowUtils.openDeliveryLocationScreen(CompleteOrderActivity.this, ConstantUtils.optOpenScreen.BUILD_BENTO);
+                }
+            };
+
+            mCountDown.start();
+        }
+    }
 
     @Override
     public void onAddAnotherBento() {
@@ -718,11 +757,8 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
     public void onBuild() {
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, MenuDao.gateKeeper.getAppState());
 
-        if (!SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.MEAL_NAME).isEmpty() &&
-                (!SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.MEAL_NAME).equals(mMenu.meal_name) ||
-                        !SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.POD_MODE).equals(SettingsDao.getCurrent().pod_mode))) {
-            DebugUtils.logDebug(TAG, "Should change from MealName " + SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.MEAL_NAME) + " to " + mMenu.meal_name +
-                    " Should change from Pod Mode " + SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.POD_MODE) + " to " + SettingsDao.getCurrent().pod_mode);
+        if (!SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.POD_MODE).equals(SettingsDao.getCurrent().pod_mode)) {
+            DebugUtils.logDebug(TAG, "Should change from Pod Mode " + SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.POD_MODE) + " to " + SettingsDao.getCurrent().pod_mode);
 
             WidgetsUtils.createLongToast(R.string.error_restarting_app);
             mOrderDao.cleanUp();
@@ -766,6 +802,11 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
             mBentoService.setServiceListener(null);
             unbindService(mConnection);
             mBound = false;
+        }
+
+        if (mCountDown != null) {
+            mCountDown.cancel();
+            mCountDown = null;
         }
     }
 

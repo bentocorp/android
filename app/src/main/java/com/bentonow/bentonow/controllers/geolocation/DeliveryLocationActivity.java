@@ -393,7 +393,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                     break;
                 case COMPLETE_ORDER:
                     if (BentoNowUtils.isValidCompleteOrder(DeliveryLocationActivity.this))
-                        BentoNowUtils.openCompleteOrderActivity(DeliveryLocationActivity.this);
+                        BentoNowUtils.openCompleteOrderActivity(DeliveryLocationActivity.this, MenuDao.getCurrentMenu());
                     break;
                 case BUILD_BENTO:
                     BentoNowUtils.openBuildBentoActivity(DeliveryLocationActivity.this);

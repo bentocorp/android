@@ -302,11 +302,11 @@ public class InitParse {
 
                     if (jsonHash.has("2")) {
                         MenuDao.gateKeeper.getMealTypes().setTwo(gson.fromJson(jsonHash.getString("2"), Hash.class));
-                        MenuDao.gateKeeper.getMealTypes().getTwo().setOaCutoff(timeForce);
+                        //  MenuDao.gateKeeper.getMealTypes().getTwo().setOaCutoff(timeForce);
                     }
                     if (jsonHash.has("3")) {
                         MenuDao.gateKeeper.getMealTypes().setThree(gson.fromJson(jsonHash.getString("3"), Hash.class));
-                        MenuDao.gateKeeper.getMealTypes().getTwo().setOaCutoff(timeForce);
+                        //  MenuDao.gateKeeper.getMealTypes().getTwo().setOaCutoff(timeForce);
                     }
                 }
 
@@ -315,9 +315,28 @@ public class InitParse {
                     }.getType()));
             }
 
-            if (jsonGateKeeper.has("appOnDemandWidget"))
+            if (jsonGateKeeper.has("appOnDemandWidget")) {
+                JSONObject jsonOnDemandWidget = new JSONObject(jsonGateKeeper.getString("appOnDemandWidget"));
                 MenuDao.gateKeeper.setAppOnDemandWidget(gson.fromJson(jsonGateKeeper.getString("appOnDemandWidget"), AppOnDemandWidgetModel.class));
+                MenuDao.gateKeeper.getAppOnDemandWidget().setMenu(null);
 
+                if (jsonOnDemandWidget.has("menuPreview")) {
+                    try {
+                        JSONObject jsonMenuPreview = new JSONObject(jsonOnDemandWidget.getString("menuPreview"));
+                        if (jsonMenuPreview.has("Menu")) {
+                            Menu mMenuPreview = gson.fromJson(jsonMenuPreview.getString("Menu"), Menu.class);
+                            if (jsonMenuPreview.has("MenuItems")) {
+                                mMenuPreview.dishModels = gson.fromJson(jsonMenuPreview.getString("MenuItems"), new TypeToken<List<DishModel>>() {
+                                }.getType());
+                                MenuDao.gateKeeper.getAppOnDemandWidget().setMenu(mMenuPreview);
+                            }
+
+                        }
+                    } catch (Exception ex) {
+                        DebugUtils.logDebug(TAG, ex);
+                    }
+                }
+            }
 
             if (jsonGateKeeper.has("AvailableServices")) {
                 JSONObject jsonServices = new JSONObject(jsonGateKeeper.getString("AvailableServices"));
@@ -331,7 +350,7 @@ public class InitParse {
 
                     mOrderAhead.kitchen = jsonOrderAhead.getString("kitchen");
                     mOrderAhead.zone = jsonOrderAhead.getString("zone");
-
+                    mOrderAhead.title = jsonOrderAhead.getString("title");
 
                     if (jsonOrderAhead.has("availableMenus")) {
                         JSONObject jsonAvailableMenus = new JSONObject(jsonOrderAhead.getString("availableMenus"));

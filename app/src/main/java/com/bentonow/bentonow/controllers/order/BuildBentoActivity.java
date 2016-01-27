@@ -210,7 +210,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
             mOrder.MealName = mMenu.meal_name;
             mOrder.MenuType = mMenu.menu_type;
             mOrder.MenuId = mMenu.menu_id;
-            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MEAL_NAME, mMenu.meal_name);
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_ORDER_AHEAD_MENU, bIsMenuOD);
             SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.POD_MODE, SettingsDao.getCurrent().pod_mode);
 
             mOrderDao.updateOrder(mOrder);
@@ -282,7 +282,6 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     }
 
     private void updateWidget() {
-        aMenusId = MenuDao.getCurrentMenuIds();
         getSpinnerDayAdapter().clear();
         getSpinnerTimeAdapter().clear();
 
@@ -297,12 +296,13 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
             getWrapperOa().setVisibility(View.VISIBLE);
             getSpinnerDayAdapter().addAll(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus);
             getSpinnerDayAdapter().notifyDataSetChanged();
+            getTxtOaHeader().setText(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.title);
         } else
             getWrapperOa().setVisibility(View.GONE);
 
-        if (MenuDao.gateKeeper.isOnDemand() && MenuDao.gateKeeper.getAppOnDemandWidget() != null && MenuDao.gateKeeper.getAppOnDemandWidget().isSelected() && MenuDao.get() != null) {
+        if (MenuDao.gateKeeper.isOnDemand() && MenuDao.gateKeeper.getAppOnDemandWidget() != null && MenuDao.gateKeeper.getAppOnDemandWidget().isSelected() && MenuDao.gateKeeper.getAppOnDemandWidget().getMenu() != null && MenuDao.gateKeeper.getAppOnDemandWidget().getState().equals("open")) {
             bIsMenuOD = true;
-            mMenu = MenuDao.get();
+            mMenu = MenuDao.cloneMenu(MenuDao.gateKeeper.getAppOnDemandWidget().getMenu());
             createOrder();
             getTxtDateTimeToolbar().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getTitle());
         } else {
@@ -314,6 +314,8 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
             updateTimeOrder(mMenu.listTimeModel.get(0));
             getTxtDateTimeToolbar().setText(BentoNowUtils.getDayTimeSelected(mOrder));
         }
+
+        aMenusId = MenuDao.getCurrentMenuIds();
 
         bIsAsapChecked = bIsMenuOD ? true : false;
         updateWidgetSelection();
@@ -783,6 +785,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     public void onContinueOrderPressed() {
         String sSoldOutItems = mOrderDao.calculateSoldOutItems(mOrder, bIsMenuOD);
         mOrderDao.updateOrder(mOrder);
+        MenuDao.setCurrentMenu(mMenu);
 
         if (!mBentoDao.isBentoComplete(mOrder.OrderItems.get(orderIndex))) {
 
@@ -810,7 +813,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
             openAddOnsActivity();
         } else if (BentoNowUtils.isValidCompleteOrder(BuildBentoActivity.this)) {
             track();
-            BentoNowUtils.openCompleteOrderActivity(BuildBentoActivity.this);
+            BentoNowUtils.openCompleteOrderActivity(BuildBentoActivity.this, mMenu);
         }
     }
 
@@ -821,7 +824,8 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mMenu = bIsMenuOD ? MenuDao.get() : MenuDao.cloneMenu(mOAPreselectedMenu);
+                mMenu = bIsMenuOD ? MenuDao.cloneMenu(MenuDao.gateKeeper.getAppOnDemandWidget().getMenu()) : MenuDao.cloneMenu(mOAPreselectedMenu);
+                MenuDao.setCurrentMenu(mMenu);
 
                 mOrderDao.cleanUp();
                 createOrder();

@@ -20,8 +20,8 @@ import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.dao.IosCopyDao;
+import com.bentonow.bentonow.dao.MenuDao;
 import com.bentonow.bentonow.dao.UserDao;
-import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.ui.BackendButton;
 import com.crashlytics.android.Crashlytics;
@@ -222,7 +222,7 @@ public class EnterPhoneNumberActivity extends BaseFragmentActivity implements Vi
                     switch (optOpenScreen) {
                         case COMPLETE_ORDER:
                             if (BentoNowUtils.isValidCompleteOrder(EnterPhoneNumberActivity.this))
-                                BentoNowUtils.openCompleteOrderActivity(EnterPhoneNumberActivity.this);
+                                BentoNowUtils.openCompleteOrderActivity(EnterPhoneNumberActivity.this, MenuDao.getCurrentMenu());
                             break;
                     }
 

@@ -102,15 +102,10 @@ public class BentoNowUtils {
     }
 
     public static void openBuildBentoActivity(FragmentActivity mContext) {
-        Menu mCurrentMenu = MenuDao.get();
         mContext.finish();
-
-        if (mCurrentMenu != null) {
-            Intent iBuildBento = new Intent(mContext, BuildBentoActivity.class);
-            iBuildBento.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            mContext.startActivity(iBuildBento);
-        } else
-            openErrorActivity(mContext);
+        Intent iBuildBento = new Intent(mContext, BuildBentoActivity.class);
+        iBuildBento.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        mContext.startActivity(iBuildBento);
     }
 
     public static void openErrorActivity(FragmentActivity mContext) {
@@ -141,9 +136,22 @@ public class BentoNowUtils {
         mContext.startActivity(intent);
     }
 
-    public static void openCompleteOrderActivity(Context mContext) {
+    public static void openCompleteOrderActivity(Context mContext, Menu mMenu) {
         Intent intent = new Intent(mContext, CompleteOrderActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(Menu.TAG, mMenu);
+        mContext.startActivity(intent);
+    }
+
+    public static void openCreditCardActivity(Context mContext, ConstantUtils.optOpenScreen optOpenScreen) {
+        Intent mIntentCredit = new Intent(mContext, EnterCreditCardActivity.class);
+        mIntentCredit.putExtra(ConstantUtils.TAG_OPEN_SCREEN, optOpenScreen);
+        mContext.startActivity(mIntentCredit);
+    }
+
+    public static void openDeliveryLocationScreen(Context mContext, ConstantUtils.optOpenScreen optOpenScreen) {
+        Intent intent = new Intent(mContext, DeliveryLocationActivity.class);
+        intent.putExtra(ConstantUtils.TAG_OPEN_SCREEN, optOpenScreen);
         mContext.startActivity(intent);
     }
 
@@ -302,6 +310,7 @@ public class BentoNowUtils {
         User mUser = userDao.getCurrentUser();
         LatLng mLocation = null;
         Address mAddress = null;
+
         try {
             mLocation = new Gson().fromJson(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.LOCATION), LatLng.class);
             mAddress = new Gson().fromJson(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.ADDRESS), Address.class);
@@ -310,28 +319,16 @@ public class BentoNowUtils {
         }
 
         if (mUser == null) {
-            // WidgetsUtils.createShortToast(R.string.error_no_user_log_in);
             Intent mIntentSignIn = new Intent(mContext, SignInActivity.class);
             mIntentSignIn.putExtra(ConstantUtils.TAG_OPEN_SCREEN, ConstantUtils.optOpenScreen.COMPLETE_ORDER);
             mContext.startActivity(mIntentSignIn);
 
             bIsValid = false;
-            // } else if (LocationUtils.mCurrentLocation == null || !Settings.isInServiceArea(LocationUtils.mCurrentLocation) || BentoApplication.address == null || BentoApplication.location == null) {
         } else if (mLocation == null || mAddress == null) {
-            // WidgetsUtils.createShortToast(mContext.getString(R.string.error_no_valid_delivery_address));
-
-            Intent intent = new Intent(mContext, DeliveryLocationActivity.class);
-            intent.putExtra(ConstantUtils.TAG_OPEN_SCREEN, ConstantUtils.optOpenScreen.COMPLETE_ORDER);
-            mContext.startActivity(intent);
-
+            openDeliveryLocationScreen(mContext, ConstantUtils.optOpenScreen.COMPLETE_ORDER);
             bIsValid = false;
         } else if (!userDao.isCreditCardValid(mUser)) {
-            //  WidgetsUtils.createShortToast(R.string.error_no_credit_card);
-
-            Intent mIntentCredit = new Intent(mContext, EnterCreditCardActivity.class);
-            mIntentCredit.putExtra(ConstantUtils.TAG_OPEN_SCREEN, ConstantUtils.optOpenScreen.COMPLETE_ORDER);
-            mContext.startActivity(mIntentCredit);
-
+            openCreditCardActivity(mContext, ConstantUtils.optOpenScreen.COMPLETE_ORDER);
             bIsValid = false;
         }
 
@@ -504,44 +501,47 @@ public class BentoNowUtils {
 
     public static long showOATimer(Menu mMenu) {
         long lSeconds = 0;
-        if (mMenu.menu_id.equals(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(0).menu_id)) {
-            if (MenuDao.gateKeeper.getMealTypes() != null) {
-                if (mMenu.meal_type.equals("2") || MenuDao.gateKeeper.getMealTypes().getTwo() != null) {
-                    Calendar mCutOf = getCalendarByTime(MenuDao.gateKeeper.getMealTypes().getTwo().getOaCutoff());
-                    Calendar mNow = Calendar.getInstance();
-                    DebugUtils.logDebug(TAG, "Hour Cut OFF: " + mCutOf.get(Calendar.HOUR_OF_DAY) + ":" + mCutOf.get(Calendar.MINUTE));
-                    DebugUtils.logDebug(TAG, "Hour Now: " + mNow.get(Calendar.HOUR_OF_DAY) + ":" + mNow.get(Calendar.MINUTE));
-                    if (mCutOf.after(mNow)) {
-                        lSeconds = (mCutOf.getTimeInMillis() - mNow.getTimeInMillis());
-                        try {
-                            long lSecCutOff = Long.parseLong(SettingsDao.getCurrent().oa_countdown_remaining_mins);
-                            lSecCutOff = lSecCutOff * 60 * 1000;
-                            DebugUtils.logDebug(TAG, "Milliseconds Dif: " + lSecCutOff);
-                            if (lSecCutOff < lSeconds)
-                                lSeconds = 0;
-                        } catch (Exception ex) {
-                            DebugUtils.logError(TAG, ex);
+        if (MenuDao.gateKeeper != null && MenuDao.gateKeeper.getAvailableServices() != null && MenuDao.gateKeeper.getAvailableServices().mOrderAhead != null
+                && !MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.isEmpty())
+            if (mMenu.menu_id.equals(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(0).menu_id)) {
+                if (MenuDao.gateKeeper.getMealTypes() != null) {
+                    if (mMenu.meal_type.equals("2") && MenuDao.gateKeeper.getMealTypes().getTwo() != null) {
+                        Calendar mCutOf = getCalendarByTime(MenuDao.gateKeeper.getMealTypes().getTwo().getOaCutoff());
+                        Calendar mNow = Calendar.getInstance();
+                        DebugUtils.logDebug(TAG, "Hour Cut OFF: " + mCutOf.get(Calendar.HOUR_OF_DAY) + ":" + mCutOf.get(Calendar.MINUTE));
+                        DebugUtils.logDebug(TAG, "Hour Now: " + mNow.get(Calendar.HOUR_OF_DAY) + ":" + mNow.get(Calendar.MINUTE));
+                        if (mCutOf.after(mNow)) {
+                            lSeconds = (mCutOf.getTimeInMillis() - mNow.getTimeInMillis());
+                            try {
+                                long lSecCutOff = Long.parseLong(SettingsDao.getCurrent().oa_countdown_remaining_mins);
+                                lSecCutOff = lSecCutOff * 60 * 1000;
+                                DebugUtils.logDebug(TAG, "Milliseconds Dif: " + lSecCutOff);
+                                if (lSecCutOff < lSeconds)
+                                    lSeconds = 0;
+                            } catch (Exception ex) {
+                                DebugUtils.logError(TAG, ex);
+                            }
                         }
-                    }
-                } else if (MenuDao.gateKeeper.getMealTypes().getThree() != null) {
-                    Calendar mCutOf = getCalendarByTime(MenuDao.gateKeeper.getMealTypes().getThree().getOaCutoff());
-                    Calendar mNow = Calendar.getInstance();
-                    DebugUtils.logDebug(TAG, "Hour Cut OFF: " + mCutOf.get(Calendar.HOUR_OF_DAY) + ":" + mCutOf.get(Calendar.MINUTE));
-                    DebugUtils.logDebug(TAG, "Hour Now: " + mNow.get(Calendar.HOUR_OF_DAY) + ":" + mNow.get(Calendar.MINUTE));
-                    if (mCutOf.after(mNow)) {
-                        lSeconds = (mCutOf.getTimeInMillis() - mNow.getTimeInMillis()) / 5;
-                        try {
-                            long lSecCutOff = Long.parseLong(SettingsDao.getCurrent().oa_countdown_remaining_mins);
-                            lSecCutOff = lSecCutOff * 1000;
-                            if (lSecCutOff > lSeconds)
-                                lSeconds = 0;
-                        } catch (Exception ex) {
-                            DebugUtils.logError(TAG, ex);
+                    } else if (mMenu.meal_type.equals("3") && MenuDao.gateKeeper.getMealTypes().getThree() != null) {
+                        Calendar mCutOf = getCalendarByTime(MenuDao.gateKeeper.getMealTypes().getThree().getOaCutoff());
+                        Calendar mNow = Calendar.getInstance();
+                        DebugUtils.logDebug(TAG, "Hour Cut OFF: " + mCutOf.get(Calendar.HOUR_OF_DAY) + ":" + mCutOf.get(Calendar.MINUTE));
+                        DebugUtils.logDebug(TAG, "Hour Now: " + mNow.get(Calendar.HOUR_OF_DAY) + ":" + mNow.get(Calendar.MINUTE));
+                        if (mCutOf.after(mNow)) {
+                            lSeconds = (mCutOf.getTimeInMillis() - mNow.getTimeInMillis());
+                            try {
+                                long lSecCutOff = Long.parseLong(SettingsDao.getCurrent().oa_countdown_remaining_mins);
+                                lSecCutOff = lSecCutOff * 60 * 1000;
+                                DebugUtils.logDebug(TAG, "Milliseconds Dif: " + lSecCutOff);
+                                if (lSecCutOff < lSeconds)
+                                    lSeconds = 0;
+                            } catch (Exception ex) {
+                                DebugUtils.logError(TAG, ex);
+                            }
                         }
                     }
                 }
             }
-        }
 
 
         DebugUtils.logDebug(TAG, "Seconds Remaining: " + lSeconds);

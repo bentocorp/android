@@ -6,21 +6,21 @@ package com.bentonow.bentonow.model.gatekeeper;
 public class Hash {
     public static final String TAG = "Hash";
 
-    private String pkMealType = "";
+    private String pk_MealType = "";
     private String name = "";
     private String order = "";
     private String active = "";
     private String startTime = "";
     private String endTime = "";
-    private String oaCutoff = "";
+    private String oa_cutoff = "";
     private String displayStartTime = "";
 
     public String getPkMealType() {
-        return pkMealType;
+        return pk_MealType;
     }
 
     public void setPkMealType(String pkMealType) {
-        this.pkMealType = pkMealType;
+        this.pk_MealType = pkMealType;
     }
 
     public String getName() {
@@ -64,11 +64,11 @@ public class Hash {
     }
 
     public String getOaCutoff() {
-        return oaCutoff;
+        return oa_cutoff;
     }
 
     public void setOaCutoff(String oaCutoff) {
-        this.oaCutoff = oaCutoff;
+        this.oa_cutoff = oaCutoff;
     }
 
     public String getDisplayStartTime() {

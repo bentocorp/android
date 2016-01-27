@@ -24,8 +24,8 @@ import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.dao.IosCopyDao;
+import com.bentonow.bentonow.dao.MenuDao;
 import com.bentonow.bentonow.dao.UserDao;
-import com.bentonow.bentonow.model.BackendText;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.web.request.UserRequest;
 import com.facebook.AccessToken;
@@ -191,7 +191,7 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
                     break;
                 case COMPLETE_ORDER:
                     if (BentoNowUtils.isValidCompleteOrder(SignInActivity.this))
-                        BentoNowUtils.openCompleteOrderActivity(SignInActivity.this);
+                        BentoNowUtils.openCompleteOrderActivity(SignInActivity.this, MenuDao.getCurrentMenu());
                     break;
             }
             finish();

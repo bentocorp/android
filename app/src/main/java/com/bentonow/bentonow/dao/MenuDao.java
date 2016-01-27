@@ -29,32 +29,15 @@ public class MenuDao {
     static public MealModel lunch = new MealModel();
     static public MealModel dinner = new MealModel();
     public static List<Menu> list = new ArrayList<>();
+    public static Menu getCurrentMenu;
 
 
-    static public Menu get() {
-        refreshData();
+    static public Menu getCurrentMenu() {
+        return getCurrentMenu;
+    }
 
-        if (list != null) {
-            if (BentoNowUtils.getCurrentTime() >= 0 && BentoNowUtils.getCurrentTime() < 163000) {
-                // Try to get the lunch menu
-                for (Menu menu : list) {
-                    if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()) && menu.meal_name.equals("lunch")) {
-                        return menu;
-                    }
-                }
-
-            } else if (163000 <= BentoNowUtils.getCurrentTime() && 240000 > BentoNowUtils.getCurrentTime()) {
-                // Try to get the dinner menu
-                for (Menu menu : list) {
-                    if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()) && menu.meal_name.equals("dinner")) {
-                        return menu;
-                    }
-                }
-            }
-
-        }
-
-        return null;
+    static public void setCurrentMenu(Menu mMenu) {
+        getCurrentMenu = mMenu;
     }
 
     static public Menu getNext() {
@@ -140,9 +123,8 @@ public class MenuDao {
     public static ArrayList<String> getCurrentMenuIds() {
         ArrayList<String> aNewMenus = new ArrayList<>();
 
-        Menu mMenu = get();
-        if (mMenu != null)
-            aNewMenus.add(mMenu.meal_name);
+        if (gateKeeper.getAppOnDemandWidget() != null && gateKeeper.getAppOnDemandWidget().getMenu() != null)
+            aNewMenus.add(gateKeeper.getAppOnDemandWidget().getMenu().meal_name);
 
         if (gateKeeper != null && gateKeeper.getAvailableServices() != null && gateKeeper.getAvailableServices().mOrderAhead != null)
             for (Menu mOAMenu : gateKeeper.getAvailableServices().mOrderAhead.availableMenus)

@@ -20,7 +20,7 @@ public class SharedPreferencesUtil {
     public static final String ADDRESS = "address"; //String
     public static final String UUID_BENTO = "UUID_BENTO"; //String
     public static final String POD_MODE = "POD_MODE"; //String
-    public static final String MEAL_NAME = "MEAL_NAME"; //String
+    public static final String IS_ORDER_AHEAD_MENU = "IS_ORDER_AHEAD_MENU"; //boolean
     public static final String IS_ORDER_SOLD_OUT = "IS_ORDER_SOLD_OUT"; //boolean
     public static final String IS_APP_IN_FRONT = "IS_THE_APP_IN_FRONT"; //boolean
     public static final String CURRENT_USER_ID = "CURRENT_USER_ID"; //long

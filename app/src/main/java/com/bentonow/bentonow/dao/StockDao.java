@@ -43,7 +43,7 @@ public class StockDao {
 
         int sold = 0;
         int qty = 0;
-        Menu menu = MenuDao.get();
+        Menu menu = MenuDao.getCurrentMenu();
 
         if (menu != null) {
             for (DishModel dishModel : menu.dishModels) {

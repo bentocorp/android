@@ -9,5 +9,6 @@ public class OrderAheadModel {
 
     public String kitchen = "";
     public String zone = "";
+    public String title = "";
     public ArrayList<Menu> availableMenus = new ArrayList<>();
 }

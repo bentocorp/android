@@ -1,5 +1,7 @@
 package com.bentonow.bentonow.model.gatekeeper;
 
+import com.bentonow.bentonow.model.Menu;
+
 /**
  * Created by kokusho on 1/18/16.
  */
@@ -10,7 +12,7 @@ public class AppOnDemandWidgetModel {
     private String title = "";
     private String text = "";
     private String state = "";
-    private String mealMode = "";
+    private Menu menuPreview;
 
     public boolean isSelected() {
         return selected;
@@ -44,11 +46,12 @@ public class AppOnDemandWidgetModel {
         this.state = state;
     }
 
-    public String getMealMode() {
-        return mealMode;
+
+    public Menu getMenu() {
+        return menuPreview;
     }
 
-    public void setMealMode(String mealMode) {
-        this.mealMode = mealMode;
+    public void setMenu(Menu menu) {
+        this.menuPreview = menu;
     }
 }

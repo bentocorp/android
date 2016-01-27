@@ -144,10 +144,8 @@ public class AddOnActivity extends BaseFragmentActivity implements View.OnClickL
                     updateUI();
                     WidgetsUtils.createShortToast(String.format(getString(R.string.error_sold_out_items), sSoldOutItems));
                 } else if (BentoNowUtils.isValidCompleteOrder(AddOnActivity.this)) {
-                    Intent intent = new Intent(AddOnActivity.this, CompleteOrderActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     finish();
-                    startActivity(intent);
+                    BentoNowUtils.openCompleteOrderActivity(AddOnActivity.this, mMenu);
                 } else {
                     finish();
                 }

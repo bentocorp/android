@@ -23,8 +23,10 @@ import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
 import com.bentonow.bentonow.dao.IosCopyDao;
+import com.bentonow.bentonow.dao.MenuDao;
 import com.bentonow.bentonow.dao.SettingsDao;
 import com.bentonow.bentonow.dao.UserDao;
+import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.ui.BackendButton;
 import com.stripe.android.Stripe;
@@ -57,6 +59,7 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
     private ConstantUtils.optOpenScreen optOpenScreen;
 
     private UserDao userDao = new UserDao();
+    private Menu mMenu;
     private User mCurrentUser;
     private String sNumber = "";
     private String sCvc = "";
@@ -69,6 +72,8 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_enter_credit_card);
+
+        mMenu = getIntent().getParcelableExtra(Menu.TAG);
 
         try {
             optOpenScreen = (ConstantUtils.optOpenScreen) getIntent().getExtras().getSerializable(ConstantUtils.TAG_OPEN_SCREEN);
@@ -444,7 +449,7 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
                             break;
                         case COMPLETE_ORDER:
                             if (BentoNowUtils.isValidCompleteOrder(EnterCreditCardActivity.this))
-                                BentoNowUtils.openCompleteOrderActivity(EnterCreditCardActivity.this);
+                                BentoNowUtils.openCompleteOrderActivity(EnterCreditCardActivity.this, MenuDao.getCurrentMenu());
                             break;
                     }
                     finish();
