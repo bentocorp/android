@@ -67,7 +67,7 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
     protected void onResume() {
         bIsOpen = true;
 
-        mCurrentMenu = MenuDao.getNext();
+        mCurrentMenu = MenuDao.getNextMenu();
 
         Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE);
@@ -162,7 +162,7 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
     }
 
     public void onNextDayMenuPressed(View view) {
-        if (MenuDao.getNext() == null)
+        if (MenuDao.getNextMenu() == null)
             return;
 
         Intent intent = new Intent(ErrorActivity.this, NextDayMenuActivity.class);

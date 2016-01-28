@@ -46,7 +46,6 @@ public class InitParse {
         String sMeals;
         JSONObject jsonInit;
 
-
         try {
             jsonInit = new JSONObject(sData);
         } catch (Exception ex) {
@@ -68,20 +67,22 @@ public class InitParse {
             DebugUtils.logError(TAG, "Ios Copy: " + e.toString());
         }
 
-        MenuDao.list.clear();
+        MenuDao.mListToday.clear();
 
         try {
             sMenuToday = jsonInit.getString("/menu/{date}");
-            parseMenu(sMenuToday);
-            DebugUtils.logDebug(TAG, "/menu/{date}: " + MenuDao.list.size());
+            parseMenu(sMenuToday, true);
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MENU_TODAY, sMenuToday);
+            DebugUtils.logDebug(TAG, "/menu/{date}: " + MenuDao.mListToday.size());
         } catch (Exception e) {
             DebugUtils.logError(TAG, "/menu/{date}" + e.getMessage());
         }
 
         try {
             sMenuNextDay = jsonInit.getString("/menu/next/{date}");
-            parseMenu(sMenuNextDay);
-            DebugUtils.logDebug(TAG, "/menu/next/{date}: " + MenuDao.list.size());
+            parseMenu(sMenuNextDay, false);
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MENU_NEXT, sMenuNextDay);
+            DebugUtils.logDebug(TAG, "/menu/next/{date}: " + MenuDao.mListToday.size());
         } catch (Exception e) {
             DebugUtils.logError(TAG, "/menu/next/{date}" + e.getMessage());
         }
@@ -217,8 +218,7 @@ public class InitParse {
             MenuDao.lunch = gson.fromJson(jsonMeal.getString("2"), MealModel.class);
             MenuDao.dinner = gson.fromJson(jsonMeal.getString("3"), MealModel.class);
 
-            if (SettingsDao.mSettings != null)
-                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MEALS, sMeals);
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MEALS, sMeals);
 
         } catch (Exception ex) {
             DebugUtils.logError(TAG, "parseMeals: " + ex.toString());
@@ -226,7 +226,7 @@ public class InitParse {
 
     }
 
-    public static void parseMenu(String data) {
+    public static void parseMenu(String data, boolean bIsToday) {
         if (data == null || data.equals("null") || data.isEmpty())
             return;
 
@@ -242,7 +242,10 @@ public class InitParse {
                     if (mLunch.has("MenuItems")) {
                         row.dishModels = gson.fromJson(mLunch.getString("MenuItems"), new TypeToken<List<DishModel>>() {
                         }.getType());
-                        MenuDao.list.add(row);
+                        if (bIsToday)
+                            MenuDao.mListToday.add(row);
+                        else
+                            MenuDao.mListNextDay.add(row);
                     }
 
                 }
@@ -255,7 +258,10 @@ public class InitParse {
                     if (mLunch.has("MenuItems")) {
                         row.dishModels = gson.fromJson(mLunch.getString("MenuItems"), new TypeToken<List<DishModel>>() {
                         }.getType());
-                        MenuDao.list.add(row);
+                        if (bIsToday)
+                            MenuDao.mListToday.add(row);
+                        else
+                            MenuDao.mListNextDay.add(row);
                     }
 
                 }

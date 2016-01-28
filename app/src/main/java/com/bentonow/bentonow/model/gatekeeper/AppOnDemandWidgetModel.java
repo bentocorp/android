@@ -12,6 +12,7 @@ public class AppOnDemandWidgetModel {
     private String title = "";
     private String text = "";
     private String state = "";
+    private String mealMode = "";
     private Menu menuPreview;
 
     public boolean isSelected() {
@@ -53,5 +54,13 @@ public class AppOnDemandWidgetModel {
 
     public void setMenu(Menu menu) {
         this.menuPreview = menu;
+    }
+
+    public String getMealMode() {
+        return mealMode;
+    }
+
+    public void setMealMode(String mealMode) {
+        this.mealMode = mealMode;
     }
 }

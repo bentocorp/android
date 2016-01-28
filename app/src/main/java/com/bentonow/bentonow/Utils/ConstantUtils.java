@@ -19,6 +19,6 @@ public class ConstantUtils {
 
     public enum optOpenAddOn {BUILDER, SUMMARY}
 
-    public enum optMapCamera {ANIMATE, MOVE}
+    public enum optMenuSelected {ON_DEMAND, ORDER_AHEAD, MENU_PREVIEW}
 
 }

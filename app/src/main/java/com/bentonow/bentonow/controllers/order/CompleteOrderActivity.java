@@ -165,7 +165,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
         } else
             updateBentoUI(false);
 
-        if (!SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_ORDER_AHEAD_MENU))
+        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_ORDER_AHEAD_MENU))
             setOAHashTimer(BentoNowUtils.showOATimer(mMenu));
 
         super.onResume();

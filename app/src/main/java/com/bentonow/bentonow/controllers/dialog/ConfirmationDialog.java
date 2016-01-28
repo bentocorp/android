@@ -32,6 +32,8 @@ public class ConfirmationDialog extends android.app.Dialog {
     String buttonCancelText;
     String buttonAcceptText;
 
+    boolean bAllowDismiss;
+
     View.OnClickListener onAcceptButtonClickListener;
     View.OnClickListener onCancelButtonClickListener;
 
@@ -40,6 +42,15 @@ public class ConfirmationDialog extends android.app.Dialog {
         this.context = context;// init Context
         this.message = message;
         this.title = title;
+        bAllowDismiss = true;
+    }
+
+    public ConfirmationDialog(Context context, String title, String message, boolean bAllowDismiss) {
+        super(context, android.R.style.Theme_Translucent);
+        this.context = context;// init Context
+        this.message = message;
+        this.title = title;
+        this.bAllowDismiss = bAllowDismiss;
     }
 
     public void addCancelButton(String buttonCancelText, View.OnClickListener onCancelButtonClickListener) {
@@ -62,19 +73,20 @@ public class ConfirmationDialog extends android.app.Dialog {
         view = (RelativeLayout) findViewById(R.id.contentDialog);
         backView = (RelativeLayout) findViewById(R.id.dialog_rootView);
 
-        backView.setOnTouchListener(new View.OnTouchListener() {
+        if (bAllowDismiss)
+            backView.setOnTouchListener(new View.OnTouchListener() {
 
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getX() < view.getLeft()
-                        || event.getX() > view.getRight()
-                        || event.getY() > view.getBottom()
-                        || event.getY() < view.getTop()) {
-                    dismiss();
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getX() < view.getLeft()
+                            || event.getX() > view.getRight()
+                            || event.getY() > view.getBottom()
+                            || event.getY() < view.getTop()) {
+                        dismiss();
+                    }
+                    return false;
                 }
-                return false;
-            }
-        });
+            });
 
         this.titleTextView = (TextView) findViewById(R.id.title);
 
@@ -213,5 +225,9 @@ public class ConfirmationDialog extends android.app.Dialog {
         backView.startAnimation(backAnim);
     }
 
-
+    @Override
+    public void onBackPressed() {
+        if (bAllowDismiss)
+            super.onBackPressed();
+    }
 }

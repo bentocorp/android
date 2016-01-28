@@ -20,6 +20,8 @@ public class Menu implements Parcelable {
     public String meal_name = "";
     public String meal_order = "";
     public String day_text = "";
+    public String day_text2 = "";
+    public String displayStartTime = "";
     public List<DishModel> dishModels;
     public List<TimesModel> listTimeModel = new ArrayList<>();
 
@@ -37,6 +39,8 @@ public class Menu implements Parcelable {
         meal_name = parcel.readString();
         meal_order = parcel.readString();
         day_text = parcel.readString();
+        day_text2 = parcel.readString();
+        displayStartTime = parcel.readString();
         dishModels = new ArrayList<>();
         listTimeModel = new ArrayList<>();
         parcel.readList(dishModels, DishModel.class.getClassLoader());
@@ -54,6 +58,8 @@ public class Menu implements Parcelable {
         dest.writeString(meal_name);
         dest.writeString(meal_order);
         dest.writeString(day_text);
+        dest.writeString(day_text2);
+        dest.writeString(displayStartTime);
         dest.writeList(dishModels);
         dest.writeList(listTimeModel);
     }

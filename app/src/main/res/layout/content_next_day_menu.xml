@@ -1,0 +1,71 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_menu_preview"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <!-- content -->
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/gray"
+                android:gravity="center"
+                android:padding="@dimen/btn_padding"
+                android:text="@string/main_dishes"
+                android:textColor="@color/white" />
+
+            <com.bentonow.bentonow.ui.NextListView
+                android:id="@+id/list_next_main"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:dividerHeight="0dp"
+                tools:listitem="@layout/list_item_dish_next_main" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/gray"
+                android:gravity="center"
+                android:padding="@dimen/btn_padding"
+                android:text="@string/side_dishes"
+                android:textColor="@color/white" />
+
+            <com.bentonow.bentonow.ui.BentoGridView
+                android:id="@+id/grid_next_side"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:fillViewport="true"
+                android:numColumns="2"
+                tools:listitem="@layout/list_item_add" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/gray"
+                android:gravity="center"
+                android:padding="@dimen/btn_padding"
+                android:text="@string/add_on_dishes"
+                android:textColor="@color/white" />
+
+            <com.bentonow.bentonow.ui.NextListView
+                android:id="@+id/list_next_add_on"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:dividerHeight="0dp"
+                tools:listitem="@layout/list_item_dish_next_main" />
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

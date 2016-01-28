@@ -50,7 +50,7 @@ public class NextDayMenuActivity extends BaseFragmentActivity implements View.On
 
         MixpanelUtils.track("Previewed Today's Menu");
 
-        Menu menu = MenuDao.getNext();
+        Menu menu = MenuDao.getNextMenu();
 
         if (menu == null) {
             onBackPressed();

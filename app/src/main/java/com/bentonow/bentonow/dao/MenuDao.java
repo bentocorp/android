@@ -1,6 +1,5 @@
 package com.bentonow.bentonow.dao;
 
-import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.model.MealModel;
@@ -28,80 +27,63 @@ public class MenuDao {
     static public GateKeeperModel gateKeeper = new GateKeeperModel();
     static public MealModel lunch = new MealModel();
     static public MealModel dinner = new MealModel();
-    public static List<Menu> list = new ArrayList<>();
-    public static Menu getCurrentMenu;
+    public static List<Menu> mListToday = new ArrayList<>();
+    public static List<Menu> mListNextDay = new ArrayList<>();
+    public static Menu mCurrentMenu;
 
 
     static public Menu getCurrentMenu() {
-        return getCurrentMenu;
+        if (mCurrentMenu == null) {
+            try {
+                mCurrentMenu = new Gson().fromJson(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.CURRENT_MENU), Menu.class);
+            } catch (Exception ex) {
+                DebugUtils.logError(TAG, "getCurrentMenu(): " + ex.toString());
+            }
+        }
+        return mCurrentMenu;
     }
 
     static public void setCurrentMenu(Menu mMenu) {
-        getCurrentMenu = mMenu;
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.CURRENT_MENU, new Gson().toJson(mMenu));
+        mCurrentMenu = mMenu;
     }
 
-    static public Menu getNext() {
-        refreshData();
+    static public Menu getNextMenu() {
+        refreshDataNextDay();
 
         try {
-            String sMenuType = currentMenuType();
-            int lunchTime = Integer.parseInt(lunch.startTime.replace(":", ""));
-            int dinnerTime = Integer.parseInt(dinner.startTime.replace(":", ""));
-
-            if (list == null)
+            if (mListNextDay.isEmpty())
                 return null;
-
-            if (SettingsDao.getCurrent().status.equals("sold out")) {
-                if (BentoNowUtils.getCurrentTime() < 163000) {
-                    // Try to get the lunch menu
-                    for (Menu menu : list) {
-                        if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()))
-                            return menu;
-                    }
-
-                } else if (163000 <= BentoNowUtils.getCurrentTime()) {
-                    // Try to get the dinner menu
-                    for (Menu menu : list) {
-                        if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()) && menu.meal_name.equals(sMenuType))
-                            return menu;
-                    }
-                }
-            } else {
-                // Try to get the next menu when close
-                if ((lunchTime + SettingsDao.getCurrent().buffer_minutes * 100) >= BentoNowUtils.getCurrentTime()) {
-                    // Try to get the lunch menu
-                    for (Menu menu : list) {
-                        if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()))
-                            return menu;
-                    }
-
-                } else if ((dinnerTime + SettingsDao.getCurrent().buffer_minutes * 100) >= BentoNowUtils.getCurrentTime()) {
-                    // Try to get the dinner menu
-                    for (Menu menu : list) {
-                        if (menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate()) && menu.meal_name.equals(sMenuType)) {
-                            return menu;
-                        }
-                    }
-                }
-
-                // Try to get the other day menu
-                for (Menu menu : list) {
-                    if (!menu.for_date.replace("-", "").equals(BentoNowUtils.getTodayDate())) {
-                        return menu;
-                    }
-                }
-            }
+            else
+                return mListNextDay.get(0);
 
         } catch (Exception ignore) {
-            DebugUtils.logError("getNext()", ignore);
+            DebugUtils.logError("getNext()", ignore.toString());
         }
 
         return null;
     }
 
+    static public Menu getTodayMenu() {
+        refreshDataToday();
+        try {
+            if (mListToday.isEmpty() || gateKeeper.getAppOnDemandWidget() == null)
+                return null;
+            else {
+                for (int a = 0; a < mListToday.size(); a++)
+                    if (mListToday.get(a).meal_name.equals(gateKeeper.getAppOnDemandWidget().getMealMode()))
+                        return mListToday.get(a);
+            }
+        } catch (Exception ignore) {
+            DebugUtils.logError("getNext()", ignore.toString());
+        }
+        return null;
+
+    }
+
 
     static public String currentMenuType() {
-        refreshData();
+        refreshMealsData();
 
         try {
             int dinnerTime = Integer.parseInt(dinner.startTime.replace(":", ""));
@@ -126,7 +108,10 @@ public class MenuDao {
         if (gateKeeper.getAppOnDemandWidget() != null && gateKeeper.getAppOnDemandWidget().getMenu() != null)
             aNewMenus.add(gateKeeper.getAppOnDemandWidget().getMenu().meal_name);
 
-        if (gateKeeper != null && gateKeeper.getAvailableServices() != null && gateKeeper.getAvailableServices().mOrderAhead != null)
+        for (Menu mCurrentMenu : mListToday)
+            aNewMenus.add(mCurrentMenu.meal_name);
+
+        if (gateKeeper.getAvailableServices() != null && gateKeeper.getAvailableServices().mOrderAhead != null)
             for (Menu mOAMenu : gateKeeper.getAvailableServices().mOrderAhead.availableMenus)
                 aNewMenus.add(mOAMenu.menu_id);
 
@@ -135,10 +120,32 @@ public class MenuDao {
         return aNewMenus;
     }
 
-    public static void refreshData() {
-        if (MenuDao.dinner == null || MenuDao.lunch == null)
+    public static void refreshDataToday() {
+        if (MenuDao.mListToday == null || MenuDao.mListToday.isEmpty())
             try {
-                InitParse.parseSettings(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.MEALS));
+                InitParse.parseMenu(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.MENU_TODAY), true);
+            } catch (Exception ex) {
+                DebugUtils.logDebug(TAG, "refreshData: " + ex.toString());
+            }
+
+
+    }
+
+    public static void refreshDataNextDay() {
+        if (MenuDao.mListNextDay == null || MenuDao.mListNextDay.isEmpty())
+            try {
+                InitParse.parseMenu(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.MENU_NEXT), false);
+            } catch (Exception ex) {
+                DebugUtils.logDebug(TAG, "refreshData: " + ex.toString());
+            }
+
+
+    }
+
+    public static void refreshMealsData() {
+        if (MenuDao.lunch == null || MenuDao.dinner == null)
+            try {
+                InitParse.parseMeals(SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.MEALS));
             } catch (Exception ex) {
                 DebugUtils.logDebug(TAG, "refreshData: " + ex.toString());
             }
