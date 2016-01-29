@@ -105,11 +105,11 @@ public class MenuDao {
     public static ArrayList<String> getCurrentMenuIds() {
         ArrayList<String> aNewMenus = new ArrayList<>();
 
-        if (gateKeeper.getAppOnDemandWidget() != null && gateKeeper.getAppOnDemandWidget().getMenu() != null)
+       /* if (gateKeeper.getAppOnDemandWidget() != null && gateKeeper.getAppOnDemandWidget().getMenu() != null)
             aNewMenus.add(gateKeeper.getAppOnDemandWidget().getMenu().meal_name);
 
         for (Menu mCurrentMenu : mListToday)
-            aNewMenus.add(mCurrentMenu.meal_name);
+            aNewMenus.add(mCurrentMenu.meal_name);*/
 
         if (gateKeeper.getAvailableServices() != null && gateKeeper.getAvailableServices().mOrderAhead != null)
             for (Menu mOAMenu : gateKeeper.getAvailableServices().mOrderAhead.availableMenus)

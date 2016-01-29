@@ -172,6 +172,8 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     private boolean bShowAppOnDemand;
     private boolean bShowAppOnAhead;
     private ConstantUtils.optMenuSelected optMenu;
+    int iMenuSelected = 0;
+    boolean bIsMenuAvailable = false;
     //private static Tweak<Boolean> showBanner = MixpanelAPI.booleanTweak("Show Banner", false);
     private static Tweak<Boolean> showAddons = MixpanelAPI.booleanTweak("Show AddOns", false);
 
@@ -300,15 +302,12 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     }
 
     private void updateWidget() {
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.POD_MODE, SettingsDao.getCurrent().pod_mode);
-
         getSpinnerDayAdapter().clear();
         getSpinnerTimeAdapter().clear();
         bShowAppOnDemand = MenuDao.gateKeeper.getAppOnDemandWidget() != null && (MenuDao.getTodayMenu() != null || MenuDao.gateKeeper.getAppOnDemandWidget().getMenu() != null);
         bShowAppOnAhead = MenuDao.gateKeeper.getAvailableServices() != null && MenuDao.gateKeeper.getAvailableServices().mOrderAhead != null && !MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.isEmpty();
 
         if (bShowAppOnDemand) {
-            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ON_DEMAND_AVAILABLE, MenuDao.gateKeeper.getAppOnDemandWidget().isSelected());
             getWrapperOd().setVisibility(View.VISIBLE);
             getTxtOdTitle().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getTitle());
             getTxtOdDescription().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getText());
@@ -376,17 +375,18 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                 switch (optMenu) {
                     case ON_DEMAND:
                         mMenu = MenuDao.cloneMenu(MenuDao.getTodayMenu());
+                        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ON_DEMAND_AVAILABLE, true);
                         getTxtDateTimeToolbar().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getTitle());
                         createOrder();
                         break;
                     case MENU_PREVIEW:
                         mMenu = MenuDao.cloneMenu(MenuDao.gateKeeper.getAppOnDemandWidget().getMenu());
                         getTxtDateTimeToolbar().setText(mMenu.day_text2 != null && !mMenu.day_text2.isEmpty() ? mMenu.day_text2 : mMenu.day_text);
+                        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ON_DEMAND_AVAILABLE, false);
                         break;
                     case ORDER_AHEAD:
-                        mMenu = MenuDao.cloneMenu(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(0));
+                        mMenu = MenuDao.cloneMenu(mOAPreselectedMenu);
                         createOrder();
-                        updateDayOASpinner(mMenu, 0);
                         mOrder.for_date = mMenu.for_date;
                         updateTimeOrder((TimesModel) getSpinnerTime().getSelectedItem());
                         getTxtDateTimeToolbar().setText(BentoNowUtils.getDayTimeSelected(mOrder));
@@ -903,26 +903,6 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         }
     }
 
-    private void openConfirmationChangeMenuDialog(String sTitle, String sText, boolean bAllowCancel) {
-        if (mDialog == null || !mDialog.isShowing()) {
-            mDialog = new ConfirmationDialog(BuildBentoActivity.this, sTitle, sText, bAllowCancel);
-            mDialog.addAcceptButton(IosCopyDao.get("build-not-complete-confirmation-2"), new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            bIsMenuAlreadySelected = false;
-                            updateWidget();
-                            updateOrderByMenu();
-                        }
-                    });
-                }
-            });
-            mDialog.show();
-        }
-    }
-
     private void track() {
         try {
             OrderItem item = mOrder.OrderItems.get(orderIndex);
@@ -1063,24 +1043,77 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     @Override
     public void onBuild() {
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, MenuDao.gateKeeper.getAppState());
-        if (bIsMenuAlreadySelected)
+
+        if (bIsMenuAlreadySelected) {
+
             if (bShowAppOnAhead) {
                 if (aMenusId == null || aMenusId.isEmpty()) {
                     aMenusId = MenuDao.getCurrentMenuIds();
                 } else if (MenuDao.hasNewMenus(aMenusId)) {
                     DebugUtils.logDebug(TAG, "Should change from Missed Menus " + aMenusId.toString());
-                    openConfirmationChangeMenuDialog("New Menus Available", "There are new menus available, please choose again", false);
+
+                    iMenuSelected = 0;
+                    bIsMenuAvailable = false;
+                    // TODO Verify this logic
+                    switch (optMenu) {
+                        case ORDER_AHEAD:
+                            for (int a = 0; a < MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.size(); a++) {
+                                if (mMenu.menu_id.equals(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(a).menu_id)) {
+                                    iMenuSelected = a;
+                                    bIsMenuAvailable = true;
+                                }
+                            }
+
+                            if (!bIsMenuAvailable) {
+                                updateWidget();
+                                forceChangeMenu();
+                            }
+                        default:
+                            if (bIsMenuAvailable)
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        getSpinnerDayAdapter().clear();
+                                        getSpinnerDayAdapter().addAll(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus);
+                                        getSpinnerDayAdapter().notifyDataSetChanged();
+                                        getSpinnerDate().setSelection(iMenuSelected);
+                                        getSpinnerTimeAdapter().addAll(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(iMenuSelected).listTimeModel);
+                                        getSpinnerTimeAdapter().notifyDataSetChanged();
+                                    }
+                                });
+                            break;
+                    }
                 }
             }
-        if (bShowAppOnDemand) {
-            if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.ON_DEMAND_AVAILABLE) != MenuDao.gateKeeper.getAppOnDemandWidget().isSelected()) {
-                DebugUtils.logDebug(TAG, "Should change from Demand Change from: " + SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.ON_DEMAND_AVAILABLE) + " to " + MenuDao.gateKeeper.getAppOnDemandWidget().isSelected());
-                openConfirmationChangeMenuDialog("New Menu Available", "There is a new menu available, please choose again", false);
+            if (bShowAppOnDemand) {
+                if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.ON_DEMAND_AVAILABLE) != MenuDao.gateKeeper.getAppOnDemandWidget().isSelected()) {
+                    DebugUtils.logDebug(TAG, "Should change from Demand Change from: " + SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.ON_DEMAND_AVAILABLE) + " to " + MenuDao.gateKeeper.getAppOnDemandWidget().isSelected());
+                    switch (optMenu) {
+                        case ON_DEMAND:
+                        case MENU_PREVIEW:
+                            optMenu = MenuDao.gateKeeper.getAppOnDemandWidget().isSelected() ? ConstantUtils.optMenuSelected.ON_DEMAND : ConstantUtils.optMenuSelected.MENU_PREVIEW;
+                            updateOrderByMenu();
+                            setDateTime(true, true);
+                            break;
+                        default:
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ON_DEMAND_AVAILABLE, MenuDao.gateKeeper.getAppOnDemandWidget().isSelected());
+                                    getTxtOdTitle().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getTitle());
+                                    getTxtOdDescription().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getText());
+                                }
+                            });
+                            break;
+                    }
+                }
             }
-        }
-        if (!SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.POD_MODE).equals(SettingsDao.getCurrent().pod_mode)) {
-            DebugUtils.logDebug(TAG, "Should change from Pod Mode " + SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.POD_MODE) + " to " + SettingsDao.getCurrent().pod_mode);
-            openConfirmationChangeMenuDialog("New Pod Available", "here is a new pod available, please choose again", false);
+            if (SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.POD_MODE).isEmpty()) {
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.POD_MODE, SettingsDao.getCurrent().pod_mode);
+            } else if (!SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.POD_MODE).equals(SettingsDao.getCurrent().pod_mode)) {
+                DebugUtils.logDebug(TAG, "Should change from Pod Mode " + SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.POD_MODE) + " to " + SettingsDao.getCurrent().pod_mode);
+                recreate();
+            }
         }
     }
 

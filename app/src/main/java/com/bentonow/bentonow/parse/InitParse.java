@@ -193,7 +193,6 @@ public class InitParse {
             SettingsDao.mSettings.price = jsonSettings.getDouble("price");
             SettingsDao.mSettings.sale_price = jsonSettings.getDouble("sale_price");
             SettingsDao.mSettings.tax_percent = jsonSettings.getDouble("tax_percent");
-            SettingsDao.mSettings.status = jsonSettings.getString("status");
             SettingsDao.mSettings.tzName = jsonSettings.getString("tzName");
             SettingsDao.mSettings.pod_mode = jsonSettings.getString("pod_mode");
             SettingsDao.mSettings.oa_countdown_remaining_mins = jsonSettings.getString("oa_countdown_remaining_mins");

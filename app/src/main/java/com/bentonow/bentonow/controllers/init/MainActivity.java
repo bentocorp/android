@@ -21,7 +21,6 @@ import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
-import com.bentonow.bentonow.dao.SettingsDao;
 import com.bentonow.bentonow.parse.InitParse;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -111,7 +110,6 @@ public class MainActivity extends BaseFragmentActivity {
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
                 DebugUtils.logDebug(TAG, "onSuccess: " + statusCode);
                 InitParse.parseInitTwo(responseString);
-                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, SettingsDao.getCurrent().status);
                 checkAppStatus();
             }
         });

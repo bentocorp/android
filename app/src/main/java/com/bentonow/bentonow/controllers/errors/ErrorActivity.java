@@ -20,7 +20,6 @@ import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.dao.MenuDao;
-import com.bentonow.bentonow.dao.SettingsDao;
 import com.bentonow.bentonow.listener.InterfaceCustomerService;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.service.BentoCustomerService;
@@ -49,6 +48,8 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
 
     public static boolean bIsOpen;
 
+    String sStatus;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,7 +73,12 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
         Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY) * 100 + calendar.get(Calendar.MINUTE);
 
-        if (SettingsDao.getCurrent().status.equals("sold out")) {
+        if (MenuDao.gateKeeper.getAppOnDemandWidget() != null)
+            sStatus = MenuDao.gateKeeper.getAppOnDemandWidget().getState();
+        else
+            sStatus = "closed";
+
+        if (sStatus.equals("sold out")) {
             getTxtTitle().setText(IosCopyDao.get("sold-out-title"));
             getTxtDescription().setText(IosCopyDao.get("sold-out-text"));
         } else {
@@ -136,7 +142,7 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
             mDialog.addAcceptButton("OK", null);
             mDialog.show();
         } else {
-            UserRequest.requestCoupon(getEditTxtEmail().getText().toString(), SettingsDao.getCurrent().status, new TextHttpResponseHandler() {
+            UserRequest.requestCoupon(getEditTxtEmail().getText().toString(), sStatus, new TextHttpResponseHandler() {
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
@@ -149,7 +155,7 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    String message = SettingsDao.getCurrent().status.equals("sold out") ? IosCopyDao.get("sold-out-confirmation-text") : IosCopyDao.get("closed-confirmation-text");
+                    String message = sStatus.equals("sold out") ? IosCopyDao.get("sold-out-confirmation-text") : IosCopyDao.get("closed-confirmation-text");
                     DebugUtils.logDebug(TAG, responseString);
                     getEditTxtEmail().setText("");
 
@@ -228,7 +234,7 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
 
     @Override
     protected void onDestroy() {
-        if (SettingsDao.getCurrent().status.equals("sold out"))
+        if (sStatus.equals("sold out"))
             trackViewedScreen("Viewed Sold-out Screen");
         else
             trackViewedScreen("Viewed Closed Screen");

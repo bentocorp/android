@@ -37,7 +37,6 @@ public class ImageUtils {
             ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(BentoApplication.instance)
                     .threadPriority(Thread.MAX_PRIORITY)
                     .memoryCache(new LruMemoryCache(2 * 1024 * 1024))
-                    .memoryCacheSize(2 * 1024 * 1024)
                     .diskCacheSize(50 * 1024 * 1024)
                     .build();
             imageLoader = ImageLoader.getInstance();
