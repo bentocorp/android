@@ -20,6 +20,7 @@ public class DishModel implements Parcelable {
     public int bento_pk;
     public String qty;
     public int count_max;
+    public int can_be_added;
 
     public DishModel() {
 
@@ -38,6 +39,7 @@ public class DishModel implements Parcelable {
         bento_pk = parcel.readInt();
         qty = parcel.readString();
         count_max = parcel.readInt();
+        can_be_added = parcel.readInt();
     }
 
     @Override
@@ -54,6 +56,7 @@ public class DishModel implements Parcelable {
         dest.writeInt(bento_pk);
         dest.writeString(qty);
         dest.writeInt(count_max);
+        dest.writeInt(can_be_added);
     }
 
 

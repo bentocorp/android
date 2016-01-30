@@ -126,12 +126,15 @@ public class CustomSideListAdapter extends ArrayAdapter<DishModel> {
         if (!dishDao.canBeAdded(mDish)) {
             viewHolder.getBtnAddToBento().setText(IosCopyDao.get("reached-max-button"));
             viewHolder.getImgSoldOut().setVisibility(View.GONE);
+            getItem(position).can_be_added = 0;
         } else if (dishDao.isSoldOut(mDish, true, bIsMenuOD)) {
             viewHolder.getBtnAddToBento().setText("Sold Out");
             viewHolder.getImgSoldOut().setVisibility(View.VISIBLE);
+            getItem(position).can_be_added = 0;
         } else {
             viewHolder.getBtnAddToBento().setText(IosCopyDao.get("build-main-add-button-1"));
             viewHolder.getImgSoldOut().setVisibility(View.GONE);
+            getItem(position).can_be_added = 1;
         }
 
         return convertView;

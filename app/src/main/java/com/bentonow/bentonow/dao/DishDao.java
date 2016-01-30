@@ -421,7 +421,10 @@ public class DishDao {
 
 
     public boolean isSoldOut(DishModel mDishModel, boolean countCurrent, boolean bIsOD) {
-        return bIsOD ? StockDao.isSold(mDishModel.itemId, countCurrent) : isDishSoldOut(mDishModel, countCurrent);
+        if (bIsOD)
+            return StockDao.isSold(mDishModel.itemId, countCurrent);
+        else
+            return isDishSoldOut(mDishModel, countCurrent);
     }
 
 

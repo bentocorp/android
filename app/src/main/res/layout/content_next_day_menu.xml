@@ -16,6 +16,17 @@
             android:orientation="vertical">
 
             <TextView
+                style="@style/TxtBentoPromo"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/primary"
+                android:gravity="center"
+                android:padding="@dimen/btn_padding"
+                android:text="MENU PREVIEW"
+                android:textColor="@color/white" />
+
+
+            <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/gray"

@@ -206,12 +206,24 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
     @Override
     protected void onResume() {
+        if (mOrder != null) {
+            createOrder();
+        }
+
         updateUI();
         super.onResume();
     }
 
     public void updateUI() {
-        if (bIsMenuAlreadySelected)
+        if (bIsMenuAlreadySelected) {
+            if (bShowAppOnAhead) {
+                getTxtOdTitle().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getTitle());
+                getTxtOdDescription().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getText());
+            }
+
+            getTxtOdHeader().setTextColor(getResources().getColor(optMenu == ConstantUtils.optMenuSelected.ORDER_AHEAD ? R.color.black : R.color.primary));
+            getTxtOaHeader().setTextColor(getResources().getColor(optMenu == ConstantUtils.optMenuSelected.ORDER_AHEAD ? R.color.primary : R.color.black));
+
             switch (optMenu) {
                 case ON_DEMAND:
                 case ORDER_AHEAD:
@@ -222,8 +234,6 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                     getTxtEta().setVisibility(optMenu == ConstantUtils.optMenuSelected.ON_DEMAND ? View.VISIBLE : View.GONE);
                     getImgDividerStatus().setVisibility(optMenu == ConstantUtils.optMenuSelected.ON_DEMAND ? View.VISIBLE : View.GONE);
                     getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), BentoNowUtils.getDefaultPriceBento(DishDao.getLowestMainPrice(mMenu))));
-                    getTxtOdHeader().setTextColor(getResources().getColor(optMenu == ConstantUtils.optMenuSelected.ON_DEMAND ? R.color.primary : R.color.black));
-                    getTxtOaHeader().setTextColor(getResources().getColor(optMenu == ConstantUtils.optMenuSelected.ON_DEMAND ? R.color.black : R.color.primary));
 
                     if (optMenu == ConstantUtils.optMenuSelected.ORDER_AHEAD && bIsMenuAlreadySelected && mMenu.menu_id.equals(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(0).menu_id))
                         setOAHashTimer(BentoNowUtils.showOATimer(mMenu));
@@ -267,6 +277,10 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                     getListMain().setAdapter(getMainAdapter());
                     getListAddOn().setAdapter(getAddOnAdapter());
                     getGridSide().setAdapter(getSideAdapter());
+                    getButtonCancel().setVisibility(bIsMenuAlreadySelected ? View.VISIBLE : View.GONE);
+                    getTxtNumBento().setVisibility(View.GONE);
+                    getActionbarRightBtn().setImageResource(R.drawable.ic_ab_bento);
+                    getTxtDateTimeToolbar().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getTitle());
 
                     for (DishModel dishModel : mMenu.dishModels) {
                         switch (dishModel.type) {
@@ -298,6 +312,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
                     break;
             }
+        }
 
     }
 
@@ -377,11 +392,12 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                         mMenu = MenuDao.cloneMenu(MenuDao.getTodayMenu());
                         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ON_DEMAND_AVAILABLE, true);
                         getTxtDateTimeToolbar().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getTitle());
+                        restartDishUI();
                         createOrder();
                         break;
                     case MENU_PREVIEW:
                         mMenu = MenuDao.cloneMenu(MenuDao.gateKeeper.getAppOnDemandWidget().getMenu());
-                        getTxtDateTimeToolbar().setText(mMenu.day_text2 != null && !mMenu.day_text2.isEmpty() ? mMenu.day_text2 : mMenu.day_text);
+                        getTxtDateTimeToolbar().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getTitle());
                         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ON_DEMAND_AVAILABLE, false);
                         break;
                     case ORDER_AHEAD:
@@ -390,6 +406,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                         mOrder.for_date = mMenu.for_date;
                         updateTimeOrder((TimesModel) getSpinnerTime().getSelectedItem());
                         getTxtDateTimeToolbar().setText(BentoNowUtils.getDayTimeSelected(mOrder));
+                        restartDishUI();
                         break;
                 }
 
@@ -846,19 +863,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     }
 
     public void onAddAnotherBentoPressed() {
-        if (SettingsDao.getCurrent().pod_mode.equals("5")) {
-            getImgMain().setTag(null);
-            getImgSide1().setTag(null);
-            getImgSide2().setTag(null);
-            getImgSide3().setTag(null);
-            getImgSide4().setTag(null);
-        } else {
-            getImgMain4().setTag(null);
-            getImgSide14().setTag(null);
-            getImgSide24().setTag(null);
-            getImgSide34().setTag(null);
-        }
-
+        restartDishUI();
 
         mOrder.OrderItems.add(mBentoDao.getNewBento(ConstantUtils.optItemType.CUSTOM_BENTO_BOX));
         mOrder.currentOrderItem = orderIndex = mOrder.OrderItems.size() - 1;
@@ -920,6 +925,25 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         }
     }
 
+    private void restartDishUI() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (SettingsDao.getCurrent().pod_mode.equals("5")) {
+                    getImgMain().setTag(null);
+                    getImgSide1().setTag(null);
+                    getImgSide2().setTag(null);
+                    getImgSide3().setTag(null);
+                    getImgSide4().setTag(null);
+                } else {
+                    getImgMain4().setTag(null);
+                    getImgSide14().setTag(null);
+                    getImgSide24().setTag(null);
+                    getImgSide34().setTag(null);
+                }
+            }
+        });
+    }
 
     @Override
     public void onClick(View v) {
@@ -966,22 +990,25 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                     forceChangeMenu();
                     setDateTime(true, true);
                 } else {
-                    if (optMenu == ConstantUtils.optMenuSelected.ON_DEMAND) {
-                        if (!bIsAsapChecked) {
-                            bChangeMenu = true;
-                        }
-                    } else {
-                        if (bIsAsapChecked) {
-                            bChangeMenu = true;
-                        } else {
-                            if (!mMenu.menu_id.equals(mOAPreselectedMenu.menu_id)) {
+                    switch (optMenu) {
+                        case MENU_PREVIEW:
+                        case ON_DEMAND:
+                            if (!bIsAsapChecked)
+                                bChangeMenu = true;
+                            break;
+                        case ORDER_AHEAD:
+                            if (bIsAsapChecked) {
                                 bChangeMenu = true;
                             } else {
-                                for (int a = 0; a < mOAPreselectedMenu.listTimeModel.size(); a++)
-                                    if (mOAPreselectedMenu.listTimeModel.get(a).isSelected)
-                                        updateTimeOrder(mOAPreselectedMenu.listTimeModel.get(a));
+                                if (!mMenu.menu_id.equals(mOAPreselectedMenu.menu_id)) {
+                                    bChangeMenu = true;
+                                } else {
+                                    for (int a = 0; a < mOAPreselectedMenu.listTimeModel.size(); a++)
+                                        if (mOAPreselectedMenu.listTimeModel.get(a).isSelected)
+                                            updateTimeOrder(mOAPreselectedMenu.listTimeModel.get(a));
+                                }
                             }
-                        }
+                            break;
                     }
 
                     if (bChangeMenu) {

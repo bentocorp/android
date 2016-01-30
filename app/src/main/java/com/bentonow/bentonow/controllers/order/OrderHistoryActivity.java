@@ -11,7 +11,7 @@ import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 
-public class OrderConfirmedActivity extends BaseFragmentActivity implements View.OnClickListener {
+public class OrderHistoryActivity extends BaseFragmentActivity implements View.OnClickListener {
 
     private static final String TAG = "OrderConfirmedActivity";
 
@@ -51,6 +51,6 @@ public class OrderConfirmedActivity extends BaseFragmentActivity implements View
     @Override
     public void onBackPressed() {
         finish();
-        BentoNowUtils.openBuildBentoActivity(OrderConfirmedActivity.this);
+        BentoNowUtils.openBuildBentoActivity(OrderHistoryActivity.this);
     }
 }

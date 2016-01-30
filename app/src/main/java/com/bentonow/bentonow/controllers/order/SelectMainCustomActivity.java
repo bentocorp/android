@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.adapter.CustomMainListAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
@@ -32,8 +33,6 @@ public class SelectMainCustomActivity extends BaseFragmentActivity implements Vi
 
     private Order mOrder;
 
-    private boolean bIsMenuOD;
-
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_main);
@@ -52,8 +51,6 @@ public class SelectMainCustomActivity extends BaseFragmentActivity implements Vi
 
             mOrder = mOrderDao.getCurrentOrder();
 
-            bIsMenuOD = !mOrder.order_type.equals("2");
-
             orderIndex = mOrder.currentOrderItem;
 
             getListAdapter().setCurrentAdded(mOrder.OrderItems.get(orderIndex).items.get(0));
@@ -63,7 +60,7 @@ public class SelectMainCustomActivity extends BaseFragmentActivity implements Vi
 
             for (DishModel dishModel : mMenu.dishModels) {
                 if (dishModel.type.equals("main")) {
-                    if (mDishDao.isSoldOut(dishModel, true, bIsMenuOD))
+                    if (mDishDao.isSoldOut(dishModel, true, !SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_ORDER_AHEAD_MENU)))
                         aSoldDish.add(dishModel);
                     else
                         getListAdapter().add(dishModel);
@@ -104,10 +101,8 @@ public class SelectMainCustomActivity extends BaseFragmentActivity implements Vi
 
     @Override
     public void onAddToBentoClick(int iDishPosition) {
-        if (mDishDao.isSoldOut(getListAdapter().getCurrentSelected(), true, bIsMenuOD) || !mDishDao.canBeAdded(getListAdapter().getCurrentSelected()))
+        if (getListAdapter().getItem(iDishPosition).can_be_added == 0)
             return;
-
-        //  Order.current.OrderItems.get(orderIndex).items.set(0, getListAdapter().getCurrentSelected());
 
         DishModel mDish = getListAdapter().getCurrentSelected();
         mDish.dish_pk = mOrder.OrderItems.get(orderIndex).items.get(0).dish_pk;
@@ -143,7 +138,7 @@ public class SelectMainCustomActivity extends BaseFragmentActivity implements Vi
 
     private CustomMainListAdapter getListAdapter() {
         if (mListAdapter == null)
-            mListAdapter = new CustomMainListAdapter(SelectMainCustomActivity.this, bIsMenuOD, SelectMainCustomActivity.this);
+            mListAdapter = new CustomMainListAdapter(SelectMainCustomActivity.this, !SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_ORDER_AHEAD_MENU), SelectMainCustomActivity.this);
         return mListAdapter;
     }
 

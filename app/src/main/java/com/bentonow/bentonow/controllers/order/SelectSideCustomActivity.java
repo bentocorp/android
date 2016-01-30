@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.adapter.CustomSideListAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
@@ -35,8 +36,6 @@ public class SelectSideCustomActivity extends BaseFragmentActivity implements Vi
     int orderIndex;
     int itemIndex;
 
-    private boolean bIsMenuOD;
-
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_side);
@@ -46,8 +45,6 @@ public class SelectSideCustomActivity extends BaseFragmentActivity implements Vi
         Menu mMenu = getIntent().getParcelableExtra(Menu.TAG);
 
         mOrder = mOrderDao.getCurrentOrder();
-
-        bIsMenuOD = !mOrder.order_type.equals("2");
 
         if (mMenu == null) {
             ConfirmationDialog mDialog = new ConfirmationDialog(SelectSideCustomActivity.this, null, "There is no current menu to show");
@@ -67,7 +64,7 @@ public class SelectSideCustomActivity extends BaseFragmentActivity implements Vi
 
             for (DishModel dishModel : mMenu.dishModels) {
                 if (dishModel.type.equals("side"))
-                    if (mDishDao.isSoldOut(dishModel, true, bIsMenuOD))
+                    if (mDishDao.isSoldOut(dishModel, true, !SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_ORDER_AHEAD_MENU)))
                         aSoldDish.add(dishModel);
                     else
                         getListAdapter().add(dishModel);
@@ -105,7 +102,7 @@ public class SelectSideCustomActivity extends BaseFragmentActivity implements Vi
 
     @Override
     public void onAddToBentoClick(int iDishPosition) {
-        if (mDishDao.isSoldOut(getListAdapter().getCurrentSelected(), true, bIsMenuOD) || !mDishDao.canBeAdded(getListAdapter().getCurrentSelected()))
+        if (mDishDao.isSoldOut(getListAdapter().getCurrentSelected(), true, !SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_ORDER_AHEAD_MENU)) || !mDishDao.canBeAdded(getListAdapter().getCurrentSelected()))
             return;
         DishModel dishModel = DishDao.clone(getListAdapter().getCurrentSelected());
         dishModel.type += itemIndex;
@@ -135,7 +132,7 @@ public class SelectSideCustomActivity extends BaseFragmentActivity implements Vi
 
     private CustomSideListAdapter getListAdapter() {
         if (mListAdapter == null)
-            mListAdapter = new CustomSideListAdapter(SelectSideCustomActivity.this, bIsMenuOD, SelectSideCustomActivity.this);
+            mListAdapter = new CustomSideListAdapter(SelectSideCustomActivity.this, !SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_ORDER_AHEAD_MENU), SelectSideCustomActivity.this);
         return mListAdapter;
     }
 
