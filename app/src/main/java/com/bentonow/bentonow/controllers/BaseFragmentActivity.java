@@ -13,6 +13,7 @@ import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.dao.BentoDao;
 import com.bentonow.bentonow.dao.DishDao;
 import com.bentonow.bentonow.dao.OrderDao;
+import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.service.BentoCustomerService;
 import com.facebook.appevents.AppEventsLogger;
 
@@ -31,6 +32,7 @@ public class BaseFragmentActivity extends FragmentActivity {
     protected OrderDao mOrderDao = new OrderDao();
     protected BentoDao mBentoDao = new BentoDao();
     protected DishDao mDishDao = new DishDao();
+    protected UserDao userDao = new UserDao();
 
     protected long lStart, lEnd;
 

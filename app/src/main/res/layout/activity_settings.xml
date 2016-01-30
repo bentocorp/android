@@ -1,5 +1,6 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:id="@+id/base_relative_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,7 +8,6 @@
     android:orientation="vertical">
 
 
-    <!-- bento_toolbar -->
     <LinearLayout
         android:id="@+id/ActionBarContainer"
         android:layout_width="match_parent"
@@ -17,401 +17,494 @@
         <include layout="@layout/bento_toolbar" />
     </LinearLayout>
 
-    <ScrollView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@+id/ActionBarContainer">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+        <RelativeLayout
+            android:id="@+id/container_user"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
 
-            <RelativeLayout
-                android:id="@+id/container_user"
+            <LinearLayout
+                android:id="@+id/user_data_content"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/btn_padding">
+
+                <TextView
+                    android:id="@+id/txt_name"
+                    style="@style/TextViewSettingsUserInfo"
+                    android:layout_width="wrap_content"
+                    android:text="@string/app_name"
+                    android:textColor="#576070"
+                    android:textStyle="bold" />
 
                 <LinearLayout
-                    android:id="@+id/user_data_content"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="@dimen/btn_padding">
-
-                    <TextView
-                        android:id="@+id/txt_name"
-                        style="@style/TextViewSettingsUserInfo"
-                        android:layout_width="wrap_content"
-                        android:text="@string/app_name"
-                        android:textStyle="bold" />
-
-                    <LinearLayout
-                        android:id="@+id/layout_container_phone"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:id="@+id/txt_phone"
-                            style="@style/TextViewSettingsUserInfo"
-                            android:layout_width="wrap_content"
-                            android:text="(552)664-316" />
-
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_marginLeft="10dp"
-                            android:layout_height="20dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_action_editor_mode_edit" />
-
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/txt_email"
-                        style="@style/TextViewSettingsUserInfo"
-                        android:layout_width="wrap_content"
-                        android:text="kokushos@gmail.com" />
-                </LinearLayout>
-
-                <Button
-                    android:id="@+id/btn_logout"
-                    style="?android:attr/buttonBarButtonStyle"
+                    android:id="@+id/layout_container_phone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/user_data_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentStart="false"
-                    android:background="@null"
-                    android:onClick="onLogoutPressed"
-                    android:padding="@dimen/btn_padding"
-                    android:text="Log out"
-                    android:textColor="@color/btn_green"
-                    android:textStyle="bold" />
-            </RelativeLayout>
-
-            <!-- content -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:orientation="vertical">
-
-                <RelativeLayout
-                    android:id="@+id/container_sig_in"
-                    android:layout_width="match_parent"
-                    android:layout_height="55sp">
-
-                    <LinearLayout
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <com.bentonow.bentonow.ui.FontAwesomeButton
-                            android:id="@+id/ico_user"
-                            style="@style/icon_white"
-                            android:text="@string/fa_user" />
-
-                        <LinearLayout
-                            android:layout_width="fill_parent"
-                            android:layout_height="fill_parent"
-                            android:background="@drawable/border_bottom"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="fill_parent"
-                                android:layout_weight="1"
-                                android:gravity="center_vertical"
-                                android:paddingStart="@dimen/btn_padding"
-                                android:text="Sign In" />
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="fill_parent"
-                                android:paddingRight="20dp"
-                                android:src="@drawable/arrow_gray_right" />
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <Button
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
-                        android:background="@null"
-                        android:onClick="onSignInPressed" />
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="55sp">
-
-                    <LinearLayout
-                        android:id="@+id/btn_setting_faq"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <com.bentonow.bentonow.ui.FontAwesomeButton
-                            android:id="@+id/ico_faq"
-                            style="@style/icon_white"
-                            android:text="@string/fa_question_circle" />
-
-                        <LinearLayout
-                            android:layout_width="fill_parent"
-                            android:layout_height="fill_parent"
-                            android:background="@drawable/border_bottom"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="fill_parent"
-                                android:layout_weight="1"
-                                android:gravity="center_vertical"
-                                android:paddingLeft="@dimen/btn_padding"
-                                android:text="FAQ" />
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="fill_parent"
-                                android:paddingRight="20dp"
-                                android:src="@drawable/arrow_gray_right" />
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <Button
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
-                        android:background="@null"
-                        android:onClick="onFaqPressed" />
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="55sp">
-
-                    <LinearLayout
-                        android:id="@+id/btn_setting_email"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <com.bentonow.bentonow.ui.FontAwesomeButton
-                            android:id="@+id/ico_mail_support"
-                            style="@style/icon_white"
-                            android:text="@string/fa_envelope" />
-
-                        <LinearLayout
-                            android:layout_width="fill_parent"
-                            android:layout_height="fill_parent"
-                            android:background="@drawable/border_bottom"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="fill_parent"
-                                android:layout_weight="1"
-                                android:gravity="center_vertical"
-                                android:paddingLeft="@dimen/btn_padding"
-                                android:text="Email Support" />
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="fill_parent"
-                                android:paddingRight="20dp"
-                                android:src="@drawable/arrow_gray_right" />
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <Button
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
-                        android:background="@null"
-                        android:onClick="onEmailSupportPressed" />
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="55sp">
-
-                    <LinearLayout
-                        android:id="@+id/btn_setting_phone"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <com.bentonow.bentonow.ui.FontAwesomeButton
-                            android:id="@+id/ico_phone_support"
-                            style="@style/icon_white"
-                            android:text="@string/fa_phone" />
-
-                        <LinearLayout
-                            android:layout_width="fill_parent"
-                            android:layout_height="fill_parent"
-                            android:background="@drawable/border_bottom"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="fill_parent"
-                                android:layout_weight="1"
-                                android:gravity="center_vertical"
-                                android:paddingLeft="@dimen/btn_padding"
-                                android:text="Phone Support"
-
-                                />
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="fill_parent"
-                                android:paddingRight="20dp"
-                                android:src="@drawable/arrow_gray_right" />
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <Button
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
-                        android:background="@null"
-                        android:onClick="onPhoneSupportPressed" />
-                </RelativeLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/container_coupon"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="30sp"
-                    android:background="@color/dark_blue"
-                    android:orientation="vertical"
-                    android:padding="10sp">
-
-                    <com.bentonow.bentonow.ui.BackendTextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:paddingBottom="10sp"
-                        android:textColor="@color/white"
-                        app:key="share-promo-message" />
+                    android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/txt_coupon"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="@string/app_name"
-                        android:textColor="@color/white"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
+                        android:id="@+id/txt_phone"
+                        style="@style/TextViewSettingsUserInfo"
+                        android:layout_width="wrap_content"
+                        android:text="(552)664-316" />
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="10dp"
+                        android:src="@drawable/ic_action_editor_mode_edit" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/txt_email"
+                    style="@style/TextViewSettingsUserInfo"
+                    android:layout_width="wrap_content"
+                    android:text="kokushos@gmail.com" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_logout"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/user_data_content"
+                android:layout_alignParentRight="true"
+                android:background="@null"
+                android:fontFamily="sans-serif-light"
+                android:onClick="onLogoutPressed"
+                android:padding="@dimen/btn_padding"
+                android:text="Log out"
+                android:textColor="@color/btn_green"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/container_coupon"
+            android:layout_below="@+id/container_user">
+
+            <LinearLayout
+                android:id="@+id/linearLayout6"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/container_settings_orders"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/settings_row_height"
+                    android:background="@drawable/border_bottom"
+                    android:orientation="horizontal"
+                    android:weightSum="7">
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1">
+
+                        <android.support.v7.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
+                            app:cardCornerRadius="7dp"
+                            card_view:cardBackgroundColor="@color/gray_icon">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_action_action_shopping_cart" />
+                        </android.support.v7.widget.CardView>
+
+
+                    </FrameLayout>
+
+                    <com.bentonow.bentonow.ui.AutoFitTxtView
+                        style="@style/TxtSettingsRows"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="5"
+                        android:text="Orders" />
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:padding="12dp"
+                        android:src="@drawable/arrow_gray_right" />
+
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/container_setting_credit_card"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="@dimen/settings_row_height"
+                    android:background="@drawable/border_bottom"
                     android:orientation="horizontal"
-                    android:padding="20sp">
+                    android:weightSum="7">
 
-                    <RelativeLayout
+                    <FrameLayout
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="1">
 
-                        <com.bentonow.bentonow.ui.FontAwesomeButton
-                            android:id="@+id/btn_facebook"
-                            style="@style/btn_rounded"
-                            android:layout_centerHorizontal="true"
-                            android:background="@drawable/background_circle_blue"
-                            android:onClick="onFacebookPressed"
-                            android:text="@string/fa_facebook" />
-
-                        <TextView
+                        <android.support.v7.widget.CardView
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/btn_facebook"
-                            android:layout_marginTop="5sp"
-                            android:gravity="center"
-                            android:text="@string/share"
-                            android:textColor="@color/dark_blue"
-                            android:textStyle="bold" />
-                    </RelativeLayout>
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
+                            app:cardCornerRadius="7dp"
+                            card_view:cardBackgroundColor="@color/gray_icon">
 
-                    <RelativeLayout
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_action_action_credit_card" />
+                        </android.support.v7.widget.CardView>
+
+
+                    </FrameLayout>
+
+                    <com.bentonow.bentonow.ui.AutoFitTxtView
+                        style="@style/TxtSettingsRows"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="5"
+                        android:text="Credit Card" />
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:padding="12dp"
+                        android:src="@drawable/arrow_gray_right" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/container_sign_in"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/settings_row_height"
+                    android:background="@drawable/border_bottom"
+                    android:orientation="horizontal"
+                    android:weightSum="7">
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
                         android:layout_weight="1">
 
-                        <com.bentonow.bentonow.ui.FontAwesomeButton
-                            android:id="@+id/btn_twitter"
-                            style="@style/btn_rounded"
-                            android:layout_centerHorizontal="true"
-                            android:background="@drawable/background_circle_cyan"
-                            android:onClick="onTwitterPressed"
-                            android:text="@string/fa_twitter" />
-
-                        <TextView
+                        <android.support.v7.widget.CardView
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/btn_twitter"
-                            android:layout_marginTop="5sp"
-                            android:gravity="center"
-                            android:text="@string/tweet"
-                            android:textColor="@color/dark_blue"
-                            android:textStyle="bold" />
-                    </RelativeLayout>
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
+                            app:cardCornerRadius="7dp"
+                            card_view:cardBackgroundColor="@color/gray_icon">
 
-                    <RelativeLayout
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_action_social_person" />
+                        </android.support.v7.widget.CardView>
+
+
+                    </FrameLayout>
+
+                    <com.bentonow.bentonow.ui.AutoFitTxtView
+                        style="@style/TxtSettingsRows"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="5"
+                        android:text="Log In" />
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:padding="12dp"
+                        android:src="@drawable/arrow_gray_right" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/container_setting_faq"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/settings_row_height"
+                    android:background="@drawable/border_bottom"
+                    android:orientation="horizontal"
+                    android:weightSum="7">
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
                         android:layout_weight="1">
 
-                        <com.bentonow.bentonow.ui.FontAwesomeButton
-                            android:id="@+id/btn_sms"
-                            style="@style/btn_rounded"
-                            android:layout_centerHorizontal="true"
-                            android:background="@drawable/background_circle_sms_green"
-                            android:onClick="onMessagePressed"
-                            android:text="@string/fa_comment" />
-
-                        <TextView
+                        <android.support.v7.widget.CardView
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/btn_sms"
-                            android:layout_marginTop="5sp"
-                            android:gravity="center"
-                            android:text="@string/text"
-                            android:textColor="@color/dark_blue"
-                            android:textStyle="bold" />
-                    </RelativeLayout>
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
+                            app:cardCornerRadius="7dp"
+                            card_view:cardBackgroundColor="@color/gray_icon">
 
-                    <RelativeLayout
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_action_question_mark" />
+                        </android.support.v7.widget.CardView>
+
+
+                    </FrameLayout>
+
+                    <com.bentonow.bentonow.ui.AutoFitTxtView
+                        style="@style/TxtSettingsRows"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="5"
+                        android:text="FAQ" />
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:padding="12dp"
+                        android:src="@drawable/arrow_gray_right" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/container_setting_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/settings_row_height"
+                    android:background="@drawable/border_bottom"
+                    android:orientation="horizontal"
+                    android:weightSum="7">
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
                         android:layout_weight="1">
 
-                        <com.bentonow.bentonow.ui.FontAwesomeButton
-                            android:id="@+id/btn_email"
-                            style="@style/btn_rounded"
-                            android:layout_centerHorizontal="true"
-                            android:background="@drawable/background_circle_dark_blue"
-                            android:onClick="onEmailPressed"
-                            android:text="@string/fa_envelope" />
-
-                        <TextView
+                        <android.support.v7.widget.CardView
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/btn_email"
-                            android:layout_marginTop="5sp"
-                            android:gravity="center"
-                            android:text="@string/email"
-                            android:textColor="@color/dark_blue"
-                            android:textStyle="bold" />
-                    </RelativeLayout>
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
+                            app:cardCornerRadius="7dp"
+                            card_view:cardBackgroundColor="@color/gray_icon">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_action_communication_email" />
+                        </android.support.v7.widget.CardView>
+
+
+                    </FrameLayout>
+
+                    <com.bentonow.bentonow.ui.AutoFitTxtView
+                        style="@style/TxtSettingsRows"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="5"
+                        android:text="Email Support" />
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:padding="12dp"
+                        android:src="@drawable/arrow_gray_right" />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/container_setting_call"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/settings_row_height"
+                    android:background="@drawable/border_bottom"
+                    android:orientation="horizontal"
+                    android:weightSum="7">
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1">
+
+                        <android.support.v7.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
+                            app:cardCornerRadius="7dp"
+                            card_view:cardBackgroundColor="@color/gray_icon">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_action_maps_local_phone" />
+                        </android.support.v7.widget.CardView>
+
+
+                    </FrameLayout>
+
+                    <com.bentonow.bentonow.ui.AutoFitTxtView
+                        style="@style/TxtSettingsRows"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="5"
+                        android:text="Phone Support" />
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:padding="12dp"
+                        android:src="@drawable/arrow_gray_right" />
 
                 </LinearLayout>
             </LinearLayout>
+        </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/container_coupon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/dark_blue"
+                android:orientation="vertical"
+                android:padding="10sp">
+
+                <com.bentonow.bentonow.ui.BackendTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:paddingBottom="5dp"
+                    android:textColor="@color/white"
+                    app:key="share-promo-message" />
+
+                <TextView
+                    android:id="@+id/txt_coupon"
+                    style="@style/TxtSettingsSocialMedia"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="10dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="10dp"
+                android:paddingTop="10dp">
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <com.bentonow.bentonow.ui.FontAwesomeButton
+                        android:id="@+id/btn_facebook"
+                        style="@style/btn_rounded"
+                        android:layout_centerHorizontal="true"
+                        android:background="@drawable/background_circle_blue"
+                        android:onClick="onFacebookPressed"
+                        android:text="@string/fa_facebook" />
+
+                    <TextView
+                        style="@style/TxtSettingsSocialMedia"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/btn_facebook"
+                        android:text="@string/share" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <com.bentonow.bentonow.ui.FontAwesomeButton
+                        android:id="@+id/btn_twitter"
+                        style="@style/btn_rounded"
+                        android:layout_centerHorizontal="true"
+                        android:background="@drawable/background_circle_cyan"
+                        android:onClick="onTwitterPressed"
+                        android:text="@string/fa_twitter" />
+
+                    <TextView
+                        style="@style/TxtSettingsSocialMedia"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/btn_twitter"
+                        android:text="@string/tweet" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <com.bentonow.bentonow.ui.FontAwesomeButton
+                        android:id="@+id/btn_sms"
+                        style="@style/btn_rounded"
+                        android:layout_centerHorizontal="true"
+                        android:background="@drawable/background_circle_sms_green"
+                        android:onClick="onMessagePressed"
+                        android:text="@string/fa_comment" />
+
+                    <TextView
+                        style="@style/TxtSettingsSocialMedia"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/btn_sms"
+                        android:text="@string/text" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <com.bentonow.bentonow.ui.FontAwesomeButton
+                        android:id="@+id/btn_email"
+                        style="@style/btn_rounded"
+                        android:layout_centerHorizontal="true"
+                        android:background="@drawable/background_circle_dark_blue"
+                        android:onClick="onEmailPressed"
+                        android:text="@string/fa_envelope" />
+
+                    <TextView
+                        style="@style/TxtSettingsSocialMedia"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/btn_email"
+                        android:text="@string/email" />
+                </RelativeLayout>
+
+            </LinearLayout>
         </LinearLayout>
-    </ScrollView>
-</LinearLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

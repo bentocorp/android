@@ -1,45 +1,75 @@
 package com.bentonow.bentonow.controllers.order;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.bentonow.bentonow.R;
-import com.bentonow.bentonow.Utils.BentoNowUtils;
-import com.bentonow.bentonow.Utils.MixpanelUtils;
+import com.bentonow.bentonow.Utils.BentoRestClient;
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
-import com.bentonow.bentonow.controllers.help.HelpActivity;
+import com.bentonow.bentonow.model.User;
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
+
+import org.apache.http.Header;
 
 public class OrderHistoryActivity extends BaseFragmentActivity implements View.OnClickListener {
 
-    private static final String TAG = "OrderConfirmedActivity";
+    private static final String TAG = "OrderHistoryActivity";
+
+    private User mCurrentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_order_confirmed);
+        setContentView(R.layout.activity_order_history);
 
-        MixpanelUtils.track("Viewed Order Confirmation Screen");
 
-        ImageView actionbar_right_btn = (ImageView) findViewById(R.id.actionbar_right_btn);
-        actionbar_right_btn.setImageResource(R.drawable.ic_ab_help);
-        actionbar_right_btn.setOnClickListener(this);
+        ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
+        actionbar_left_btn.setImageResource(R.drawable.ic_ab_back);
+        actionbar_left_btn.setOnClickListener(OrderHistoryActivity.this);
+
+
     }
 
-    public void onFaqPressed(View view) {
-        Intent intent = new Intent(this, HelpActivity.class);
-        intent.putExtra("faq", true);
-        startActivity(intent);
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        mCurrentUser = userDao.getCurrentUser();
+
+        getOrderHistoryByUser();
     }
 
-    public void onAddAnotherBentoPressed(View view) {
-        onBackPressed();
+    private void getOrderHistoryByUser() {
+        RequestParams params = new RequestParams();
+        params.put("api_token", mCurrentUser.api_token);
+        BentoRestClient.get("/user/orderhistory", params, new TextHttpResponseHandler() {
+            @SuppressWarnings("deprecation")
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                DebugUtils.logError(TAG, "getOrderHistoryByUser failed: " + responseString + " StatusCode: " + statusCode);
+            }
+
+            @SuppressWarnings("deprecation")
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                DebugUtils.logDebug(TAG, "getOrderHistoryByUser: " + responseString);
+            }
+        });
     }
 
     @Override
     public void onClick(View v) {
-        onFaqPressed(null);
+        switch (v.getId()) {
+            case R.id.actionbar_left_btn:
+                onBackPressed();
+                break;
+            default:
+                DebugUtils.logError(TAG, v.getId() + "");
+                break;
+        }
     }
 
 
@@ -48,9 +78,4 @@ public class OrderHistoryActivity extends BaseFragmentActivity implements View.O
         super.onDestroy();
     }
 
-    @Override
-    public void onBackPressed() {
-        finish();
-        BentoNowUtils.openBuildBentoActivity(OrderHistoryActivity.this);
-    }
 }

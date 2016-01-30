@@ -19,7 +19,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:padding="@dimen/actionbar_btns_padding"
+            android:padding="15dp"
             android:src="@drawable/ic_ab_user" />
 
         <ImageView

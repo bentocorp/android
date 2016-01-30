@@ -79,10 +79,9 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
             optOpenScreen = (ConstantUtils.optOpenScreen) getIntent().getExtras().getSerializable(ConstantUtils.TAG_OPEN_SCREEN);
         } catch (Exception ex) {
             DebugUtils.logError(TAG, ex);
+            optOpenScreen = ConstantUtils.optOpenScreen.NORMAL;
         }
 
-        if (optOpenScreen == null)
-            optOpenScreen = ConstantUtils.optOpenScreen.NORMAL;
 
         mCurrentUser = userDao.getCurrentUser();
 

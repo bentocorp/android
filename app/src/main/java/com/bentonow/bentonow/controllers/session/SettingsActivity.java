@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,8 +25,8 @@ import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.dialog.EditPhoneDialog;
 import com.bentonow.bentonow.controllers.dialog.LogOutDialog;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
+import com.bentonow.bentonow.controllers.order.OrderHistoryActivity;
 import com.bentonow.bentonow.dao.IosCopyDao;
-import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.listener.ListenerDialog;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.ui.FontAwesomeButton;
@@ -49,8 +50,14 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
     private String message = null;
 
     private LinearLayout layoutContainerPhone;
+    private LinearLayout containerSettingsOrders;
+    private LinearLayout containerSettingsSignIn;
+    private LinearLayout containerSettingsFaq;
+    private LinearLayout containerSettingsEmail;
+    private LinearLayout containerSettingsCall;
+    private LinearLayout containerSettingsCreditCard;
+    private RelativeLayout containerUser;
 
-    private UserDao userDao = new UserDao();
     private User mCurrentUser;
 
     @Override
@@ -65,15 +72,12 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
         ((FontAwesomeButton) findViewById(R.id.btn_sms)).setup(this);
         ((FontAwesomeButton) findViewById(R.id.btn_email)).setup(this);
 
-        ((FontAwesomeButton) findViewById(R.id.btn_facebook)).setup(this);
-        ((FontAwesomeButton) findViewById(R.id.btn_twitter)).setup(this);
-        ((FontAwesomeButton) findViewById(R.id.btn_sms)).setup(this);
-        ((FontAwesomeButton) findViewById(R.id.btn_email)).setup(this);
-
-        ((FontAwesomeButton) findViewById(R.id.ico_user)).setup(this);
-        ((FontAwesomeButton) findViewById(R.id.ico_faq)).setup(this);
-        ((FontAwesomeButton) findViewById(R.id.ico_mail_support)).setup(this);
-        ((FontAwesomeButton) findViewById(R.id.ico_phone_support)).setup(this);
+        getContainerSettingsSignIn().setOnClickListener(this);
+        getContainerSettingsFaq().setOnClickListener(this);
+        getContainerSettingsEmail().setOnClickListener(this);
+        getContainerSettingsCall().setOnClickListener(this);
+        getContainerSettingsCreditCard().setOnClickListener(this);
+        getContainerSettingsOrders().setOnClickListener(this);
     }
 
     @Override
@@ -81,9 +85,6 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
         super.onResume();
 
         mCurrentUser = userDao.getCurrentUser();
-
-
-        DebugUtils.logDebug(TAG, "Api Token: " + mCurrentUser.api_token);
 
         updateUI();
 
@@ -103,8 +104,10 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
     }
 
     void updateUI() {
-        findViewById(R.id.container_user).setVisibility(mCurrentUser == null ? View.GONE : View.VISIBLE);
-        findViewById(R.id.container_sig_in).setVisibility(mCurrentUser != null ? View.GONE : View.VISIBLE);
+        getContainerUser().setVisibility(mCurrentUser == null ? View.GONE : View.VISIBLE);
+        getContainerSettingsSignIn().setVisibility(mCurrentUser != null ? View.GONE : View.VISIBLE);
+        getContainerSettingsCreditCard().setVisibility(mCurrentUser != null ? View.VISIBLE : View.GONE);
+        getContainerSettingsOrders().setVisibility(mCurrentUser != null ? View.VISIBLE : View.GONE);
         getLayoutContainerPhone().setOnClickListener(this);
 
         if (mCurrentUser != null) {
@@ -115,6 +118,8 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
 
             ((TextView) findViewById(R.id.txt_coupon)).setText(mCurrentUser.coupon_code);
             findViewById(R.id.container_coupon).setVisibility(View.VISIBLE);
+
+            DebugUtils.logDebug(TAG, "Api Token: " + mCurrentUser.api_token);
         } else {
             findViewById(R.id.container_coupon).setVisibility(View.GONE);
         }
@@ -173,19 +178,19 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
         mDialog.show();
     }
 
-    public void onSignInPressed(View v) {
+    private void onSignInPressed() {
         Intent intent = new Intent(this, SignInActivity.class);
         intent.putExtra("settings", true);
         startActivity(intent);
     }
 
-    public void onFaqPressed(View v) {
+    private void onFaqPressed() {
         Intent intent = new Intent(this, HelpActivity.class);
         intent.putExtra("faq", true);
         startActivity(intent);
     }
 
-    public void onEmailSupportPressed(View v) {
+    public void onEmailSupportPressed() {
         String[] TO = {"help@bentonow.com"};
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
         emailIntent.setData(Uri.parse("mailto:"));
@@ -199,13 +204,25 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
         }
     }
 
-    public void onPhoneSupportPressed(View v) {
+    private void onPhoneSupportPressed() {
         action = "phone";
         ConfirmationDialog mDialog = new ConfirmationDialog(SettingsActivity.this, "Call Us", "415.300.1332");
         mDialog.addAcceptButton("Call", SettingsActivity.this);
         mDialog.addCancelButton("Cancel", null);
         mDialog.show();
     }
+
+    private void onCreditCardPressed() {
+        //TODO New Credit Card Button Text
+        BentoNowUtils.openCreditCardActivity(SettingsActivity.this, ConstantUtils.optOpenScreen.NORMAL);
+    }
+
+
+    private void openOrderHistoryActivity() {
+        Intent mIntentOrder = new Intent(SettingsActivity.this, OrderHistoryActivity.class);
+        startActivity(mIntentOrder);
+    }
+
 
     public void onFacebookPressed(View v) {
         if (!SocialNetworksUtil.postStatusFacebook(SettingsActivity.this, message, ConstantUtils.URL_INSTALL_ANDROID)) {
@@ -268,7 +285,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
                         if (!userDao.removeUser())
                             userDao.clearAllData();
 
-                        onSignInPressed(null);
+                        onSignInPressed();
                         break;
                     default:
                         Crashlytics.log(Log.ERROR, "SendOrderError", "Code " + statusCode + " : Response " + responseString + " : Parsing " + sError);
@@ -343,6 +360,27 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
                 });
                 editDialog.show(getFragmentManager(), EditPhoneDialog.TAG);
                 break;
+            case R.id.container_sign_in:
+                onSignInPressed();
+                break;
+            case R.id.container_setting_faq:
+                onFaqPressed();
+                break;
+            case R.id.container_setting_email:
+                onEmailSupportPressed();
+                break;
+            case R.id.container_setting_call:
+                onPhoneSupportPressed();
+                break;
+            case R.id.container_setting_credit_card:
+                onCreditCardPressed();
+                break;
+            case R.id.container_settings_orders:
+                openOrderHistoryActivity();
+                break;
+            default:
+                DebugUtils.logError(TAG, "No found: " + v.getId());
+                break;
         }
     }
 
@@ -364,4 +402,54 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
 
         return layoutContainerPhone;
     }
+
+    private LinearLayout getContainerSettingsOrders() {
+        if (containerSettingsOrders == null)
+            containerSettingsOrders = (LinearLayout) findViewById(R.id.container_settings_orders);
+
+        return containerSettingsOrders;
+    }
+
+    private LinearLayout getContainerSettingsSignIn() {
+        if (containerSettingsSignIn == null)
+            containerSettingsSignIn = (LinearLayout) findViewById(R.id.container_sign_in);
+
+        return containerSettingsSignIn;
+    }
+
+    private LinearLayout getContainerSettingsFaq() {
+        if (containerSettingsFaq == null)
+            containerSettingsFaq = (LinearLayout) findViewById(R.id.container_setting_faq);
+
+        return containerSettingsFaq;
+    }
+
+    private LinearLayout getContainerSettingsEmail() {
+        if (containerSettingsEmail == null)
+            containerSettingsEmail = (LinearLayout) findViewById(R.id.container_setting_email);
+
+        return containerSettingsEmail;
+    }
+
+    private LinearLayout getContainerSettingsCall() {
+        if (containerSettingsCall == null)
+            containerSettingsCall = (LinearLayout) findViewById(R.id.container_setting_call);
+
+        return containerSettingsCall;
+    }
+
+    private LinearLayout getContainerSettingsCreditCard() {
+        if (containerSettingsCreditCard == null)
+            containerSettingsCreditCard = (LinearLayout) findViewById(R.id.container_setting_credit_card);
+
+        return containerSettingsCreditCard;
+    }
+
+    private RelativeLayout getContainerUser() {
+        if (containerUser == null)
+            containerUser = (RelativeLayout) findViewById(R.id.container_user);
+
+        return containerUser;
+    }
+
 }

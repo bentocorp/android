@@ -20,13 +20,12 @@
     <dimen name="dish_main_custom_item_height">200dp</dimen>
     <dimen name="dish_side_custom_item_height">180dp</dimen>
     <dimen name="actionbar_btns_padding">10dp</dimen>
-    <dimen name="actionbar_height" >55dp</dimen>
+    <dimen name="actionbar_height">55dp</dimen>
     <dimen name="red_rounded">25dp</dimen>
     <dimen name="red_rounded_padding">0dp</dimen>
     <dimen name="red_rounded_margin_top">5dp</dimen>
     <dimen name="red_rounded_width_height">16dp</dimen>
     <dimen name="red_rounded_text_size">9sp</dimen>
-    <dimen name="setting_ico_padd">5dp</dimen>
     <dimen name="point_counter_size">40dp</dimen>
     <dimen name="home_about_point_padding">10dp</dimen>
     <dimen name="home_about_point_left_padding">10dp</dimen>
@@ -39,4 +38,6 @@
     <dimen name="menu_item_description">14sp</dimen>
     <dimen name="menu_item_side_title">12sp</dimen>
     <dimen name="h1">32sp</dimen>
+    <dimen name="settings_row_height">48dp</dimen>
+    <dimen name="setting_ico_padd">10dp</dimen>
 </resources>

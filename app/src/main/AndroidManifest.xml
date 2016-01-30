@@ -101,6 +101,9 @@
         <activity
             android:name=".controllers.errors.NextDayMenuActivity"
             android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".controllers.order.OrderHistoryActivity"
+            android:screenOrientation="portrait"></activity>
 
 
         <activity
