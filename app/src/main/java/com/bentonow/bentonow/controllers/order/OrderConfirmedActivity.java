@@ -10,10 +10,14 @@ import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
+import com.bentonow.bentonow.ui.BackendButton;
 
 public class OrderConfirmedActivity extends BaseFragmentActivity implements View.OnClickListener {
 
     private static final String TAG = "OrderConfirmedActivity";
+
+    private BackendButton btnViewAllOrders;
+    private ImageView menuItemRight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,9 +26,10 @@ public class OrderConfirmedActivity extends BaseFragmentActivity implements View
 
         MixpanelUtils.track("Viewed Order Confirmation Screen");
 
-        ImageView actionbar_right_btn = (ImageView) findViewById(R.id.actionbar_right_btn);
-        actionbar_right_btn.setImageResource(R.drawable.ic_ab_help);
-        actionbar_right_btn.setOnClickListener(this);
+        getMenuItemRight().setImageResource(R.drawable.ic_ab_help);
+        getMenuItemRight().setOnClickListener(this);
+
+        getBtnViewAllOrders().setOnClickListener(this);
     }
 
     public void onFaqPressed(View view) {
@@ -39,7 +44,15 @@ public class OrderConfirmedActivity extends BaseFragmentActivity implements View
 
     @Override
     public void onClick(View v) {
-        onFaqPressed(null);
+        switch (v.getId()) {
+            case R.id.actionbar_right_btn:
+                onFaqPressed(null);
+                break;
+            case R.id.btn_view_all_orders:
+                BentoNowUtils.openOrderHistoryActivity(OrderConfirmedActivity.this);
+                break;
+        }
+
     }
 
 
@@ -53,4 +66,18 @@ public class OrderConfirmedActivity extends BaseFragmentActivity implements View
         finish();
         BentoNowUtils.openBuildBentoActivity(OrderConfirmedActivity.this);
     }
+
+    public BackendButton getBtnViewAllOrders() {
+        if (btnViewAllOrders == null)
+            btnViewAllOrders = (BackendButton) findViewById(R.id.btn_view_all_orders);
+        return btnViewAllOrders;
+    }
+
+
+    public ImageView getMenuItemRight() {
+        if (menuItemRight == null)
+            menuItemRight = (ImageView) findViewById(R.id.actionbar_right_btn);
+        return menuItemRight;
+    }
+
 }

@@ -2,62 +2,129 @@ package com.bentonow.bentonow.controllers.order;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
+import com.bentonow.bentonow.controllers.adapter.ExpandableListOrderHistoryAdapter;
+import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
+import com.bentonow.bentonow.dao.IosCopyDao;
+import com.bentonow.bentonow.listener.ListenerOrderHistory;
 import com.bentonow.bentonow.model.User;
+import com.bentonow.bentonow.model.order.history.OrderHistoryModel;
+import com.bentonow.bentonow.parse.OrderHistoryJsonParser;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.apache.http.Header;
 
-public class OrderHistoryActivity extends BaseFragmentActivity implements View.OnClickListener {
+public class OrderHistoryActivity extends BaseFragmentActivity implements View.OnClickListener, ListenerOrderHistory {
 
     private static final String TAG = "OrderHistoryActivity";
 
+    private ImageView menuItemLeft;
+    private TextView toolbarTitle;
+    private ExpandableListView mExpandableListOrderHistory;
+
+    private ExpandableListOrderHistoryAdapter mExpandableAdapter;
+    private ProgressDialog mProgressDialog;
+
     private User mCurrentUser;
+    private OrderHistoryModel mOrderHistory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_history);
 
+        getMenuItemLeft().setImageResource(R.drawable.ic_ab_back);
+        getMenuItemLeft().setOnClickListener(OrderHistoryActivity.this);
+        getToolbarTitle().setText(IosCopyDao.get("pane-title-orders"));
 
-        ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
-        actionbar_left_btn.setImageResource(R.drawable.ic_ab_back);
-        actionbar_left_btn.setOnClickListener(OrderHistoryActivity.this);
+        getmExpandableListOrderHistory().setAdapter(getExpandableListAdapter());
+        getmExpandableListOrderHistory().setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+            @Override
+            public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
+                // Doing nothing
+                return true;
+            }
+        });
 
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
 
         mCurrentUser = userDao.getCurrentUser();
 
         getOrderHistoryByUser();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
     private void getOrderHistoryByUser() {
+        showLoadingDialog(getString(R.string.processing_label), false);
+
         RequestParams params = new RequestParams();
         params.put("api_token", mCurrentUser.api_token);
+
         BentoRestClient.get("/user/orderhistory", params, new TextHttpResponseHandler() {
             @SuppressWarnings("deprecation")
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 DebugUtils.logError(TAG, "getOrderHistoryByUser failed: " + responseString + " StatusCode: " + statusCode);
+
+               // dismissDialog();
             }
 
             @SuppressWarnings("deprecation")
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
                 DebugUtils.logDebug(TAG, "getOrderHistoryByUser: " + responseString);
+
+                mOrderHistory = OrderHistoryJsonParser.parseOrderHistory(responseString);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        getExpandableListAdapter().setListHistory(mOrderHistory.getListHistorySection());
+                        for (int a = 0; a < mOrderHistory.getListHistorySection().size(); a++)
+                            getmExpandableListOrderHistory().expandGroup(a, false);
+
+                        dismissDialog();
+                    }
+                });
+
             }
         });
+    }
+
+    private void showLoadingDialog(String sText, boolean bCancelable) {
+        if (mProgressDialog == null || !mProgressDialog.isShowing()) {
+            mProgressDialog = new ProgressDialog(OrderHistoryActivity.this, sText, bCancelable);
+            mProgressDialog.show();
+        }
+    }
+
+    private void dismissDialog() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mProgressDialog != null)
+                    mProgressDialog.dismiss();
+
+                mProgressDialog = null;
+            }
+        });
+    }
+
+    @Override
+    public void onRemoveOrder(int id) {
+
     }
 
     @Override
@@ -76,6 +143,35 @@ public class OrderHistoryActivity extends BaseFragmentActivity implements View.O
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    private ImageView getMenuItemLeft() {
+        if (menuItemLeft == null)
+            menuItemLeft = (ImageView) findViewById(R.id.actionbar_left_btn);
+        return menuItemLeft;
+    }
+
+    private TextView getToolbarTitle() {
+        if (toolbarTitle == null)
+            toolbarTitle = (TextView) findViewById(R.id.actionbar_title);
+        return toolbarTitle;
+    }
+
+
+    private ExpandableListView getmExpandableListOrderHistory() {
+        if (mExpandableListOrderHistory == null) {
+            mExpandableListOrderHistory = (ExpandableListView) findViewById(R.id.expand_list_order_history);
+            mExpandableListOrderHistory.setGroupIndicator(null);
+            mExpandableListOrderHistory.setClickable(false);
+        }
+        return mExpandableListOrderHistory;
+    }
+
+
+    private ExpandableListOrderHistoryAdapter getExpandableListAdapter() {
+        if (mExpandableAdapter == null)
+            mExpandableAdapter = new ExpandableListOrderHistoryAdapter(OrderHistoryActivity.this, OrderHistoryActivity.this);
+        return mExpandableAdapter;
     }
 
 }

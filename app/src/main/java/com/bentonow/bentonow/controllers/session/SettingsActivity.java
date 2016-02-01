@@ -217,13 +217,6 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
         BentoNowUtils.openCreditCardActivity(SettingsActivity.this, ConstantUtils.optOpenScreen.NORMAL);
     }
 
-
-    private void openOrderHistoryActivity() {
-        Intent mIntentOrder = new Intent(SettingsActivity.this, OrderHistoryActivity.class);
-        startActivity(mIntentOrder);
-    }
-
-
     public void onFacebookPressed(View v) {
         if (!SocialNetworksUtil.postStatusFacebook(SettingsActivity.this, message, ConstantUtils.URL_INSTALL_ANDROID)) {
 
@@ -376,7 +369,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
                 onCreditCardPressed();
                 break;
             case R.id.container_settings_orders:
-                openOrderHistoryActivity();
+               BentoNowUtils.openOrderHistoryActivity(SettingsActivity.this);
                 break;
             default:
                 DebugUtils.logError(TAG, "No found: " + v.getId());

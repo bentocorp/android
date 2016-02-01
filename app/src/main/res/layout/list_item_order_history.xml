@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/complete_row"
+    android:layout_width="fill_parent"
+    android:layout_height="48dp"
+    android:background="#EAEEEE"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <ImageButton
+        android:id="@+id/btn_edit_order"
+        android:layout_width="38dp"
+        android:layout_height="48dp"
+        android:background="@null"
+        android:contentDescription="@null"
+        android:src="@drawable/completeorder_cell_btn_minute" />
+
+    <me.grantland.widget.AutofitTextView
+        android:id="@+id/txt_order_history_title"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center|left"
+        android:paddingLeft="@dimen/btn_padding"
+        android:paddingRight="@dimen/btn_padding"
+        android:singleLine="true"
+        android:textColor="#7BA850"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/txt_order_history_price"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:paddingLeft="@dimen/btn_padding"
+        android:paddingRight="@dimen/btn_padding"
+        android:text=""
+        android:textAppearance="@style/SmallText"
+        android:textColor="#444E59" />
+
+</LinearLayout>

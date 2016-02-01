@@ -1,11 +1,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/base_relative_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.bentonow.bentonow.controllers.order.CompleteOrderActivity"
-    android:id="@+id/base_relative_layout"
-    android:background="@color/bgcolor">
+    android:background="#EAEEEE"
+    tools:context="com.bentonow.bentonow.controllers.order.CompleteOrderActivity">
 
     <!-- bento_toolbar -->
     <LinearLayout
@@ -13,68 +13,66 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        >
-        <include layout="@layout/actionbar_center_logo"/>
+        android:layout_centerHorizontal="true">
+
+        <include layout="@layout/actionbar_center_logo" />
     </LinearLayout>
 
     <!-- INI CONTAINER -->
     <RelativeLayout
-        android:layout_below="@+id/ActionBarContainer"
-        android:layout_above="@+id/footer_container"
+        android:id="@+id/main_relative"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/main_relative"
-        android:gravity="center"
-        >
+        android:layout_above="@+id/footer_container"
+        android:layout_below="@+id/ActionBarContainer"
+        android:gravity="center">
         <!-- INI content -->
 
-            <LinearLayout
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/general_padding">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/general_padding"
+                android:adjustViewBounds="true"
+                android:padding="@dimen/general_padding"
+                android:src="@drawable/car_order_confirmed" />
+
+            <com.bentonow.bentonow.ui.BackendTextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/general_padding"
-                >
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:src="@drawable/car_order_confirmed"
-                    android:padding="@dimen/general_padding"
-                    android:layout_margin="@dimen/general_padding"
-                    />
-                <com.bentonow.bentonow.ui.BackendTextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Order Confirmed!"
-                    android:gravity="center"
-                    android:textAppearance="@style/H1Gray"
-                    app:key="completed-title"
-                    />
-                <com.bentonow.bentonow.ui.BackendTextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="We'll send you text message updates while your delivery is on the way."
-                    android:textAppearance="@style/NormalText"
-                    android:layout_marginTop="15dp"
-                    app:key="completed-text"
-                    />
-                <com.bentonow.bentonow.ui.BackendButton
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="@string/question_concerns"
-                    android:textAppearance="@style/NormalText"
-                    android:textColor="@color/btn_green"
-                    android:textStyle="bold"
-                    android:layout_marginTop="15dp"
-                    android:background="@null"
-                    style="?android:attr/buttonBarButtonStyle"
-                    app:key="completed-questions-link"
-                    android:onClick="onFaqPressed"
-                    />
-            </LinearLayout>
+                android:gravity="center"
+                android:text="Order Confirmed!"
+                android:textAppearance="@style/H1Gray"
+                app:key="completed-title" />
+
+            <com.bentonow.bentonow.ui.BackendTextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:gravity="center"
+                android:text="We'll send you text message updates while your delivery is on the way."
+                android:textAppearance="@style/NormalText"
+                app:key="completed-text" />
+
+            <com.bentonow.bentonow.ui.BackendButton
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:background="@null"
+                android:gravity="center"
+                android:onClick="onFaqPressed"
+                android:text="@string/question_concerns"
+                android:textAppearance="@style/NormalText"
+                android:textColor="@color/btn_green"
+                android:textStyle="bold"
+                app:key="completed-questions-link" />
+        </LinearLayout>
 
         <!-- END content -->
     </RelativeLayout>
@@ -87,18 +85,32 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        >
+        android:orientation="vertical">
+
         <com.bentonow.bentonow.ui.BackendButton
-            android:background="@color/btn_green"
+            android:id="@+id/btn_view_all_orders"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:background="#6E7988"
             android:gravity="center"
-            android:textColor="@color/white"
-            android:padding="@dimen/btn_padding"
-            android:text="BUILD ANOTHER BENTO"
-            app:key="completed-button"
             android:onClick="onAddAnotherBentoPressed"
-            />
+            android:padding="@dimen/btn_padding"
+            android:textColor="@color/white"
+            app:key="btn-view-all-orders" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="20dp"></FrameLayout>
+
+        <com.bentonow.bentonow.ui.BackendButton
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="#6E7988"
+            android:gravity="center"
+            android:onClick="onAddAnotherBentoPressed"
+            android:padding="@dimen/btn_padding"
+            android:textColor="@color/white"
+            app:key="completed-button" />
     </LinearLayout>
 
 </RelativeLayout>

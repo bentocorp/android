@@ -33,7 +33,7 @@
             android:id="@+id/address_row"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:background="@color/white"
             android:orientation="horizontal">
@@ -90,7 +90,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:paddingBottom="@dimen/btn_padding"
-                android:paddingEnd="@dimen/btn_padding"
+                android:paddingRight="@dimen/btn_padding"
                 android:paddingTop="@dimen/btn_padding"
                 android:textColor="@color/black" />
 
@@ -120,7 +120,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_above="@+id/divisor_5"
-            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
             android:layout_below="@+id/divisor_2"
             tools:listheader="@layout/list_item_header_order"
             tools:listitem="@layout/list_item_order" />
@@ -318,7 +318,7 @@
                     android:id="@+id/view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
                     android:padding="@dimen/btn_padding"
                     android:textColor="@color/dark_gray"
@@ -331,7 +331,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignTop="@+id/view"
                     android:layout_centerVertical="true"
-                    android:layout_toEndOf="@+id/view"
+                    android:layout_toRightOf="@+id/view"
                     android:background="@null"
                     android:gravity="center_vertical"
                     android:onClick="showAddPromoCodeDialog"
@@ -346,7 +346,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_toStartOf="@+id/txt_total">
+                    android:layout_toLeftOf="@+id/txt_total">
 
                     <TextView
                         android:id="@+id/txt_promo_total"
@@ -372,7 +372,7 @@
                     android:id="@+id/txt_total"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:padding="@dimen/btn_padding"
                     android:text="@string/zero_dollar"
@@ -391,7 +391,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentLeft="true">
 
         <com.bentonow.bentonow.ui.BackendButton
             android:id="@+id/btn_on_lets_eat_pressed"
@@ -477,7 +477,6 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:baselineAligned="false"
             android:gravity="center"
@@ -533,7 +532,7 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:baselineAligned="false"
             android:gravity="center"
@@ -582,7 +581,7 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:baselineAligned="false"
             android:gravity="center"
@@ -632,7 +631,6 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:baselineAligned="false"
             android:gravity="center"
@@ -698,7 +696,6 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:baselineAligned="false"
             android:gravity="center"

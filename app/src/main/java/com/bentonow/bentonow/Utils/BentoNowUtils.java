@@ -18,6 +18,7 @@ import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.controllers.init.MainActivity;
 import com.bentonow.bentonow.controllers.order.BuildBentoActivity;
 import com.bentonow.bentonow.controllers.order.CompleteOrderActivity;
+import com.bentonow.bentonow.controllers.order.OrderHistoryActivity;
 import com.bentonow.bentonow.controllers.payment.EnterCreditCardActivity;
 import com.bentonow.bentonow.controllers.session.EnterPhoneNumberActivity;
 import com.bentonow.bentonow.controllers.session.SettingsActivity;
@@ -47,12 +48,11 @@ import java.util.UUID;
  */
 public class BentoNowUtils {
 
-    private static final String TAG = "BentoNowUtils";
-
     public static final SimpleDateFormat sdfBento = new SimpleDateFormat("yyyyMMdd");
     public static final SimpleDateFormat sdfBentoInit2 = new SimpleDateFormat("yyyy-MM-dd");
     public static final boolean B_APPIUM_TESTING = false;
     public static final boolean B_KOKUSHO_TESTING = true;
+    private static final String TAG = "BentoNowUtils";
 
     public static int getCurrentTime() {
         if (BuildConfig.DEBUG && BentoNowUtils.B_KOKUSHO_TESTING)
@@ -166,6 +166,11 @@ public class BentoNowUtils {
         startMain.addCategory(Intent.CATEGORY_HOME);
         startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         mContext.startActivity(startMain);
+    }
+
+    public static void openOrderHistoryActivity(FragmentActivity mContext) {
+        Intent mIntentOrder = new Intent(mContext, OrderHistoryActivity.class);
+        mContext.startActivity(mIntentOrder);
     }
 
     public static String getUUIDBento() {
