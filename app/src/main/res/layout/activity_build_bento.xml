@@ -142,19 +142,6 @@
                         android:layout_height="30dp"
                         android:text="As soon as possible" />
 
-                    <TextView
-                        android:id="@+id/txt_od_title"
-                        style="@style/TextViewMenuDateTitle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginBottom="3dp"
-                        android:layout_marginTop="3dp"
-                        android:layout_weight="80"
-                        android:text="Today, Lunch" />
-
                     <com.bentonow.bentonow.ui.AutoFitTxtView
                         android:id="@+id/txt_date_time_description"
                         android:layout_width="match_parent"
@@ -162,6 +149,7 @@
                         android:layout_above="@+id/linearLayout3"
                         android:maxLines="5"
                         android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+                        android:textColor="@color/black"
                         android:textSize="16sp" />
 
                 </LinearLayout>
@@ -188,81 +176,85 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="3dp"
-                android:orientation="horizontal"
-                android:weightSum="100">
+                android:orientation="vertical">
 
 
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="90"
-                    android:orientation="vertical">
+                    android:id="@+id/wrapper_oa_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:orientation="horizontal"
+                    android:weightSum="100">
+
 
                     <com.bentonow.bentonow.ui.AutoFitTxtView
                         android:id="@+id/txt_oa_header"
                         style="@style/TextViewMenuDateName"
-                        android:layout_width="match_parent"
-                        android:layout_height="30dp"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="90"
                         android:text="Choose your time" />
 
-                    <LinearLayout
-                        android:id="@+id/container_spinner_day_time_oa"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_above="@+id/wrapper_valid_date"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_marginBottom="10dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:weightSum="100">
 
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="60"
-                            android:orientation="vertical"
-                            android:paddingRight="10dp">
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="10">
 
-                            <Spinner
-                                android:id="@+id/spinner_date"
-                                android:layout_width="match_parent"
-                                android:layout_height="40dp" />
+                        <ImageView
+                            android:id="@+id/checkbox_oa"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_gravity="center|right"
+                            android:background="@drawable/bento_btn_check_on_holo_light"
+                            android:checked="true" />
 
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="40"
-                            android:orientation="vertical"
-                            android:paddingLeft="10dp">
-
-                            <Spinner
-                                android:id="@+id/spinner_time"
-                                android:layout_width="match_parent"
-                                android:layout_height="40dp" />
-
-                        </LinearLayout>
-                    </LinearLayout>
+                    </FrameLayout>
 
                 </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/container_spinner_day_time_oa"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/wrapper_valid_date"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginBottom="10dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:weightSum="100">
 
-                <FrameLayout
-                    android:layout_width="0dp"
-                    android:layout_height="30dp"
-                    android:layout_weight="10">
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="60"
+                        android:orientation="vertical"
+                        android:paddingRight="10dp">
 
-                    <ImageView
-                        android:id="@+id/checkbox_oa"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_gravity="center|right"
-                        android:background="@drawable/bento_btn_check_on_holo_light"
-                        android:checked="true" />
+                        <Spinner
+                            android:id="@+id/spinner_date"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp" />
 
-                </FrameLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="40"
+                        android:orientation="vertical"
+                        android:paddingLeft="10dp">
+
+                        <Spinner
+                            android:id="@+id/spinner_time"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+
             </LinearLayout>
 
             <LinearLayout

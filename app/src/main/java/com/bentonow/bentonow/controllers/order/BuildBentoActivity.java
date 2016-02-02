@@ -59,21 +59,22 @@ import java.util.ArrayList;
 public class BuildBentoActivity extends BaseFragmentActivity implements View.OnClickListener, InterfaceCustomerService, AdapterView.OnItemClickListener {
 
     static final String TAG = "BuildBentoActivity";
-
+    //private static Tweak<Boolean> showBanner = MixpanelAPI.booleanTweak("Show Banner", false);
+    private static Tweak<Boolean> showAddons = MixpanelAPI.booleanTweak("Show AddOns", false);
+    int iMenuSelected = 0;
+    boolean bIsMenuAvailable = false;
     private BackendTextView txtAddMain;
     private BackendTextView txtAddSide1;
     private BackendTextView txtAddSide2;
     private BackendTextView txtAddSide3;
     private BackendTextView txtAddSide4;
-
     private BackendAutoFitTextView btnContinue;
     private BackendAutoFitTextView btnAddAnotherBento;
     private TextView txtNumBento;
     private LinearLayout layoutAddOns;
     private LinearLayout wrapperOd;
     private LinearLayout wrapperOa;
-
-
+    private LinearLayout wrapperOaHeader;
     private int orderIndex;
     private AutoFitTxtView txtPromoName;
     private AutoFitTxtView txtEta;
@@ -84,7 +85,6 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     private AutoFitTxtView txtOdHeader;
     private ImageView actionbarLeftBtn;
     private ImageView actionbarRightBtn;
-
     private ImageView imgMain;
     private ImageView imgMain4;
     private ImageView imgSide1;
@@ -123,7 +123,6 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     private FrameLayout containerCancelWidget;
     private LinearLayout containerDateTimeSelection;
     private LinearLayout containerSpinnerDayTimeOa;
-
     private TextView txtTitleMain;
     private TextView txtTitleMain4;
     private TextView txtTitleSide1;
@@ -133,35 +132,26 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     private TextView txtTitleSide3;
     private TextView txtTitleSide34;
     private TextView txtTitleSide4;
-    private TextView txtOdTitle;
-
     private Spinner spinnerDate;
     private Spinner spinnerTime;
-
     private ImageView checkBoxOD;
     private ImageView checkBoxOA;
-
     private ButtonFlat buttonCancel;
     private ButtonFlat buttonAccept;
     private ListView mListMain;
     private GridView gridSide;
     private ListView mListAddOn;
-
     private NextDayMainListAdapter mainAdapter;
     private NextDayMainListAdapter sideAdapter;
     private NextDayMainListAdapter addOnAdapter;
-
     private SpinnerOATimeListAdapter mSpinnerTimeAdapter;
     private SpinnerOADayListAdapter mSpinnerDayAdapter;
-
     private ConfirmationDialog mDialog;
-
     private Menu mMenu;
     private Menu mOAPreselectedMenu;
     private Order mOrder;
     private ArrayList<String> aMenusId = new ArrayList<>();
     private CountDownTimer mCountDown;
-
     private String sContinueBtn;
     private long lMilliSecondsRemaining;
     private boolean bSawAddOns = false;
@@ -172,10 +162,6 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     private boolean bShowAppOnDemand;
     private boolean bShowAppOnAhead;
     private ConstantUtils.optMenuSelected optMenu;
-    int iMenuSelected = 0;
-    boolean bIsMenuAvailable = false;
-    //private static Tweak<Boolean> showBanner = MixpanelAPI.booleanTweak("Show Banner", false);
-    private static Tweak<Boolean> showAddons = MixpanelAPI.booleanTweak("Show AddOns", false);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -190,8 +176,8 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         getButtonCancel().setOnClickListener(this);
         getButtonAccept().setOnClickListener(this);
         getContainerCancelWidget().setOnClickListener(this);
-        getCheckBoxOD().setOnClickListener(this);
-        getCheckBoxOA().setOnClickListener(this);
+        getWrapperOd().setOnClickListener(this);
+        getWrapperOaHeader().setOnClickListener(this);
 
         getTxtEta().setText(String.format(getString(R.string.build_bento_eta), MenuDao.eta_min + "-" + MenuDao.eta_max));
 
@@ -217,7 +203,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     public void updateUI() {
         if (bIsMenuAlreadySelected) {
             if (bShowAppOnAhead) {
-                getTxtOdTitle().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getTitle());
+                getTxtOdHeader().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getTitle());
                 getTxtOdDescription().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getText());
             }
 
@@ -324,7 +310,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
         if (bShowAppOnDemand) {
             getWrapperOd().setVisibility(View.VISIBLE);
-            getTxtOdTitle().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getTitle());
+            getTxtOdHeader().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getTitle());
             getTxtOdDescription().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getText());
         } else
             getWrapperOd().setVisibility(View.GONE);
@@ -803,13 +789,15 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                 if (bIsAsapChecked) {
                     getCheckBoxOD().setBackgroundDrawable(getResources().getDrawable(R.drawable.bento_btn_check_on_holo_light));
                     getCheckBoxOA().setBackgroundDrawable(getResources().getDrawable(R.drawable.bento_btn_check_off_holo_light));
-                    getTxtOdTitle().setVisibility(View.VISIBLE);
+                    getTxtOdHeader().setTextColor(getResources().getColor(R.color.green_promo));
+                    getTxtOaHeader().setTextColor(getResources().getColor(R.color.black));
                     getTxtOdDescription().setVisibility(View.VISIBLE);
                     getContainerSpinnerDayTimeOa().setVisibility(View.GONE);
                 } else {
                     getCheckBoxOD().setBackgroundDrawable(getResources().getDrawable(R.drawable.bento_btn_check_off_holo_light));
                     getCheckBoxOA().setBackgroundDrawable(getResources().getDrawable(R.drawable.bento_btn_check_on_holo_light));
-                    getTxtOdTitle().setVisibility(View.GONE);
+                    getTxtOdHeader().setTextColor(getResources().getColor(R.color.black));
+                    getTxtOaHeader().setTextColor(getResources().getColor(R.color.green_promo));
                     getTxtOdDescription().setVisibility(View.GONE);
                     getContainerSpinnerDayTimeOa().setVisibility(View.VISIBLE);
                 }
@@ -1042,13 +1030,13 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                 setDateTime(true, true);
                 restartWidget();
                 break;
-            case R.id.checkbox_od:
+            case R.id.wrapper_od:
                 if (!bIsAsapChecked) {
                     bIsAsapChecked = true;
                     updateWidgetSelection();
                 }
                 break;
-            case R.id.checkbox_oa:
+            case R.id.wrapper_oa_header:
                 if (bIsAsapChecked) {
                     bIsAsapChecked = false;
                     updateWidgetSelection();
@@ -1127,7 +1115,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                                 @Override
                                 public void run() {
                                     SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ON_DEMAND_AVAILABLE, MenuDao.gateKeeper.getAppOnDemandWidget().isSelected());
-                                    getTxtOdTitle().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getTitle());
+                                    getTxtOdHeader().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getTitle());
                                     getTxtOdDescription().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getText());
                                 }
                             });
@@ -1509,12 +1497,6 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         return txtTitleMain4;
     }
 
-    private TextView getTxtOdTitle() {
-        if (txtOdTitle == null)
-            txtOdTitle = (TextView) findViewById(R.id.txt_od_title);
-        return txtOdTitle;
-    }
-
     private RelativeLayout getContainerMainTitle() {
         if (containerMainTitle == null)
             containerMainTitle = (RelativeLayout) findViewById(R.id.container_main_title);
@@ -1633,6 +1615,13 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         if (wrapperOa == null)
             wrapperOa = (LinearLayout) findViewById(R.id.wrapper_oa);
         return wrapperOa;
+    }
+
+
+    private LinearLayout getWrapperOaHeader() {
+        if (wrapperOaHeader == null)
+            wrapperOaHeader = (LinearLayout) findViewById(R.id.wrapper_oa_header);
+        return wrapperOaHeader;
     }
 
     private Spinner getSpinnerDate() {

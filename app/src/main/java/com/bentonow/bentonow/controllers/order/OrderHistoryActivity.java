@@ -80,7 +80,7 @@ public class OrderHistoryActivity extends BaseFragmentActivity implements View.O
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 DebugUtils.logError(TAG, "getOrderHistoryByUser failed: " + responseString + " StatusCode: " + statusCode);
 
-                // dismissDialog();
+                dismissDialog();
             }
 
             @SuppressWarnings("deprecation")
@@ -94,11 +94,11 @@ public class OrderHistoryActivity extends BaseFragmentActivity implements View.O
                     @Override
                     public void run() {
                         boolean bShowList = false;
-                        // getExpandableListAdapter().setListHistory(mOrderHistory.getListHistorySection());
+                        getExpandableListAdapter().setListHistory(mOrderHistory.getListHistorySection());
                         for (int a = 0; a < mOrderHistory.getListHistorySection().size(); a++) {
-                            //getmExpandableListOrderHistory().expandGroup(a, false);
-                            //if (!mOrderHistory.getListHistorySection().get(a).getListItems().isEmpty())
-                            //  bShowList = true;
+                            getExpandableListOrderHistory().expandGroup(a, false);
+                            if (!mOrderHistory.getListHistorySection().get(a).getListItems().isEmpty())
+                                bShowList = true;
                         }
 
                         getTxtEmptyOrderHistory().setVisibility(bShowList ? View.GONE : View.VISIBLE);
