@@ -82,11 +82,10 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         TextView.OnEditorActionListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     public static final String TAG = "DeliveryLocationAct";
-
+    private static final long SCROLL_TIME = 100L;
     private GoogleMap googleMap; // Might be null if Google Play services APK is not available.
     private MySupportMapFragment mapFragment;
     private AutoCompleteTextView txt_address;
-
     private BackendTextView txtAlertAgree;
     private CheckBox check_i_agree;
     private Button btn_continue;
@@ -96,20 +95,15 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private ImageView actionbar_left_btn;
     private ProgressBar progressBar;
     private ProgressDialog mProgressDialog;
-
     private boolean mRequestingLocationUpdates;
     private GoogleApiClient mGoogleApiClient;
     private Location mCurrentLocation;
     private LocationRequest mLocationRequest;
     private LatLng mLastOrderLocation;
     private Address mOrderAddress;
-
     private ConstantUtils.optOpenScreen optOpenScreen;
-
     private ArrayList<AutoCompleteModel> resultList;
-
     private float previousZoomLevel = 17.7f;
-    private static final long SCROLL_TIME = 100L;
     private long lastTouched = 0;
 
     @Override
@@ -444,63 +438,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         });
     }
 
-
-    class GooglePlacesAutocompleteAdapter extends ArrayAdapter<String> implements Filterable {
-
-
-        public GooglePlacesAutocompleteAdapter(Context context, int textViewResourceId) {
-            super(context, textViewResourceId);
-        }
-
-        @Override
-        public int getCount() {
-            return (resultList != null) ? resultList.size() : 0;
-        }
-
-        @Override
-        public String getItem(int index) {
-            try {
-                return resultList.get(index).getAddress();
-            } catch (IndexOutOfBoundsException ignore) {
-                return "";
-            }
-        }
-
-        @Override
-        public Filter getFilter() {
-            return new Filter() {
-                @Override
-                protected FilterResults performFiltering(CharSequence constraint) {
-                    FilterResults filterResults = new FilterResults();
-                    if (constraint != null) {
-                        // Retrieve the autocomplete results.
-                        resultList = autocomplete(constraint.toString());
-
-                        // Assign the data to the FilterResults
-                        filterResults.values = resultList;
-                        filterResults.count = resultList.size();
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                notifyDataSetChanged();
-                            }
-                        });
-                    }
-                    return filterResults;
-                }
-
-                @Override
-                protected void publishResults(CharSequence constraint, FilterResults results) {
-                    if (results != null && results.count > 0) {
-                        notifyDataSetChanged();
-                    } else {
-                        notifyDataSetInvalidated();
-                    }
-                }
-            };
-        }
-    }
-
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     void setupAutocomplete() {
         getTxtAddress().setAdapter(new GooglePlacesAutocompleteAdapter(this, R.layout.listitem_locationaddress));
@@ -514,7 +451,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         getTxtAddress().setOnEditorActionListener(this);
     }
 
-
     public ArrayList<AutoCompleteModel> autocomplete(String input) {
         ArrayList<AutoCompleteModel> resultList = null;
 
@@ -523,6 +459,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         try {
             URL url = new URL("https://maps.googleapis.com/maps/api/place/autocomplete/json?key=" + getResources().getString(R.string.google_server_key) + "&input=" + URLEncoder.encode(input, "utf8"));
 
+            DebugUtils.logDebug(TAG, "URL Search: " + url.toString());
             conn = (HttpURLConnection) url.openConnection();
             InputStreamReader in = new InputStreamReader(conn.getInputStream());
 
@@ -661,7 +598,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         return mLocationRequest;
     }
 
-
     protected synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -676,7 +612,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         super.onPause();
         stopLocationUpdates();
     }
-
 
     @Override
     public void onClick(View v) {
@@ -731,7 +666,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         return true;
     }
 
-
     @Override
     public void onConnected(Bundle bundle) {
         DebugUtils.logDebug("buildGoogleApiClient", "onConnected:");
@@ -779,7 +713,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             }
         });
     }
-
 
     private MySupportMapFragment getMapFragment() {
         if (mapFragment == null)
@@ -845,6 +778,62 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         if (actionbar_left_btn == null)
             actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
         return actionbar_left_btn;
+    }
+
+    class GooglePlacesAutocompleteAdapter extends ArrayAdapter<String> implements Filterable {
+
+
+        public GooglePlacesAutocompleteAdapter(Context context, int textViewResourceId) {
+            super(context, textViewResourceId);
+        }
+
+        @Override
+        public int getCount() {
+            return (resultList != null) ? resultList.size() : 0;
+        }
+
+        @Override
+        public String getItem(int index) {
+            try {
+                return resultList.get(index).getAddress();
+            } catch (IndexOutOfBoundsException ignore) {
+                return "";
+            }
+        }
+
+        @Override
+        public Filter getFilter() {
+            return new Filter() {
+                @Override
+                protected FilterResults performFiltering(CharSequence constraint) {
+                    FilterResults filterResults = new FilterResults();
+                    if (constraint != null) {
+                        // Retrieve the autocomplete results.
+                        resultList = autocomplete(constraint.toString());
+
+                        // Assign the data to the FilterResults
+                        filterResults.values = resultList;
+                        filterResults.count = resultList.size();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                notifyDataSetChanged();
+                            }
+                        });
+                    }
+                    return filterResults;
+                }
+
+                @Override
+                protected void publishResults(CharSequence constraint, FilterResults results) {
+                    if (results != null && results.count > 0) {
+                        notifyDataSetChanged();
+                    } else {
+                        notifyDataSetInvalidated();
+                    }
+                }
+            };
+        }
     }
 
 }

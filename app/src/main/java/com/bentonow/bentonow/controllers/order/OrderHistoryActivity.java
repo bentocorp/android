@@ -17,6 +17,7 @@ import com.bentonow.bentonow.listener.ListenerOrderHistory;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.order.history.OrderHistoryModel;
 import com.bentonow.bentonow.parse.OrderHistoryJsonParser;
+import com.bentonow.bentonow.ui.BackendAutoFitTextView;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 
@@ -29,6 +30,7 @@ public class OrderHistoryActivity extends BaseFragmentActivity implements View.O
     private ImageView menuItemLeft;
     private TextView toolbarTitle;
     private ExpandableListView mExpandableListOrderHistory;
+    private BackendAutoFitTextView txtEmptyOrderHistory;
 
     private ExpandableListOrderHistoryAdapter mExpandableAdapter;
     private ProgressDialog mProgressDialog;
@@ -45,8 +47,8 @@ public class OrderHistoryActivity extends BaseFragmentActivity implements View.O
         getMenuItemLeft().setOnClickListener(OrderHistoryActivity.this);
         getToolbarTitle().setText(IosCopyDao.get("pane-title-orders"));
 
-        getmExpandableListOrderHistory().setAdapter(getExpandableListAdapter());
-        getmExpandableListOrderHistory().setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+        getExpandableListOrderHistory().setAdapter(getExpandableListAdapter());
+        getExpandableListOrderHistory().setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
                 // Doing nothing
@@ -78,7 +80,7 @@ public class OrderHistoryActivity extends BaseFragmentActivity implements View.O
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 DebugUtils.logError(TAG, "getOrderHistoryByUser failed: " + responseString + " StatusCode: " + statusCode);
 
-               // dismissDialog();
+                // dismissDialog();
             }
 
             @SuppressWarnings("deprecation")
@@ -91,10 +93,16 @@ public class OrderHistoryActivity extends BaseFragmentActivity implements View.O
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        getExpandableListAdapter().setListHistory(mOrderHistory.getListHistorySection());
-                        for (int a = 0; a < mOrderHistory.getListHistorySection().size(); a++)
-                            getmExpandableListOrderHistory().expandGroup(a, false);
+                        boolean bShowList = false;
+                        // getExpandableListAdapter().setListHistory(mOrderHistory.getListHistorySection());
+                        for (int a = 0; a < mOrderHistory.getListHistorySection().size(); a++) {
+                            //getmExpandableListOrderHistory().expandGroup(a, false);
+                            //if (!mOrderHistory.getListHistorySection().get(a).getListItems().isEmpty())
+                            //  bShowList = true;
+                        }
 
+                        getTxtEmptyOrderHistory().setVisibility(bShowList ? View.GONE : View.VISIBLE);
+                        getExpandableListOrderHistory().setVisibility(bShowList ? View.VISIBLE : View.GONE);
                         dismissDialog();
                     }
                 });
@@ -157,8 +165,13 @@ public class OrderHistoryActivity extends BaseFragmentActivity implements View.O
         return toolbarTitle;
     }
 
+    private BackendAutoFitTextView getTxtEmptyOrderHistory() {
+        if (txtEmptyOrderHistory == null)
+            txtEmptyOrderHistory = (BackendAutoFitTextView) findViewById(R.id.txt_empty_order_history);
+        return txtEmptyOrderHistory;
+    }
 
-    private ExpandableListView getmExpandableListOrderHistory() {
+    private ExpandableListView getExpandableListOrderHistory() {
         if (mExpandableListOrderHistory == null) {
             mExpandableListOrderHistory = (ExpandableListView) findViewById(R.id.expand_list_order_history);
             mExpandableListOrderHistory.setGroupIndicator(null);

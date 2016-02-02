@@ -28,11 +28,9 @@ import java.util.List;
 /**
  * Created by kokusho on 1/18/16.
  */
-public class InitParse {
+public class InitParse extends MainParser {
     private static final String TAG = "InitParse";
     private static final String timeForce = "12:40:00";
-
-    private static long init, now;
 
     public static void parseInitTwo(String sData) {
         init = System.currentTimeMillis();
@@ -289,7 +287,7 @@ public class InitParse {
             if (jsonGateKeeper.has("CurrentMealType"))
                 MenuDao.gateKeeper.setCurrentMealType(jsonGateKeeper.getString("CurrentMealType"));
 
-            if (jsonGateKeeper.has("MyZones")) {
+            if (parseSection(jsonGateKeeper, "MyZones")) {
                 JSONObject jsonMyZones = new JSONObject(jsonGateKeeper.getString("MyZones"));
 
                 if (jsonMyZones.has("OnDemand"))
@@ -299,10 +297,10 @@ public class InitParse {
                     MenuDao.gateKeeper.setOrderAhead(jsonMyZones.getBoolean("OrderAhead"));
             }
 
-            if (jsonGateKeeper.has("MealTypes")) {
+            if (parseSection(jsonGateKeeper, "MealTypes")) {
                 JSONObject jsonMealType = new JSONObject(jsonGateKeeper.getString("MealTypes"));
 
-                if (jsonMealType.has("hash")) {
+                if (parseSection(jsonMealType, "hash")) {
                     JSONObject jsonHash = new JSONObject(jsonMealType.getString("hash"));
 
                     if (jsonHash.has("2")) {
@@ -320,12 +318,12 @@ public class InitParse {
                     }.getType()));
             }
 
-            if (jsonGateKeeper.has("appOnDemandWidget")) {
+            if (parseSection(jsonGateKeeper, "appOnDemandWidget")) {
                 JSONObject jsonOnDemandWidget = new JSONObject(jsonGateKeeper.getString("appOnDemandWidget"));
                 MenuDao.gateKeeper.setAppOnDemandWidget(gson.fromJson(jsonGateKeeper.getString("appOnDemandWidget"), AppOnDemandWidgetModel.class));
                 MenuDao.gateKeeper.getAppOnDemandWidget().setMenu(null);
 
-                if (jsonOnDemandWidget.has("menuPreview")) {
+                if (parseSection(jsonOnDemandWidget, "menuPreview")) {
                     try {
                         JSONObject jsonMenuPreview = new JSONObject(jsonOnDemandWidget.getString("menuPreview"));
                         if (jsonMenuPreview.has("Menu")) {
@@ -343,13 +341,13 @@ public class InitParse {
                 }
             }
 
-            if (jsonGateKeeper.has("AvailableServices")) {
+            if (parseSection(jsonGateKeeper, "AvailableServices")) {
                 JSONObject jsonServices = new JSONObject(jsonGateKeeper.getString("AvailableServices"));
 
                 if (jsonServices.has("OnDemand"))
                     MenuDao.gateKeeper.getAvailableServices().OnDemand = (jsonServices.getBoolean("OnDemand"));
 
-                if (jsonServices.has("OrderAhead")) {
+                if (parseSection(jsonServices, "OrderAhead")) {
                     OrderAheadModel mOrderAhead = new OrderAheadModel();
                     JSONObject jsonOrderAhead = new JSONObject(jsonServices.getString("OrderAhead"));
 
@@ -357,7 +355,7 @@ public class InitParse {
                     mOrderAhead.zone = jsonOrderAhead.getString("zone");
                     mOrderAhead.title = jsonOrderAhead.getString("title");
 
-                    if (jsonOrderAhead.has("availableMenus")) {
+                    if (parseSection(jsonOrderAhead, "availableMenus")) {
                         JSONObject jsonAvailableMenus = new JSONObject(jsonOrderAhead.getString("availableMenus"));
 
                         if (jsonAvailableMenus.has("menus")) {

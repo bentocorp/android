@@ -13,7 +13,8 @@
         android:layout_height="48dp"
         android:background="@null"
         android:contentDescription="@null"
-        android:src="@drawable/completeorder_cell_btn_minute" />
+        android:src="@drawable/completeorder_cell_btn_minute"
+        android:visibility="gone" />
 
     <me.grantland.widget.AutofitTextView
         android:id="@+id/txt_order_history_title"
@@ -24,7 +25,7 @@
         android:paddingLeft="@dimen/btn_padding"
         android:paddingRight="@dimen/btn_padding"
         android:singleLine="true"
-        android:textColor="#7BA850"
+        android:textColor="#444E59"
         android:textSize="12sp" />
 
     <TextView

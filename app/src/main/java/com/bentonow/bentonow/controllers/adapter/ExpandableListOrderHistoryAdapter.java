@@ -61,7 +61,7 @@ public class ExpandableListOrderHistoryAdapter extends BaseExpandableListAdapter
 
         viewHolder.getTxtOrderHistoryTitle().setText(mItem.getTitle());
         viewHolder.getTxtOrderHistoryPrice().setText(mItem.getPrice());
-        viewHolder.getBtnEditOrder().setVisibility(listHistorySection.get(groupPosition).getSectionTitle().contains("Scheduled") ? View.VISIBLE : View.GONE);
+       // viewHolder.getBtnEditOrder().setVisibility(listHistorySection.get(groupPosition).getSectionTitle().contains("Scheduled") ? View.VISIBLE : View.GONE);
 
 
         return convertView;

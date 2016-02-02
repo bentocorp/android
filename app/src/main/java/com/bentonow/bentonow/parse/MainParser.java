@@ -7,6 +7,8 @@ package com.bentonow.bentonow.parse;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.google.gson.Gson;
 
+import org.json.JSONObject;
+
 public class MainParser {
 
     public static final String TAG_SECTION_TITLE = "sectionTitle";
@@ -44,4 +46,17 @@ public class MainParser {
         now = System.currentTimeMillis();
         DebugUtils.logDebug("Parse en :: " + (now - init) + " ms");
     }
+
+    public static boolean parseSection(JSONObject mJson, String sTag) {
+        try {
+            if (mJson == null || !mJson.has(sTag) || mJson.getString(sTag) == null || mJson.getString(sTag).equals("null") || mJson.getString(sTag).isEmpty())
+                return false;
+            else
+                return true;
+        } catch (Exception ex) {
+            DebugUtils.logError(sTag + " : " + ex.toString());
+            return false;
+        }
+    }
+
 }

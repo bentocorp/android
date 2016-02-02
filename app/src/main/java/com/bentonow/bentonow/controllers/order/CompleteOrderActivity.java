@@ -625,6 +625,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
     private void openAddOnActivity() {
         Intent mAddOnActivity = new Intent(CompleteOrderActivity.this, AddOnActivity.class);
         mAddOnActivity.putExtra(AddOnActivity.TAG_OPEN_BY, ConstantUtils.optOpenAddOn.SUMMARY);
+        mAddOnActivity.putExtra(Menu.TAG, mMenu);
         startActivity(mAddOnActivity);
         overridePendingTransition(R.anim.bottom_slide_in, R.anim.none);
     }
