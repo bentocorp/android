@@ -41,6 +41,7 @@ import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.order.OrderItem;
 import com.bentonow.bentonow.parse.InitParse;
 import com.bentonow.bentonow.service.BentoCustomerService;
+import com.bentonow.bentonow.ui.AutoFitTxtView;
 import com.bentonow.bentonow.ui.BackendButton;
 import com.crashlytics.android.Crashlytics;
 import com.loopj.android.http.RequestParams;
@@ -57,15 +58,19 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
     private static final String TAG = "CompleteOrderActivity";
     private static final String TAG_ORDER_TYPE = "Order Type";
 
-    private TextView txt_address;
+    private AutoFitTxtView txt_address;
     private TextView txt_credit_card;
     private TextView txt_discount;
     private TextView txt_tax;
     private TextView txt_delivery_price;
     private TextView txt_tip;
     private TextView txt_total;
+    private TextView txtDeliverTimeUp;
+    private TextView txtDeliverTimeDown;
+
 
     private ImageView img_credit_card;
+    private ImageView imgDeliverTime;
 
     private View container_discount;
 
@@ -100,7 +105,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_complete_order);
 
-        txt_address = (TextView) findViewById(R.id.txt_address);
+        txt_address = (AutoFitTxtView) findViewById(R.id.txt_address);
         txt_credit_card = (TextView) findViewById(R.id.txt_credit_card);
         txt_discount = (TextView) findViewById(R.id.txt_discount);
         txt_tax = (TextView) findViewById(R.id.txt_tax);
@@ -144,6 +149,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
     }
 
     private void emptyOrders() {
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.CLEAR_ORDERS_FROM_SUMMARY, true);
         mOrderDao.cleanUp();
         runOnUiThread(new Runnable() {
             @Override
@@ -514,6 +520,16 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
         mOrderDao.calculateOrder(mOrder);
         mOrderDao.updateOrder(mOrder);
 
+        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_ORDER_AHEAD_MENU)) {
+            getImgDeliverTime().setImageResource(R.drawable.ic_action_action_today);
+            getTxtDeliverTimeUp().setText(BentoNowUtils.getDaySelected(mOrder));
+            getTxtDeliverTimeDown().setText(BentoNowUtils.getTimeSelected(mOrder));
+        } else {
+            getImgDeliverTime().setImageResource(R.drawable.ic_action_device_access_time);
+            getTxtDeliverTimeUp().setText(String.format(getString(R.string.summary_bento_od_delivery_time), MenuDao.eta_min, MenuDao.eta_max));
+            getTxtDeliverTimeDown().setText("min.");
+        }
+
         if (mOrder.OrderDetails.coupon_discount_cents > 0) {
             getBtnAddPromoCode().setTextColor(getResources().getColor(R.color.orange));
             getBtnAddPromoCode().setText("REMOVE PROMO");
@@ -841,6 +857,24 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
         if (txtPromoTotal == null)
             txtPromoTotal = (TextView) findViewById(R.id.txt_promo_total);
         return txtPromoTotal;
+    }
+
+    private TextView getTxtDeliverTimeUp() {
+        if (txtDeliverTimeUp == null)
+            txtDeliverTimeUp = (TextView) findViewById(R.id.txt_deliver_time_up);
+        return txtDeliverTimeUp;
+    }
+
+    private TextView getTxtDeliverTimeDown() {
+        if (txtDeliverTimeDown == null)
+            txtDeliverTimeDown = (TextView) findViewById(R.id.txt_deliver_time_down);
+        return txtDeliverTimeDown;
+    }
+
+    private ImageView getImgDeliverTime() {
+        if (imgDeliverTime == null)
+            imgDeliverTime = (ImageView) findViewById(R.id.img_deliver_time);
+        return imgDeliverTime;
     }
 
     private BackendButton getBtnOnLetsEatPressed() {

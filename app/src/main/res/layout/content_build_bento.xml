@@ -824,6 +824,7 @@
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:orientation="horizontal"
+            android:visibility="gone"
             android:weightSum="100">
 
             <com.bentonow.bentonow.ui.BackendAutoFitTextView

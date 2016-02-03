@@ -26,6 +26,8 @@ public class SharedPreferencesUtil {
     public static final String CURRENT_USER_ID = "CURRENT_USER_ID"; //long
     public static final String CURRENT_MENU = "CURRENT_MENU"; //String
     public static final String ON_DEMAND_AVAILABLE = "ON_DEMAND_AVAILABLE"; //boolean
+    public static final String ON_CONTINUE_FROM_ADD_ON = "ON_CONTINUE_FROM_ADD_ON"; //boolean
+    public static final String CLEAR_ORDERS_FROM_SUMMARY = "CLEAR_ORDERS_FROM_SUMMARY"; //boolean
 
     //DATA FROM SERVER
     public static final String BACKENDTEXT = "backendText"; //String

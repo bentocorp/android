@@ -162,7 +162,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         });
 
         updateUI();
-
+//TODO check new location again
         setupMap();
     }
 

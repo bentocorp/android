@@ -90,6 +90,17 @@ public class OrderDao {
         return DishDao.getDefaultPriceBento(dDishPrice);
     }
 
+    public static int countDishesAdded(OrderItem mOrder) {
+        int iNumDishes = 0;
+
+        for (DishModel dish : mOrder.items) {
+            if (dish != null && !dish.name.isEmpty())
+                iNumDishes++;
+        }
+
+        return iNumDishes;
+    }
+
     public Order insertNewOrder(Order mOrder) {
 
         dbAdapter.begginTransaction();
@@ -323,6 +334,19 @@ public class OrderDao {
         dbAdapter.deleteAll(DishDao.TABLE_NAME);
     }
 
+   /* public static boolean isSoldOutOrder(OrderItem mOrder) {
+        boolean bIsSoldOut = false;
+        DishDao mDishDao = new DishDao();
+        for (DishModel mDishModel : mOrder.items) {
+            if (mDishDao.isSoldOut(mDishModel, false)) {
+                bIsSoldOut = true;
+                DebugUtils.logDebug("calculateSoldOutItems:", mDishModel.name);
+            }
+        }
+
+        return bIsSoldOut;
+    }*/
+
     public String calculateSoldOutItems(Order mOrder, boolean bIsMenuOD) {
         String sSoldOutItems = "";
         DishDao mDishDao = new DishDao();
@@ -342,17 +366,39 @@ public class OrderDao {
         return sSoldOutItems;
     }
 
-   /* public static boolean isSoldOutOrder(OrderItem mOrder) {
-        boolean bIsSoldOut = false;
+    public String calculateSoldOutItems(Order mOrder, int iOrderIndex, boolean bIsMenuOD) {
+        String sSoldOutItems = "";
         DishDao mDishDao = new DishDao();
-        for (DishModel mDishModel : mOrder.items) {
-            if (mDishDao.isSoldOut(mDishModel, false)) {
+
+        boolean bIsSoldOut = false;
+        for (DishModel mDishModel : mOrder.OrderItems.get(iOrderIndex).items) {
+            if (mDishModel != null && mDishModel.name != null && !sSoldOutItems.contains(mDishModel.name) && mDishDao.isSoldOut(mDishModel, false, bIsMenuOD)) {
                 bIsSoldOut = true;
+                sSoldOutItems += "\n- " + mDishModel.name;
                 DebugUtils.logDebug("calculateSoldOutItems:", mDishModel.name);
             }
         }
 
-        return bIsSoldOut;
+        mOrder.OrderItems.get(iOrderIndex).bIsSoldoOut = bIsSoldOut;
+
+        return sSoldOutItems;
+    }
+
+
+/*    public int countItemsById(int itemId) {
+        int count = 0;
+        mOrder = getCurrentOrder();
+
+        if (mOrder != null) {
+            for (OrderItem orderItem : mOrder.OrderItems) {
+                for (DishModel dishModel : orderItem.items) {
+                    if (dishModel != null && dishModel.itemId == itemId)
+                        ++count;
+                }
+            }
+        }
+
+        return count;
     }*/
 
     public void calculateOrder(Order mOrder) {
@@ -439,23 +485,6 @@ public class OrderDao {
         DebugUtils.logDebug(TAG, "Total: " + total);
         DebugUtils.logDebug(TAG, "Total Discount: " + (total_w_o_coupon - total));
     }
-
-
-/*    public int countItemsById(int itemId) {
-        int count = 0;
-        mOrder = getCurrentOrder();
-
-        if (mOrder != null) {
-            for (OrderItem orderItem : mOrder.OrderItems) {
-                for (DishModel dishModel : orderItem.items) {
-                    if (dishModel != null && dishModel.itemId == itemId)
-                        ++count;
-                }
-            }
-        }
-
-        return count;
-    }*/
 
     public int countCompletedOrders(Order mOrder) {
         int count = 0;

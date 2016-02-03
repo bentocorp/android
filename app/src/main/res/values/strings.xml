@@ -35,6 +35,9 @@
     <string name="build_bento_spinner_item_oa">%1$s, %2$s</string>
     <string name="build_bento_btn_time_oa">%1$s - %2$s %3$s:%4$2s</string>
 
+    <string name="summary_bento_oa_delivery_day">%1$s, %2$s</string>
+    <string name="summary_bento_oa_delivery_time">%1$s-%2$s</string>
+    <string name="summary_bento_od_delivery_time">%1$d-%2$d</string>
 
     <string name="edit_hint_enter_phone">Enter your phone number</string>
     <string name="edit_hint_confirm_phone">Confirm your phone number</string>

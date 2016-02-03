@@ -10,11 +10,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
-import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
-import com.bentonow.bentonow.Utils.WidgetsUtils;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.adapter.AddOnListAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
@@ -95,7 +94,6 @@ public class AddOnActivity extends BaseFragmentActivity implements View.OnClickL
         addAddOnDishes();
 
         MixpanelUtils.track("Viewed Add-ons Screen");
-
     }
 
     private void addAddOnDishes() {
@@ -139,17 +137,7 @@ public class AddOnActivity extends BaseFragmentActivity implements View.OnClickL
     private void openSummaryScreen() {
         switch (optOpenBy) {
             case BUILDER:
-                String sSoldOutItems = mOrderDao.calculateSoldOutItems(mOrder, bIsMenuOD);
-                if (!sSoldOutItems.isEmpty()) {
-                    updateUI();
-                    WidgetsUtils.createShortToast(String.format(getString(R.string.error_sold_out_items), sSoldOutItems));
-                } else if (BentoNowUtils.isValidCompleteOrder(AddOnActivity.this)) {
-                    finish();
-                    BentoNowUtils.openCompleteOrderActivity(AddOnActivity.this, mMenu);
-                } else {
-                    finish();
-                }
-                break;
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ON_CONTINUE_FROM_ADD_ON, true);
             case SUMMARY:
                 onBackPressed();
                 break;

@@ -8,7 +8,7 @@ import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.db.DBAdapter;
 import com.bentonow.bentonow.model.DishModel;
-import com.bentonow.bentonow.model.Settings;
+import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.order.OrderItem;
 
 import java.util.ArrayList;
@@ -19,22 +19,17 @@ import java.util.List;
  */
 public class BentoDao {
 
-    static final String TAG = "BentoDao";
-
-    private DBAdapter dbAdapter;
-    private boolean success = true;
-
     public final static String TABLE_NAME = "table_bento";
     public final static String ID_PK = "bento_pk";
-
+    static final String TAG = "BentoDao";
     private static final String ITEM_TYPE = "item_type";
     private static final String IS_SOLD_OUT = "bIsSoldOut";
     private static final String UNIT_PRICE = "unit_price";
-
     public static final String QUERY_TABLE = "" + "CREATE TABLE " + TABLE_NAME + " (" + ID_PK + " INTEGER PRIMARY KEY autoincrement, "
             + ITEM_TYPE + " TEXT, " + IS_SOLD_OUT + " INTEGER, " + UNIT_PRICE + " REAL);";
-
     public final static String[] FIELDS = {ID_PK, ITEM_TYPE, IS_SOLD_OUT, UNIT_PRICE};
+    private DBAdapter dbAdapter;
+    private boolean success = true;
 
     public BentoDao() {
         dbAdapter = new DBAdapter();
@@ -215,6 +210,18 @@ public class BentoDao {
 
         DishDao mDishDao = new DishDao();
         mDishDao.removeAllDishBento(iBentoPk);
+
+        OrderDao mOrderDao = new OrderDao();
+        Order mOrder = mOrderDao.getCurrentOrder();
+
+        int iNewOrderItemIndex = 0;
+        for (int a = 0; a < mOrder.OrderItems.size(); a++) {
+            if (mOrder.OrderItems.get(a).item_type.equals("CustomerBentoBox")) {
+                iNewOrderItemIndex = a;
+            }
+        }
+        mOrder.currentOrderItem = iNewOrderItemIndex;
+        mOrderDao.updateOrder(mOrder);
 
         return success;
     }

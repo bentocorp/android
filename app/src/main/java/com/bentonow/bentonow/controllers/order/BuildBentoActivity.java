@@ -37,7 +37,6 @@ import com.bentonow.bentonow.dao.DishDao;
 import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.dao.MenuDao;
 import com.bentonow.bentonow.dao.SettingsDao;
-import com.bentonow.bentonow.dao.StockDao;
 import com.bentonow.bentonow.listener.InterfaceCustomerService;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
@@ -153,6 +152,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     private ArrayList<String> aMenusId = new ArrayList<>();
     private CountDownTimer mCountDown;
     private String sContinueBtn;
+    private int iNumDishesAdded;
     private long lMilliSecondsRemaining;
     private boolean bSawAddOns = false;
     private boolean bHasAddOns = false;
@@ -192,11 +192,22 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
     @Override
     protected void onResume() {
-        if (mOrder != null) {
-            createOrder();
+        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.CLEAR_ORDERS_FROM_SUMMARY)) {
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.CLEAR_ORDERS_FROM_SUMMARY, false);
+
+            forceChangeMenu();
+        } else {
+            if (mOrder != null) {
+                createOrder();
+            }
+            updateUI();
+
+            if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.ON_CONTINUE_FROM_ADD_ON)) {
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ON_CONTINUE_FROM_ADD_ON, false);
+                onContinueOrderPressed();
+            }
         }
 
-        updateUI();
         super.onResume();
     }
 
@@ -228,34 +239,44 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                         mCountDown = null;
                     }
 
-                    if (mBentoDao.isBentoComplete(mOrder.OrderItems.get(orderIndex)) && !StockDao.isSold()) {
-                        getBtnContinue().setBackgroundColor(getResources().getColor(R.color.btn_green));
-                        getBtnContinue().setText(IosCopyDao.get("build-button-2"));
-                        sContinueBtn = IosCopyDao.get("build-button-2");
-                        getBtnAddAnotherBento().setTextColor(getResources().getColor(R.color.btn_green));
-                        getBtnAddAnotherBento().setOnClickListener(this);
-                        getBtnAddOn().setTextColor(getResources().getColor(R.color.btn_green));
-                        getBtnAddOn().setOnClickListener(this);
-                    } else {
-                        getBtnContinue().setBackgroundColor(getResources().getColor(R.color.gray));
-                        getBtnContinue().setText(IosCopyDao.get("build-button-1"));
-                        sContinueBtn = IosCopyDao.get("build-title");
-                        getBtnAddAnotherBento().setTextColor(getResources().getColor(R.color.btn_green_trans));
-                        getBtnAddAnotherBento().setOnClickListener(null);
-                        getBtnAddOn().setTextColor(getResources().getColor(R.color.btn_green_trans));
-                        getBtnAddOn().setOnClickListener(null);
-                    }
-
                     if (mOrderDao.countCompletedOrders(mOrder) == 0) {
                         getTxtNumBento().setVisibility(View.GONE);
                         getTxtNumBento().setText("0");
                         getActionbarRightBtn().setImageResource(R.drawable.ic_ab_bento);
+                        getLayoutAddOns().setVisibility(View.GONE);
+                        getBtnContinue().setBackgroundColor(getResources().getColor(R.color.gray));
+                        getBtnAddAnotherBento().setTextColor(getResources().getColor(R.color.btn_green_trans));
+                        getBtnAddAnotherBento().setOnClickListener(null);
+                        getBtnAddOn().setTextColor(getResources().getColor(R.color.btn_green_trans));
+                        getBtnAddOn().setOnClickListener(null);
+                        getBtnAddAnotherBento().setText(IosCopyDao.get("build-add-button"));
+
+                        if (mOrderDao.countDishesAdded(mOrder.OrderItems.get(orderIndex)) == 0)
+                            sContinueBtn = IosCopyDao.get("build-title");
+                        else
+                            sContinueBtn = IosCopyDao.get("build-button-1");
+
                     } else {
                         getTxtNumBento().setVisibility(View.VISIBLE);
                         getTxtNumBento().setText(mOrderDao.countCompletedOrders(mOrder) + "");
                         getActionbarRightBtn().setImageResource(R.drawable.ic_ab_bento_completed);
+                        getLayoutAddOns().setVisibility(View.VISIBLE);
+                        getBtnContinue().setBackgroundColor(getResources().getColor(R.color.btn_green));
+                        getBtnAddOn().setTextColor(getResources().getColor(R.color.btn_green));
+                        getBtnAddOn().setOnClickListener(this);
+                        getBtnAddAnotherBento().setTextColor(getResources().getColor(R.color.btn_green));
+                        getBtnAddAnotherBento().setOnClickListener(this);
+                        sContinueBtn = IosCopyDao.get("build-button-2");
+
+                        if (mBentoDao.isBentoComplete(mOrder.OrderItems.get(orderIndex)) || orderIndex == 0)
+                            getBtnAddAnotherBento().setText(IosCopyDao.get("build-add-button"));
+                        else if (mOrderDao.countDishesAdded(mOrder.OrderItems.get(orderIndex)) == 0)
+                            getBtnAddAnotherBento().setText(IosCopyDao.get("build-title"));
+                        else
+                            getBtnAddAnotherBento().setText(IosCopyDao.get("build-button-1"));
                     }
 
+                    getBtnContinue().setText(sContinueBtn);
 
                     getBtnAddOn().setVisibility(bHasAddOns ? View.VISIBLE : View.GONE);
                     break;
@@ -295,7 +316,6 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
                     getContentMenuPreview().setVisibility(View.VISIBLE);
                     getContentBuildBento().setVisibility(View.GONE);
-
                     break;
             }
         }
@@ -408,6 +428,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         mOrder = mOrderDao.getCurrentOrder();
 
         if (mOrder == null) {
+
             mOrder = mOrderDao.getNewOrder(optMenu == ConstantUtils.optMenuSelected.ON_DEMAND);
             mOrder.MealName = mMenu.meal_name;
             mOrder.MenuType = mMenu.menu_type;
@@ -421,8 +442,6 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         if (mOrder.OrderItems.size() == 0) {
             mOrder.OrderItems.add(mBentoDao.getNewBento(ConstantUtils.optItemType.CUSTOM_BENTO_BOX));
             mOrder.OrderItems.add(mBentoDao.getNewBento(ConstantUtils.optItemType.ADD_ON));
-        } else if (mOrder.OrderItems.size() <= orderIndex) {
-            orderIndex = mOrder.OrderItems.size() - 1;
         }
 
         for (int a = 0; a < mMenu.dishModels.size(); a++) {
@@ -860,7 +879,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     }
 
     public void onAddAnotherBentoPressed() {
-       // restartDishUI();
+        // restartDishUI();
 
         mOrder.OrderItems.add(mBentoDao.getNewBento(ConstantUtils.optItemType.CUSTOM_BENTO_BOX));
         mOrder.currentOrderItem = orderIndex = mOrder.OrderItems.size() - 1;
@@ -871,32 +890,56 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     }
 
     public void onContinueOrderPressed() {
-        String sSoldOutItems = mOrderDao.calculateSoldOutItems(mOrder, optMenu == ConstantUtils.optMenuSelected.ON_DEMAND);
         mOrderDao.updateOrder(mOrder);
         MenuDao.setCurrentMenu(mMenu);
 
-        if (!mBentoDao.isBentoComplete(mOrder.OrderItems.get(orderIndex))) {
+        if (orderIndex == 0) {
+            if (!mBentoDao.isBentoComplete(mOrder.OrderItems.get(orderIndex))) {
+                autoCompleteOrder();
+            } else
+                openSummaryScreen();
+        } else if (mOrderDao.countDishesAdded(mOrder.OrderItems.get(orderIndex)) == 0) {
+            mBentoDao.removeBento(mOrder.OrderItems.get(orderIndex).order_pk);
+            BentoNowUtils.openCompleteOrderActivity(BuildBentoActivity.this, mMenu);
+        } else if (mBentoDao.isBentoComplete(mOrder.OrderItems.get(orderIndex))) {
+            track();
+            openSummaryScreen();
+        } else {
+            mDialog = new ConfirmationDialog(BuildBentoActivity.this, null, IosCopyDao.get("build-not-complete-text"));
+            mDialog.addAcceptButton(IosCopyDao.get("build-not-complete-confirmation-2"), BuildBentoActivity.this);
+            mDialog.addCancelButton(IosCopyDao.get("build-not-complete-confirmation-1"), BuildBentoActivity.this);
 
-            for (int a = 0; a < mOrder.OrderItems.get(orderIndex).items.size(); a++) {
+            mDialog.show();
 
-                if (mOrder.OrderItems.get(orderIndex).items.get(a) == null || mOrder.OrderItems.get(orderIndex).items.get(a).name.isEmpty()) {
-                    if (a == 0) {
-                        Intent intent = new Intent(this, SelectMainCustomActivity.class);
-                        intent.putExtra(Menu.TAG, mMenu);
-                        startActivity(intent);
-                    } else {
-                        Intent intent = new Intent(this, SelectSideCustomActivity.class);
-                        intent.putExtra(Menu.TAG, mMenu);
-                        intent.putExtra("itemIndex", a);
-                        startActivity(intent);
-                    }
-                    break;
+        }
+
+
+    }
+
+    private void autoCompleteOrder() {
+        for (int a = 0; a < mOrder.OrderItems.get(orderIndex).items.size(); a++) {
+            if (mOrder.OrderItems.get(orderIndex).items.get(a) == null || mOrder.OrderItems.get(orderIndex).items.get(a).name.isEmpty()) {
+                if (a == 0) {
+                    Intent intent = new Intent(this, SelectMainCustomActivity.class);
+                    intent.putExtra(Menu.TAG, mMenu);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(this, SelectSideCustomActivity.class);
+                    intent.putExtra(Menu.TAG, mMenu);
+                    intent.putExtra("itemIndex", a);
+                    startActivity(intent);
                 }
+                break;
             }
-        } else if (!sSoldOutItems.isEmpty()) {
+        }
+    }
+
+    private void openSummaryScreen() {
+        String sSoldOutItems = mOrderDao.calculateSoldOutItems(mOrder, orderIndex, optMenu == ConstantUtils.optMenuSelected.ON_DEMAND);
+
+        if (!sSoldOutItems.isEmpty()) {
             updateUI();
             WidgetsUtils.createShortToast(String.format(getString(R.string.error_sold_out_items), sSoldOutItems));
-            // if (bHasAddOns && showAddons.get() && !bSawAddOns) {
         } else if (bHasAddOns && !bSawAddOns) {
             openAddOnsActivity();
         } else if (BentoNowUtils.isValidCompleteOrder(BuildBentoActivity.this)) {
@@ -973,8 +1016,12 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                     openAddOnsActivity();
                 break;
             case R.id.btn_add_another_bento:
-                if (!bShowDateTime)
-                    onAddAnotherBentoPressed();
+                if (!bShowDateTime) {
+                    if (mBentoDao.isBentoComplete(mOrder.OrderItems.get(orderIndex)))
+                        onAddAnotherBentoPressed();
+                    else
+                        autoCompleteOrder();
+                }
                 break;
             case R.id.layout_date_time:
                 setDateTime(true, true);
