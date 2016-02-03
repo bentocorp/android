@@ -30,6 +30,7 @@
     <dimen name="home_about_point_padding">10dp</dimen>
     <dimen name="home_about_point_left_padding">10dp</dimen>
     <dimen name="cero">0dp</dimen>
+    <dimen name="summary_height_row">40dp</dimen>
 
 
     <dimen name="main_dish_custom_price">15sp</dimen>

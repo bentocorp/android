@@ -20,14 +20,9 @@ import java.util.List;
  * Created by Jose Torres on 27/09/15.
  */
 public class DishDao {
-    static final String TAG = "DishDao";
-
-    private DBAdapter dbAdapter;
-    private boolean success = true;
-
     public final static String TABLE_NAME = "table_dish";
     public final static String ID_PK = "dish_pk";
-
+    static final String TAG = "DishDao";
     private static final String ITEM_ID = "itemId";
     private static final String NAME = "name";
     private static final String DESCRIPTION = "description";
@@ -37,17 +32,46 @@ public class DishDao {
     private static final String PRICE = "price";
     private static final String QTY = "qty";
     private static final String BENTO_PK = "bento_pk";
-
     public static final String QUERY_TABLE = "" + "CREATE TABLE " + TABLE_NAME + " (" + ID_PK + " INTEGER PRIMARY KEY autoincrement, "
             + ITEM_ID + " INTEGER, " + NAME + " TEXT, " + DESCRIPTION + " TEXT, " + TYPE + " TEXT, " + IMAGE1 + " TEXT," + MAX_PER_ORDER + " TEXT, " + BENTO_PK + " INTEGER, " + PRICE + " REAL,"
             + QTY + " TEXT);";
-
     public final static String[] FIELDS = {ID_PK, ITEM_ID, NAME, DESCRIPTION, TYPE, IMAGE1,
             MAX_PER_ORDER, BENTO_PK, PRICE, QTY};
+    private DBAdapter dbAdapter;
+    private boolean success = true;
 
 
     public DishDao() {
         dbAdapter = new DBAdapter();
+    }
+
+    public static DishModel clone(DishModel mDishModel) {
+        Gson gson = new GsonBuilder().serializeNulls().create();
+        return gson.fromJson(gson.toJson(mDishModel), DishModel.class);
+    }
+
+    public static double getLowestMainPrice(Menu mMenu) {
+        double dMinPrice = 0;
+
+        for (DishModel dishModel : mMenu.dishModels)
+            if (dishModel.type.equals("main")) {
+                dishModel.price = DishDao.getDefaultPriceBento(dishModel.price);
+                if (dMinPrice == 0)
+                    dMinPrice = dishModel.price;
+                else {
+                    if (dMinPrice > dishModel.price)
+                        dMinPrice = dishModel.price;
+                }
+            }
+
+        return dMinPrice;
+    }
+
+    public static double getDefaultPriceBento(double dPrice) {
+        if (dPrice <= 0)
+            return SettingsDao.getCurrent().price;
+        else
+            return dPrice;
     }
 
     public boolean insertDish(DishModel mDish) {
@@ -206,7 +230,7 @@ public class DishDao {
             cursor.close();
 
         } catch (Exception ex) {
-            DebugUtils.logError(TAG, ex);
+            DebugUtils.logError(TAG, "getAllDishByOrder: " + ex.toString());
         } finally {
             dbAdapter.setTransacctionSuccesfull();
         }
@@ -255,7 +279,6 @@ public class DishDao {
         return hasDish;
     }
 
-
     public DishModel getDishItem(int iPk) {
         DishModel mDish = null;
 
@@ -300,12 +323,11 @@ public class DishDao {
 
             dbAdapter.setTransacctionSuccesfull();
         } catch (Exception ex) {
-            DebugUtils.logError(TAG, ex);
+            DebugUtils.logError(TAG, "getDishItem: " + ex.toString());
         }
 
         return mDish;
     }
-
 
     public boolean updateDishItem(DishModel mDish) {
         String where = ID_PK + " =?";
@@ -348,7 +370,6 @@ public class DishDao {
 
         return mNewDish;
     }
-
 
     public boolean removeAllDishBento(int iBentoPk) {
         String where = BENTO_PK + "=?";
@@ -397,12 +418,10 @@ public class DishDao {
         return success;
     }
 
-
     public void clearAllData() {
         DebugUtils.logDebug(TAG, "Clear All Data");
         dbAdapter.deleteAll(TABLE_NAME);
     }
-
 
     private ContentValues getContentValues(DishModel mDish) {
         ContentValues cValues = new ContentValues();
@@ -419,14 +438,12 @@ public class DishDao {
         return cValues;
     }
 
-
     public boolean isSoldOut(DishModel mDishModel, boolean countCurrent, boolean bIsOD) {
         if (bIsOD)
             return StockDao.isSold(mDishModel.itemId, countCurrent);
         else
             return isDishSoldOut(mDishModel, countCurrent);
     }
-
 
     public boolean isDishSoldOut(DishModel mDishModel, boolean countCurrent) {
         int iCurrent = countCurrent ? 1 : 0;
@@ -435,7 +452,7 @@ public class DishDao {
         try {
             iQty = Integer.parseInt(mDishModel.qty);
         } catch (Exception ex) {
-            DebugUtils.logError(TAG, ex);
+            DebugUtils.logError(TAG, "isDishSoldOut: " + ex.toString());
             iQty = 0;
         }
         int iCurrentStock = iQty - (countItemsById(mDishModel.itemId) + iCurrent);
@@ -490,36 +507,6 @@ public class DishDao {
         return null;
     }
 
-    public static DishModel clone(DishModel mDishModel) {
-        Gson gson = new GsonBuilder().serializeNulls().create();
-        return gson.fromJson(gson.toJson(mDishModel), DishModel.class);
-    }
-
-    public static double getLowestMainPrice(Menu mMenu) {
-        double dMinPrice = 0;
-
-        for (DishModel dishModel : mMenu.dishModels)
-            if (dishModel.type.equals("main")) {
-                dishModel.price = DishDao.getDefaultPriceBento(dishModel.price);
-                if (dMinPrice == 0)
-                    dMinPrice = dishModel.price;
-                else {
-                    if (dMinPrice > dishModel.price)
-                        dMinPrice = dishModel.price;
-                }
-            }
-
-        return dMinPrice;
-    }
-
-
-    public static double getDefaultPriceBento(double dPrice) {
-        if (dPrice <= 0)
-            return SettingsDao.getCurrent().price;
-        else
-            return dPrice;
-    }
-
     public int countItemsById(int itemId) {
         int count = 0;
 
@@ -539,7 +526,7 @@ public class DishDao {
 
             dbAdapter.setTransacctionSuccesfull();
         } catch (Exception ex) {
-            DebugUtils.logError(TAG, ex);
+            DebugUtils.logError(TAG, "countItemsById : " + ex.toString());
         }
 
 

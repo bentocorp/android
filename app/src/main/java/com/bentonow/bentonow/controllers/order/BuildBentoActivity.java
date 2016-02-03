@@ -378,7 +378,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                         mMenu = MenuDao.cloneMenu(MenuDao.getTodayMenu());
                         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ON_DEMAND_AVAILABLE, true);
                         getTxtDateTimeToolbar().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getTitle());
-                        restartDishUI();
+                        //  restartDishUI();
                         createOrder();
                         break;
                     case MENU_PREVIEW:
@@ -392,7 +392,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                         mOrder.for_date = mMenu.for_date;
                         updateTimeOrder((TimesModel) getSpinnerTime().getSelectedItem());
                         getTxtDateTimeToolbar().setText(BentoNowUtils.getDayTimeSelected(mOrder));
-                        restartDishUI();
+                        //   restartDishUI();
                         break;
                 }
 
@@ -498,6 +498,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
             if (item.items.get(0) == null || item.items.get(0).name.isEmpty()) {
                 getImgMain().setImageBitmap(null);
+                getImgMain().setTag(null);
                 getTxtTitleMain().setText("");
                 getTxtAddMain().setVisibility(View.VISIBLE);
                 getContainerMainTitle().setVisibility(View.GONE);
@@ -515,6 +516,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
             if (item.items.get(1) == null || item.items.get(1).name.isEmpty()) {
                 getImgSide1().setImageBitmap(null);
+                getImgSide1().setTag(null);
                 getTxtTitleSide1().setText("");
                 getTxtAddSide1().setVisibility(View.VISIBLE);
                 getContainerSide1Title().setVisibility(View.GONE);
@@ -532,6 +534,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
             if (item.items.get(2) == null || item.items.get(2).name.isEmpty()) {
                 getImgSide2().setImageBitmap(null);
+                getImgSide2().setTag(null);
                 getTxtTitleSide2().setText("");
                 getTxtAddSide2().setVisibility(View.VISIBLE);
                 getContainerSide2Title().setVisibility(View.GONE);
@@ -549,6 +552,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
             if (item.items.get(3) == null || item.items.get(3).name.isEmpty()) {
                 getImgSide3().setImageBitmap(null);
+                getImgSide3().setTag(null);
                 getTxtTitleSide3().setText("");
                 getTxtAddSide3().setVisibility(View.VISIBLE);
                 getContainerSide3Title().setVisibility(View.GONE);
@@ -566,6 +570,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
             if (item.items.get(4) == null || item.items.get(4).name.isEmpty()) {
                 getImgSide4().setImageBitmap(null);
+                getImgSide4().setTag(null);
                 getTxtTitleSide4().setText("");
                 getTxtAddSide4().setVisibility(View.VISIBLE);
                 getContainerSide4Title().setVisibility(View.GONE);
@@ -586,6 +591,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
             if (item.items.get(0) == null || item.items.get(0).name.isEmpty()) {
                 getImgMain4().setImageBitmap(null);
+                getImgMain4().setTag(null);
                 getTxtTitleMain4().setText("");
                 getContainerMainTitle4().setVisibility(View.GONE);
                 getImgMainSoldOut4().setVisibility(View.GONE);
@@ -601,6 +607,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
             if (item.items.get(1) == null || item.items.get(1).name.isEmpty()) {
                 getImgSide14().setImageBitmap(null);
+                getImgSide14().setTag(null);
                 getTxtTitleSide14().setText("");
                 getContainerSide14Title().setVisibility(View.GONE);
                 getImgSide14SoldOut().setVisibility(View.GONE);
@@ -616,6 +623,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
             if (item.items.get(2) == null || item.items.get(2).name.isEmpty()) {
                 getImgSide24().setImageBitmap(null);
+                getImgSide24().setTag(null);
                 getTxtTitleSide24().setText("");
                 getContainerSide24Title().setVisibility(View.GONE);
                 getImgSide24SoldOut().setVisibility(View.GONE);
@@ -631,6 +639,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
             if (item.items.get(3) == null || item.items.get(3).name.isEmpty()) {
                 getImgSide34().setImageBitmap(null);
+                getImgSide34().setTag(null);
                 getTxtTitleSide34().setText("");
                 getContainerSide34Title().setVisibility(View.GONE);
                 getImgSide34SoldOut().setVisibility(View.GONE);
@@ -851,7 +860,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     }
 
     public void onAddAnotherBentoPressed() {
-        restartDishUI();
+       // restartDishUI();
 
         mOrder.OrderItems.add(mBentoDao.getNewBento(ConstantUtils.optItemType.CUSTOM_BENTO_BOX));
         mOrder.currentOrderItem = orderIndex = mOrder.OrderItems.size() - 1;
@@ -1065,7 +1074,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                 if (aMenusId == null || aMenusId.isEmpty()) {
                     aMenusId = MenuDao.getCurrentMenuIds();
                 } else if (MenuDao.hasNewMenus(aMenusId)) {
-                    DebugUtils.logDebug(TAG, "Should change from Missed Menus " + aMenusId.toString());
+                    DebugUtils.logError(TAG, "Should change from Missed Menus " + aMenusId.toString());
 
                     iMenuSelected = 0;
                     bIsMenuAvailable = false;
@@ -1126,7 +1135,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
             if (SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.POD_MODE).isEmpty()) {
                 SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.POD_MODE, SettingsDao.getCurrent().pod_mode);
             } else if (!SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.POD_MODE).equals(SettingsDao.getCurrent().pod_mode)) {
-                DebugUtils.logDebug(TAG, "Should change from Pod Mode " + SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.POD_MODE) + " to " + SettingsDao.getCurrent().pod_mode);
+                DebugUtils.logError(TAG, "Should change from Pod Mode " + SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.POD_MODE) + " to " + SettingsDao.getCurrent().pod_mode);
                 recreate();
             }
         }

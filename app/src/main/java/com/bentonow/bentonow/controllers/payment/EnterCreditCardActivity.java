@@ -26,7 +26,6 @@ import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.dao.MenuDao;
 import com.bentonow.bentonow.dao.SettingsDao;
 import com.bentonow.bentonow.dao.UserDao;
-import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.ui.BackendButton;
 import com.stripe.android.Stripe;
@@ -42,30 +41,22 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
 
     private static final String TAG = "EnterCreditCardActivity";
 
-    ImageView img_credit_card;
-
-    EditText txt_number;
-    TextView txt_last4;
-    EditText txt_date;
-    EditText txt_cvc;
-
+    private ImageView img_credit_card;
+    private int focused = R.id.txt_number;
+    private EditText txt_number;
+    private TextView txt_last4;
+    private EditText txt_date;
+    private EditText txt_cvc;
+    private BackendButton btn_save;
     private TextView txtBentoPrice;
-
-    BackendButton btn_save;
-
     private ConfirmationDialog mDialog;
     private ProgressDialog mProgressDialog;
-
     private ConstantUtils.optOpenScreen optOpenScreen;
-
     private UserDao userDao = new UserDao();
-    private Menu mMenu;
     private User mCurrentUser;
     private String sNumber = "";
     private String sCvc = "";
     private String sDate = "";
-
-    int focused = R.id.txt_number;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,15 +64,12 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
 
         setContentView(R.layout.activity_enter_credit_card);
 
-        mMenu = getIntent().getParcelableExtra(Menu.TAG);
-
         try {
             optOpenScreen = (ConstantUtils.optOpenScreen) getIntent().getExtras().getSerializable(ConstantUtils.TAG_OPEN_SCREEN);
         } catch (Exception ex) {
             DebugUtils.logError(TAG, ex);
             optOpenScreen = ConstantUtils.optOpenScreen.NORMAL;
         }
-
 
         mCurrentUser = userDao.getCurrentUser();
 
@@ -113,6 +101,16 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
     }
 
     void updateUI() {
+
+        switch (optOpenScreen) {
+            case COMPLETE_ORDER:
+                btn_save.setText(IosCopyDao.get("credit-card-button"));
+                break;
+            default:
+                btn_save.setText("SAVE CREDIT CARD");
+                break;
+        }
+
         btn_save.setBackgroundResource(isValid() ? R.drawable.bg_green_cornered : R.drawable.btn_dark_gray);
 
         getTxtBentoPrice().setText(BentoNowUtils.getNumberFromPrice(SettingsDao.getCurrent().price));
@@ -443,12 +441,12 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
                     dismissDialog();
 
                     switch (optOpenScreen) {
-                        case NORMAL:
-                            onBackPressed();
-                            break;
                         case COMPLETE_ORDER:
                             if (BentoNowUtils.isValidCompleteOrder(EnterCreditCardActivity.this))
                                 BentoNowUtils.openCompleteOrderActivity(EnterCreditCardActivity.this, MenuDao.getCurrentMenu());
+                            break;
+                        default:
+                            onBackPressed();
                             break;
                     }
                     finish();

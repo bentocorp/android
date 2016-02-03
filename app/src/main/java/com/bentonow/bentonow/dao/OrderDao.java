@@ -22,16 +22,9 @@ import com.bentonow.bentonow.model.order.OrderStripe;
  */
 public class OrderDao {
 
-    static final String TAG = "OrderDao";
-
-    private DBAdapter dbAdapter;
-    private boolean success = true;
-
-    private BentoDao mBentoDao = new BentoDao();
-
     public final static String TABLE_NAME = "table_order";
     public final static String ID_PK = "order_pk";
-
+    static final String TAG = "OrderDao";
     private static final String ORDER_DETAIL_COUPON_DISCOUNT_CENTS = "OrderDetail_coupon_discount_cents";
     private static final String ORDER_DETAIL_TIP_PERCENTAGE = "OrderDetail_tip_percentage";
     private static final String ORDER_DETAIL_TAX_CENTS = "OrderDetail_tax_cents";
@@ -65,8 +58,6 @@ public class OrderDao {
     private static final String SCHEDULED_WINDOW_START = "scheduled_window_start";
     private static final String SCHEDULED_WINDOW_END = "scheduled_window_end";
     private static final String MENU_ID = "MenuId";
-
-
     public static final String QUERY_TABLE = "" + "CREATE TABLE " + TABLE_NAME + " (" + ID_PK + " INTEGER PRIMARY KEY autoincrement, "
             + CURRENT_ORDER_ITEM + " INTEGER, " + ORDER_DETAIL_COUPON_DISCOUNT_CENTS + " REAL, " + ORDER_DETAIL_TIP_PERCENTAGE + " REAL, " + ORDER_DETAIL_TAX_CENTS + " REAL, " + ORDER_DETAIL_TIP_CENTS + " REAL, "
             + ORDER_DETAIL_TOTAL_CENTS + " REAL, " + ORDER_DETAIL_DELIVERY_PRICE + " REAL, " + ORDER_DETAIL_ITEMS_TOTAL + " REAL, " + ORDER_DETAIL_TAX_PERCENTAGE + " REAL, " + ORDER_DETAIL_SUBTOTAL + " REAL, " + ORDER_DETAIL_TOTAL_CENTS_WITHOUT_COUPON + " REAL, "
@@ -74,14 +65,29 @@ public class OrderDao {
             + ORDER_LOCATION_LAT + " REAL, " + ORDER_LOCATION_LNG + " REAL," + ORDER_STRIPE_STRIPE_TOKEN + " STRING," + COUPON_CODE + " STRING," + IDEMPOTENT_TOKEN + " STRING," + PLATFORM + " STRING,"
             + MENU_TYPE + " STRING," + MEAL_NAME + " STRING," + ETA_MIN + " STRING," + ETA_MAX + " STRING," + ORDER_TYPE + " STRING," + KITCHEN + " STRING," + ORDER_AHEAD_ZONE + " STRING," + FOR_DATE + " STRING,"
             + SCHEDULED_WINDOW_START + " STRING," + SCHEDULED_WINDOW_END + " STRING," + MENU_ID + " STRING);";
-
     public final static String[] FIELDS = {ID_PK, CURRENT_ORDER_ITEM, ORDER_DETAIL_COUPON_DISCOUNT_CENTS, ORDER_DETAIL_TIP_PERCENTAGE, ORDER_DETAIL_TAX_CENTS, ORDER_DETAIL_TIP_CENTS, ORDER_DETAIL_TOTAL_CENTS,
             ORDER_DETAIL_DELIVERY_PRICE, ORDER_DETAIL_ITEMS_TOTAL, ORDER_DETAIL_TAX_PERCENTAGE, ORDER_DETAIL_SUBTOTAL, ORDER_DETAIL_TOTAL_CENTS_WITHOUT_COUPON, ORDER_ADDRESS_NUMBER,
             ORDER_ADDRESS_STREET, ORDER_ADDRESS_CITY, ORDER_ADDRESS_STATE, ORDER_ADDRESS_ZIP, ORDER_LOCATION_LAT, ORDER_LOCATION_LNG, ORDER_STRIPE_STRIPE_TOKEN, COUPON_CODE, IDEMPOTENT_TOKEN, PLATFORM, MENU_TYPE,
             MEAL_NAME, ETA_MIN, ETA_MAX, ORDER_TYPE, KITCHEN, ORDER_AHEAD_ZONE, FOR_DATE, SCHEDULED_WINDOW_START, SCHEDULED_WINDOW_END, MENU_ID};
+    private DBAdapter dbAdapter;
+    private boolean success = true;
+    private BentoDao mBentoDao = new BentoDao();
 
     public OrderDao() {
         dbAdapter = new DBAdapter();
+    }
+
+    public static double getPriceByOrder(OrderItem mOrder) {
+        double dDishPrice = 0;
+
+        for (DishModel mDish : mOrder.items)
+            if (mDish.type.equals("main")) {
+                dDishPrice = DishDao.getDefaultPriceBento(mDish.price);
+                mOrder.unit_price = dDishPrice;
+                break;
+            }
+
+        return DishDao.getDefaultPriceBento(dDishPrice);
     }
 
     public Order insertNewOrder(Order mOrder) {
@@ -99,18 +105,20 @@ public class OrderDao {
         return mOrder;
     }
 
-    public Order getNewOrder(boolean bIsOrderAhead) {
+    public Order getNewOrder(boolean bIsOnDemand) {
 
         Order mOrder = new Order();
         mOrder.OrderItems.add(mBentoDao.getNewBento(ConstantUtils.optItemType.CUSTOM_BENTO_BOX));
         mOrder.OrderItems.add(mBentoDao.getNewBento(ConstantUtils.optItemType.ADD_ON));
 
-        if (!bIsOrderAhead) {
+        if (bIsOnDemand) {
+            mOrder.order_type = "1";
+            mOrder.OrderDetails.delivery_price = SettingsDao.getCurrent().delivery_price;
+        } else {
             mOrder.order_type = "2";
             mOrder.kitchen = MenuDao.gateKeeper.getAvailableServices().mOrderAhead.kitchen;
             mOrder.OrderAheadZone = MenuDao.gateKeeper.getAvailableServices().mOrderAhead.zone;
-        } else
-            mOrder.order_type = "1";
+        }
 
         OrderEta mOrderEta = new OrderEta();
         mOrderEta.max = String.valueOf(MenuDao.eta_max);
@@ -308,27 +316,12 @@ public class OrderDao {
         return cValues;
     }
 
-
     public void clearAllData() {
         DebugUtils.logDebug(TAG, "Clear All Data");
         dbAdapter.deleteAll(TABLE_NAME);
         dbAdapter.deleteAll(BentoDao.TABLE_NAME);
         dbAdapter.deleteAll(DishDao.TABLE_NAME);
     }
-
-    public static double getPriceByOrder(OrderItem mOrder) {
-        double dDishPrice = 0;
-
-        for (DishModel mDish : mOrder.items)
-            if (mDish.type.equals("main")) {
-                dDishPrice = DishDao.getDefaultPriceBento(mDish.price);
-                mOrder.unit_price = dDishPrice;
-                break;
-            }
-
-        return DishDao.getDefaultPriceBento(dDishPrice);
-    }
-
 
     public String calculateSoldOutItems(Order mOrder, boolean bIsMenuOD) {
         String sSoldOutItems = "";
@@ -429,6 +422,7 @@ public class OrderDao {
         mOrder.OrderDetails.tip_cents = AndroidUtil.round(tip, 2) * 100;
         mOrder.OrderDetails.total_cents = AndroidUtil.round(total, 2) * 100;
         mOrder.OrderDetails.total_cents_without_coupon = AndroidUtil.round(total_w_o_coupon, 2) * 100;
+        mOrder.OrderDetails.delivery_price = delivery_fee;
 
         DebugUtils.logDebug(TAG, "Item Price: " + mOrder.OrderDetails.items_total);
         DebugUtils.logDebug(TAG, "Delivery Fee: " + delivery_fee);

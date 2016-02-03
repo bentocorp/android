@@ -35,7 +35,7 @@
             android:background="@null"
             android:gravity="right"
             android:textColor="@color/btn_green"
-            android:textSize="@dimen/text_very_very_small"
+            android:textSize="12sp"
             android:textStyle="bold"
             app:key="complete-edit" />
     </LinearLayout>

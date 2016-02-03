@@ -32,31 +32,23 @@
         <LinearLayout
             android:id="@+id/address_row"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/summary_height_row"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:background="@color/white"
+            android:onClick="onChangeAddressPressed"
             android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/txt_address"
+                style="@style/TxtSummaryHeader"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:padding="@dimen/btn_padding"
-                android:textColor="@color/black" />
+                android:gravity="center|left"
+                android:textSize="13sp" />
 
-            <Button
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@null"
-                android:onClick="onChangeAddressPressed"
-                android:padding="@dimen/btn_padding"
-                android:text="@string/change"
-                android:textColor="@color/btn_green"
-                android:textSize="@dimen/text_very_very_small"
-                android:textStyle="bold" />
+
         </LinearLayout>
 
         <View
@@ -70,41 +62,38 @@
         <LinearLayout
             android:id="@+id/row_payment"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/summary_height_row"
             android:layout_below="@+id/divisor_1"
             android:background="@color/white"
+            android:onClick="onChangeCreditCardPressed"
             android:orientation="horizontal">
 
             <ImageView
                 android:id="@+id/img_credit_card"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/summary_height_row"
+                android:layout_height="@dimen/summary_height_row"
+                android:layout_gravity="center"
                 android:adjustViewBounds="true"
                 android:contentDescription="@null"
-                android:padding="@dimen/btn_padding"
+                android:paddingLeft="@dimen/btn_padding"
                 android:src="@drawable/card_empty" />
 
             <TextView
                 android:id="@+id/txt_credit_card"
+                style="@style/TxtSummaryHeader"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:paddingBottom="@dimen/btn_padding"
-                android:paddingRight="@dimen/btn_padding"
-                android:paddingTop="@dimen/btn_padding"
-                android:textColor="@color/black" />
+                android:gravity="center|left"
+                android:textSize="13sp" />
 
-            <Button
-                style="?android:attr/buttonBarButtonStyle"
+            <TextView
+                style="@style/TxtSummaryHeader"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@null"
-                android:onClick="onChangeCreditCardPressed"
-                android:padding="@dimen/btn_padding"
-                android:text="@string/change"
-                android:textColor="@color/btn_green"
-                android:textSize="@dimen/text_very_very_small"
-                android:textStyle="bold" />
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/edit"
+                android:textSize="13sp" />
         </LinearLayout>
 
         <View
@@ -141,39 +130,11 @@
             android:layout_alignParentBottom="true"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:id="@+id/row_delivery_price"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:orientation="horizontal">
-
-                <com.bentonow.bentonow.ui.BackendTextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:padding="@dimen/btn_padding"
-                    android:textColor="@color/dark_gray"
-                    app:key="delivery_label" />
-
-                <TextView
-                    android:id="@+id/txt_delivery_price"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="@dimen/btn_padding"
-                    android:text="@string/zero_dollar"
-                    android:textColor="@color/dark_gray" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="1px"
-                android:background="@color/divisor" />
 
             <LinearLayout
                 android:id="@+id/container_discount"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/summary_height_row"
                 android:background="@color/white"
                 android:orientation="horizontal"
                 android:visibility="visible">
@@ -204,7 +165,7 @@
             <LinearLayout
                 android:id="@+id/row_tax"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/summary_height_row"
                 android:background="@color/white"
                 android:orientation="horizontal">
 
@@ -231,13 +192,40 @@
                 android:layout_height="1px"
                 android:background="@color/divisor" />
 
+            <LinearLayout
+                android:id="@+id/row_delivery_price"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/summary_height_row"
+                android:background="@color/white"
+                android:orientation="horizontal">
 
+                <com.bentonow.bentonow.ui.BackendTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="@dimen/btn_padding"
+                    android:textColor="@color/dark_gray"
+                    app:key="delivery_label" />
+
+                <TextView
+                    android:id="@+id/txt_delivery_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/btn_padding"
+                    android:text="@string/zero_dollar"
+                    android:textColor="@color/dark_gray" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1px"
+                android:background="@color/divisor" />
             <!-- ORDER ITEMS / ITEM -->
 
             <LinearLayout
                 android:id="@+id/row_tip"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/summary_height_row"
                 android:background="@color/white"
                 android:orientation="horizontal">
 
@@ -311,7 +299,7 @@
             <RelativeLayout
                 android:id="@+id/row_total"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/summary_height_row"
                 android:background="@color/white">
 
                 <com.bentonow.bentonow.ui.BackendTextView
@@ -326,19 +314,15 @@
 
                 <TextView
                     android:id="@+id/btn_add_promo_code"
-                    style="?android:attr/buttonBarButtonStyle"
+                    style="@style/TxtSummaryHeader"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_alignTop="@+id/view"
                     android:layout_centerVertical="true"
                     android:layout_toRightOf="@+id/view"
-                    android:background="@null"
                     android:gravity="center_vertical"
                     android:onClick="showAddPromoCodeDialog"
-                    android:padding="@dimen/btn_padding"
-                    android:textColor="@color/btn_green"
-                    android:textSize="@dimen/text_very_very_small"
-                    android:textStyle="bold" />
+                    android:textSize="13sp" />
 
 
                 <RelativeLayout
@@ -389,7 +373,7 @@
     <LinearLayout
         android:id="@+id/footer_container"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/summary_height_row"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true">
 

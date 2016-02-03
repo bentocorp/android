@@ -79,7 +79,7 @@ public class OrderHistoryActivity extends BaseFragmentActivity implements View.O
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 DebugUtils.logError(TAG, "getOrderHistoryByUser failed: " + responseString + " StatusCode: " + statusCode);
-
+//TODO show login at 401 error code
                 dismissDialog();
             }
 
