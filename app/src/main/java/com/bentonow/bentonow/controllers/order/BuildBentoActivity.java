@@ -179,6 +179,10 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         getWrapperOd().setOnClickListener(this);
         getWrapperOaHeader().setOnClickListener(this);
 
+        getListMain().setAdapter(getMainAdapter());
+        getListAddOn().setAdapter(getAddOnAdapter());
+        getGridSide().setAdapter(getSideAdapter());
+
         getTxtEta().setText(String.format(getString(R.string.build_bento_eta), MenuDao.eta_min + "-" + MenuDao.eta_max));
 
         getSpinnerDate().setAdapter(getSpinnerDayAdapter());
@@ -281,38 +285,38 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                     getBtnAddOn().setVisibility(bHasAddOns ? View.VISIBLE : View.GONE);
                     break;
                 case MENU_PREVIEW:
-                    getListMain().setAdapter(getMainAdapter());
-                    getListAddOn().setAdapter(getAddOnAdapter());
-                    getGridSide().setAdapter(getSideAdapter());
                     getButtonCancel().setVisibility(bIsMenuAlreadySelected ? View.VISIBLE : View.GONE);
                     getTxtNumBento().setVisibility(View.GONE);
                     getActionbarRightBtn().setImageResource(R.drawable.ic_ab_bento);
                     getTxtDateTimeToolbar().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getTitle());
 
-                    for (DishModel dishModel : mMenu.dishModels) {
-                        switch (dishModel.type) {
-                            case "main":
-                                getMainAdapter().add(dishModel);
-                                break;
-                            case "side":
-                                getSideAdapter().add(dishModel);
-                                break;
-                            case "addon":
-                                getAddOnAdapter().add(dishModel);
-                                break;
-                            default:
-                                DebugUtils.logError(TAG, "Unknown Type: " + dishModel.type + " Dish: " + dishModel.name);
-                                break;
+                    if (getMainAdapter().isEmpty()) {
+                        for (DishModel dishModel : mMenu.dishModels) {
+                            switch (dishModel.type) {
+                                case "main":
+                                    getMainAdapter().add(dishModel);
+                                    break;
+                                case "side":
+                                    getSideAdapter().add(dishModel);
+                                    break;
+                                case "addon":
+                                    getAddOnAdapter().add(dishModel);
+                                    break;
+                                default:
+                                    DebugUtils.logError(TAG, "Unknown Type: " + dishModel.type + " Dish: " + dishModel.name);
+                                    break;
+                            }
+
                         }
 
-                    }
-                    getMainAdapter().notifyDataSetChanged();
-                    getSideAdapter().notifyDataSetChanged();
-                    getAddOnAdapter().notifyDataSetChanged();
+                        getMainAdapter().notifyDataSetChanged();
+                        getSideAdapter().notifyDataSetChanged();
+                        getAddOnAdapter().notifyDataSetChanged();
 
-                    getListMain().setOnItemClickListener(this);
-                    getListAddOn().setOnItemClickListener(this);
-                    getGridSide().setOnItemClickListener(this);
+                        getListMain().setOnItemClickListener(this);
+                        getListAddOn().setOnItemClickListener(this);
+                        getGridSide().setOnItemClickListener(this);
+                    }
 
                     getContentMenuPreview().setVisibility(View.VISIBLE);
                     getContentBuildBento().setVisibility(View.GONE);
@@ -388,6 +392,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
     private void updateOrderByMenu() {
         mOrderDao.cleanUp();
+        getMainAdapter().clear();
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_ORDER_AHEAD_MENU, optMenu == ConstantUtils.optMenuSelected.ORDER_AHEAD);
 
         runOnUiThread(new Runnable() {
@@ -416,8 +421,13 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                         break;
                 }
 
-                MenuDao.setCurrentMenu(mMenu);
-                updateUI();
+                if (mMenu != null) {
+                    MenuDao.setCurrentMenu(mMenu);
+                    updateUI();
+                } else {
+                    finish();
+                    BentoNowUtils.openDeliveryLocationScreen(BuildBentoActivity.this, ConstantUtils.optOpenScreen.BUILD_BENTO);
+                }
 
             }
         });

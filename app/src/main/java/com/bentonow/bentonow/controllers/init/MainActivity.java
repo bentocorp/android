@@ -33,11 +33,8 @@ import org.json.JSONObject;
 public class MainActivity extends BaseFragmentActivity {
 
     static final String TAG = "MainActivity";
-
-    private TextView txtVersion;
-
     public static boolean bIsOpen = false;
-
+    private TextView txtVersion;
     private Dialog mDialogPlayServices;
     private ConfirmationDialog mConfirmationDialog;
 
@@ -60,6 +57,12 @@ public class MainActivity extends BaseFragmentActivity {
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, "open");
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.LOCATION, "");
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ADDRESS, "");
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MENU_TODAY, "");
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MENU_NEXT, "");
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STATUS_ALL, "");
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.BACKENDTEXT, "");
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.SETTINGS, "");
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MEALS, "");
 
         GoogleLocationUtil.getGoogleApiClient(false);
 

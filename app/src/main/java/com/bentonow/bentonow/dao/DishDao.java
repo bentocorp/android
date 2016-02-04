@@ -351,6 +351,9 @@ public class DishDao {
     public DishModel updateDishItem(DishModel mOldDish, DishModel mNewDish) {
         String where = ID_PK + " =?";
 
+        if (mNewDish == null)
+            return null;
+
         mNewDish.bento_pk = mOldDish.bento_pk;
         mNewDish.dish_pk = mOldDish.dish_pk;
 

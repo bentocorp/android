@@ -265,7 +265,7 @@ public class InitParse extends MainParser {
             }
 
         } catch (Exception e) {
-            DebugUtils.logError(TAG, "setMenuWithString():" + e.getMessage());
+            DebugUtils.logError(TAG, "parseMenu(): " + e.getMessage());
         }
 
     }
