@@ -347,11 +347,11 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private boolean isValidLocation() {
         boolean bIsValid = true;
 
-        if (mOrderAddress == null || mLastOrderLocation == null || !getCheckIAgree().isChecked()) {
+        if (mOrderAddress == null || mLastOrderLocation == null || !getCheckIAgree().isChecked() || getTxtAddress().getText().toString().isEmpty()) {
             bIsValid = false;
             String sError = getString(R.string.alert_tab_checkbox);
 
-            if (mOrderAddress == null || mLastOrderLocation == null)
+            if (mOrderAddress == null || mLastOrderLocation == null || getTxtAddress().getText().toString().isEmpty())
                 sError = getString(R.string.delivery_alert_no_address);
 
             getTxtAlertAgree().setText(sError);
