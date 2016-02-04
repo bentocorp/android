@@ -27,11 +27,9 @@ public class BentoCustomerService extends Service {
     public static final String TAG = "BentoCustomerService";
 
     private static InterfaceCustomerService mListener;
-
-    private final WebSocketServiceBinder binder = new WebSocketServiceBinder();
     private static Handler mHandler;
     private static Runnable mLoadingTask;
-
+    private final WebSocketServiceBinder binder = new WebSocketServiceBinder();
     public boolean bSendRequest;
     public int iNumTimesRequest;
 
@@ -78,7 +76,7 @@ public class BentoCustomerService extends Service {
         }
     }
 
-    private void getBentoData(boolean cCheckStatus) {
+    public void getBentoData(boolean cCheckStatus) {
         if (bSendRequest || !cCheckStatus) {
             bSendRequest = false;
 
@@ -107,7 +105,8 @@ public class BentoCustomerService extends Service {
                 }
             });
 
-        }
+        } else
+            DebugUtils.logDebug(TAG, "Request already sent");
     }
 
     private void startTimerTask() {
