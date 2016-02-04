@@ -105,6 +105,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private ArrayList<AutoCompleteModel> resultList;
     private float previousZoomLevel = 17.7f;
     private long lastTouched = 0;
+    private boolean bAllowRequest = true;
+    private String sTextToSearch = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -489,7 +491,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             // Extract the Place descriptions from the results
             resultList = new ArrayList<>(list.length());
             for (int i = 0; i < list.length(); i++) {
-                DebugUtils.logDebug(TAG, "Predictions: " + list.getJSONObject(i).toString());
+                //   DebugUtils.logDebug(TAG, "Predictions: " + list.getJSONObject(i).toString());
                 AutoCompleteModel mAutocomplete = new AutoCompleteModel();
                 mAutocomplete.setAddress(list.getJSONObject(i).getString("description"));
                 mAutocomplete.setPlaceId(list.getJSONObject(i).getString("place_id"));
@@ -809,28 +811,49 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                     FilterResults filterResults = new FilterResults();
                     if (constraint != null) {
                         // Retrieve the autocomplete results.
-                        resultList = autocomplete(constraint.toString());
+                        if (bAllowRequest) {
+                            bAllowRequest = false;
+                            resultList = autocomplete(constraint.toString());
+                            bAllowRequest = true;
 
-                        // Assign the data to the FilterResults
-                        filterResults.values = resultList;
-                        filterResults.count = resultList.size();
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                notifyDataSetChanged();
-                            }
-                        });
+                            // Assign the data to the FilterResults
+                            filterResults.values = resultList;
+                            filterResults.count = resultList.size();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    notifyDataSetChanged();
+                                    if (!sTextToSearch.isEmpty()) {
+                                        sTextToSearch = "";
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+                                            getTxtAddress().setText(getTxtAddress().getText().toString(), true);
+                                        else
+                                            getTxtAddress().setText(getTxtAddress().getText().toString());
+                                    }
+                                }
+                            });
+
+
+                        } else {
+                            sTextToSearch = getTxtAddress().getText().toString();
+                            DebugUtils.logDebug(TAG, "Text Pending Search: " + sTextToSearch);
+                        }
                     }
                     return filterResults;
                 }
 
                 @Override
-                protected void publishResults(CharSequence constraint, FilterResults results) {
-                    if (results != null && results.count > 0) {
-                        notifyDataSetChanged();
-                    } else {
-                        notifyDataSetInvalidated();
-                    }
+                protected void publishResults(final CharSequence constraint, final FilterResults results) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (results != null && results.count > 0) {
+                                notifyDataSetChanged();
+                            } else {
+                                notifyDataSetInvalidated();
+                            }
+                        }
+                    });
                 }
             };
         }
