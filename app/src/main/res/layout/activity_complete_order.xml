@@ -341,7 +341,7 @@
                 android:background="@color/white">
 
                 <com.bentonow.bentonow.ui.BackendTextView
-                    android:id="@+id/view"
+                    android:id="@+id/txt_total_fix"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
@@ -355,9 +355,9 @@
                     style="@style/TxtSummaryHeader"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_alignTop="@+id/view"
+                    android:layout_alignTop="@+id/txt_total_fix"
                     android:layout_centerVertical="true"
-                    android:layout_toRightOf="@+id/view"
+                    android:layout_toRightOf="@+id/txt_total_fix"
                     android:gravity="center_vertical"
                     android:onClick="showAddPromoCodeDialog"
                     android:textSize="13sp" />
