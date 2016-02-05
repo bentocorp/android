@@ -235,7 +235,6 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                             getContentMenuPreview().setVisibility(View.GONE);
                             getContentBuildBento().setVisibility(View.VISIBLE);
                             updateDishUI();
-                            getButtonCancel().setVisibility(bIsMenuAlreadySelected ? View.VISIBLE : View.GONE);
                             getTxtEta().setVisibility(optMenu == ConstantUtils.optMenuSelected.ON_DEMAND ? View.VISIBLE : View.GONE);
                             getImgDividerStatus().setVisibility(optMenu == ConstantUtils.optMenuSelected.ON_DEMAND ? View.VISIBLE : View.GONE);
                             getTxtPromoName().setText(String.format(getString(R.string.build_bento_price), BentoNowUtils.getDefaultPriceBento(DishDao.getLowestMainPrice(mMenu))));
@@ -755,6 +754,8 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
             public void run() {
                 if (!bShowDateTime) {
                     bShowDateTime = true;
+                    getButtonCancel().setVisibility(bIsMenuAlreadySelected ? View.VISIBLE : View.GONE);
+                    restartWidget();
                     getImgDropDownUp().setImageResource(R.drawable.ic_action_navigation_arrow_drop_up);
                     getContainerDateTime().setVisibility(View.VISIBLE);
                     Animation dateInAnimation = AnimationUtils.loadAnimation(BuildBentoActivity.this, R.anim.date_time_in);
@@ -1052,7 +1053,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                 break;
             case R.id.layout_date_time:
                 setDateTime(true, true);
-                restartWidget();
+                //   restartWidget();
                 break;
             case R.id.button_accept_widget:
                 if (bShowAppOnAhead || bShowAppOnDemand) {
@@ -1094,14 +1095,15 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                             mDialog.addCancelButton(IosCopyDao.get("build-not-complete-confirmation-1"), new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
-                                            restartWidget();
+                                            //   restartWidget();
                                         }
                                     }
 
                             );
                             mDialog.show();
-                        } else
-                            restartWidget();
+                        }
+                        //else
+                        // restartWidget();
 
                         setDateTime(!bChangeMenu, true);
                     }
@@ -1110,11 +1112,11 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                 break;
             case R.id.button_cancel_widget:
                 setDateTime(true, true);
-                restartWidget();
+                // restartWidget();
                 break;
             case R.id.container_cancel_widget:
                 setDateTime(true, true);
-                restartWidget();
+                //restartWidget();
                 break;
             case R.id.wrapper_od:
                 if (!bIsAsapChecked) {
