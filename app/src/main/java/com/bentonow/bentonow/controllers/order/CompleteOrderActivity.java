@@ -167,17 +167,20 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
     protected void onResume() {
         mCurrentUser = userDao.getCurrentUser();
 
-        getCurrentOrder();
+        if (mCurrentUser == null)
+            onBackPressed();
+        else {
+            getCurrentOrder();
 
-        if (mOrder == null || mOrder.OrderItems == null || mOrder.OrderItems.isEmpty()) {
-            Crashlytics.log(Log.ERROR, "Order", "No Items in the Order");
-            emptyOrders();
-        } else
-            updateBentoUI(false);
+            if (mOrder == null || mOrder.OrderItems == null || mOrder.OrderItems.isEmpty()) {
+                Crashlytics.log(Log.ERROR, "Order", "No Items in the Order");
+                emptyOrders();
+            } else
+                updateBentoUI(false);
 
-        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_ORDER_AHEAD_MENU))
-            setOAHashTimer(BentoNowUtils.showOATimer(mMenu));
-
+            if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_ORDER_AHEAD_MENU))
+                setOAHashTimer(BentoNowUtils.showOATimer(mMenu));
+        }
         super.onResume();
     }
 
