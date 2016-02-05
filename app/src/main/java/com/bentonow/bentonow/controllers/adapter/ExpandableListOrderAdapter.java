@@ -115,7 +115,7 @@ public class ExpandableListOrderAdapter extends BaseExpandableListAdapter {
                 viewHolder.getBtnEdit().setVisibility(bEditAddOn && iSelectedAddOn != childPosition ? View.VISIBLE : View.GONE);
 
                 viewHolder.getTxtPrice().setTextColor(bIsSoldOut ? mActivity.getResources().getColor(R.color.orange) : mActivity.getResources().getColor(R.color.dark_gray));
-                viewHolder.getTxtPrice().setText(String.format(mActivity.getString(R.string.money_format), mDish.price));
+                viewHolder.getTxtPrice().setText(String.format(mActivity.getString(R.string.money_format), (mDish.price * mDish.count_max)));
                 viewHolder.getTxtPrice().setVisibility(viewHolder.getBtnRemove().getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
 
                 viewHolder.getBtnRemove().setOnClickListener(new View.OnClickListener() {
