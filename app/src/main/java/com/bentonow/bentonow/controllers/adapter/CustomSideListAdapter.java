@@ -107,6 +107,14 @@ public class CustomSideListAdapter extends ArrayAdapter<DishModel> {
         viewHolder.getTxtTitle().setText(mDish.name);
         viewHolder.getImgGradient().setVisibility(selected ? View.VISIBLE : View.GONE);
         viewHolder.getBtnAdded().setVisibility(selected && added ? View.VISIBLE : View.GONE);
+        viewHolder.getBtnAdded().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onAddedClick(position);
+                DebugUtils.logDebug("onAddedClick()", position);
+            }
+        });
+
         viewHolder.getBtnAddToBento().setVisibility(selected && !added ? View.VISIBLE : View.GONE);
 
         viewHolder.getBtnAddToBento().setOnClickListener(new View.OnClickListener() {

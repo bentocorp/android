@@ -831,18 +831,16 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
             @Override
             public void run() {
                 if (bIsAsapChecked) {
-                    getCheckBoxOD().setBackgroundDrawable(getResources().getDrawable(R.drawable.bento_btn_check_on_holo_light));
-                    getCheckBoxOA().setBackgroundDrawable(getResources().getDrawable(R.drawable.bento_btn_check_off_holo_light));
+                    getCheckBoxOD().setBackgroundDrawable(getResources().getDrawable(R.drawable.bento_btn_check_on_holo_light_alone));
+                    getCheckBoxOA().setBackgroundDrawable(null);
                     getTxtOdHeader().setTextColor(getResources().getColor(R.color.green_promo));
                     getTxtOaHeader().setTextColor(getResources().getColor(R.color.black));
-                    getTxtOdDescription().setVisibility(View.VISIBLE);
                     getContainerSpinnerDayTimeOa().setVisibility(View.GONE);
                 } else {
-                    getCheckBoxOD().setBackgroundDrawable(getResources().getDrawable(R.drawable.bento_btn_check_off_holo_light));
-                    getCheckBoxOA().setBackgroundDrawable(getResources().getDrawable(R.drawable.bento_btn_check_on_holo_light));
+                    getCheckBoxOD().setBackgroundDrawable(null);
+                    getCheckBoxOA().setBackgroundDrawable(getResources().getDrawable(R.drawable.bento_btn_check_on_holo_light_alone));
                     getTxtOdHeader().setTextColor(getResources().getColor(R.color.black));
                     getTxtOaHeader().setTextColor(getResources().getColor(R.color.green_promo));
-                    getTxtOdDescription().setVisibility(View.GONE);
                     getContainerSpinnerDayTimeOa().setVisibility(View.VISIBLE);
                 }
             }

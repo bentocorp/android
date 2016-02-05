@@ -26,15 +26,13 @@ import java.util.ArrayList;
 public class SelectSideCustomActivity extends BaseFragmentActivity implements View.OnClickListener, AdapterView.OnItemClickListener, ListenerCustomDish {
 
     static final String TAG = "SelectSideActivity";
-
-    private GridView mGridView;
-
-    private CustomSideListAdapter mListAdapter;
-
-    private Order mOrder;
-
     int orderIndex;
     int itemIndex;
+    private GridView mGridView;
+    private CustomSideListAdapter mListAdapter;
+    private Order mOrder;
+
+    private DishModel mCurrentDish;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +54,12 @@ public class SelectSideCustomActivity extends BaseFragmentActivity implements Vi
 
             getGridView().setAdapter(getListAdapter());
             getGridView().setOnItemClickListener(this);
+
+            mCurrentDish = mDishDao.clone(mOrder.OrderItems.get(orderIndex).items.get(itemIndex));
+            if (mCurrentDish.type.isEmpty())
+                mCurrentDish.type = "side" + itemIndex;
+            else if (mCurrentDish.type.equals("side"))
+                mCurrentDish.type = "side" + itemIndex;
 
             getListAdapter().setCurrentSelected(mOrder.OrderItems.get(orderIndex).items.get(itemIndex));
             getListAdapter().setCurrentAdded(mOrder.OrderItems.get(orderIndex).items.get(itemIndex));
@@ -98,22 +102,29 @@ public class SelectSideCustomActivity extends BaseFragmentActivity implements Vi
 
     @Override
     public void onAddedClick(int iDishPosition) {
+        MixpanelUtils.track("Withdrew Side Dish");
+
+        mCurrentDish.name = "";
+
+        mDishDao.updateDishItem(mCurrentDish);
+
+        getListAdapter().setCurrentAdded(null);
+
+        getListAdapter().notifyDataSetChanged();
     }
 
     @Override
     public void onAddToBentoClick(int iDishPosition) {
         if (mDishDao.isSoldOut(getListAdapter().getCurrentSelected(), true, !SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_ORDER_AHEAD_MENU)) || !mDishDao.canBeAdded(getListAdapter().getCurrentSelected()))
             return;
-        DishModel dishModel = DishDao.clone(getListAdapter().getCurrentSelected());
-        dishModel.type += itemIndex;
-        dishModel.dish_pk = mOrder.OrderItems.get(orderIndex).items.get(itemIndex).dish_pk;
-        dishModel.bento_pk = mOrder.OrderItems.get(orderIndex).items.get(itemIndex).bento_pk;
+        DishModel mDish = DishDao.clone(getListAdapter().getCurrentSelected());
+        mDish.type = mCurrentDish.type;
+        mDish.dish_pk = mCurrentDish.dish_pk;
+        mDish.bento_pk = mCurrentDish.bento_pk;
 
-        //Order.current.OrderItems.get(orderIndex).items.set(itemIndex, dishModel);
+        mDishDao.updateDishItem(mDish);
 
-        mDishDao.updateDishItem(dishModel);
-
-        DebugUtils.logDebug(TAG, "added " + dishModel.type);
+        DebugUtils.logDebug(TAG, "added " + mDish.type);
 
         onBackPressed();
     }

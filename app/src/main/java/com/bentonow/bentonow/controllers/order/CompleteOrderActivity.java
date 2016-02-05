@@ -21,6 +21,7 @@ import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
+import com.bentonow.bentonow.Utils.exception.ServiceException;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.adapter.ExpandableListOrderAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
@@ -194,6 +195,25 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
             params.put("status_error", error);
 
             MixpanelUtils.track("Placed An Order", params);
+        } catch (Exception e) {
+            DebugUtils.logError(TAG, e);
+        }
+    }
+
+    private void trackError(String sError) {
+        try {
+            JSONObject params = new JSONObject();
+
+            if (mCurrentUser != null)
+                params.put("payment method", mCurrentUser.card.brand);
+
+            params.put("quantity", mOrder.OrderItems.size());
+            params.put("total price", mOrder.OrderDetails.total_cents / 100);
+            params.put("status", sError == null ? "success" : "failure");
+            params.put("status_error", sError);
+
+            MixpanelUtils.track("Complete Order Error", params);
+            Crashlytics.logException(new ServiceException(params.toString()));
         } catch (Exception e) {
             DebugUtils.logError(TAG, e);
         }
@@ -408,10 +428,8 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    String error;
+                    String error = "";
                     JSONObject json;
-
-                    DebugUtils.logError(TAG, "Order: " + statusCode + " " + responseString);
 
                     try {
                         json = new JSONObject(responseString);
@@ -420,12 +438,16 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
                         } else {
                             error = json.getString("error");
                         }
+                        trackError(error);
                     } catch (Exception ignore) {
-                        error = "No Network";
-                        DebugUtils.logError(TAG, "onFailure(): " + ignore.toString());
+                        DebugUtils.logError(TAG, "Order: " + statusCode + " Response(): " + responseString);
+                        trackError("Order: " + statusCode + " Response(): " + responseString);
                     }
 
                     switch (statusCode) {
+                        case 0:
+                            error = "No Network";
+                            break;
                         case 401:
                             DebugUtils.logError(TAG, "Invalid Api Token");
                             WidgetsUtils.createShortToast("You session is expired, please LogIn again");
@@ -437,7 +459,8 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
                             break;
                         case 402:
                             action = "credit_card";
-                            error = getString(R.string.error_no_credit_card);
+                            if (error.isEmpty())
+                                error = getString(R.string.error_no_credit_card);
                             break;
                         case 406:
                             if (responseString.contains("You cannot use a Stripe token more than once")) {
@@ -458,14 +481,12 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
                             error = IosCopyDao.get("closed-title");
                             break;
                         default:
-                            Crashlytics.log(Log.ERROR, "SendOrderError", "Code " + statusCode + " : Response " + responseString + " : Parsing " + error);
-                            error = getResources().getString(R.string.error_send_order);
+                            if (error.isEmpty())
+                                error = getResources().getString(R.string.error_send_order);
                             break;
                     }
 
                     dismissDialog();
-
-                    track(error);
 
                     if (!error.equals("")) {
                         mDialog = new ConfirmationDialog(CompleteOrderActivity.this, null, error);

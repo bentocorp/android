@@ -8,6 +8,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
@@ -33,6 +34,8 @@ public class SelectMainCustomActivity extends BaseFragmentActivity implements Vi
 
     private Order mOrder;
 
+    private DishModel mCurrentDish;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_main);
@@ -52,6 +55,11 @@ public class SelectMainCustomActivity extends BaseFragmentActivity implements Vi
             mOrder = mOrderDao.getCurrentOrder();
 
             orderIndex = mOrder.currentOrderItem;
+
+            mCurrentDish = mDishDao.clone(mOrder.OrderItems.get(orderIndex).items.get(0));
+
+            if (mCurrentDish.type.isEmpty())
+                mCurrentDish.type = "main";
 
             getListAdapter().setCurrentAdded(mOrder.OrderItems.get(orderIndex).items.get(0));
             getListAdapter().setCurrentSelected(mOrder.OrderItems.get(orderIndex).items.get(0));
@@ -83,20 +91,15 @@ public class SelectMainCustomActivity extends BaseFragmentActivity implements Vi
 
     @Override
     public void onAddedClick(int iDishPosition) {
-        //if (currentSelectedItem.itemId == Order.current.OrderItems.get(orderIndex).items.get(0).itemId)
-
-        //Order.current.OrderItems.get(orderIndex).items.set(0, null);
         MixpanelUtils.track("Withdrew Main Dish");
 
-        DishModel mDish = mDishDao.getEmptyDish(mOrder.OrderItems.get(orderIndex).order_pk);
-        mDish.dish_pk = mOrder.OrderItems.get(orderIndex).items.get(0).dish_pk;
-        mDish.bento_pk = mOrder.OrderItems.get(orderIndex).items.get(0).bento_pk;
-        mDishDao.updateDishItem(mDish);
+        mCurrentDish.name = "";
+
+        mDishDao.updateDishItem(mCurrentDish);
 
         getListAdapter().setCurrentAdded(null);
 
         getListAdapter().notifyDataSetChanged();
-        //onBackPressed();
     }
 
     @Override
@@ -104,10 +107,14 @@ public class SelectMainCustomActivity extends BaseFragmentActivity implements Vi
         if (getListAdapter().getItem(iDishPosition).can_be_added == 0)
             return;
 
-        DishModel mDish = getListAdapter().getCurrentSelected();
-        mDish.dish_pk = mOrder.OrderItems.get(orderIndex).items.get(0).dish_pk;
-        mDish.bento_pk = mOrder.OrderItems.get(orderIndex).items.get(0).bento_pk;
+        DishModel mDish = mDishDao.clone(getListAdapter().getCurrentSelected());
+        mDish.type = mCurrentDish.type;
+        mDish.dish_pk = mCurrentDish.dish_pk;
+        mDish.bento_pk = mCurrentDish.bento_pk;
+
         mDishDao.updateDishItem(mDish);
+
+        DebugUtils.logDebug(TAG, "added " + mDish.type);
 
         onBackPressed();
     }

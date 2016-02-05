@@ -72,7 +72,7 @@ public class BentoDao {
         switch (optItemType) {
             case CUSTOM_BENTO_BOX:
                 DishDao mDishDao = new DishDao();
-
+//TODO add the type name here
                 for (int a = 0; a < iNumBento; a++) {
                     DishModel mDish = mDishDao.getEmptyDish(mOrder.order_pk);
                     mOrder.items.add(mDish);

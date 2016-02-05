@@ -150,7 +150,7 @@
                         android:maxLines="5"
                         android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
                         android:textColor="@color/black"
-                        android:textSize="16sp" />
+                        android:textSize="13sp" />
 
                 </LinearLayout>
 
@@ -164,7 +164,7 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_gravity="center|right"
-                        android:background="@drawable/bento_btn_check_on_holo_light"
+                        android:background="@drawable/bento_btn_check_on_holo_light_alone"
                         android:checked="true" />
 
                 </FrameLayout>
@@ -206,7 +206,7 @@
                             android:layout_width="30dp"
                             android:layout_height="30dp"
                             android:layout_gravity="center|right"
-                            android:background="@drawable/bento_btn_check_on_holo_light"
+                            android:background="@drawable/bento_btn_check_on_holo_light_alone"
                             android:checked="true" />
 
                     </FrameLayout>
