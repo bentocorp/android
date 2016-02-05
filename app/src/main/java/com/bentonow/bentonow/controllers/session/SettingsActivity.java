@@ -25,7 +25,6 @@ import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.dialog.EditPhoneDialog;
 import com.bentonow.bentonow.controllers.dialog.LogOutDialog;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
-import com.bentonow.bentonow.controllers.order.OrderHistoryActivity;
 import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.listener.ListenerDialog;
 import com.bentonow.bentonow.model.User;
@@ -106,7 +105,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
     void updateUI() {
         getContainerUser().setVisibility(mCurrentUser == null ? View.GONE : View.VISIBLE);
         getContainerSettingsSignIn().setVisibility(mCurrentUser != null ? View.GONE : View.VISIBLE);
-        getContainerSettingsCreditCard().setVisibility(mCurrentUser != null ? View.VISIBLE : View.GONE);
+        getContainerSettingsCreditCard().setVisibility(View.GONE);
         getContainerSettingsOrders().setVisibility(mCurrentUser != null ? View.VISIBLE : View.GONE);
         getLayoutContainerPhone().setOnClickListener(this);
 
@@ -369,7 +368,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
                 onCreditCardPressed();
                 break;
             case R.id.container_settings_orders:
-               BentoNowUtils.openOrderHistoryActivity(SettingsActivity.this);
+                BentoNowUtils.openOrderHistoryActivity(SettingsActivity.this);
                 break;
             default:
                 DebugUtils.logError(TAG, "No found: " + v.getId());

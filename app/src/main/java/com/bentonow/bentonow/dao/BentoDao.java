@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Created by Jose Torres on 10/27/15.
  */
-public class BentoDao {
+public class BentoDao extends MainDao {
 
     public final static String TABLE_NAME = "table_bento";
     public final static String ID_PK = "bento_pk";
@@ -72,9 +72,8 @@ public class BentoDao {
         switch (optItemType) {
             case CUSTOM_BENTO_BOX:
                 DishDao mDishDao = new DishDao();
-//TODO add the type name here
                 for (int a = 0; a < iNumBento; a++) {
-                    DishModel mDish = mDishDao.getEmptyDish(mOrder.order_pk);
+                    DishModel mDish = mDishDao.getEmptyDish(mOrder.order_pk, a == 0 ? "main" : String.valueOf("side" + a));
                     mOrder.items.add(mDish);
                 }
                 break;
@@ -124,7 +123,7 @@ public class BentoDao {
             for (int i = 0; i < cursor.getCount(); i++) {
                 OrderItem mOrder = new OrderItem();
                 mOrder.order_pk = (cursor.getInt(_ID_PK));
-                mOrder.item_type = (cursor.getString(_ITEM_TYPE));
+                mOrder.item_type = getStringFromColumn(cursor.getString(_ITEM_TYPE));
                 mOrder.bIsSoldoOut = (cursor.getInt(_IS_SOLD_OUT) == 1 ? true : false);
                 mOrder.unit_price = (cursor.getDouble(_UNIT_PRICE));
                 mListBento.add(mOrder);
@@ -170,7 +169,7 @@ public class BentoDao {
             cursor.moveToFirst();
             for (int i = 0; i < cursor.getCount(); i++) {
                 mOrder.order_pk = (cursor.getInt(_ID_PK));
-                mOrder.item_type = (cursor.getString(_ITEM_TYPE));
+                mOrder.item_type = getStringFromColumn(cursor.getString(_ITEM_TYPE));
                 mOrder.bIsSoldoOut = (cursor.getInt(_IS_SOLD_OUT) == 1 ? true : false);
                 mOrder.unit_price = (cursor.getDouble(_UNIT_PRICE));
                 cursor.moveToNext();

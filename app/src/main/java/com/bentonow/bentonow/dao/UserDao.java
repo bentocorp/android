@@ -12,7 +12,7 @@ import com.bentonow.bentonow.model.user.Card;
 /**
  * Created by Jose Torres on 11/3/15.
  */
-public class UserDao {
+public class UserDao extends MainDao {
     public static final String TAG = "UserDao";
 
     private DBAdapter dbAdapter;
@@ -102,22 +102,22 @@ public class UserDao {
             cursor.moveToFirst();
             for (int i = 0; i < cursor.getCount(); i++) {
                 mUser = new User();
-                mUser.firstname = (cursor.getString(_FIRST_NAME));
-                mUser.lastname = (cursor.getString(_LAST_NAME));
-                mUser.password = (cursor.getString(_PASSWORD));
-                mUser.email = (cursor.getString(_EMAIL));
-                mUser.phone = (cursor.getString(_PHONE));
-                mUser.coupon_code = (cursor.getString(_COUPON_CODE));
-                mUser.api_token = (cursor.getString(_API_TOKEN));
-                mUser.stripe_token = (cursor.getString(_STRIPE_TOKEN));
-                mUser.fb_token = (cursor.getString(_FB_TOKEN));
-                mUser.fb_id = (cursor.getString(_FB_ID));
-                mUser.fb_profile_pic = (cursor.getString(_FB_PROFILE_PIC));
-                mUser.fb_age_range = (cursor.getString(_FB_AGE_RANGE));
-                mUser.fb_gender = (cursor.getString(_FB_GENDER));
+                mUser.firstname = getStringFromColumn(cursor.getString(_FIRST_NAME));
+                mUser.lastname = getStringFromColumn(cursor.getString(_LAST_NAME));
+                mUser.password = getStringFromColumn(cursor.getString(_PASSWORD));
+                mUser.email = getStringFromColumn(cursor.getString(_EMAIL));
+                mUser.phone = getStringFromColumn(cursor.getString(_PHONE));
+                mUser.coupon_code = getStringFromColumn(cursor.getString(_COUPON_CODE));
+                mUser.api_token = getStringFromColumn(cursor.getString(_API_TOKEN));
+                mUser.stripe_token = getStringFromColumn(cursor.getString(_STRIPE_TOKEN));
+                mUser.fb_token = getStringFromColumn(cursor.getString(_FB_TOKEN));
+                mUser.fb_id = getStringFromColumn(cursor.getString(_FB_ID));
+                mUser.fb_profile_pic = getStringFromColumn(cursor.getString(_FB_PROFILE_PIC));
+                mUser.fb_age_range = getStringFromColumn(cursor.getString(_FB_AGE_RANGE));
+                mUser.fb_gender = getStringFromColumn(cursor.getString(_FB_GENDER));
                 Card mCard = new Card();
-                mCard.brand = (cursor.getString(_CARD_BRAND));
-                mCard.last4 = (cursor.getString(_CARD_LAST4));
+                mCard.brand = getStringFromColumn(cursor.getString(_CARD_BRAND));
+                mCard.last4 = getStringFromColumn(cursor.getString(_CARD_LAST4));
                 mUser.card = mCard;
 
                 cursor.moveToNext();

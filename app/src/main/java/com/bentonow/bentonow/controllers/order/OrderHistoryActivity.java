@@ -80,6 +80,13 @@ public class OrderHistoryActivity extends BaseFragmentActivity implements View.O
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 DebugUtils.logError(TAG, "getOrderHistoryByUser failed: " + responseString + " StatusCode: " + statusCode);
 //TODO show login at 401 error code
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        getTxtEmptyOrderHistory().setVisibility(View.VISIBLE);
+                        getExpandableListOrderHistory().setVisibility(View.GONE);
+                    }
+                });
                 dismissDialog();
             }
 

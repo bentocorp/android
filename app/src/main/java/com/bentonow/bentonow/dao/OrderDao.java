@@ -20,7 +20,7 @@ import com.bentonow.bentonow.model.order.OrderStripe;
 /**
  * Created by Jose Torres on 10/27/15.
  */
-public class OrderDao {
+public class OrderDao extends MainDao {
 
     public final static String TABLE_NAME = "table_order";
     public final static String ID_PK = "order_pk";
@@ -202,18 +202,18 @@ public class OrderDao {
                 mOrder = new Order();
                 mOrder.order_pk = (cursor.getInt(_ID_PK));
                 mOrder.currentOrderItem = (cursor.getInt(_CURRENT_ORDER_ITEM));
-                mOrder.CouponCode = (cursor.getString(_COUPON_CODE));
-                mOrder.IdempotentToken = (cursor.getString(_IDEMPOTENT_TOKEN));
-                mOrder.Platform = (cursor.getString(_PLATFORM));
-                mOrder.MenuType = (cursor.getString(_MENU_TYPE));
-                mOrder.MealName = (cursor.getString(_MEAL_NAME));
-                mOrder.order_type = (cursor.getString(_ORDER_TYPE));
-                mOrder.kitchen = (cursor.getString(_KITCHEN));
-                mOrder.OrderAheadZone = (cursor.getString(_ORDER_AHEAD_ZONE));
-                mOrder.for_date = (cursor.getString(_FOR_DATE));
-                mOrder.scheduled_window_start = (cursor.getString(_SCHEDULED_WINDOW_START));
-                mOrder.scheduled_window_end = (cursor.getString(_SCHEDULED_WINDOW_END));
-                mOrder.MenuId = (cursor.getString(_MENU_ID));
+                mOrder.CouponCode = getStringFromColumn(cursor.getString(_COUPON_CODE));
+                mOrder.IdempotentToken = getStringFromColumn(cursor.getString(_IDEMPOTENT_TOKEN));
+                mOrder.Platform = getStringFromColumn(cursor.getString(_PLATFORM));
+                mOrder.MenuType = getStringFromColumn(cursor.getString(_MENU_TYPE));
+                mOrder.MealName = getStringFromColumn(cursor.getString(_MEAL_NAME));
+                mOrder.order_type = getStringFromColumn(cursor.getString(_ORDER_TYPE));
+                mOrder.kitchen = getStringFromColumn(cursor.getString(_KITCHEN));
+                mOrder.OrderAheadZone = getStringFromColumn(cursor.getString(_ORDER_AHEAD_ZONE));
+                mOrder.for_date = getStringFromColumn(cursor.getString(_FOR_DATE));
+                mOrder.scheduled_window_start = getStringFromColumn(cursor.getString(_SCHEDULED_WINDOW_START));
+                mOrder.scheduled_window_end = getStringFromColumn(cursor.getString(_SCHEDULED_WINDOW_END));
+                mOrder.MenuId = getStringFromColumn(cursor.getString(_MENU_ID));
 
                 OrderDetails mOrderDetail = new OrderDetails();
                 mOrderDetail.coupon_discount_cents = (cursor.getInt(_ORDER_DETAIL_COUPON_DISCOUNT_CENTS));
@@ -228,22 +228,22 @@ public class OrderDao {
                 mOrderDetail.total_cents_without_coupon = (cursor.getInt(_ORDER_DETAIL_TOTAL_CENTS_WITHOUT_COUPON));
 
                 OrderAddress mOrderAddress = new OrderAddress();
-                mOrderAddress.number = (cursor.getString(_ORDER_ADDRESS_NUMBER));
-                mOrderAddress.street = (cursor.getString(_ORDER_ADDRESS_STREET));
-                mOrderAddress.city = (cursor.getString(_ORDER_ADDRESS_CITY));
-                mOrderAddress.state = (cursor.getString(_ORDER_ADDRESS_STATE));
-                mOrderAddress.zip = (cursor.getString(_ORDER_ADDRESS_ZIP));
+                mOrderAddress.number = getStringFromColumn(cursor.getString(_ORDER_ADDRESS_NUMBER));
+                mOrderAddress.street = getStringFromColumn(cursor.getString(_ORDER_ADDRESS_STREET));
+                mOrderAddress.city = getStringFromColumn(cursor.getString(_ORDER_ADDRESS_CITY));
+                mOrderAddress.state = getStringFromColumn(cursor.getString(_ORDER_ADDRESS_STATE));
+                mOrderAddress.zip = getStringFromColumn(cursor.getString(_ORDER_ADDRESS_ZIP));
 
                 OrderLocation mOrderLocation = new OrderLocation();
                 mOrderLocation.lat = (cursor.getDouble(_ORDER_LOCATION_LAT));
                 mOrderLocation.lng = (cursor.getDouble(_ORDER_LOCATION_LNG));
 
                 OrderStripe mOrderStripe = new OrderStripe();
-                mOrderStripe.stripeToken = (cursor.getString(_ORDER_STRIPE_STRIPE_TOKEN));
+                mOrderStripe.stripeToken = getStringFromColumn(cursor.getString(_ORDER_STRIPE_STRIPE_TOKEN));
 
                 OrderEta mOrderEta = new OrderEta();
-                mOrderEta.max = (cursor.getString(_ETA_MAX));
-                mOrderEta.min = (cursor.getString(_ETA_MIN));
+                mOrderEta.max = getStringFromColumn(cursor.getString(_ETA_MAX));
+                mOrderEta.min = getStringFromColumn(cursor.getString(_ETA_MIN));
 
                 mOrderDetail.address = mOrderAddress;
                 mOrderDetail.coords = mOrderLocation;
@@ -504,6 +504,7 @@ public class OrderDao {
     public void cleanUp() {
         DebugUtils.logDebug(TAG, "Clean Up");
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_ORDER_AHEAD_MENU, false);
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.UUID_BENTO, "");
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.POD_MODE, "");
         OrderDao mOrderDao = new OrderDao();
         mOrderDao.clearAllData();

@@ -56,10 +56,6 @@ public class SelectSideCustomActivity extends BaseFragmentActivity implements Vi
             getGridView().setOnItemClickListener(this);
 
             mCurrentDish = mDishDao.clone(mOrder.OrderItems.get(orderIndex).items.get(itemIndex));
-            if (mCurrentDish.type.isEmpty())
-                mCurrentDish.type = "side" + itemIndex;
-            else if (mCurrentDish.type.equals("side"))
-                mCurrentDish.type = "side" + itemIndex;
 
             getListAdapter().setCurrentSelected(mOrder.OrderItems.get(orderIndex).items.get(itemIndex));
             getListAdapter().setCurrentAdded(mOrder.OrderItems.get(orderIndex).items.get(itemIndex));
@@ -105,12 +101,18 @@ public class SelectSideCustomActivity extends BaseFragmentActivity implements Vi
         MixpanelUtils.track("Withdrew Side Dish");
 
         mCurrentDish.name = "";
+        mCurrentDish.itemId = -1;
 
         mDishDao.updateDishItem(mCurrentDish);
 
-        getListAdapter().setCurrentAdded(null);
+        getListAdapter().setCurrentAdded(mCurrentDish);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                getListAdapter().notifyDataSetChanged();
+            }
+        });
 
-        getListAdapter().notifyDataSetChanged();
     }
 
     @Override
@@ -124,7 +126,7 @@ public class SelectSideCustomActivity extends BaseFragmentActivity implements Vi
 
         mDishDao.updateDishItem(mDish);
 
-        DebugUtils.logDebug(TAG, "added " + mDish.type);
+        DebugUtils.logDebug(TAG, "Added: " + mDish.type);
 
         onBackPressed();
     }

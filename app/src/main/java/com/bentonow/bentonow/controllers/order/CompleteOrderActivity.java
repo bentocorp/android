@@ -27,6 +27,7 @@ import com.bentonow.bentonow.controllers.adapter.ExpandableListOrderAdapter;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.dialog.CouponDialog;
 import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
+import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.controllers.session.SignInActivity;
 import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.dao.MenuDao;
@@ -40,6 +41,7 @@ import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.order.OrderItem;
+import com.bentonow.bentonow.model.order.post.OrderPost;
 import com.bentonow.bentonow.parse.InitParse;
 import com.bentonow.bentonow.service.BentoCustomerService;
 import com.bentonow.bentonow.ui.AutoFitTxtView;
@@ -119,6 +121,8 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
 
         container_discount = findViewById(R.id.container_discount);
 
+        bIsMenuOD = !SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_ORDER_AHEAD_MENU);
+
         getExpandableListOrder().setAdapter(getExpandableListAdapter());
 
         mMenu = getIntent().getParcelableExtra(Menu.TAG);
@@ -137,7 +141,6 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
 
     private void getCurrentOrder() {
         mOrder = mOrderDao.getCurrentOrder();
-        bIsMenuOD = !mOrder.order_type.equals("2");
 
         aOrder = new ArrayList<>();
 
@@ -249,7 +252,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                     dismissDialog();
 
-                    DebugUtils.logDebug(TAG, "requestPromoCode failed: " + responseString + " StatusCode:" + statusCode);
+                    DebugUtils.logError(TAG, "requestPromoCode failed: " + responseString + " StatusCode:" + statusCode);
                     String sError;
 
                     try {
@@ -365,7 +368,10 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
 
     public void onChangeAddressPressed(View v) {
         MixpanelUtils.track("Tapped On Change - Address");
-        BentoNowUtils.openDeliveryLocationScreen(this, ConstantUtils.optOpenScreen.SUMMARY);
+        Intent intent = new Intent(CompleteOrderActivity.this, DeliveryLocationActivity.class);
+        intent.putExtra(ConstantUtils.TAG_OPEN_SCREEN, ConstantUtils.optOpenScreen.SUMMARY);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
     }
 
     public void onChangeCreditCardPressed(View v) {
@@ -408,21 +414,12 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
                 }
             }
 
+            OrderPost mOrderPost = new OrderPost(mOrder);
             RequestParams params = new RequestParams();
-            params.put("data", mOrder.toString());
+            params.put("data", mOrderPost.toString());
             params.put("api_token", mCurrentUser.api_token);
 
-
-            if (mOrder.OrderItems == null || mOrder.OrderItems.isEmpty()) {
-                action = "no_items";
-                track(action);
-                Crashlytics.log(Log.ERROR, "Order", "No Items in the Order");
-                DebugUtils.logError(TAG, "Order Items 0 ");
-                emptyOrders();
-                return;
-            }
-
-            DebugUtils.logDebug(TAG, "Order: " + mOrder.toString());
+            DebugUtils.logDebug(TAG, "Order: " + mOrderPost.toString());
 
             BentoRestClient.post("/order", params, new TextHttpResponseHandler() {
                 @SuppressWarnings("deprecation")
@@ -430,6 +427,8 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                     String error = "";
                     JSONObject json;
+
+                    DebugUtils.logError(TAG, "Status: " + statusCode + " Response(): " + responseString);
 
                     try {
                         json = new JSONObject(responseString);
@@ -440,7 +439,6 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
                         }
                         trackError(error);
                     } catch (Exception ignore) {
-                        DebugUtils.logError(TAG, "Order: " + statusCode + " Response(): " + responseString);
                         trackError("Order: " + statusCode + " Response(): " + responseString);
                     }
 
@@ -505,8 +503,6 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
                     Log.i(TAG, "Order: " + responseString);
 
                     mCurrentUser.stripe_token = null;
-
-                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.UUID_BENTO, "");
 
                     dismissDialog();
 

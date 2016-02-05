@@ -58,9 +58,6 @@ public class SelectMainCustomActivity extends BaseFragmentActivity implements Vi
 
             mCurrentDish = mDishDao.clone(mOrder.OrderItems.get(orderIndex).items.get(0));
 
-            if (mCurrentDish.type.isEmpty())
-                mCurrentDish.type = "main";
-
             getListAdapter().setCurrentAdded(mOrder.OrderItems.get(orderIndex).items.get(0));
             getListAdapter().setCurrentSelected(mOrder.OrderItems.get(orderIndex).items.get(0));
 
@@ -94,12 +91,18 @@ public class SelectMainCustomActivity extends BaseFragmentActivity implements Vi
         MixpanelUtils.track("Withdrew Main Dish");
 
         mCurrentDish.name = "";
+        mCurrentDish.itemId = -1;
 
         mDishDao.updateDishItem(mCurrentDish);
 
         getListAdapter().setCurrentAdded(null);
 
-        getListAdapter().notifyDataSetChanged();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                getListAdapter().notifyDataSetChanged();
+            }
+        });
     }
 
     @Override
@@ -114,7 +117,7 @@ public class SelectMainCustomActivity extends BaseFragmentActivity implements Vi
 
         mDishDao.updateDishItem(mDish);
 
-        DebugUtils.logDebug(TAG, "added " + mDish.type);
+        DebugUtils.logDebug(TAG, "Added: " + mDish.type);
 
         onBackPressed();
     }

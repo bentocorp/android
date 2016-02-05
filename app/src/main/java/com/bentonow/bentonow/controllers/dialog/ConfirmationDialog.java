@@ -127,7 +127,6 @@ public class ConfirmationDialog extends android.app.Dialog {
 
     @Override
     public void show() {
-        // TODO 自动生成的方法存根
         super.show();
         // set dialog enter animations
         view.startAnimation(AnimationUtils.loadAnimation(context, R.anim.dialog_main_show_amination));

@@ -120,6 +120,25 @@ public class MenuDao {
         return aNewMenus;
     }
 
+
+    public static boolean hasCurrentMenu(String sMenuId) {
+        boolean bHasMenu = false;
+
+        refreshDataToday();
+
+        if (!mListToday.isEmpty())
+            for (int a = 0; a < mListToday.size(); a++)
+                if (mListToday.get(a).menu_id.equals(sMenuId))
+                    bHasMenu = true;
+
+        if (!bHasMenu && gateKeeper.getAvailableServices() != null && gateKeeper.getAvailableServices().mOrderAhead != null)
+            for (int b = 0; b < gateKeeper.getAvailableServices().mOrderAhead.availableMenus.size(); b++)
+                if (gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(b).menu_id.equals(sMenuId))
+                    bHasMenu = true;
+
+        return bHasMenu;
+    }
+
     public static void refreshDataToday() {
         if (MenuDao.mListToday == null || MenuDao.mListToday.isEmpty())
             try {

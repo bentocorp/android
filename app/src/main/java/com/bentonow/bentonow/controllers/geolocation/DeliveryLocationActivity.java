@@ -45,9 +45,11 @@ import com.bentonow.bentonow.controllers.fragment.MySupportMapFragment;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.dao.MenuDao;
+import com.bentonow.bentonow.dao.SettingsDao;
 import com.bentonow.bentonow.listener.ListenerWebRequest;
 import com.bentonow.bentonow.listener.OnCustomDragListener;
 import com.bentonow.bentonow.model.AutoCompleteModel;
+import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.parse.InitParse;
 import com.bentonow.bentonow.ui.BackendTextView;
 import com.bentonow.bentonow.web.request.RequestGetPlaceDetail;
@@ -364,10 +366,16 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         return bIsValid;
     }
 
-    private void getMenusByLocation() {
-        DebugUtils.logDebug(TAG, "onContinuePressed AppState " + MenuDao.gateKeeper.getAppState());
-        BentoNowUtils.saveOrderLocation(mLastOrderLocation, mOrderAddress);
+    private void getMenusByLocation(String responseString) {
+        InitParse.parseInitTwo(responseString);
+
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.POD_MODE, SettingsDao.getCurrent().pod_mode);
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, MenuDao.gateKeeper.getAppState());
+
+        if (optOpenScreen != ConstantUtils.optOpenScreen.SUMMARY)
+            BentoNowUtils.saveOrderLocation(mLastOrderLocation, mOrderAddress);
+
+        DebugUtils.logDebug(TAG, "onContinuePressed AppState " + MenuDao.gateKeeper.getAppState());
 
         if (MenuDao.gateKeeper.getAppState().contains("map,no_service")) {
             Intent mIntentBummer = new Intent(DeliveryLocationActivity.this, BummerActivity.class);
@@ -382,11 +390,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                 e.printStackTrace();
             }
         } else if (MenuDao.gateKeeper.getAppState().contains("build")) {
-
             switch (optOpenScreen) {
-                case NORMAL:
-                    onBackPressed();
-                    break;
                 case COMPLETE_ORDER:
                     if (BentoNowUtils.isValidCompleteOrder(DeliveryLocationActivity.this))
                         BentoNowUtils.openCompleteOrderActivity(DeliveryLocationActivity.this, MenuDao.getCurrentMenu());
@@ -395,6 +399,13 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                     BentoNowUtils.openBuildBentoActivity(DeliveryLocationActivity.this);
                     break;
                 case SUMMARY:
+                    BentoNowUtils.saveOrderLocation(mLastOrderLocation, mOrderAddress);
+                    if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_ORDER_AHEAD_MENU))
+                        BentoNowUtils.openBuildBentoActivity(DeliveryLocationActivity.this);
+                    else
+                        onBackPressed();
+                    break;
+                default:
                     onBackPressed();
                     break;
             }
@@ -428,8 +439,23 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
                 onFinish();
 
-                InitParse.parseInitTwo(responseString);
-                getMenusByLocation();
+                switch (optOpenScreen) {
+                    case SUMMARY:
+                        Order mCurrentOrder = mOrderDao.getCurrentOrder();
+                        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_ORDER_AHEAD_MENU))
+                            if (mCurrentOrder != null && responseString.contains("\"menu_id\":\"" + mCurrentOrder.MenuId + "\"")) {
+                                BentoNowUtils.saveOrderLocation(mLastOrderLocation, mOrderAddress);
+                                onBackPressed();
+                            } else {
+                                getMenusByLocation(responseString);
+                            }
+                        else
+                            getMenusByLocation(responseString);
+                        break;
+                    default:
+                        getMenusByLocation(responseString);
+                        break;
+                }
 
             }
 
