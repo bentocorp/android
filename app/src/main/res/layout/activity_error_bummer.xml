@@ -23,15 +23,6 @@
         android:src="@drawable/error_map"
         android:scaleType="centerCrop"
         android:adjustViewBounds="true" />-->
-    <fragment
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_above="@+id/linearLayout5"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/ActionBarContainer"
-        tools:context="com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity" />
 
 
     <LinearLayout
@@ -42,55 +33,6 @@
         android:layout_alignParentLeft="true"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:orientation="horizontal">
-
-            <com.bentonow.bentonow.ui.AutoFitTxtView
-                android:id="@+id/txt_address"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:maxLines="2"
-                android:padding="@dimen/btn_padding"
-                android:text="@null" />
-
-            <Button
-                android:id="@+id/btn_change"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_gravity="center"
-                android:background="@null"
-                android:onClick="onChangePressed"
-                android:padding="@dimen/btn_padding"
-                android:text="CHANGE"
-                android:textColor="@color/btn_green"
-                android:textSize="@dimen/text_very_small"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <com.bentonow.bentonow.ui.BackendTextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:paddingLeft="@dimen/general_padding"
-            android:paddingRight="@dimen/general_padding"
-            android:paddingTop="@dimen/general_padding"
-            android:text="@string/error_delivery_address_text_title"
-            android:textColor="@color/red"
-            android:textSize="@dimen/title1"
-            app:key="out-of-area-middle-title" />
-
-        <com.bentonow.bentonow.ui.BackendTextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/general_padding"
-            android:paddingLeft="@dimen/general_padding"
-            android:paddingRight="@dimen/general_padding"
-            app:key="out-of-area-text" />
     </LinearLayout>
 
     <LinearLayout
@@ -187,5 +129,69 @@
         </LinearLayout>
 
     </RelativeLayout>
+
+    <com.bentonow.bentonow.ui.BackendTextView
+        android:id="@+id/view"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/ActionBarContainer"
+        android:layout_marginTop="24dp"
+        android:gravity="center"
+        android:paddingLeft="@dimen/general_padding"
+        android:paddingRight="@dimen/general_padding"
+        android:paddingTop="@dimen/general_padding"
+        android:text="@string/error_delivery_address_text_title"
+        android:textColor="@color/red"
+        android:textSize="@dimen/title1"
+        app:key="out-of-area-middle-title" />
+
+    <com.bentonow.bentonow.ui.BackendTextView
+        android:id="@+id/view2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/view"
+        android:layout_marginTop="20dp"
+        android:paddingBottom="@dimen/general_padding"
+        android:paddingLeft="@dimen/general_padding"
+        android:paddingRight="@dimen/general_padding"
+        app:key="out-of-area-text" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/view2"
+        android:layout_marginTop="24dp"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+        <com.bentonow.bentonow.ui.AutoFitTxtView
+            android:id="@+id/txt_address"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:maxLines="2"
+            android:padding="@dimen/btn_padding"
+            android:text="@null" />
+
+        <Button
+            android:id="@+id/btn_change"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="center"
+            android:background="@null"
+            android:onClick="onChangePressed"
+            android:padding="@dimen/btn_padding"
+            android:text="CHANGE"
+            android:textColor="@color/btn_green"
+            android:textSize="@dimen/text_very_small"
+            android:textStyle="bold" />
+    </LinearLayout>
 
 </RelativeLayout>

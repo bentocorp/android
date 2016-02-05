@@ -35,7 +35,6 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
 
     private EditText txt_email;
     private AutoFitTxtView txtAddress;
-    private GoogleMap map;
 
     private String sCurrentLocation = "";
 
@@ -115,7 +114,6 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
     @Override
     protected void onResume() {
         super.onResume();
-        setupMap();
     }
 
     @Override
@@ -124,28 +122,6 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
         super.onDestroy();
     }
 
-    private void setupMap() {
-        if (map != null) return;
-        map = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
-
-        if (map == null) return;
-
-        float zoom = 11f;
-
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.772492, -122.420262), zoom));
-        PolygonOptions rectOptions = new PolygonOptions();
-        for (String aServiceArea_dinner : SettingsDao.getServiceArea()) {
-            String[] loc = aServiceArea_dinner.split(",");
-            double lat = Double.valueOf(loc[1]);
-            double lng = Double.valueOf(loc[0]);
-            rectOptions.add(new LatLng(lat, lng));
-        }
-        rectOptions.fillColor(getResources().getColor(R.color.blue_20));
-        rectOptions.strokeWidth(5);
-        rectOptions.strokeColor(getResources().getColor(R.color.blue));
-
-        map.addPolygon(rectOptions);
-    }
 
 
     private AutoFitTxtView getTxtAddress() {

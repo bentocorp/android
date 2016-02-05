@@ -33,7 +33,6 @@ import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.LocationUtils;
-import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
@@ -381,14 +380,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             Intent mIntentBummer = new Intent(DeliveryLocationActivity.this, BummerActivity.class);
             mIntentBummer.putExtra(BummerActivity.TAG_INVALID_ADDRESS, getTxtAddress().getText().toString());
             startActivity(mIntentBummer);
-
-            try {
-                JSONObject params = new JSONObject();
-                params.put("address", getTxtAddress().getText().toString());
-                MixpanelUtils.track("Selected address outside of service area", params);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         } else if (MenuDao.gateKeeper.getAppState().contains("build")) {
             switch (optOpenScreen) {
                 case COMPLETE_ORDER:
