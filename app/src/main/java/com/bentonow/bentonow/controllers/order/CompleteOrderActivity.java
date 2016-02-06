@@ -502,6 +502,8 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
                     track(null);
 
                     MixpanelUtils.trackRevenue(mOrder.OrderDetails.total_cents / 100, mCurrentUser);
+                    
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.CLEAR_ORDERS_FROM_SUMMARY, true);
 
                     Log.i(TAG, "Order: " + responseString);
 

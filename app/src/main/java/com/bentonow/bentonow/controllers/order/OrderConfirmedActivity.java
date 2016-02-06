@@ -61,11 +61,6 @@ public class OrderConfirmedActivity extends BaseFragmentActivity implements View
         super.onDestroy();
     }
 
-    @Override
-    public void onBackPressed() {
-        finish();
-        BentoNowUtils.openBuildBentoActivity(OrderConfirmedActivity.this);
-    }
 
     public BackendButton getBtnViewAllOrders() {
         if (btnViewAllOrders == null)

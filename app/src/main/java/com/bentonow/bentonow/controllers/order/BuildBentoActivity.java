@@ -122,6 +122,15 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     private FrameLayout containerCancelWidget;
     private LinearLayout containerDateTimeSelection;
     private LinearLayout containerSpinnerDayTimeOa;
+    private LinearLayout wrapperBentoMain;
+    private LinearLayout wrapperBentoMainFour;
+    private LinearLayout wrapperBentoSide1;
+    private LinearLayout wrapperBentoSide1Four;
+    private LinearLayout wrapperBentoSide2;
+    private LinearLayout wrapperBentoSide2Four;
+    private LinearLayout wrapperBentoSide3;
+    private LinearLayout wrapperBentoSide3Four;
+    private LinearLayout wrapperBentoSide4;
     private TextView txtTitleMain;
     private TextView txtTitleMain4;
     private TextView txtTitleSide1;
@@ -179,6 +188,15 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         getContainerCancelWidget().setOnClickListener(this);
         getWrapperOd().setOnClickListener(this);
         getWrapperOaHeader().setOnClickListener(this);
+        getWrapperBentoMain().setOnClickListener(this);
+        getWrapperBentoMainFour().setOnClickListener(this);
+        getWrapperBentoSide1().setOnClickListener(this);
+        getWrapperBentoSide1Four().setOnClickListener(this);
+        getWrapperBentoSide2().setOnClickListener(this);
+        getWrapperBentoSide2Four().setOnClickListener(this);
+        getWrapperBentoSide3().setOnClickListener(this);
+        getWrapperBentoSide3Four().setOnClickListener(this);
+        getWrapperBentoSide4().setOnClickListener(this);
 
         getListMain().setAdapter(getMainAdapter());
         getListAddOn().setAdapter(getAddOnAdapter());
@@ -860,7 +878,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     }
 
 
-    public void onAddMainPressed(View view) {
+    public void onAddMainPressed() {
         if (!bShowDateTime) {
             Intent intent = new Intent(this, SelectMainCustomActivity.class);
             intent.putExtra(Menu.TAG, mMenu);
@@ -868,7 +886,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         }
     }
 
-    public void onAddSide1Pressed(View view) {
+    public void onAddSide1Pressed() {
         if (!bShowDateTime) {
             Intent intent = new Intent(this, SelectSideCustomActivity.class);
             intent.putExtra(Menu.TAG, mMenu);
@@ -877,7 +895,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         }
     }
 
-    public void onAddSide2Pressed(View view) {
+    public void onAddSide2Pressed() {
         if (!bShowDateTime) {
             Intent intent = new Intent(this, SelectSideCustomActivity.class);
             intent.putExtra(Menu.TAG, mMenu);
@@ -886,7 +904,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         }
     }
 
-    public void onAddSide3Pressed(View view) {
+    public void onAddSide3Pressed() {
         if (!bShowDateTime) {
             Intent intent = new Intent(this, SelectSideCustomActivity.class);
             intent.putExtra(Menu.TAG, mMenu);
@@ -895,7 +913,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         }
     }
 
-    public void onAddSide4Pressed(View view) {
+    public void onAddSide4Pressed() {
         if (!bShowDateTime) {
             Intent intent = new Intent(this, SelectSideCustomActivity.class);
             intent.putExtra(Menu.TAG, mMenu);
@@ -1015,124 +1033,147 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.actionbar_left_btn:
-                BentoNowUtils.openSettingsActivity(BuildBentoActivity.this);
-                break;
-            case R.id.actionbar_right_btn:
-                if (!bShowDateTime && optMenu != ConstantUtils.optMenuSelected.MENU_PREVIEW)
-                    if (mBentoDao.isBentoComplete(mOrder.OrderItems.get(orderIndex))) {
-                        onContinueOrderPressed();
-                    } else {
-                        mDialog = new ConfirmationDialog(BuildBentoActivity.this, null, IosCopyDao.get("build-not-complete-text"));
-                        mDialog.addAcceptButton(IosCopyDao.get("build-not-complete-confirmation-2"), BuildBentoActivity.this);
-                        mDialog.addCancelButton(IosCopyDao.get("build-not-complete-confirmation-1"), BuildBentoActivity.this);
+        if (bAllowClickEvent) {
+            bAllowClickEvent = false;
+            switch (v.getId()) {
+                case R.id.actionbar_left_btn:
+                    BentoNowUtils.openSettingsActivity(BuildBentoActivity.this);
+                    break;
+                case R.id.actionbar_right_btn:
+                    if (!bShowDateTime && optMenu != ConstantUtils.optMenuSelected.MENU_PREVIEW)
+                        if (mBentoDao.isBentoComplete(mOrder.OrderItems.get(orderIndex))) {
+                            onContinueOrderPressed();
+                        } else {
+                            mDialog = new ConfirmationDialog(BuildBentoActivity.this, null, IosCopyDao.get("build-not-complete-text"));
+                            mDialog.addAcceptButton(IosCopyDao.get("build-not-complete-confirmation-2"), BuildBentoActivity.this);
+                            mDialog.addCancelButton(IosCopyDao.get("build-not-complete-confirmation-1"), BuildBentoActivity.this);
 
-                        mDialog.show();
-                    }
-                break;
-            case R.id.button_accept:
-                if (!bShowDateTime)
-                    autocomplete();
-                break;
-            case R.id.btn_continue:
-                if (!bShowDateTime)
-                    onContinueOrderPressed();
-                break;
-            case R.id.btn_add_on_add_on:
-                if (!bShowDateTime)
-                    openAddOnsActivity();
-                break;
-            case R.id.btn_add_another_bento:
-                if (!bShowDateTime) {
-                    if (mBentoDao.isBentoComplete(mOrder.OrderItems.get(orderIndex)))
-                        onAddAnotherBentoPressed();
-                    else
-                        autoCompleteOrder();
-                }
-                break;
-            case R.id.layout_date_time:
-                setDateTime(true, true);
-                //   restartWidget();
-                break;
-            case R.id.button_accept_widget:
-                if (bShowAppOnAhead || bShowAppOnDemand) {
-                    boolean bChangeMenu = false;
-                    if (!bIsMenuAlreadySelected) {
-                        bIsMenuAlreadySelected = true;
-                        forceChangeMenu();
-                        setDateTime(true, true);
-                    } else {
-                        switch (optMenu) {
-                            case MENU_PREVIEW:
-                            case ON_DEMAND:
-                                if (!bIsAsapChecked)
-                                    bChangeMenu = true;
-                                break;
-                            case ORDER_AHEAD:
-                                if (bIsAsapChecked) {
-                                    bChangeMenu = true;
-                                } else {
-                                    if (!mMenu.menu_id.equals(mOAPreselectedMenu.menu_id)) {
-                                        bChangeMenu = true;
-                                    } else {
-                                        for (int a = 0; a < mOAPreselectedMenu.listTimeModel.size(); a++)
-                                            if (mOAPreselectedMenu.listTimeModel.get(a).isSelected)
-                                                updateTimeOrder(mOAPreselectedMenu.listTimeModel.get(a));
-                                    }
-                                }
-                                break;
-                        }
-
-                        if (bChangeMenu) {
-                            mDialog = new ConfirmationDialog(BuildBentoActivity.this, IosCopyDao.get("oa-change-warning-title"), IosCopyDao.get("oa-change-warning-text"));
-                            mDialog.addAcceptButton(IosCopyDao.get("build-not-complete-confirmation-2"), new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    forceChangeMenu();
-                                }
-                            });
-                            mDialog.addCancelButton(IosCopyDao.get("build-not-complete-confirmation-1"), new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            //   restartWidget();
-                                        }
-                                    }
-
-                            );
                             mDialog.show();
                         }
-                        //else
-                        // restartWidget();
-
-                        setDateTime(!bChangeMenu, true);
+                    break;
+                case R.id.button_accept:
+                    if (!bShowDateTime)
+                        autocomplete();
+                    break;
+                case R.id.btn_continue:
+                    if (!bShowDateTime)
+                        onContinueOrderPressed();
+                    break;
+                case R.id.btn_add_on_add_on:
+                    if (!bShowDateTime)
+                        openAddOnsActivity();
+                    break;
+                case R.id.btn_add_another_bento:
+                    if (!bShowDateTime) {
+                        if (mBentoDao.isBentoComplete(mOrder.OrderItems.get(orderIndex)))
+                            onAddAnotherBentoPressed();
+                        else
+                            autoCompleteOrder();
                     }
-                } else
-                    mBentoService.getBentoData(true);
-                break;
-            case R.id.button_cancel_widget:
-                setDateTime(true, true);
-                // restartWidget();
-                break;
-            case R.id.container_cancel_widget:
-                setDateTime(true, true);
-                //restartWidget();
-                break;
-            case R.id.wrapper_od:
-                if (!bIsAsapChecked) {
-                    bIsAsapChecked = true;
-                    updateWidgetSelection();
-                }
-                break;
-            case R.id.wrapper_oa_header:
-                if (bIsAsapChecked) {
-                    bIsAsapChecked = false;
-                    updateWidgetSelection();
-                }
-                break;
-            default:
-                DebugUtils.logError(TAG, String.valueOf(v.getId()));
-                break;
+                    break;
+                case R.id.layout_date_time:
+                    setDateTime(true, true);
+                    //   restartWidget();
+                    break;
+                case R.id.button_accept_widget:
+                    if (bShowAppOnAhead || bShowAppOnDemand) {
+                        boolean bChangeMenu = false;
+                        if (!bIsMenuAlreadySelected) {
+                            bIsMenuAlreadySelected = true;
+                            forceChangeMenu();
+                            setDateTime(true, true);
+                        } else {
+                            switch (optMenu) {
+                                case MENU_PREVIEW:
+                                case ON_DEMAND:
+                                    if (!bIsAsapChecked)
+                                        bChangeMenu = true;
+                                    break;
+                                case ORDER_AHEAD:
+                                    if (bIsAsapChecked) {
+                                        bChangeMenu = true;
+                                    } else {
+                                        if (!mMenu.menu_id.equals(mOAPreselectedMenu.menu_id)) {
+                                            bChangeMenu = true;
+                                        } else {
+                                            for (int a = 0; a < mOAPreselectedMenu.listTimeModel.size(); a++)
+                                                if (mOAPreselectedMenu.listTimeModel.get(a).isSelected)
+                                                    updateTimeOrder(mOAPreselectedMenu.listTimeModel.get(a));
+                                        }
+                                    }
+                                    break;
+                            }
+
+                            if (bChangeMenu) {
+                                mDialog = new ConfirmationDialog(BuildBentoActivity.this, IosCopyDao.get("oa-change-warning-title"), IosCopyDao.get("oa-change-warning-text"));
+                                mDialog.addAcceptButton(IosCopyDao.get("build-not-complete-confirmation-2"), new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        forceChangeMenu();
+                                    }
+                                });
+                                mDialog.addCancelButton(IosCopyDao.get("build-not-complete-confirmation-1"), new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                //   restartWidget();
+                                            }
+                                        }
+
+                                );
+                                mDialog.show();
+                            }
+                            //else
+                            // restartWidget();
+
+                            setDateTime(!bChangeMenu, true);
+                        }
+                    } else
+                        mBentoService.getBentoData(true);
+                    break;
+                case R.id.button_cancel_widget:
+                    setDateTime(true, true);
+                    // restartWidget();
+                    break;
+                case R.id.container_cancel_widget:
+                    setDateTime(true, true);
+                    //restartWidget();
+                    break;
+                case R.id.wrapper_od:
+                    if (!bIsAsapChecked) {
+                        bIsAsapChecked = true;
+                        updateWidgetSelection();
+                    }
+                    break;
+                case R.id.wrapper_oa_header:
+                    if (bIsAsapChecked) {
+                        bIsAsapChecked = false;
+                        updateWidgetSelection();
+                    }
+                    break;
+                case R.id.build_main:
+                case R.id.build_main_four:
+                    onAddMainPressed();
+                    break;
+                case R.id.btn_bento_side_1:
+                case R.id.btn_bento_side_1_four:
+                    onAddSide1Pressed();
+                    break;
+                case R.id.btn_bento_side_2:
+                case R.id.btn_bento_side_2_four:
+                    onAddSide2Pressed();
+                    break;
+                case R.id.btn_bento_side_3:
+                case R.id.btn_bento_side_3_four:
+                    onAddSide3Pressed();
+                    break;
+                case R.id.btn_bento_side_4:
+                    onAddSide4Pressed();
+                    break;
+                default:
+                    DebugUtils.logError(TAG, String.valueOf(v.getId()));
+                    break;
+            }
+            bAllowClickEvent = true;
         }
     }
 
@@ -1709,6 +1750,59 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         return wrapperOa;
     }
 
+    private LinearLayout getWrapperBentoMain() {
+        if (wrapperBentoMain == null)
+            wrapperBentoMain = (LinearLayout) findViewById(R.id.build_main);
+        return wrapperBentoMain;
+    }
+
+    private LinearLayout getWrapperBentoMainFour() {
+        if (wrapperBentoMainFour == null)
+            wrapperBentoMainFour = (LinearLayout) findViewById(R.id.build_main_four);
+        return wrapperBentoMainFour;
+    }
+
+    private LinearLayout getWrapperBentoSide1() {
+        if (wrapperBentoSide1 == null)
+            wrapperBentoSide1 = (LinearLayout) findViewById(R.id.btn_bento_side_1);
+        return wrapperBentoSide1;
+    }
+
+    private LinearLayout getWrapperBentoSide1Four() {
+        if (wrapperBentoSide1Four == null)
+            wrapperBentoSide1Four = (LinearLayout) findViewById(R.id.btn_bento_side_1_four);
+        return wrapperBentoSide1Four;
+    }
+
+    private LinearLayout getWrapperBentoSide2() {
+        if (wrapperBentoSide2 == null)
+            wrapperBentoSide2 = (LinearLayout) findViewById(R.id.btn_bento_side_2);
+        return wrapperBentoSide2;
+    }
+
+    private LinearLayout getWrapperBentoSide2Four() {
+        if (wrapperBentoSide2Four == null)
+            wrapperBentoSide2Four = (LinearLayout) findViewById(R.id.btn_bento_side_2_four);
+        return wrapperBentoSide2Four;
+    }
+
+    private LinearLayout getWrapperBentoSide3() {
+        if (wrapperBentoSide3 == null)
+            wrapperBentoSide3 = (LinearLayout) findViewById(R.id.btn_bento_side_3);
+        return wrapperBentoSide3;
+    }
+
+    private LinearLayout getWrapperBentoSide3Four() {
+        if (wrapperBentoSide3Four == null)
+            wrapperBentoSide3Four = (LinearLayout) findViewById(R.id.btn_bento_side_3_four);
+        return wrapperBentoSide3Four;
+    }
+
+    private LinearLayout getWrapperBentoSide4() {
+        if (wrapperBentoSide4 == null)
+            wrapperBentoSide4 = (LinearLayout) findViewById(R.id.btn_bento_side_4);
+        return wrapperBentoSide4;
+    }
 
     private LinearLayout getWrapperOaHeader() {
         if (wrapperOaHeader == null)

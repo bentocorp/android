@@ -16,7 +16,7 @@ public class DishPost {
         id = mDish.itemId;
         type = String.valueOf(mDish.type);
         name = String.valueOf(mDish.name);
-        qty = String.valueOf(mDish.qty);
+        qty = String.valueOf(mDish.count_max);
         unit_price = mDish.unit_price;
     }
 

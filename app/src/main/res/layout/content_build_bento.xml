@@ -86,7 +86,6 @@
                         android:id="@+id/build_main_four"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:onClick="onAddMainPressed"
                         android:orientation="vertical">
 
                         <RelativeLayout
@@ -168,7 +167,6 @@
                         android:id="@+id/btn_bento_side_1_four"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:onClick="onAddSide1Pressed"
                         android:orientation="vertical">
 
                         <RelativeLayout
@@ -257,7 +255,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="fill_parent"
                         android:layout_weight="1"
-                        android:onClick="onAddSide2Pressed"
                         android:orientation="vertical">
 
                         <RelativeLayout
@@ -341,7 +338,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="fill_parent"
                         android:layout_weight="1"
-                        android:onClick="onAddSide3Pressed"
                         android:orientation="vertical">
 
                         <RelativeLayout
@@ -434,7 +430,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="onAddMainPressed"
                 android:orientation="vertical">
 
                 <RelativeLayout
@@ -514,7 +509,6 @@
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
                     android:background="@drawable/btn_gray_square"
-                    android:onClick="onAddSide1Pressed"
                     android:orientation="vertical">
 
                     <RelativeLayout
@@ -585,7 +579,6 @@
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
                     android:background="@drawable/btn_gray_square"
-                    android:onClick="onAddSide2Pressed"
                     android:orientation="vertical">
 
                     <RelativeLayout
@@ -666,7 +659,6 @@
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
                     android:background="@drawable/btn_build_side_3"
-                    android:onClick="onAddSide3Pressed"
                     android:orientation="vertical">
 
                     <RelativeLayout
@@ -738,7 +730,6 @@
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
                     android:background="@drawable/btn_build_side_4"
-                    android:onClick="onAddSide4Pressed"
                     android:orientation="vertical">
 
                     <RelativeLayout

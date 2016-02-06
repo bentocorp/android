@@ -36,6 +36,8 @@ public class BaseFragmentActivity extends FragmentActivity {
 
     protected long lStart, lEnd;
 
+    protected boolean bAllowClickEvent = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
