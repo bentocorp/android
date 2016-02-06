@@ -95,8 +95,8 @@ public class AddOnListAdapter extends RecyclerView.Adapter<AddOnWrapper> {
 
         viewHolder.getTxtNumberAddOn().setText(String.valueOf(mDishDao.countItemsById(mDish.itemId)));
 
-        /*
-        if (mDishDao.isSoldOut(mDish, true, bIsMenuOD)) {
+
+       /* if (mDishDao.isSoldOut(mDish, true, bIsMenuOD)) {
             viewHolder.getImgSoldOut().setVisibility(View.VISIBLE);
             viewHolder.getImgGradient().setVisibility(View.VISIBLE);
             viewHolder.getImgAddDish().setImageResource(R.drawable.ic_action_content_add_circle_outline_gray);
@@ -116,17 +116,26 @@ public class AddOnListAdapter extends RecyclerView.Adapter<AddOnWrapper> {
             viewHolder.getImgRemoveDish().setImageResource(R.drawable.ic_action_content_remove_circle_outline);
         }*/
 
+
         if (!mDishDao.canBeAdded(mDish) || mDishDao.isSoldOut(mDish, true, bIsMenuOD)) {
             viewHolder.getImgSoldOut().setVisibility(View.VISIBLE);
             viewHolder.getImgGradient().setVisibility(View.VISIBLE);
-            //   viewHolder.getImgAddDish().setImageResource(R.drawable.ic_action_content_add_circle_outline_gray);
-            //  viewHolder.getImgRemoveDish().setImageResource(R.drawable.ic_action_content_remove_circle_outline_gray);
+
+            viewHolder.getImgAddDish().setImageResource(R.drawable.ic_action_content_add_circle_outline_gray);
             viewHolder.getImgAddDish().setOnClickListener(null);
+
+            if (mDishDao.countItemsById(mDish.itemId) == 0) {
+                viewHolder.getImgRemoveDish().setImageResource(R.drawable.ic_action_content_remove_circle_outline_gray);
+                viewHolder.getImgRemoveDish().setOnClickListener(null);
+            } else {
+                viewHolder.getImgRemoveDish().setImageResource(R.drawable.ic_action_content_remove_circle_outline);
+            }
+
         } else {
             viewHolder.getImgSoldOut().setVisibility(View.INVISIBLE);
             viewHolder.getImgGradient().setVisibility(iDishSelected == position ? View.VISIBLE : View.INVISIBLE);
-            //viewHolder.getImgAddDish().setImageResource(R.drawable.ic_action_content_add_circle_outline);
-            //viewHolder.getImgRemoveDish().setImageResource(R.drawable.ic_action_content_remove_circle_outline);
+            viewHolder.getImgAddDish().setImageResource(R.drawable.ic_action_content_add_circle_outline);
+            viewHolder.getImgRemoveDish().setImageResource(R.drawable.ic_action_content_remove_circle_outline);
         }
 
         viewHolder.getTxtDescription().setVisibility(iDishSelected == position ? View.VISIBLE : View.INVISIBLE);

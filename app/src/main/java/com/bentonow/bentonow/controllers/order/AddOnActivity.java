@@ -76,6 +76,8 @@ public class AddOnActivity extends BaseFragmentActivity implements View.OnClickL
 
         getActionbarLeftBtn().setImageResource(R.drawable.ab_x_close);
 
+        bIsMenuOD = !SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_ORDER_AHEAD_MENU);
+
         getMenuItemBuildBento().setVisibility(View.VISIBLE);
         getMenuItemBuildBento().setImageResource(R.drawable.ic_ab_bento_completed);
         getTxtToolbarRightBadge().setVisibility(View.VISIBLE);
@@ -124,7 +126,6 @@ public class AddOnActivity extends BaseFragmentActivity implements View.OnClickL
 
     private void updateUI() {
         mOrder = mOrderDao.getCurrentOrder();
-        bIsMenuOD = !mOrder.order_type.equals("2");
 
         runOnUiThread(new Runnable() {
             @Override

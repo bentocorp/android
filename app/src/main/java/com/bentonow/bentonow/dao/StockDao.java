@@ -24,14 +24,21 @@ public class StockDao {
         int iCurrent = countCurrent ? 1 : 0;
         DishDao mDishDao = new DishDao();
 
-        for (Stock stock : listStock) {
-            if (stock.itemId == itemId) {
-                int iCurrentStock = stock.qty - (mDishDao.countItemsById(itemId) + iCurrent);
-                if (iCurrentStock < 0) {
-                    DebugUtils.logDebug(TAG, "isSold: " + itemId + ": " + " QTY:" + stock.qty + " Stock:" + iCurrentStock);
-                    return true;
-                } else
-                    return false;
+
+        for (int a = 0; a < listStock.size(); a++) {
+            try {
+                int iStockId = Integer.parseInt(listStock.get(a).itemId);
+                int iStockQty = Integer.parseInt(listStock.get(a).qty);
+                if (iStockId == itemId) {
+                    int iCurrentStock = iStockQty - (mDishDao.countItemsById(itemId) + iCurrent);
+                    if (iCurrentStock < 0) {
+                        DebugUtils.logDebug(TAG, "isSold: " + itemId + ": " + " QTY:" + iStockQty + " Stock:" + iCurrentStock);
+                        return true;
+                    } else
+                        return false;
+                }
+            } catch (Exception ex) {
+                DebugUtils.logError(TAG, ex);
             }
         }
         return false;
