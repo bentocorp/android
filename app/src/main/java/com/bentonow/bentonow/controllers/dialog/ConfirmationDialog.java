@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.ui.material.ButtonFlat;
 
 /**
@@ -196,6 +197,8 @@ public class ConfirmationDialog extends android.app.Dialog {
 
     @Override
     public void dismiss() {
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
+
         Animation anim = AnimationUtils.loadAnimation(context, R.anim.dialog_main_hide_amination);
         anim.setAnimationListener(new Animation.AnimationListener() {
 

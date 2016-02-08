@@ -231,6 +231,8 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
             }
         }
 
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
+
         super.onResume();
     }
 
@@ -883,7 +885,8 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
             Intent intent = new Intent(this, SelectMainCustomActivity.class);
             intent.putExtra(Menu.TAG, mMenu);
             startActivity(intent);
-        }
+        } else
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
     }
 
     public void onAddSide1Pressed() {
@@ -892,7 +895,8 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
             intent.putExtra(Menu.TAG, mMenu);
             intent.putExtra("itemIndex", 1);
             startActivity(intent);
-        }
+        } else
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
     }
 
     public void onAddSide2Pressed() {
@@ -901,7 +905,8 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
             intent.putExtra(Menu.TAG, mMenu);
             intent.putExtra("itemIndex", 2);
             startActivity(intent);
-        }
+        } else
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
     }
 
     public void onAddSide3Pressed() {
@@ -910,7 +915,8 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
             intent.putExtra(Menu.TAG, mMenu);
             intent.putExtra("itemIndex", 3);
             startActivity(intent);
-        }
+        } else
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
     }
 
     public void onAddSide4Pressed() {
@@ -919,7 +925,8 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
             intent.putExtra(Menu.TAG, mMenu);
             intent.putExtra("itemIndex", 4);
             startActivity(intent);
-        }
+        } else
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
     }
 
     public void onAddAnotherBentoPressed() {
@@ -932,6 +939,8 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         }
 
         updateUI();
+
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
     }
 
     public void onContinueOrderPressed() {
@@ -946,7 +955,8 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         } else if (mOrderDao.countDishesAdded(mOrder.OrderItems.get(orderIndex)) == 0 || bAutoCompleteFails) {
             bAutoCompleteFails = false;
             mBentoDao.removeBento(mOrder.OrderItems.get(orderIndex).order_pk);
-            BentoNowUtils.openCompleteOrderActivity(BuildBentoActivity.this, mMenu);
+            createOrder();
+            openSummaryScreen();
         } else if (mBentoDao.isBentoComplete(mOrder.OrderItems.get(orderIndex))) {
             track();
             openSummaryScreen();
@@ -956,7 +966,6 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
             mDialog.addCancelButton(IosCopyDao.get("build-not-complete-confirmation-1"), BuildBentoActivity.this);
 
             mDialog.show();
-
         }
 
 
@@ -986,12 +995,14 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         if (!sSoldOutItems.isEmpty()) {
             updateUI();
             WidgetsUtils.createShortToast(String.format(getString(R.string.error_sold_out_items), sSoldOutItems));
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
         } else if (bHasAddOns && !bSawAddOns) {
             openAddOnsActivity();
         } else if (BentoNowUtils.isValidCompleteOrder(BuildBentoActivity.this)) {
             track();
             BentoNowUtils.openCompleteOrderActivity(BuildBentoActivity.this, mMenu);
-        }
+        } else
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
     }
 
     private void track() {
@@ -1033,8 +1044,8 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
     @Override
     public void onClick(View v) {
-        if (bAllowClickEvent) {
-            bAllowClickEvent = false;
+        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK)) {
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, false);
             switch (v.getId()) {
                 case R.id.actionbar_left_btn:
                     BentoNowUtils.openSettingsActivity(BuildBentoActivity.this);
@@ -1050,18 +1061,26 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
                             mDialog.show();
                         }
+                    else
+                        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
                     break;
                 case R.id.button_accept:
                     if (!bShowDateTime)
                         autocomplete();
+
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
                     break;
                 case R.id.btn_continue:
                     if (!bShowDateTime)
                         onContinueOrderPressed();
+
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
                     break;
                 case R.id.btn_add_on_add_on:
                     if (!bShowDateTime)
                         openAddOnsActivity();
+                    else
+                        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
                     break;
                 case R.id.btn_add_another_bento:
                     if (!bShowDateTime) {
@@ -1070,10 +1089,11 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                         else
                             autoCompleteOrder();
                     }
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
                     break;
                 case R.id.layout_date_time:
                     setDateTime(true, true);
-                    //   restartWidget();
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
                     break;
                 case R.id.button_accept_widget:
                     if (bShowAppOnAhead || bShowAppOnDemand) {
@@ -1115,40 +1135,41 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                                 mDialog.addCancelButton(IosCopyDao.get("build-not-complete-confirmation-1"), new View.OnClickListener() {
                                             @Override
                                             public void onClick(View view) {
-                                                //   restartWidget();
                                             }
                                         }
 
                                 );
                                 mDialog.show();
                             }
-                            //else
-                            // restartWidget();
 
                             setDateTime(!bChangeMenu, true);
                         }
                     } else
                         mBentoService.getBentoData(true);
+
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
                     break;
                 case R.id.button_cancel_widget:
                     setDateTime(true, true);
-                    // restartWidget();
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
                     break;
                 case R.id.container_cancel_widget:
                     setDateTime(true, true);
-                    //restartWidget();
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
                     break;
                 case R.id.wrapper_od:
                     if (!bIsAsapChecked) {
                         bIsAsapChecked = true;
                         updateWidgetSelection();
                     }
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
                     break;
                 case R.id.wrapper_oa_header:
                     if (bIsAsapChecked) {
                         bIsAsapChecked = false;
                         updateWidgetSelection();
                     }
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
                     break;
                 case R.id.build_main:
                 case R.id.build_main_four:
@@ -1171,9 +1192,9 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                     break;
                 default:
                     DebugUtils.logError(TAG, String.valueOf(v.getId()));
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
                     break;
             }
-            bAllowClickEvent = true;
         }
     }
 
