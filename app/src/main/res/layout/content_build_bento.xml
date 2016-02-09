@@ -11,7 +11,6 @@
         android:id="@+id/layout_status"
         android:layout_width="match_parent"
         android:layout_height="25dp"
-        android:layout_below="@+id/ActionBarContainer"
         android:background="@color/green_promo">
 
         <com.bentonow.bentonow.ui.AutoFitTxtView
@@ -440,15 +439,14 @@
 
                     <com.bentonow.bentonow.ui.BackendTextView
                         android:id="@+id/txt_add_main"
+                        style="@style/TxtItemsBentoTitle"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_centerHorizontal="true"
                         android:layout_centerVertical="true"
-                        android:background="@null"
                         android:gravity="center"
                         android:text="@string/add_main_dish"
                         android:textColor="@color/btn_green"
-                        android:textStyle="bold"
                         app:key="build-main" />
 
                     <ImageView
@@ -518,6 +516,7 @@
 
                         <com.bentonow.bentonow.ui.BackendTextView
                             android:id="@+id/txt_add_side1"
+                            style="@style/TxtItemsBentoTitle"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_centerHorizontal="true"
@@ -526,7 +525,6 @@
                             android:gravity="center"
                             android:text="@string/add_side"
                             android:textColor="@color/btn_green"
-                            android:textStyle="bold"
                             app:key="build-side-1" />
 
                         <ImageView
@@ -588,6 +586,7 @@
 
                         <com.bentonow.bentonow.ui.BackendTextView
                             android:id="@+id/txt_add_side2"
+                            style="@style/TxtItemsBentoTitle"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_centerHorizontal="true"
@@ -597,7 +596,6 @@
                             android:shadowColor="@color/btn_green"
                             android:text="@string/add_side"
                             android:textColor="@color/btn_green"
-                            android:textStyle="bold"
                             app:key="build-side-2" />
 
                         <ImageView
@@ -668,6 +666,7 @@
 
                         <com.bentonow.bentonow.ui.BackendTextView
                             android:id="@+id/txt_add_side3"
+                            style="@style/TxtItemsBentoTitle"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_centerHorizontal="true"
@@ -676,7 +675,6 @@
                             android:gravity="center"
                             android:text="@string/add_side"
                             android:textColor="@color/btn_green"
-                            android:textStyle="bold"
                             app:key="build-side-3" />
 
                         <ImageView
@@ -739,6 +737,7 @@
 
                         <com.bentonow.bentonow.ui.BackendTextView
                             android:id="@+id/txt_add_side4"
+                            style="@style/TxtItemsBentoTitle"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_centerHorizontal="true"
@@ -747,7 +746,6 @@
                             android:gravity="center"
                             android:text="@string/add_side"
                             android:textColor="@color/btn_green"
-                            android:textStyle="bold"
                             app:key="build-side-4" />
 
                         <ImageView
@@ -820,6 +818,7 @@
 
             <com.bentonow.bentonow.ui.BackendAutoFitTextView
                 android:id="@+id/btn_add_another_bento"
+                style="@style/TxtItemsBentoTitle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="40"
@@ -831,7 +830,6 @@
                 android:text="BUILD ANOTHER BENTO"
                 android:textColor="@color/btn_green"
                 android:textSize="15sp"
-                android:textStyle="bold"
                 app:key="build-add-button" />
 
             <FrameLayout
@@ -841,6 +839,7 @@
 
             <com.bentonow.bentonow.ui.AutoFitTxtView
                 android:id="@+id/btn_add_on_add_on"
+                style="@style/TxtItemsBentoTitle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="40"
@@ -848,8 +847,7 @@
                 android:gravity="center"
                 android:text="VIEW ADD-ONS"
                 android:textColor="@color/btn_green"
-                android:textSize="13sp"
-                android:textStyle="bold" />
+                android:textSize="13sp" />
 
         </LinearLayout>
     </RelativeLayout>
@@ -864,6 +862,7 @@
 
         <com.bentonow.bentonow.ui.BackendAutoFitTextView
             android:id="@+id/btn_continue"
+            style="@style/TxtItemsBentoTitle"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="@color/gray"

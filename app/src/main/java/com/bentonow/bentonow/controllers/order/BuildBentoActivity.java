@@ -814,14 +814,16 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                     bShowDateTime = true;
                     getButtonCancel().setVisibility(bIsMenuAlreadySelected ? View.VISIBLE : View.GONE);
                     restartWidget();
-                    getImgDropDownUp().setImageResource(R.drawable.ic_action_navigation_arrow_drop_up);
+                    getImgDropDownUp().setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_action_navigation_arrow_drop_up));
+                    getTxtDateTimeToolbar().setTextColor(getResources().getColor(R.color.dark_blue));
                     getContainerDateTime().setVisibility(View.VISIBLE);
                     Animation dateInAnimation = AnimationUtils.loadAnimation(BuildBentoActivity.this, R.anim.date_time_in);
                     if (bAnimateEnter)
                         getContainerDateTimeSelection().startAnimation(dateInAnimation);
                 } else if (bIsMenuAlreadySelected) {
                     bShowDateTime = false;
-                    getImgDropDownUp().setImageResource(R.drawable.ic_action_navigation_arrow_drop_down);
+                    getImgDropDownUp().setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_action_navigation_arrow_drop_down));
+                    getTxtDateTimeToolbar().setTextColor(getResources().getColor(R.color.green_promo));
                     Animation dateOutAnimation = AnimationUtils.loadAnimation(BuildBentoActivity.this, R.anim.top_slide_out);
                     dateOutAnimation.setAnimationListener(new Animation.AnimationListener() {
                         @Override
@@ -904,12 +906,12 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                     getCheckBoxOD().setBackgroundDrawable(getResources().getDrawable(R.drawable.bento_btn_check_on_holo_light_alone));
                     getCheckBoxOA().setBackgroundDrawable(null);
                     getTxtOdHeader().setTextColor(getResources().getColor(R.color.green_promo));
-                    getTxtOaHeader().setTextColor(getResources().getColor(R.color.black));
+                    getTxtOaHeader().setTextColor(getResources().getColor(R.color.dark_blue));
                     getContainerSpinnerDayTimeOa().setVisibility(View.GONE);
                 } else {
                     getCheckBoxOD().setBackgroundDrawable(null);
                     getCheckBoxOA().setBackgroundDrawable(getResources().getDrawable(R.drawable.bento_btn_check_on_holo_light_alone));
-                    getTxtOdHeader().setTextColor(getResources().getColor(R.color.black));
+                    getTxtOdHeader().setTextColor(getResources().getColor(R.color.dark_blue));
                     getTxtOaHeader().setTextColor(getResources().getColor(R.color.green_promo));
                     getContainerSpinnerDayTimeOa().setVisibility(View.VISIBLE);
                 }

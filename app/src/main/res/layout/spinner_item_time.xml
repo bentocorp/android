@@ -7,12 +7,13 @@
 
     <com.bentonow.bentonow.ui.AutoFitTxtView
         android:id="@+id/txt_oa_time"
+        style="@style/TxtOpenSansRegular"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fontFamily="sans-serif"
         android:gravity="center|left"
         android:singleLine="true"
         android:text="12:00 01:00"
-        android:textColor="@color/black"
+        android:textColor="@color/dark_blue"
         android:textSize="15sp" />
 </LinearLayout>

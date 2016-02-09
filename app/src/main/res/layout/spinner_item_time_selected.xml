@@ -14,9 +14,10 @@
         android:layout_toStartOf="@+id/img_selector"
         android:fontFamily="sans-serif"
         android:gravity="center|left"
+        style="@style/TxtOpenSansRegular"
         android:singleLine="true"
         android:text="12:00 01:00"
-        android:textColor="@color/black"
+        android:textColor="@color/dark_blue"
         android:textSize="15sp" />
 
     <ImageView

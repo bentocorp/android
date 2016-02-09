@@ -63,6 +63,7 @@
 
                 <com.bentonow.bentonow.ui.AutoFitTxtView
                     android:id="@+id/txt_date_time_toolbar"
+                    style="@style/TxtOpenSansBold"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_above="@+id/img_drop_down_up"
@@ -70,16 +71,15 @@
                     android:gravity="center|bottom"
                     android:lines="1"
                     android:text="Date &amp; Time"
-                    android:textColor="@color/green_promo"
-                    android:textSize="18sp" />
+                    android:textColor="@color/gray_blue"
+                    android:textSize="16sp" />
 
                 <ImageView
                     android:id="@+id/img_drop_down_up"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_alignParentBottom="true"
-                    android:layout_centerHorizontal="true"
-                    android:src="@drawable/ic_action_navigation_arrow_drop_down" />
+                    android:layout_centerHorizontal="true" />
             </RelativeLayout>
 
 
@@ -144,12 +144,13 @@
 
                     <com.bentonow.bentonow.ui.AutoFitTxtView
                         android:id="@+id/txt_date_time_description"
+                        style="@style/TxtOpenSansRegular"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_above="@+id/linearLayout3"
                         android:maxLines="5"
                         android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-                        android:textColor="@color/black"
+                        android:textColor="@color/dark_blue"
                         android:textSize="13sp" />
 
                 </LinearLayout>
