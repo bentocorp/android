@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -15,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
@@ -48,6 +48,7 @@ import com.bentonow.bentonow.ui.AutoFitTxtView;
 import com.bentonow.bentonow.ui.BackendAutoFitTextView;
 import com.bentonow.bentonow.ui.BackendTextView;
 import com.bentonow.bentonow.ui.material.ButtonFlat;
+import com.bentonow.bentonow.ui.material.SpinnerMaterial;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.mixpanel.android.mpmetrics.Tweak;
 
@@ -140,8 +141,8 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     private TextView txtTitleSide3;
     private TextView txtTitleSide34;
     private TextView txtTitleSide4;
-    private Spinner spinnerDate;
-    private Spinner spinnerTime;
+    private SpinnerMaterial spinnerDate;
+    private SpinnerMaterial spinnerTime;
     private ImageView checkBoxOD;
     private ImageView checkBoxOA;
     private ButtonFlat buttonCancel;
@@ -205,7 +206,44 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         getTxtEta().setText(String.format(getString(R.string.build_bento_eta), MenuDao.eta_min + "-" + MenuDao.eta_max));
 
         getSpinnerDate().setAdapter(getSpinnerDayAdapter());
+        getSpinnerDate().setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getSpinnerTime().onDetachedFromWindow();
+                            getSpinnerTime().setEnabled(false);
+                            getSpinnerTime().setClickable(false);
+                        }
+                    });
+                }
+                return false;
+            }
+
+        });
+
         getSpinnerTime().setAdapter(getSpinnerTimeAdapter());
+        getSpinnerTime().setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getSpinnerDate().onDetachedFromWindow();
+                            getSpinnerDate().onDetachedFromWindow();
+                            getSpinnerDate().setEnabled(false);
+                        }
+                    });
+                }
+                return false;
+            }
+
+        });
 
         sContinueBtn = IosCopyDao.get("build-title");
 
@@ -379,11 +417,11 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                             updateDayOASpinner(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(i), 0);
                             getSpinnerDayAdapter().iSelectedPosition = i;
+                            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
                         }
 
                         @Override
                         public void onNothingSelected(AdapterView<?> adapterView) {
-
                         }
                     });
                     getSpinnerTime().setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -400,8 +438,8 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
                         @Override
                         public void onNothingSelected(AdapterView<?> adapterView) {
-
                         }
+
                     });
                 } else
                     getWrapperOa().setVisibility(View.GONE);
@@ -1042,6 +1080,20 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         });
     }
 
+    private void restartSpinnerUI() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                getSpinnerTime().onDetachedFromWindow();
+                getSpinnerTime().setEnabled(true);
+                getSpinnerTime().setClickable(true);
+                getSpinnerDate().onDetachedFromWindow();
+                getSpinnerDate().setEnabled(true);
+                getSpinnerDate().setClickable(true);
+            }
+        });
+    }
+
     @Override
     public void onClick(View v) {
         if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK)) {
@@ -1341,6 +1393,14 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     public void onConnectService() {
         DebugUtils.logDebug(TAG, "Service Connected");
         mBentoService.setServiceListener(BuildBentoActivity.this);
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        if (hasFocus)
+            restartSpinnerUI();
+
+        super.onWindowFocusChanged(hasFocus);
     }
 
     @Override
@@ -1831,15 +1891,15 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         return wrapperOaHeader;
     }
 
-    private Spinner getSpinnerDate() {
+    private SpinnerMaterial getSpinnerDate() {
         if (spinnerDate == null)
-            spinnerDate = (Spinner) findViewById(R.id.spinner_date);
+            spinnerDate = (SpinnerMaterial) findViewById(R.id.spinner_date);
         return spinnerDate;
     }
 
-    private Spinner getSpinnerTime() {
+    private SpinnerMaterial getSpinnerTime() {
         if (spinnerTime == null)
-            spinnerTime = (Spinner) findViewById(R.id.spinner_time);
+            spinnerTime = (SpinnerMaterial) findViewById(R.id.spinner_time);
         return spinnerTime;
     }
 
