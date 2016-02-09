@@ -2,19 +2,17 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="40dp"
-    android:background="@color/white"
-    android:paddingLeft="15dp"
-    android:paddingRight="15dp">
+    android:background="@color/white">
 
     <com.bentonow.bentonow.ui.AutoFitTxtView
         android:id="@+id/txt_oa_time"
+        style="@style/TxtOpenSansRegular"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_toLeftOf="@+id/img_selector"
         android:layout_toStartOf="@+id/img_selector"
         android:fontFamily="sans-serif"
         android:gravity="center|left"
-        style="@style/TxtOpenSansRegular"
         android:singleLine="true"
         android:text="12:00 01:00"
         android:textColor="@color/dark_blue"

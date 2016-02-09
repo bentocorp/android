@@ -36,7 +36,7 @@
 
                 <TextView
                     android:id="@+id/txt_name"
-                    style="@style/TextViewSettingsUserInfo"
+                    style="@style/TextViewSettingsUserInfoName"
                     android:layout_width="wrap_content"
                     android:text="@string/app_name"
                     android:textColor="#576070"
@@ -70,9 +70,9 @@
                     android:text="kokushos@gmail.com" />
             </LinearLayout>
 
-            <Button
+            <TextView
                 android:id="@+id/btn_logout"
-                style="?android:attr/buttonBarButtonStyle"
+                style="@style/TxtOpenSansBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/user_data_content"

@@ -113,10 +113,9 @@
     <!-- TextView -->
 
     <style name="ActionBarTitle">
-        <item name="android:textSize">@dimen/title2</item>
-        <item name="android:textColor">@color/actionbar_title_color</item>
-        <item name="android:textStyle">bold</item>
-        <item name="fontPath">fonts/OpenSans-Regular.ttf</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/dark_blue</item>
+        <item name="fontPath">fonts/OpenSans-Bold.ttf</item>
     </style>
 
     <style name="TxtBentoPromo" parent="@android:style/Widget.TextView">
@@ -163,14 +162,14 @@
     <style name="TxtAddOnTitle" parent="@android:style/Widget.TextView">
         <item name="android:textColor">@color/dark_blue</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textSize">@dimen/main_dish_custom_price</item>
-        <item name="fontPath">fonts/OpenSans-Regular.ttf</item>
+        <item name="android:textSize">13sp</item>
+        <item name="fontPath">fonts/OpenSans-Bold.ttf</item>
     </style>
 
     <style name="TxtSettingsRows" parent="@android:style/Widget.TextView">
         <item name="android:textColor">@color/dark_blue</item>
         <item name="android:textSize">14sp</item>
-        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="fontPath">fonts/OpenSans-Regular.ttf</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:paddingLeft">@dimen/setting_ico_padd</item>
     </style>
@@ -178,7 +177,7 @@
     <style name="TxtSettingsSocialMedia" parent="@android:style/Widget.TextView">
         <item name="android:textColor">@color/dark_blue</item>
         <item name="android:textSize">14sp</item>
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontPath">fonts/OpenSans-Bold.ttf</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_marginTop">5dp</item>
     </style>
@@ -267,13 +266,22 @@
         <item name="android:gravity">center_vertical</item>
     </style>
 
+    <style name="TextViewSettingsUserInfoName" parent="@android:style/Widget.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">20dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#8E949D</item>
+        <item name="android:gravity">center</item>
+        <item name="fontPath">fonts/OpenSans-Bold.ttf</item>
+    </style>
+
     <style name="TextViewSettingsUserInfo" parent="@android:style/Widget.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">20dp</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">#8E949D</item>
         <item name="android:gravity">center</item>
-        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="fontPath">fonts/OpenSans-Regular.ttf</item>
     </style>
 
     <style name="TextViewMenuDateName" parent="@android:style/Widget.TextView">

@@ -424,6 +424,19 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 DebugUtils.logError(TAG, "Cannot loadData: " + responseString);
                 onFinish();
+                String sError;
+                switch (statusCode) {
+                    case 0:// No internet Connection
+                        sError = getString(R.string.error_no_internet_connection);
+                        break;
+                    default:
+                        sError = getString(R.string.error_web_request);
+                        break;
+                }
+
+                ConfirmationDialog mDialog = new ConfirmationDialog(DeliveryLocationActivity.this, "Error", sError);
+                mDialog.addAcceptButton("OK", null);
+                mDialog.show();
             }
 
             @Override

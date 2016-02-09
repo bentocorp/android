@@ -71,6 +71,7 @@
                         android:id="@+id/txt_deliver_time_up"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
+                        style="@style/TxtOpenSansRegular"
                         android:layout_gravity="center|bottom"
                         android:layout_weight="1"
                         android:text="15-25" />
@@ -79,6 +80,7 @@
                         android:id="@+id/txt_deliver_time_down"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
+                        style="@style/TxtOpenSansRegular"
                         android:layout_gravity="center|top"
                         android:layout_weight="1"
                         android:text="min" />
@@ -182,6 +184,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:padding="@dimen/btn_padding"
+                    style="@style/TxtOpenSansRegular"
                     android:textColor="@color/dark_gray"
                     app:key="complete-promo-discount" />
 
@@ -190,6 +193,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/btn_padding"
+                    style="@style/TxtOpenSansRegular"
                     android:text="@string/zero_dollar"
                     android:textColor="@color/dark_gray" />
             </LinearLayout>
@@ -212,6 +216,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:padding="@dimen/btn_padding"
+                    style="@style/TxtOpenSansRegular"
                     android:textColor="@color/dark_gray"
                     app:key="complete-tax" />
 
@@ -220,6 +225,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/btn_padding"
+                    style="@style/TxtOpenSansRegular"
                     android:text="@string/zero_dollar"
                     android:textColor="@color/dark_gray" />
             </LinearLayout>
@@ -241,6 +247,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    style="@style/TxtOpenSansRegular"
                     android:padding="@dimen/btn_padding"
                     android:textColor="@color/dark_gray"
                     app:key="delivery_label" />
@@ -251,6 +258,7 @@
                     android:layout_height="wrap_content"
                     android:padding="@dimen/btn_padding"
                     android:text="@string/zero_dollar"
+                    style="@style/TxtOpenSansRegular"
                     android:textColor="@color/dark_gray" />
             </LinearLayout>
 
@@ -272,6 +280,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:padding="@dimen/btn_padding"
+                    style="@style/TxtOpenSansRegular"
                     android:textColor="@color/dark_gray"
                     app:key="complete-tip" />
 
@@ -347,6 +356,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
                     android:padding="@dimen/btn_padding"
+                    style="@style/TxtOpenSansRegular"
                     android:textColor="@color/dark_gray"
                     app:key="complete-total" />
 
@@ -375,6 +385,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="@dimen/btn_padding"
+                        style="@style/TxtOpenSansRegular"
                         android:text="@string/zero_dollar"
                         android:textColor="@color/orange" />
 
@@ -395,6 +406,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
+                    style="@style/TxtOpenSansRegular"
                     android:layout_centerVertical="true"
                     android:padding="@dimen/btn_padding"
                     android:text="@string/zero_dollar"
@@ -421,6 +433,7 @@
             android:layout_height="wrap_content"
             android:background="@color/btn_green"
             android:gravity="center"
+            style="@style/TxtOpenSansBold"
             android:padding="@dimen/btn_padding"
             android:textColor="@color/white"
             app:key="complete-button" />

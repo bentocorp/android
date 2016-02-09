@@ -38,6 +38,7 @@
 
         <com.bentonow.bentonow.ui.BackendButton
             android:id="@+id/btn_finalize"
+            style="@style/TxtOpenSansBold"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="@color/btn_green"
