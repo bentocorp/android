@@ -19,7 +19,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
             android:layout_toLeftOf="@+id/img_divider_status"
             android:gravity="center"
             android:text="" />
@@ -53,7 +52,6 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/linearLayout4"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:layout_below="@+id/layout_status"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
@@ -411,7 +409,6 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/linearLayout4"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:layout_below="@+id/layout_status"
         android:paddingLeft="25dp"
         android:paddingRight="25dp"
@@ -810,7 +807,6 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:orientation="horizontal"
             android:visibility="gone"
@@ -857,8 +853,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentLeft="true">
 
         <com.bentonow.bentonow.ui.BackendAutoFitTextView
             android:id="@+id/btn_continue"

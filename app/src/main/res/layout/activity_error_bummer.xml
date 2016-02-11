@@ -41,7 +41,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:orientation="vertical">
 
         <LinearLayout
@@ -95,7 +94,6 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:baselineAligned="false"
             android:gravity="center"
@@ -135,7 +133,6 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:layout_below="@+id/ActionBarContainer"
         android:layout_marginTop="24dp"
         android:gravity="center"
@@ -152,7 +149,6 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:layout_below="@+id/view"
         android:layout_marginTop="20dp"
         android:paddingBottom="@dimen/general_padding"
@@ -164,7 +160,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:layout_below="@+id/view2"
         android:layout_marginTop="24dp"
         android:background="@color/white"

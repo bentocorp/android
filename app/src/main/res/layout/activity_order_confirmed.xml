@@ -84,7 +84,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:orientation="vertical">
 
         <com.bentonow.bentonow.ui.BackendButton

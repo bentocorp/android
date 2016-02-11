@@ -96,6 +96,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private ImageView actionbar_left_btn;
     private ProgressBar progressBar;
     private ProgressDialog mProgressDialog;
+    private ConfirmationDialog mConfirmationDialog;
     private boolean mRequestingLocationUpdates;
     private GoogleApiClient mGoogleApiClient;
     private Location mCurrentLocation;
@@ -104,6 +105,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private Address mOrderAddress;
     private ConstantUtils.optOpenScreen optOpenScreen;
     private ArrayList<AutoCompleteModel> resultList;
+
     private float previousZoomLevel = 17.7f;
     private long lastTouched = 0;
     private boolean bAllowRequest = true;
@@ -326,8 +328,21 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
     public void onCurrentLocationPressed(View view) {
-        WidgetsUtils.createShortToast("Getting your location");
-        startLocationUpdates();
+        if (LocationUtils.isGpsEnable(DeliveryLocationActivity.this)) {
+            WidgetsUtils.createShortToast("Getting your location");
+            startLocationUpdates();
+        } else if (mConfirmationDialog == null || !mConfirmationDialog.isShowing()) {
+            mConfirmationDialog = new ConfirmationDialog(DeliveryLocationActivity.this, "Enable GPS", "GPS is disabled in your device. Enable it?");
+            mConfirmationDialog.addAcceptButton("Yes", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent callGPSSettingIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(callGPSSettingIntent);
+                }
+            });
+            mConfirmationDialog.addCancelButton("No", null);
+            mConfirmationDialog.show();
+        }
     }
 
     private void updateCurrentLocation() {
