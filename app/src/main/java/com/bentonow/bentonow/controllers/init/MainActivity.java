@@ -55,8 +55,6 @@ public class MainActivity extends BaseFragmentActivity {
         }
 
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, "open");
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.LOCATION, "");
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ADDRESS, "");
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MENU_TODAY, "");
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MENU_NEXT, "");
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STATUS_ALL, "");
@@ -126,7 +124,7 @@ public class MainActivity extends BaseFragmentActivity {
         if (BentoNowUtils.isLastVersionApp(MainActivity.this)) {
             if (LocationUtils.isGpsEnable(MainActivity.this)) {
                 MixpanelUtils.track("Allow Location Services");
-                openNextScren();
+                openNextScreen();
             } else {
                 MixpanelUtils.track("Don't Allow Location Services");
                 if (mConfirmationDialog == null || !mConfirmationDialog.isShowing()) {
@@ -141,7 +139,7 @@ public class MainActivity extends BaseFragmentActivity {
                     mConfirmationDialog.addCancelButton("No", new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            openNextScren();
+                            openNextScreen();
                         }
                     });
                     mConfirmationDialog.show();
@@ -154,7 +152,7 @@ public class MainActivity extends BaseFragmentActivity {
 
     }
 
-    private void openNextScren() {
+    private void openNextScreen() {
         if (!SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.APP_FIRST_RUN)) {
             MixpanelUtils.track("App Installed");
             Intent intent = new Intent(this, GettingStartedActivity.class);
@@ -162,6 +160,10 @@ public class MainActivity extends BaseFragmentActivity {
             finish();
             startActivity(intent);
         } else {
+            if (LocationUtils.isGpsEnable(MainActivity.this)) {
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.LOCATION, "");
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ADDRESS, "");
+            }
             Intent intent = new Intent(this, DeliveryLocationActivity.class);
             intent.putExtra(ConstantUtils.TAG_OPEN_SCREEN, ConstantUtils.optOpenScreen.BUILD_BENTO);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);

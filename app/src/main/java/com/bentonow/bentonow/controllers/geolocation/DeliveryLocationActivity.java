@@ -165,7 +165,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         });
 
         updateUI();
-//TODO check new location again
+
         setupMap();
     }
 
@@ -198,6 +198,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         }
 
         getBtnClear().setVisibility(getTxtAddress().getText().length() > 0 ? View.VISIBLE : View.GONE);
+
+        AndroidUtil.hideKeyboard(getProgressBar());
     }
 
     private void setupMap() {

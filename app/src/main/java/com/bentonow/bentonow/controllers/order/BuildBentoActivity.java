@@ -818,8 +818,26 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                     getTxtDateTimeToolbar().setTextColor(getResources().getColor(R.color.dark_blue));
                     getContainerDateTime().setVisibility(View.VISIBLE);
                     Animation dateInAnimation = AnimationUtils.loadAnimation(BuildBentoActivity.this, R.anim.date_time_in);
+                    dateInAnimation.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+                            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, false);
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+                        }
+                    });
                     if (bAnimateEnter)
                         getContainerDateTimeSelection().startAnimation(dateInAnimation);
+                    else
+                        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
+
                 } else if (bIsMenuAlreadySelected) {
                     bShowDateTime = false;
                     getImgDropDownUp().setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_action_navigation_arrow_drop_down));
@@ -828,10 +846,12 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                     dateOutAnimation.setAnimationListener(new Animation.AnimationListener() {
                         @Override
                         public void onAnimationStart(Animation animation) {
+                            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, false);
                         }
 
                         @Override
                         public void onAnimationEnd(Animation animation) {
+                            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -850,6 +870,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
                                 getContainerDateTime().setVisibility(View.GONE);
                             }
                         });

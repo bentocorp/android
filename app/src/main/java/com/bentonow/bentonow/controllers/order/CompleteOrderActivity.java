@@ -386,7 +386,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
         if (mOrder.OrderDetails.tip_percentage > 0) {
             mOrder.OrderDetails.tip_percentage -= 5;
         }
-
+        mOrderDao.updateOrder(mOrder);
         updateViewsUI();
     }
 
@@ -394,7 +394,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
         if (mOrder.OrderDetails.tip_percentage < 30) {
             mOrder.OrderDetails.tip_percentage += 5;
         }
-
+        mOrderDao.updateOrder(mOrder);
         updateViewsUI();
     }
 
@@ -502,7 +502,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
                     track(null);
 
                     MixpanelUtils.trackRevenue(mOrder.OrderDetails.total_cents / 100, mCurrentUser);
-                    
+
                     SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.CLEAR_ORDERS_FROM_SUMMARY, true);
 
                     Log.i(TAG, "Order: " + responseString);

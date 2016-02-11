@@ -217,7 +217,7 @@ public class OrderDao extends MainDao {
 
                 OrderDetails mOrderDetail = new OrderDetails();
                 mOrderDetail.coupon_discount_cents = (cursor.getInt(_ORDER_DETAIL_COUPON_DISCOUNT_CENTS));
-                mOrderDetail.tip_cents = (cursor.getDouble(_ORDER_DETAIL_TIP_PERCENTAGE));
+                mOrderDetail.tip_percentage = (cursor.getDouble(_ORDER_DETAIL_TIP_PERCENTAGE));
                 mOrderDetail.tax_cents = (cursor.getDouble(_ORDER_DETAIL_TAX_CENTS));
                 mOrderDetail.tip_cents = (cursor.getDouble(_ORDER_DETAIL_TIP_CENTS));
                 mOrderDetail.total_cents = (cursor.getDouble(_ORDER_DETAIL_TOTAL_CENTS));
