@@ -4,6 +4,10 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.res.Resources;
 import android.os.Build;
+import android.text.InputFilter;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -81,6 +85,45 @@ public class AndroidUtil {
     public static String getSecondsFromMillis(long lMilliseconds) {
         long lSeconds = TimeUnit.MILLISECONDS.toSeconds(lMilliseconds) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(lMilliseconds));
         return lSeconds < 9 ? "0" + lSeconds : String.valueOf(lSeconds);
+    }
+
+    public static InputFilter getInputFilterEmoji() {
+        return new InputFilter() {
+            @Override
+            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+                CharSequence sourceOriginal = source;
+                source = replaceEmoji(source);
+                end = source.toString().length();
+
+                if (end == 0)
+                    return ""; //Return empty string if the input character is already removed
+
+                if (!sourceOriginal.toString().equals(source.toString())) {
+                    char[] v = new char[end - start];
+                    TextUtils.getChars(source, start, end, v, 0);
+
+                    String s = new String(v);
+
+                    if (source instanceof Spanned) {
+                        SpannableString sp = new SpannableString(s);
+                        TextUtils.copySpansFrom((Spanned) source, start, end, null, sp, 0);
+                        return sp;
+                    } else {
+                        return s;
+                    }
+                } else {
+                    return null; // keep original
+                }
+            }
+
+            private String replaceEmoji(CharSequence source) {
+
+                String notAllowedCharactersRegex = "[^a-zA-Z0-9@#\\$%\\&\\-\\+\\(\\)\\*;:!\\?\\~`£\\{\\}\\[\\]=\\.,_/\\\\\\s'\\\"<>\\^\\|÷×]";
+                return source.toString()
+                        .replaceAll(notAllowedCharactersRegex, "");
+            }
+
+        };
     }
 
 }

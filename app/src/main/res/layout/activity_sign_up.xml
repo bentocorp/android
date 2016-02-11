@@ -1,6 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/base_relative_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -122,7 +121,7 @@
                     android:layout_height="fill_parent"
                     android:background="@color/divisor" />
 
-                <EditText
+                <com.bentonow.bentonow.ui.CustomEditText
                     android:id="@+id/txt_name"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
@@ -165,7 +164,7 @@
                     android:layout_height="fill_parent"
                     android:background="@color/divisor" />
 
-                <EditText
+                <com.bentonow.bentonow.ui.CustomEditText
                     android:id="@+id/txt_email"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
@@ -218,7 +217,7 @@
                     android:textColor="@color/gray"
                     android:textSize="@dimen/text_small" />
 
-                <EditText
+                <com.bentonow.bentonow.ui.CustomEditText
                     android:id="@+id/txt_phone"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
@@ -264,7 +263,7 @@
                     android:layout_height="fill_parent"
                     android:background="@color/divisor" />
 
-                <EditText
+                <com.bentonow.bentonow.ui.CustomEditText
                     android:id="@+id/txt_password"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"

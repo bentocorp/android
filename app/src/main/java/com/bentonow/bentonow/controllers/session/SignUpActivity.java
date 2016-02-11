@@ -3,6 +3,7 @@ package com.bentonow.bentonow.controllers.session;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
@@ -26,6 +27,7 @@ import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.dao.MenuDao;
 import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.model.User;
+import com.bentonow.bentonow.ui.CustomEditText;
 import com.bentonow.bentonow.web.request.UserRequest;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -51,10 +53,10 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
     private View container_alert;
     private TextView txt_message;
 
-    private EditText txt_name;
-    private EditText txt_email;
-    private EditText txt_phone;
-    private EditText txt_password;
+    private CustomEditText txt_name;
+    private CustomEditText txt_email;
+    private CustomEditText txt_phone;
+    private CustomEditText txt_password;
 
     private ImageView img_user;
     private ImageView img_email;
@@ -74,6 +76,7 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
     private User registerUser;
 
     private boolean beganRegistration = false;
+    private InputFilter mInputFilter;
     private String error = "";
 
     @Override
@@ -98,9 +101,9 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
         txt_message = (TextView) findViewById(R.id.txt_message);
 
 
-        txt_email = (EditText) findViewById(R.id.txt_email);
-        txt_phone = (EditText) findViewById(R.id.txt_phone);
-        txt_password = (EditText) findViewById(R.id.txt_password);
+        txt_email = (CustomEditText) findViewById(R.id.txt_email);
+        txt_phone = (CustomEditText) findViewById(R.id.txt_phone);
+        txt_password = (CustomEditText) findViewById(R.id.txt_password);
 
         img_user = (ImageView) findViewById(R.id.img_user);
         img_email = (ImageView) findViewById(R.id.img_email);
@@ -112,7 +115,6 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
         if (getIntent().getStringExtra("email") != null) {
             txt_email.setText(getIntent().getStringExtra("email"));
         }
-
 
         MixpanelUtils.track("Began Registration");
 
@@ -526,10 +528,11 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
             mProgressDialog.dismiss();
     }
 
-
-    private EditText getEditName() {
+    private CustomEditText getEditName() {
         if (txt_name == null)
-            txt_name = (EditText) findViewById(R.id.txt_name);
+            txt_name = (CustomEditText) findViewById(R.id.txt_name);
         return txt_name;
     }
+
+
 }
