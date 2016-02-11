@@ -55,8 +55,12 @@ public class CouponDialog extends Dialog implements View.OnClickListener {
         switch (view.getId()) {
             case R.id.button_accept:
                 if (mDialogListener != null)
-                    mDialogListener.btnOkClick(getEditCoupon().getText().toString());
-                dismiss();
+                    if (!getEditCoupon().getText().toString().trim().isEmpty())
+                        mDialogListener.btnOkClick(getEditCoupon().getText().toString());
+                    else
+                        AndroidUtil.hideKeyboard(view);
+                else
+                    dismiss();
                 break;
             case R.id.btn_cancel:
                 dismiss();

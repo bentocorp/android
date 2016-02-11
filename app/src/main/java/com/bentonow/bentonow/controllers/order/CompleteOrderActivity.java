@@ -261,7 +261,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
                     try {
                         sError = new JSONObject(responseString).getString("error");
                     } catch (Exception e) {
-                        sError = getString(R.string.error_no_internet_connection);
+                        sError = getString(R.string.error_sign_up_user);
                         DebugUtils.logError(TAG, "requestPromoCode(): " + e.getLocalizedMessage());
                     }
 
