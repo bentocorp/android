@@ -201,7 +201,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
         getBtnClear().setVisibility(getTxtAddress().getText().length() > 0 ? View.VISIBLE : View.GONE);
 
-        AndroidUtil.hideKeyboard(getProgressBar());
     }
 
     private void setupMap() {
@@ -234,6 +233,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                     scanLocation(latLng);
                     if (bMovedMap)
                         getGoogleMap().animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, previousZoomLevel));
+
+                    AndroidUtil.hideKeyboard(getProgressBar());
                 }
             });
 
@@ -268,7 +269,14 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
         }
 
-        updateUI();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                AndroidUtil.hideKeyboard(getProgressBar());
+                updateUI();
+            }
+        });
+
 
     }
 
@@ -324,6 +332,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             getTxtAddress().setText("");
 
         mOrderAddress = null;
+
+        AndroidUtil.hideKeyboard(getProgressBar());
         updateUI();
     }
 

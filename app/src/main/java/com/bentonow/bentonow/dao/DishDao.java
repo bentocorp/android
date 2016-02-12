@@ -20,6 +20,7 @@ import java.util.List;
  * Created by Jose Torres on 27/09/15.
  */
 public class DishDao extends MainDao {
+
     public final static String TABLE_NAME = "table_dish";
     public final static String ID_PK = "dish_pk";
     static final String TAG = "DishDao";
@@ -156,6 +157,36 @@ public class DishDao extends MainDao {
         }
 
         return mListDish;
+    }
+
+    public int getNumDishes() {
+        int iNum = 0;
+
+        try {
+
+            dbAdapter.begginTransaction();
+
+            Cursor cursor = dbAdapter.getData(TABLE_NAME, FIELDS, null);
+
+            int _NAME = cursor.getColumnIndex(NAME);
+
+            cursor.moveToFirst();
+            for (int i = 0; i < cursor.getCount(); i++) {
+                if (!getStringFromColumn(cursor.getString(_NAME)).isEmpty())
+                    iNum++;
+                cursor.moveToNext();
+            }
+
+            cursor.close();
+
+            dbAdapter.setTransacctionSuccesfull();
+        } catch (Exception ex) {
+            DebugUtils.logError(TAG, ex);
+        }
+
+        DebugUtils.logDebug(TAG, "getNumDishes: " + iNum);
+
+        return iNum;
     }
 
     public List<DishModel> getAllDishByType(ConstantUtils.optDishType optDish) {

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -206,7 +205,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         getTxtEta().setText(String.format(getString(R.string.build_bento_eta), MenuDao.eta_min + "-" + MenuDao.eta_max));
 
         getSpinnerDate().setAdapter(getSpinnerDayAdapter());
-        getSpinnerDate().setOnTouchListener(new View.OnTouchListener() {
+        /*getSpinnerDate().setOnTouchListener(new View.OnTouchListener() {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -216,6 +215,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                         public void run() {
                             getSpinnerTime().onDetachedFromWindow();
                             getSpinnerTime().setEnabled(false);
+                            getSpinnerDate().setEnabled(true);
                             getSpinnerTime().setClickable(false);
                         }
                     });
@@ -223,10 +223,10 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                 return false;
             }
 
-        });
+        });*/
 
         getSpinnerTime().setAdapter(getSpinnerTimeAdapter());
-        getSpinnerTime().setOnTouchListener(new View.OnTouchListener() {
+        /*getSpinnerTime().setOnTouchListener(new View.OnTouchListener() {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -236,11 +236,45 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                         public void run() {
                             getSpinnerDate().onDetachedFromWindow();
                             getSpinnerDate().onDetachedFromWindow();
+                            getSpinnerTime().setEnabled(true);
                             getSpinnerDate().setEnabled(false);
                         }
                     });
                 }
                 return false;
+            }
+
+        });*/
+        getSpinnerDate().setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (bShowAppOnAhead) {
+                    updateDayOASpinner(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(i), 0);
+                    getSpinnerDayAdapter().iSelectedPosition = i;
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+        getSpinnerTime().setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int iPosition, long l) {
+                if (bShowAppOnAhead) {
+                    for (int a = 0; a < mOAPreselectedMenu.listTimeModel.size(); a++) {
+                        if (a == iPosition) {
+                            mOAPreselectedMenu.listTimeModel.get(a).isSelected = true;
+                        } else
+                            mOAPreselectedMenu.listTimeModel.get(a).isSelected = false;
+                    }
+                    getSpinnerTimeAdapter().iSelectedPosition = iPosition;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
             }
 
         });
@@ -412,35 +446,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                     getSpinnerTimeAdapter().addAll(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(0).listTimeModel);
                     getSpinnerTimeAdapter().notifyDataSetChanged();
                     getTxtOaHeader().setText(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.title);
-                    getSpinnerDate().setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                            updateDayOASpinner(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(i), 0);
-                            getSpinnerDayAdapter().iSelectedPosition = i;
-                            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
-                        }
 
-                        @Override
-                        public void onNothingSelected(AdapterView<?> adapterView) {
-                        }
-                    });
-                    getSpinnerTime().setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(AdapterView<?> adapterView, View view, int iPosition, long l) {
-                            for (int a = 0; a < mOAPreselectedMenu.listTimeModel.size(); a++) {
-                                if (a == iPosition) {
-                                    mOAPreselectedMenu.listTimeModel.get(a).isSelected = true;
-                                } else
-                                    mOAPreselectedMenu.listTimeModel.get(a).isSelected = false;
-                            }
-                            getSpinnerTimeAdapter().iSelectedPosition = iPosition;
-                        }
-
-                        @Override
-                        public void onNothingSelected(AdapterView<?> adapterView) {
-                        }
-
-                    });
                 } else
                     getWrapperOa().setVisibility(View.GONE);
 
@@ -1107,12 +1113,12 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                getSpinnerTime().onDetachedFromWindow();
+                /*getSpinnerTime().onDetachedFromWindow();
                 getSpinnerTime().setEnabled(true);
                 getSpinnerTime().setClickable(true);
                 getSpinnerDate().onDetachedFromWindow();
                 getSpinnerDate().setEnabled(true);
-                getSpinnerDate().setClickable(true);
+                getSpinnerDate().setClickable(true);*/
             }
         });
     }
@@ -1200,21 +1206,25 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                             }
 
                             if (bChangeMenu) {
-                                mDialog = new ConfirmationDialog(BuildBentoActivity.this, IosCopyDao.get("oa-change-warning-title"), IosCopyDao.get("oa-change-warning-text"));
-                                mDialog.addAcceptButton(IosCopyDao.get("build-not-complete-confirmation-2"), new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        forceChangeMenu();
-                                    }
-                                });
-                                mDialog.addCancelButton(IosCopyDao.get("build-not-complete-confirmation-1"), new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View view) {
-                                            }
+                                if (mDishDao.getNumDishes() == 0) {
+                                    forceChangeMenu();
+                                } else {
+                                    mDialog = new ConfirmationDialog(BuildBentoActivity.this, IosCopyDao.get("oa-change-warning-title"), IosCopyDao.get("oa-change-warning-text"));
+                                    mDialog.addAcceptButton(IosCopyDao.get("build-not-complete-confirmation-2"), new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            forceChangeMenu();
                                         }
+                                    });
+                                    mDialog.addCancelButton(IosCopyDao.get("build-not-complete-confirmation-1"), new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View view) {
+                                                }
+                                            }
 
-                                );
-                                mDialog.show();
+                                    );
+                                    mDialog.show();
+                                }
                             }
 
                             setDateTime(!bChangeMenu, true);
@@ -1416,14 +1426,6 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     public void onConnectService() {
         DebugUtils.logDebug(TAG, "Service Connected");
         mBentoService.setServiceListener(BuildBentoActivity.this);
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        if (hasFocus)
-            restartSpinnerUI();
-
-        super.onWindowFocusChanged(hasFocus);
     }
 
     @Override

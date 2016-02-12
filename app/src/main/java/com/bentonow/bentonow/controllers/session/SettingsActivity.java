@@ -56,6 +56,9 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
     private LinearLayout containerSettingsCall;
     private LinearLayout containerSettingsCreditCard;
     private RelativeLayout containerUser;
+    private TextView txtLogout;
+
+    private LogOutDialog mLogOutDialog;
 
     private User mCurrentUser;
 
@@ -77,6 +80,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
         getContainerSettingsCall().setOnClickListener(this);
         getContainerSettingsCreditCard().setOnClickListener(this);
         getContainerSettingsOrders().setOnClickListener(this);
+        getTxtLogout().setOnClickListener(this);
     }
 
     @Override
@@ -168,13 +172,16 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
         });
     }
 
-    public void onLogoutPressed(View v) {
+    public void onLogoutPressed() {
         DebugUtils.logDebug(TAG, "onLogoutPressed");
         action = "logout";
-        LogOutDialog mDialog = new LogOutDialog(SettingsActivity.this, "Confirmation", "Are you sure you want to log out ?");
-        mDialog.addAcceptButton("YES", SettingsActivity.this);
-        mDialog.addCancelButton("NO", SettingsActivity.this);
-        mDialog.show();
+
+        if (mLogOutDialog == null || !mLogOutDialog.isShowing()) {
+            mLogOutDialog = new LogOutDialog(SettingsActivity.this, "Confirmation", "Are you sure you want to log out ?");
+            mLogOutDialog.addAcceptButton("YES", SettingsActivity.this);
+            mLogOutDialog.addCancelButton("NO", SettingsActivity.this);
+            mLogOutDialog.show();
+        }
     }
 
     private void onSignInPressed() {
@@ -370,6 +377,9 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
             case R.id.container_settings_orders:
                 BentoNowUtils.openOrderHistoryActivity(SettingsActivity.this);
                 break;
+            case R.id.txt_logout:
+                onLogoutPressed();
+                break;
             default:
                 DebugUtils.logError(TAG, "No found: " + v.getId());
                 break;
@@ -442,6 +452,13 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
             containerUser = (RelativeLayout) findViewById(R.id.container_user);
 
         return containerUser;
+    }
+
+    private TextView getTxtLogout() {
+        if (txtLogout == null)
+            txtLogout = (TextView) findViewById(R.id.txt_logout);
+
+        return txtLogout;
     }
 
 }

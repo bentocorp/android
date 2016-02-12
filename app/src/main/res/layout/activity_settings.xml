@@ -71,7 +71,7 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/btn_logout"
+                android:id="@+id/txt_logout"
                 style="@style/TxtOpenSansBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -79,7 +79,6 @@
                 android:layout_alignParentRight="true"
                 android:background="@null"
                 android:fontFamily="sans-serif-light"
-                android:onClick="onLogoutPressed"
                 android:padding="@dimen/btn_padding"
                 android:text="Log out"
                 android:textColor="@color/btn_green"
