@@ -69,10 +69,8 @@
                 android:layout_height="fill_parent"
                 android:background="@color/transparent"
                 android:gravity="center"
-                android:padding="@dimen/btn_padding"
-                android:paddingBottom="@dimen/btn_padding"
                 android:paddingLeft="@dimen/btn_padding"
-                android:paddingTop="@dimen/btn_padding"
+                android:paddingRight="@dimen/btn_padding"
                 android:text="+1 "
                 android:textColor="@color/gray"
                 android:textSize="@dimen/text_small" />
@@ -87,9 +85,8 @@
                 android:gravity="center_vertical"
                 android:inputType="phone"
                 android:maxLength="16"
-                android:paddingBottom="@dimen/btn_padding"
+                android:layout_gravity="center|left"
                 android:paddingRight="@dimen/btn_padding"
-                android:paddingTop="@dimen/btn_padding"
                 android:singleLine="true"
                 android:textColor="@color/gray"
                 android:textSize="@dimen/text_small" />

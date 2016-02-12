@@ -57,7 +57,7 @@ android {
         }
         stage {
             applicationId "com.bentonow.bentonow.stage"
-            versionName '1.21-rc10-dev'
+            versionName '1.21-rc11-dev'
         }
     }
 
