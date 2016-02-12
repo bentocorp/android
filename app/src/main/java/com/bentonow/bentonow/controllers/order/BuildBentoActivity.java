@@ -481,7 +481,8 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ON_DEMAND_AVAILABLE, true);
                         getTxtDateTimeToolbar().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getTitle());
                         //  restartDishUI();
-                        createOrder();
+                        if (mMenu != null)
+                            createOrder();
                         break;
                     case MENU_PREVIEW:
                         mMenu = MenuDao.cloneMenu(MenuDao.gateKeeper.getAppOnDemandWidget().getMenu());
@@ -490,10 +491,12 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                         break;
                     case ORDER_AHEAD:
                         mMenu = MenuDao.cloneMenu(mOAPreselectedMenu);
-                        createOrder();
-                        mOrder.for_date = mMenu.for_date;
-                        updateTimeOrder((TimesModel) getSpinnerTime().getSelectedItem());
-                        getTxtDateTimeToolbar().setText(BentoNowUtils.getDayTimeSelected(mOrder));
+                        if (mMenu != null) {
+                            createOrder();
+                            mOrder.for_date = mMenu.for_date;
+                            updateTimeOrder((TimesModel) getSpinnerTime().getSelectedItem());
+                            getTxtDateTimeToolbar().setText(BentoNowUtils.getDayTimeSelected(mOrder));
+                        }
                         //   restartDishUI();
                         break;
                 }
@@ -530,6 +533,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
             mOrder.OrderItems.add(mBentoDao.getNewBento(ConstantUtils.optItemType.CUSTOM_BENTO_BOX));
             mOrder.OrderItems.add(mBentoDao.getNewBento(ConstantUtils.optItemType.ADD_ON));
         }
+        bHasAddOns = false;
 
         for (int a = 0; a < mMenu.dishModels.size(); a++) {
             if (mMenu.dishModels.get(a).type.equals("addon")) {
