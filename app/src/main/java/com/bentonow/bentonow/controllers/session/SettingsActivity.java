@@ -18,6 +18,7 @@ import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.SocialNetworksUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
@@ -57,6 +58,10 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
     private LinearLayout containerSettingsCreditCard;
     private RelativeLayout containerUser;
     private TextView txtLogout;
+    private FontAwesomeButton btnFacebook;
+    private FontAwesomeButton btnTwitter;
+    private FontAwesomeButton btnSms;
+    private FontAwesomeButton btnEmail;
 
     private LogOutDialog mLogOutDialog;
 
@@ -69,10 +74,10 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
 
         initActionbar();
 
-        ((FontAwesomeButton) findViewById(R.id.btn_facebook)).setup(this);
-        ((FontAwesomeButton) findViewById(R.id.btn_twitter)).setup(this);
-        ((FontAwesomeButton) findViewById(R.id.btn_sms)).setup(this);
-        ((FontAwesomeButton) findViewById(R.id.btn_email)).setup(this);
+        getBtnFacebook().setup(this);
+        getBtnTwitter().setup(this);
+        getBtnSms().setup(this);
+        getBtnEmail().setup(this);
 
         getContainerSettingsSignIn().setOnClickListener(this);
         getContainerSettingsFaq().setOnClickListener(this);
@@ -80,7 +85,12 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
         getContainerSettingsCall().setOnClickListener(this);
         getContainerSettingsCreditCard().setOnClickListener(this);
         getContainerSettingsOrders().setOnClickListener(this);
+        getLayoutContainerPhone().setOnClickListener(this);
         getTxtLogout().setOnClickListener(this);
+        getBtnFacebook().setOnClickListener(this);
+        getBtnTwitter().setOnClickListener(this);
+        getBtnSms().setOnClickListener(this);
+        getBtnEmail().setOnClickListener(this);
     }
 
     @Override
@@ -111,7 +121,6 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
         getContainerSettingsSignIn().setVisibility(mCurrentUser != null ? View.GONE : View.VISIBLE);
         getContainerSettingsCreditCard().setVisibility(View.GONE);
         getContainerSettingsOrders().setVisibility(mCurrentUser != null ? View.VISIBLE : View.GONE);
-        getLayoutContainerPhone().setOnClickListener(this);
 
         if (mCurrentUser != null) {
             ((TextView) findViewById(R.id.txt_name)).setText(mCurrentUser.lastname != null ? mCurrentUser.firstname + " " + mCurrentUser.lastname : mCurrentUser.firstname);
@@ -223,12 +232,12 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
         BentoNowUtils.openCreditCardActivity(SettingsActivity.this, ConstantUtils.optOpenScreen.NORMAL);
     }
 
-    public void onFacebookPressed(View v) {
+    public void onFacebookPressed() {
         if (!SocialNetworksUtil.postStatusFacebook(SettingsActivity.this, message, ConstantUtils.URL_INSTALL_ANDROID)) {
 
             Toast.makeText(getApplicationContext(), "There is no facebook client installed.", Toast.LENGTH_SHORT).show();
 
-            onEmailPressed(v);
+            onEmailPressed();
         }
     }
 
@@ -247,11 +256,11 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
         startActivity(intent);
     }
 
-    public void onMessagePressed(View v) {
+    public void onMessagePressed() {
         SocialNetworksUtil.sendSms(SettingsActivity.this, message);
     }
 
-    public void onEmailPressed(View v) {
+    public void onEmailPressed() {
         SocialNetworksUtil.sendEmail(SettingsActivity.this, message);
     }
 
@@ -324,65 +333,85 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
         });
     }
 
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_SETTINGS_CLICK, hasFocus);
+        DebugUtils.logDebug(TAG, "onWindowFocusChanged: " + hasFocus);
+    }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.actionbar_left_btn:
-                onBackPressed();
-                break;
-            case R.id.button_accept:
-                if (action.equals("phone")) {
-                    SocialNetworksUtil.phoneCall(SettingsActivity.this, "4153001332");
-                } else if (action.equals("logout")) {
-                    mCurrentUser = null;
-                    userDao.removeUser();
-                    MixpanelUtils.clearPreferences();
-                    updateUI();
-                    MixpanelUtils.track("Logged Out");
-                }
+        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.ENABLE_SETTINGS_CLICK)) {
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_SETTINGS_CLICK, false);
+            switch (v.getId()) {
+                case R.id.actionbar_left_btn:
+                    onBackPressed();
+                    break;
+                case R.id.button_accept:
+                    if (action.equals("phone")) {
+                        SocialNetworksUtil.phoneCall(SettingsActivity.this, "4153001332");
+                    } else if (action.equals("logout")) {
+                        mCurrentUser = null;
+                        userDao.removeUser();
+                        MixpanelUtils.clearPreferences();
+                        updateUI();
+                        MixpanelUtils.track("Logged Out");
+                    } else
+                        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_SETTINGS_CLICK, true);
 
-                action = "";
-                break;
-            case R.id.layout_container_phone:
-                EditPhoneDialog editDialog = new EditPhoneDialog();
-                editDialog.setmListenerDialog(new ListenerDialog() {
-                    @Override
-                    public void btnOkClick(String sPhoneNumber) {
-                        DebugUtils.logDebug(TAG, "btnOkClick: " + sPhoneNumber);
-                        updatePhoneNumber(sPhoneNumber);
-                    }
+                    action = "";
+                    break;
+                case R.id.layout_container_phone:
+                    EditPhoneDialog editDialog = new EditPhoneDialog();
+                    editDialog.setmListenerDialog(new ListenerDialog() {
+                        @Override
+                        public void btnOkClick(String sPhoneNumber) {
+                            DebugUtils.logDebug(TAG, "btnOkClick: " + sPhoneNumber);
+                            updatePhoneNumber(sPhoneNumber);
+                        }
 
-                    @Override
-                    public void btnOnCancel() {
-                    }
-                });
-                editDialog.show(getFragmentManager(), EditPhoneDialog.TAG);
-                break;
-            case R.id.container_sign_in:
-                onSignInPressed();
-                break;
-            case R.id.container_setting_faq:
-                onFaqPressed();
-                break;
-            case R.id.container_setting_email:
-                onEmailSupportPressed();
-                break;
-            case R.id.container_setting_call:
-                onPhoneSupportPressed();
-                break;
-            case R.id.container_setting_credit_card:
-                onCreditCardPressed();
-                break;
-            case R.id.container_settings_orders:
-                BentoNowUtils.openOrderHistoryActivity(SettingsActivity.this);
-                break;
-            case R.id.txt_logout:
-                onLogoutPressed();
-                break;
-            default:
-                DebugUtils.logError(TAG, "No found: " + v.getId());
-                break;
+                        @Override
+                        public void btnOnCancel() {
+                        }
+                    });
+                    editDialog.show(getFragmentManager(), EditPhoneDialog.TAG);
+                    break;
+                case R.id.container_sign_in:
+                    onSignInPressed();
+                    break;
+                case R.id.container_setting_faq:
+                    onFaqPressed();
+                    break;
+                case R.id.container_setting_email:
+                    onEmailSupportPressed();
+                    break;
+                case R.id.container_setting_call:
+                    onPhoneSupportPressed();
+                    break;
+                case R.id.container_setting_credit_card:
+                    onCreditCardPressed();
+                    break;
+                case R.id.container_settings_orders:
+                    BentoNowUtils.openOrderHistoryActivity(SettingsActivity.this);
+                    break;
+                case R.id.txt_logout:
+                    onLogoutPressed();
+                    break;
+                case R.id.btn_facebook:
+                    onFacebookPressed();
+                    break;
+                case R.id.btn_email:
+                    onEmailPressed();
+                    break;
+                case R.id.btn_sms:
+                    onMessagePressed();
+                    break;
+                default:
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_SETTINGS_CLICK, true);
+                    DebugUtils.logError(TAG, "No found: " + v.getId());
+                    break;
+            }
         }
     }
 
@@ -459,6 +488,30 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
             txtLogout = (TextView) findViewById(R.id.txt_logout);
 
         return txtLogout;
+    }
+
+    private FontAwesomeButton getBtnFacebook() {
+        if (btnFacebook == null)
+            btnFacebook = (FontAwesomeButton) findViewById(R.id.btn_facebook);
+        return btnFacebook;
+    }
+
+    private FontAwesomeButton getBtnEmail() {
+        if (btnEmail == null)
+            btnEmail = (FontAwesomeButton) findViewById(R.id.btn_email);
+        return btnEmail;
+    }
+
+    private FontAwesomeButton getBtnTwitter() {
+        if (btnTwitter == null)
+            btnTwitter = (FontAwesomeButton) findViewById(R.id.btn_twitter);
+        return btnTwitter;
+    }
+
+    private FontAwesomeButton getBtnSms() {
+        if (btnSms == null)
+            btnSms = (FontAwesomeButton) findViewById(R.id.btn_sms);
+        return btnSms;
     }
 
 }

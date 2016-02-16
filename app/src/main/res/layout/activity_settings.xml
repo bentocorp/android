@@ -428,7 +428,6 @@
                         style="@style/btn_rounded"
                         android:layout_centerHorizontal="true"
                         android:background="@drawable/background_circle_blue"
-                        android:onClick="onFacebookPressed"
                         android:text="@string/fa_facebook" />
 
                     <TextView
@@ -449,7 +448,6 @@
                         style="@style/btn_rounded"
                         android:layout_centerHorizontal="true"
                         android:background="@drawable/background_circle_cyan"
-                        android:onClick="onTwitterPressed"
                         android:text="@string/fa_twitter" />
 
                     <TextView
@@ -470,7 +468,6 @@
                         style="@style/btn_rounded"
                         android:layout_centerHorizontal="true"
                         android:background="@drawable/background_circle_sms_green"
-                        android:onClick="onMessagePressed"
                         android:text="@string/fa_comment" />
 
                     <TextView
@@ -491,7 +488,6 @@
                         style="@style/btn_rounded"
                         android:layout_centerHorizontal="true"
                         android:background="@drawable/background_circle_dark_blue"
-                        android:onClick="onEmailPressed"
                         android:text="@string/fa_envelope" />
 
                     <TextView
