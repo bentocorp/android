@@ -35,6 +35,7 @@ public class MainActivity extends BaseFragmentActivity {
     static final String TAG = "MainActivity";
     public static boolean bIsOpen = false;
     private TextView txtVersion;
+    private TextView txtMessage;
     private Dialog mDialogPlayServices;
     private ConfirmationDialog mConfirmationDialog;
 
@@ -101,17 +102,27 @@ public class MainActivity extends BaseFragmentActivity {
         BentoRestClient.get(BentoRestClient.getInitUrl(), null, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                ((TextView) findViewById(R.id.txt_message)).setText("We seem to have trouble connecting to the network, please wait while we retry " + (retry > 0 ? "(" + retry + ") " : ""));
-                ++retry;
-                DebugUtils.logDebug(TAG, "retry: " + retry);
-                loadData();
+                if (bIsOpen) {
+                    ++retry;
+                    DebugUtils.logDebug(TAG, "retry: " + retry);
+                    loadData();
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getTxtMessage().setText("We seem to have trouble connecting to the network, please wait while we retry " + (retry > 0 ? "(" + retry + ") " : ""));
+                        }
+                    });
+                }
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                DebugUtils.logDebug(TAG, "onSuccess: " + statusCode);
-                InitParse.parseInitTwo(responseString);
-                checkAppStatus();
+                if (bIsOpen) {
+                    DebugUtils.logDebug(TAG, "onSuccess: " + statusCode);
+                    InitParse.parseInitTwo(responseString);
+                    checkAppStatus();
+                }
             }
         });
 
@@ -195,4 +206,11 @@ public class MainActivity extends BaseFragmentActivity {
             txtVersion = (TextView) findViewById(R.id.txt_version);
         return txtVersion;
     }
+
+    private TextView getTxtMessage() {
+        if (txtMessage == null)
+            txtMessage = (TextView) findViewById(R.id.txt_message);
+        return txtMessage;
+    }
+
 }
