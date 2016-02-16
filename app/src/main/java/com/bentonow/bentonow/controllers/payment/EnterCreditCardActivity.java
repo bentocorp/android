@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.CreditCard;
@@ -499,6 +500,13 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
     protected void onDestroy() {
         MixpanelUtils.track("Viewed Credit Card Screen");
         super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        AndroidUtil.hideKeyboard(getTxtBentoPrice());
     }
 
     private void dismissDialog() {

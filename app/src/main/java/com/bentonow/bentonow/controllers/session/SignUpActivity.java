@@ -519,6 +519,12 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
         super.onDestroy();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        AndroidUtil.hideKeyboard(txt_message);
+    }
 
     private void dismissDialog() {
         if (mDialog != null)

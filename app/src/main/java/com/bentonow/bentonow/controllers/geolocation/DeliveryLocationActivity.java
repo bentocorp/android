@@ -670,6 +670,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     protected void onPause() {
         super.onPause();
         stopLocationUpdates();
+
+        AndroidUtil.hideKeyboard(getTxtAddress());
     }
 
     @Override
