@@ -10,6 +10,8 @@ import com.bentonow.bentonow.controllers.BentoApplication;
 
 public class WidgetsUtils {
 
+    public static Toast mToast;
+
     /**
      * Method that creates a short toast based in a String
      *
@@ -18,7 +20,10 @@ public class WidgetsUtils {
     public static void createShortToast(final String message) {
         BentoApplication.instance.handlerPost(new Runnable() {
             public void run() {
-                Toast.makeText( BentoApplication.instance, message, Toast.LENGTH_SHORT).show();
+                if (!isToastShowing()) {
+                    mToast = Toast.makeText(BentoApplication.instance, message, Toast.LENGTH_SHORT);
+                    mToast.show();
+                }
             }
         });
     }
@@ -29,9 +34,12 @@ public class WidgetsUtils {
      * @param message The String that is going to be show
      */
     public static void createLongToast(final String message) {
-         BentoApplication.instance.handlerPost(new Runnable() {
+        BentoApplication.instance.handlerPost(new Runnable() {
             public void run() {
-                Toast.makeText( BentoApplication.instance, message, Toast.LENGTH_LONG).show();
+                if (!isToastShowing()) {
+                    mToast = Toast.makeText(BentoApplication.instance, message, Toast.LENGTH_LONG);
+                    mToast.show();
+                }
             }
         });
     }
@@ -42,9 +50,12 @@ public class WidgetsUtils {
      * @param id The Int from the String id
      */
     public static void createShortToast(final int id) {
-         BentoApplication.instance.handlerPost(new Runnable() {
+        BentoApplication.instance.handlerPost(new Runnable() {
             public void run() {
-                Toast.makeText( BentoApplication.instance,  BentoApplication.instance.getString(id), Toast.LENGTH_SHORT).show();
+                if (!isToastShowing()) {
+                    mToast = Toast.makeText(BentoApplication.instance, BentoApplication.instance.getString(id), Toast.LENGTH_SHORT);
+                    mToast.show();
+                }
             }
         });
     }
@@ -55,11 +66,23 @@ public class WidgetsUtils {
      * @param id
      */
     public static void createLongToast(final int id) {
-         BentoApplication.instance.handlerPost(new Runnable() {
+        BentoApplication.instance.handlerPost(new Runnable() {
             public void run() {
-                Toast.makeText( BentoApplication.instance,  BentoApplication.instance.getString(id), Toast.LENGTH_LONG).show();
+                if (!isToastShowing()) {
+                    mToast = Toast.makeText(BentoApplication.instance, BentoApplication.instance.getString(id), Toast.LENGTH_LONG);
+                    mToast.show();
+                }
             }
         });
+    }
+
+    private static boolean isToastShowing() {
+        if (mToast == null)
+            return false;
+        else if (mToast.getView().isShown())
+            return true;
+        else
+            return false;
     }
 
 }
