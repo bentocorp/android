@@ -167,21 +167,20 @@
         android:orientation="horizontal"
         android:padding="@dimen/btn_padding">
 
-        <com.bentonow.bentonow.ui.BackendButton
+        <com.bentonow.bentonow.ui.BackendTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@null"
+            android:gravity="left"
             android:onClick="onPrivacyPolicyPressed"
             android:text="@string/privacy_policy"
             android:textColor="@color/white"
             app:key="closed-privacy-policy-link" />
 
-        <com.bentonow.bentonow.ui.BackendButton
+        <com.bentonow.bentonow.ui.BackendTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@null"
             android:gravity="right"
             android:onClick="onTermAndConditionsPressed"
             android:text="@string/TermsAndConditions"
