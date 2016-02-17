@@ -7,22 +7,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
-import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
-import com.bentonow.bentonow.dao.SettingsDao;
 import com.bentonow.bentonow.ui.AutoFitTxtView;
 import com.bentonow.bentonow.ui.BackendEditText;
 import com.bentonow.bentonow.web.request.UserRequest;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.PolygonOptions;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.apache.http.Header;
@@ -70,7 +64,7 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
     }
 
     public void onSubmitPressed(View view) {
-        if (!Email.isValid(txt_email.getText().toString())) {
+        if (!AndroidUtil.isEmailValid(txt_email.getText().toString())) {
             ConfirmationDialog mDialog = new ConfirmationDialog(BummerActivity.this, "Error", "Invalid email address.");
             mDialog.addAcceptButton("OK", null);
             mDialog.show();

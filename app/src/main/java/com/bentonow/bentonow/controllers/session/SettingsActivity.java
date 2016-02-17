@@ -68,6 +68,15 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
 
     private User mCurrentUser;
 
+    public static String urlEncode(String s) {
+        try {
+            return URLEncoder.encode(s, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            Log.wtf(TAG, "UTF-8 should always be supported", e);
+            throw new RuntimeException("URLEncoder.encode() failed for " + s);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -144,15 +153,6 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
         }
     }
 
-    public static String urlEncode(String s) {
-        try {
-            return URLEncoder.encode(s, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            Log.wtf(TAG, "UTF-8 should always be supported", e);
-            throw new RuntimeException("URLEncoder.encode() failed for " + s);
-        }
-    }
-
     private void updatePhoneNumber(final String sPhoneNumber) {
         RequestParams params = new RequestParams();
         params.put("api_token", mCurrentUser.api_token);
@@ -189,8 +189,18 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
 
         if (mLogOutDialog == null || !mLogOutDialog.isShowing()) {
             mLogOutDialog = new LogOutDialog(SettingsActivity.this, "Confirmation", "Are you sure you want to log out ?");
-            mLogOutDialog.addAcceptButton("YES", SettingsActivity.this);
-            mLogOutDialog.addCancelButton("NO", SettingsActivity.this);
+            mLogOutDialog.addAcceptButton("YES", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mCurrentUser = null;
+                    userDao.removeUser();
+                    MixpanelUtils.clearPreferences();
+                    updateUI();
+                    MixpanelUtils.track("Logged Out");
+                    GoogleAnalyticsUtil.restartEvent();
+                }
+            });
+            mLogOutDialog.addCancelButton("NO", null);
             mLogOutDialog.show();
         }
     }
@@ -224,7 +234,12 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
     private void onPhoneSupportPressed() {
         action = "phone";
         ConfirmationDialog mDialog = new ConfirmationDialog(SettingsActivity.this, "Call Us", "415.300.1332");
-        mDialog.addAcceptButton("Call", SettingsActivity.this);
+        mDialog.addAcceptButton("Call", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SocialNetworksUtil.phoneCall(SettingsActivity.this, "4153001332");
+            }
+        });
         mDialog.addCancelButton("Cancel", null);
         mDialog.show();
     }
@@ -349,21 +364,6 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
             switch (v.getId()) {
                 case R.id.actionbar_left_btn:
                     onBackPressed();
-                    break;
-                case R.id.button_accept:
-                    if (action.equals("phone")) {
-                        SocialNetworksUtil.phoneCall(SettingsActivity.this, "4153001332");
-                    } else if (action.equals("logout")) {
-                        mCurrentUser = null;
-                        userDao.removeUser();
-                        MixpanelUtils.clearPreferences();
-                        updateUI();
-                        MixpanelUtils.track("Logged Out");
-                        GoogleAnalyticsUtil.restartEvent();
-                    } else
-                        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_SETTINGS_CLICK, true);
-
-                    action = "";
                     break;
                 case R.id.layout_container_phone:
                     EditPhoneDialog editDialog = new EditPhoneDialog();

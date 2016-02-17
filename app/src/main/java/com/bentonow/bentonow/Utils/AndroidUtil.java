@@ -126,4 +126,11 @@ public class AndroidUtil {
         };
     }
 
+    public static boolean isValidField(String sText) {
+        return sText != null && !sText.trim().isEmpty();
+    }
+
+    public static boolean isEmailValid(String email) {
+        return isValidField(email) && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
 }

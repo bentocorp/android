@@ -17,7 +17,6 @@ import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
-import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
@@ -214,11 +213,11 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
     }
 
     boolean validName() {
-        return !getEditName().getText().toString().equals("") && !error.contains("name");
+        return AndroidUtil.isValidField(getEditName().getText().toString()) && !error.contains("name");
     }
 
     boolean validEmail() {
-        return Email.isValid(txt_email.getText().toString()) && !error.contains("email");
+        return AndroidUtil.isEmailValid(txt_email.getText().toString()) && !error.contains("email");
     }
 
     boolean validPhone() {
@@ -227,7 +226,7 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
     }
 
     boolean validPassword() {
-        return txt_password.getText().length() >= 6 && !error.contains("password");
+        return AndroidUtil.isValidField(txt_password.getText().toString()) && txt_password.getText().length() >= 6 && !error.contains("password");
     }
 
     void onSignUpSuccess(String responseString) {

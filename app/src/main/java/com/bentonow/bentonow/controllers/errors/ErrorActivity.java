@@ -10,10 +10,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
-import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
@@ -141,7 +141,7 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
     }
 
     public void onSubmitPressed(View view) {
-        if (!Email.isValid(getEditTxtEmail().getText().toString())) {
+        if (!AndroidUtil.isEmailValid(getEditTxtEmail().getText().toString())) {
             ConfirmationDialog mDialog = new ConfirmationDialog(ErrorActivity.this, "Error", "Invalid email address.");
             mDialog.addAcceptButton("OK", null);
             mDialog.show();

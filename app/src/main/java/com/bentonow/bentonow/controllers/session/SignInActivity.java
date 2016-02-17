@@ -16,7 +16,6 @@ import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
-import com.bentonow.bentonow.Utils.Email;
 import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SocialNetworksUtil;
@@ -49,30 +48,21 @@ import java.util.Collections;
 public class SignInActivity extends BaseFragmentActivity implements View.OnClickListener, FacebookCallback<LoginResult>, GraphRequest.GraphJSONObjectCallback {
 
     public static final String TAG = "SignInActivity";
-
-
+    String error = "";
     //region Variables
     private View container_alert;
     private TextView txt_message;
-
     private EditText txt_email;
     private EditText txt_password;
-
     private ImageView img_email;
     private ImageView img_password;
-
     private Button btn_signin;
-
     private UserDao userDao = new UserDao();
     private User mCurrentUser;
-
     private ConstantUtils.optOpenScreen optOpenScreen;
-
     private CallbackManager callbackManager;
     private ConfirmationDialog mDialog;
     private ProgressDialog mProgressDialog;
-
-    String error = "";
     //endregion
 
     @Override
@@ -171,11 +161,11 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
     }
 
     boolean validEmail() {
-        return Email.isValid(txt_email.getText().toString()) && !error.contains("email");
+        return AndroidUtil.isEmailValid(txt_email.getText().toString()) && !error.contains("email");
     }
 
     boolean validPassword() {
-        return txt_password.getText().length() >= 6 && !error.contains("password");
+        return AndroidUtil.isValidField(txt_password.getText().toString()) && txt_password.getText().length() >= 6 && !error.contains("password");
     }
 
     void onSignInSuccess(String responseString) {
