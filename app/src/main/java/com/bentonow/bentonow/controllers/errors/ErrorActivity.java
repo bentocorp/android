@@ -1,6 +1,5 @@
 package com.bentonow.bentonow.controllers.errors;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -24,6 +23,7 @@ import com.bentonow.bentonow.dao.MenuDao;
 import com.bentonow.bentonow.listener.InterfaceCustomerService;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.service.BentoCustomerService;
+import com.bentonow.bentonow.ui.BackendTextView;
 import com.bentonow.bentonow.web.request.UserRequest;
 import com.loopj.android.http.TextHttpResponseHandler;
 
@@ -37,19 +37,18 @@ import java.util.Locale;
 
 public class ErrorActivity extends BaseFragmentActivity implements View.OnClickListener, InterfaceCustomerService {
     private static final String TAG = "ErrorActivity";
-
+    public static boolean bIsOpen;
+    String sStatus;
     private TextView txt_title;
     private TextView txt_description;
     private EditText edit_txt_email;
     private Button btn_next_day_menu;
+    private Button btnSubmitEmail;
+    private BackendTextView btnPolicy;
+    private BackendTextView btnTermsConditions;
     private ImageView actionbar_left_btn;
     private ImageView actionbar_right_btn;
-
     private Menu mCurrentMenu;
-
-    public static boolean bIsOpen;
-
-    String sStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,10 +56,14 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
         setContentView(R.layout.activity_error);
 
         getMenuItemInfo().setImageResource(R.drawable.ic_ab_help);
-        getMenuItemInfo().setOnClickListener(ErrorActivity.this);
-
         getMenuItemProfile().setImageResource(R.drawable.ic_signup_profile);
+
+        getMenuItemInfo().setOnClickListener(ErrorActivity.this);
         getMenuItemProfile().setOnClickListener(ErrorActivity.this);
+        getBtnNextDayMenu().setOnClickListener(ErrorActivity.this);
+        getBtnSubmitEmail().setOnClickListener(ErrorActivity.this);
+        getBtnPolicy().setOnClickListener(ErrorActivity.this);
+        getBtnTermsConditions().setOnClickListener(ErrorActivity.this);
 
         DebugUtils.logDebug(TAG, "Create: ");
     }
@@ -127,20 +130,42 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
     }
 
     @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_ERROR_CLICK, hasFocus);
+        DebugUtils.logDebug(TAG, "onWindowFocusChanged: " + hasFocus);
+    }
+
+    @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.actionbar_right_btn:
-                Intent intent = new Intent(ErrorActivity.this, HelpActivity.class);
-                intent.putExtra("faq", true);
-                startActivity(intent);
-                break;
-            case R.id.actionbar_left_btn:
-                BentoNowUtils.openSettingsActivity(ErrorActivity.this);
-                break;
+        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.ENABLE_ERROR_CLICK)) {
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_ERROR_CLICK, false);
+            switch (v.getId()) {
+                case R.id.actionbar_right_btn:
+                    Intent intent = new Intent(ErrorActivity.this, HelpActivity.class);
+                    intent.putExtra("faq", true);
+                    startActivity(intent);
+                    break;
+                case R.id.actionbar_left_btn:
+                    BentoNowUtils.openSettingsActivity(ErrorActivity.this);
+                    break;
+                case R.id.btn_next_day_menu:
+                    onNextDayMenuPressed();
+                    break;
+                case R.id.btn_submit_email:
+                    onSubmitPressed();
+                    break;
+                case R.id.btn_policy:
+                    onPrivacyPolicyPressed();
+                    break;
+                case R.id.btn_terms_conditions:
+                    onTermAndConditionsPressed();
+                    break;
+            }
         }
     }
 
-    public void onSubmitPressed(View view) {
+    public void onSubmitPressed() {
         if (!AndroidUtil.isEmailValid(getEditTxtEmail().getText().toString())) {
             ConfirmationDialog mDialog = new ConfirmationDialog(ErrorActivity.this, "Error", "Invalid email address.");
             mDialog.addAcceptButton("OK", null);
@@ -166,27 +191,35 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
                     ConfirmationDialog mDialog = new ConfirmationDialog(ErrorActivity.this, null, message);
                     mDialog.addAcceptButton("OK", null);
                     mDialog.show();
+
+                }
+
+                @Override
+                public void onFinish() {
+                    super.onFinish();
                 }
             });
         }
     }
 
-    public void onNextDayMenuPressed(View view) {
-        if (MenuDao.getNextMenu() == null)
+    public void onNextDayMenuPressed() {
+        if (MenuDao.getNextMenu() == null) {
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_ERROR_CLICK, true);
             return;
+        }
 
         Intent intent = new Intent(ErrorActivity.this, NextDayMenuActivity.class);
         intent.putExtra("title", getBtnNextDayMenu().getText().toString());
         startActivity(intent);
     }
 
-    public void onPrivacyPolicyPressed(View view) {
+    public void onPrivacyPolicyPressed() {
         Intent intent = new Intent(ErrorActivity.this, HelpActivity.class);
         intent.putExtra("privacy", true);
         startActivity(intent);
     }
 
-    public void onTermAndConditionsPressed(View view) {
+    public void onTermAndConditionsPressed() {
         Intent intent = new Intent(ErrorActivity.this, HelpActivity.class);
         intent.putExtra("tos", true);
         startActivity(intent);
@@ -233,7 +266,7 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
     protected void onStart() {
         super.onStart();
         Intent intent = new Intent(this, BentoCustomerService.class);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        //   bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -276,6 +309,24 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
             btn_next_day_menu = (Button) findViewById(R.id.btn_next_day_menu);
 
         return btn_next_day_menu;
+    }
+
+    private Button getBtnSubmitEmail() {
+        if (btnSubmitEmail == null)
+            btnSubmitEmail = (Button) findViewById(R.id.btn_submit_email);
+        return btnSubmitEmail;
+    }
+
+    private BackendTextView getBtnPolicy() {
+        if (btnPolicy == null)
+            btnPolicy = (BackendTextView) findViewById(R.id.btn_policy);
+        return btnPolicy;
+    }
+
+    private BackendTextView getBtnTermsConditions() {
+        if (btnTermsConditions == null)
+            btnTermsConditions = (BackendTextView) findViewById(R.id.btn_terms_conditions);
+        return btnTermsConditions;
     }
 
     private ImageView getMenuItemInfo() {

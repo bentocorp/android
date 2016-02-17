@@ -1,11 +1,7 @@
 package com.bentonow.bentonow.controllers.dialog;
 
-import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,30 +10,19 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
-import com.bentonow.bentonow.Utils.BentoRestClient;
-import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.listener.ListenerDialog;
-import com.bentonow.bentonow.model.BackendText;
-import com.bentonow.bentonow.model.Settings;
-import com.bentonow.bentonow.model.User;
-import com.google.gson.Gson;
-import com.loopj.android.http.RequestParams;
-import com.loopj.android.http.TextHttpResponseHandler;
-
-import org.apache.http.Header;
 
 public class EditPhoneDialog extends DialogFragment implements Animation.AnimationListener, View.OnClickListener, View.OnFocusChangeListener {
 
@@ -82,6 +67,8 @@ public class EditPhoneDialog extends DialogFragment implements Animation.Animati
                 return false;
             }
         });
+
+        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
         rootView = inflater.inflate(R.layout.dialog_edit_phone, container, false);
 
@@ -220,7 +207,7 @@ public class EditPhoneDialog extends DialogFragment implements Animation.Animati
                 onDismissDialog();
                 break;
             case R.id.btn_ok:
-                if (bChangePhone && mListenerDialog != null){
+                if (bChangePhone && mListenerDialog != null) {
                     mListenerDialog.btnOkClick(getEditTextPhoneNumber().getText().toString());
                     onDismissDialog();
                 }

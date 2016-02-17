@@ -9,12 +9,12 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
+import com.bentonow.bentonow.Utils.SocialNetworksUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.dao.IosCopyDao;
@@ -41,7 +41,13 @@ public class HelpActivity extends BaseFragmentActivity implements View.OnClickLi
 
     @Override
     protected void onResume() {
-        GoogleAnalyticsUtil.sendScreenView("Help");
+        if (getIntent().getBooleanExtra("faq", false)) {
+            GoogleAnalyticsUtil.sendScreenView("FAQ");
+        } else if (getIntent().getBooleanExtra("tos", false)) {
+            GoogleAnalyticsUtil.sendScreenView("Terms and Conditions");
+        } else if (getIntent().getBooleanExtra("privacy", false)) {
+            GoogleAnalyticsUtil.sendScreenView("Privacy Policy");
+        }
         super.onResume();
     }
 
@@ -106,17 +112,7 @@ public class HelpActivity extends BaseFragmentActivity implements View.OnClickLi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.info_email:
-                String[] TO = {"help@bentonow.com"};
-                Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                emailIntent.setData(Uri.parse("mailto:"));
-                emailIntent.setType("text/plain");
-                emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
-
-                try {
-                    startActivity(Intent.createChooser(emailIntent, "Send mail..."));
-                } catch (android.content.ActivityNotFoundException ex) {
-                    Toast.makeText(getApplicationContext(), "There is no email client installed.", Toast.LENGTH_SHORT).show();
-                }
+                SocialNetworksUtil.sendSupportEmail(HelpActivity.this, "help@bentonow.com");
                 break;
             case R.id.info_phone:
                 ConfirmationDialog mDialog = new ConfirmationDialog(HelpActivity.this, "Call Us", "415.300.1332");

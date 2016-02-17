@@ -31,6 +31,7 @@ public class SharedPreferencesUtil {
     public static final String CLEAR_ORDERS_FROM_SUMMARY = "CLEAR_ORDERS_FROM_SUMMARY"; //boolean
     public static final String ENABLE_BUILD_BENTO_CLICK = "ENABLE_BUILD_BENTO_CLICK"; //boolean
     public static final String ENABLE_SETTINGS_CLICK = "ENABLE_SETTINGS_CLICK"; //boolean
+    public static final String ENABLE_ERROR_CLICK = "ENABLE_ERROR_CLICK"; //boolean
 
     //DATA FROM SERVER
     public static final String BACKENDTEXT = "backendText"; //String

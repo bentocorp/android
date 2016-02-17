@@ -178,6 +178,7 @@ public class MainActivity extends BaseFragmentActivity {
                 SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.LOCATION, "");
                 SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ADDRESS, "");
             }
+
             Intent intent = new Intent(this, DeliveryLocationActivity.class);
             intent.putExtra(ConstantUtils.TAG_OPEN_SCREEN, ConstantUtils.optOpenScreen.BUILD_BENTO);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);

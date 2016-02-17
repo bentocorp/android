@@ -250,6 +250,21 @@ public class SocialNetworksUtil {
         }
     }
 
+    public static void sendSupportEmail(Context mContext, String sEmail) {
+        String[] TO = {sEmail};
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        emailIntent.setData(Uri.parse("mailto:"));
+        emailIntent.setType("text/plain");
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
+
+        try {
+            mContext.startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+        } catch (android.content.ActivityNotFoundException ex) {
+            WidgetsUtils.createShortToast(R.string.error_no_email_app);
+        }
+    }
+
+
     public static void phoneCall(Context mContext, String sPhone) {
         try {
             Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + sPhone));

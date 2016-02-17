@@ -98,11 +98,11 @@
             android:orientation="horizontal">
 
             <Button
+                android:id="@+id/btn_submit_email"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:gravity="center"
-                android:onClick="onSubmitPressed"
                 android:padding="@dimen/btn_padding"
                 android:text="@string/btn_submit_text"
                 android:textColor="@color/white" />
@@ -149,7 +149,6 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/btn_border_lineal_white"
                 android:gravity="center"
-                android:onClick="onNextDayMenuPressed"
                 android:padding="@dimen/btn_padding"
                 android:text="See next day Menu"
                 android:textColor="@color/white" />
@@ -168,21 +167,21 @@
         android:padding="@dimen/btn_padding">
 
         <com.bentonow.bentonow.ui.BackendTextView
+            android:id="@+id/btn_policy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="left"
-            android:onClick="onPrivacyPolicyPressed"
             android:text="@string/privacy_policy"
             android:textColor="@color/white"
             app:key="closed-privacy-policy-link" />
 
         <com.bentonow.bentonow.ui.BackendTextView
+            android:id="@+id/btn_terms_conditions"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="right"
-            android:onClick="onTermAndConditionsPressed"
             android:text="@string/TermsAndConditions"
             android:textColor="@color/white"
             app:key="closed-terms-link" />

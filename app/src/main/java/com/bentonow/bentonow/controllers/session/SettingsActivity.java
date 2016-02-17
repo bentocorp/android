@@ -162,7 +162,15 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 DebugUtils.logError(TAG, "getUserInfo:  " + responseString);
-                WidgetsUtils.createShortToast(R.string.error_phone_request);
+
+                switch (statusCode) {
+                    case 0:
+                        WidgetsUtils.createShortToast(R.string.error_no_internet_connection);
+                        break;
+                    default:
+                        WidgetsUtils.createShortToast(R.string.error_phone_request);
+                }
+
             }
 
             @SuppressWarnings("deprecation")
@@ -218,17 +226,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
     }
 
     public void onEmailSupportPressed() {
-        String[] TO = {"help@bentonow.com"};
-        Intent emailIntent = new Intent(Intent.ACTION_SEND);
-        emailIntent.setData(Uri.parse("mailto:"));
-        emailIntent.setType("text/plain");
-        emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
-
-        try {
-            startActivity(Intent.createChooser(emailIntent, "Send mail..."));
-        } catch (android.content.ActivityNotFoundException ex) {
-            Toast.makeText(getApplicationContext(), "There is no email client installed.", Toast.LENGTH_SHORT).show();
-        }
+        SocialNetworksUtil.sendSupportEmail(SettingsActivity.this, "help@bentonow.com");
     }
 
     private void onPhoneSupportPressed() {
