@@ -41,6 +41,7 @@ public class MixpanelUtils {
             people.identify(mUser.email);
             people.initPushHandling(BentoApplication.instance.getString(R.string.google_project_key));
             setProfileProperties(mUser);
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.USER_NAME, mUser.email);
         }
     }
 

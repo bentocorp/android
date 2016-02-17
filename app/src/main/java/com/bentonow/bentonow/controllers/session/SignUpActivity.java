@@ -18,6 +18,7 @@ import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Email;
+import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
@@ -120,6 +121,12 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
 
         initActionbar();
         setupTextFields();
+    }
+
+    @Override
+    protected void onResume() {
+        GoogleAnalyticsUtil.sendScreenView("Sign Up");
+        super.onResume();
     }
 
     void setupTextFields() {

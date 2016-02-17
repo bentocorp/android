@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.DebugUtils;
+import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
@@ -81,6 +82,12 @@ public class SelectSideCustomActivity extends BaseFragmentActivity implements Vi
         ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
         actionbar_left_btn.setImageResource(R.drawable.ic_ab_back);
         actionbar_left_btn.setOnClickListener(this);
+    }
+
+    @Override
+    protected void onResume() {
+        GoogleAnalyticsUtil.sendScreenView("Side Dish");
+        super.onResume();
     }
 
     @Override

@@ -10,6 +10,7 @@ import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Email;
+import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
@@ -113,6 +114,7 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
 
     @Override
     protected void onResume() {
+        GoogleAnalyticsUtil.sendScreenView("Bummer");
         super.onResume();
     }
 

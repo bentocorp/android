@@ -1,23 +1,27 @@
 package com.bentonow.bentonow.Utils;
 
-import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.controllers.BentoApplication;
-import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
 /**
  * Created by kokusho on 1/12/16.
  */
 public class GoogleAnalyticsUtil {
-    private static Tracker mTracker;
 
     public static Tracker getDefaultTracker() {
-        if (mTracker == null) {
-            GoogleAnalytics analytics = GoogleAnalytics.getInstance(BentoApplication.instance);
-            mTracker = analytics.newTracker(R.string.google_api_key);
-        }
+        return BentoApplication.instance.getDefaultTracker();
+    }
 
-        return mTracker;
+    public static void sendScreenView(String sName) {
+        getDefaultTracker().setScreenName(sName);
+        getDefaultTracker().send(new HitBuilders.ScreenViewBuilder().build());
+        getDefaultTracker().send(new HitBuilders.EventBuilder().setCategory("UX").setAction("Screen").setLabel(sName).build());
+    }
+
+    public static void restartEvent() {
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.USER_NAME, "");
+        BentoApplication.instance.restartTracker();
     }
 
 }

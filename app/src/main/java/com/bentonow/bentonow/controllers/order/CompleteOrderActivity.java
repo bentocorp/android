@@ -18,6 +18,7 @@ import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
+import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
@@ -181,6 +182,9 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
             if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_ORDER_AHEAD_MENU))
                 setOAHashTimer(BentoNowUtils.showOATimer(mMenu));
         }
+
+        GoogleAnalyticsUtil.sendScreenView("Complete Order");
+
         super.onResume();
     }
 

@@ -32,6 +32,7 @@ import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
+import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
 import com.bentonow.bentonow.Utils.LocationUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
@@ -171,6 +172,11 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         setupMap();
     }
 
+    @Override
+    protected void onResume() {
+        GoogleAnalyticsUtil.sendScreenView("Delivery Location");
+        super.onResume();
+    }
 
     private void initActionbar() {
         TextView actionbar_title = (TextView) findViewById(R.id.actionbar_title);

@@ -7,6 +7,7 @@ import android.widget.ImageView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
+import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
@@ -30,6 +31,12 @@ public class OrderConfirmedActivity extends BaseFragmentActivity implements View
         getMenuItemRight().setOnClickListener(this);
 
         getBtnViewAllOrders().setOnClickListener(this);
+    }
+
+    @Override
+    protected void onResume() {
+        GoogleAnalyticsUtil.sendScreenView("Order Confirmed");
+        super.onResume();
     }
 
     public void onFaqPressed(View view) {

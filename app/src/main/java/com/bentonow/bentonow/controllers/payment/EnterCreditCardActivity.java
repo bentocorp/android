@@ -19,6 +19,7 @@ import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.CreditCard;
 import com.bentonow.bentonow.Utils.DebugUtils;
+import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
@@ -99,6 +100,12 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
         ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
         actionbar_left_btn.setImageResource(R.drawable.ab_x_close);
         actionbar_left_btn.setOnClickListener(this);
+    }
+
+    @Override
+    protected void onResume() {
+        GoogleAnalyticsUtil.sendScreenView("Credit Card");
+        super.onResume();
     }
 
     void updateUI() {

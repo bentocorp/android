@@ -8,6 +8,7 @@ import android.view.View;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.DebugUtils;
+import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 
 public class ErrorVersionActivity extends BaseFragmentActivity {
@@ -20,6 +21,12 @@ public class ErrorVersionActivity extends BaseFragmentActivity {
         setContentView(R.layout.activity_update_needed);
 
         DebugUtils.logDebug(TAG, "onCreate");
+    }
+
+    @Override
+    protected void onResume() {
+        GoogleAnalyticsUtil.sendScreenView("Error Version");
+        super.onResume();
     }
 
     public void onUpdatePressed(View view) {

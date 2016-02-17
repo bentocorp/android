@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.DebugUtils;
+import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.adapter.ExpandableListOrderHistoryAdapter;
 import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
@@ -64,8 +65,8 @@ public class OrderHistoryActivity extends BaseFragmentActivity implements View.O
 
     @Override
     protected void onResume() {
+        GoogleAnalyticsUtil.sendScreenView("Order History");
         super.onResume();
-
     }
 
     private void getOrderHistoryByUser() {

@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
+import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
@@ -96,6 +97,12 @@ public class AddOnActivity extends BaseFragmentActivity implements View.OnClickL
         addAddOnDishes();
 
         MixpanelUtils.track("Viewed Add-ons Screen");
+    }
+
+    @Override
+    protected void onResume() {
+        GoogleAnalyticsUtil.sendScreenView("Add-On");
+        super.onResume();
     }
 
     private void addAddOnDishes() {

@@ -6,6 +6,7 @@ import android.view.View;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.ConstantUtils;
+import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
@@ -35,6 +36,8 @@ public class GettingStartedActivity extends BaseFragmentActivity {
 
     @Override
     protected void onResume() {
+        GoogleAnalyticsUtil.sendScreenView("Getting Started");
+
         super.onResume();
     }
 

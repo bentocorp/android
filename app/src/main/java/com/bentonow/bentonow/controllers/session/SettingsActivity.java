@@ -17,6 +17,7 @@ import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
+import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.SocialNetworksUtil;
@@ -104,6 +105,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
         if (mCurrentUser != null && (mCurrentUser.coupon_code == null || mCurrentUser.coupon_code.isEmpty()))
             getUserInfo();
 
+        GoogleAnalyticsUtil.sendScreenView("Settings");
     }
 
     void initActionbar() {
@@ -357,6 +359,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
                         MixpanelUtils.clearPreferences();
                         updateUI();
                         MixpanelUtils.track("Logged Out");
+                        GoogleAnalyticsUtil.restartEvent();
                     } else
                         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_SETTINGS_CLICK, true);
 

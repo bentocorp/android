@@ -19,6 +19,7 @@ public class SharedPreferencesUtil {
     public static final String LOCATION = "location"; //String
     public static final String ADDRESS = "address"; //String
     public static final String UUID_BENTO = "UUID_BENTO"; //String
+    public static final String USER_NAME = "USER_NAME"; //String
     public static final String POD_MODE = "POD_MODE"; //String
     public static final String IS_ORDER_AHEAD_MENU = "IS_ORDER_AHEAD_MENU"; //boolean
     public static final String IS_ORDER_SOLD_OUT = "IS_ORDER_SOLD_OUT"; //boolean

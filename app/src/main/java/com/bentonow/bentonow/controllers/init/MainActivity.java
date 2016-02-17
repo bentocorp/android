@@ -14,6 +14,7 @@ import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
+import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
 import com.bentonow.bentonow.Utils.GoogleLocationUtil;
 import com.bentonow.bentonow.Utils.LocationUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
@@ -94,6 +95,8 @@ public class MainActivity extends BaseFragmentActivity {
                 mDialogPlayServices.show();
             }
         }
+
+        GoogleAnalyticsUtil.sendScreenView("Splash");
 
         super.onResume();
     }

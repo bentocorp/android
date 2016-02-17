@@ -9,10 +9,13 @@ import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.listener.InterfaceWebRequest;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Tracker;
 
 import io.fabric.sdk.android.Fabric;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
@@ -25,6 +28,8 @@ public class BentoApplication extends Application {
     private Handler mHandler = new Handler();
     private UserDao userDao = new UserDao();
 
+    private Tracker mTracker;
+
 
     @Override
     public void onCreate() {
@@ -34,9 +39,9 @@ public class BentoApplication extends Application {
         MixpanelUtils.getMixpanelApi();
 
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                        .setDefaultFontPath("fonts/OpenSans-Regular.ttf")
-                        .setFontAttrId(R.attr.fontPath)
-                        .build()
+                .setDefaultFontPath("fonts/OpenSans-Regular.ttf")
+                .setFontAttrId(R.attr.fontPath)
+                .build()
         );
 
         try {
@@ -72,5 +77,19 @@ public class BentoApplication extends Application {
 
     public void handlerPost(Runnable runnable) {
         mHandler.post(runnable);
+    }
+
+    synchronized public Tracker getDefaultTracker() {
+        if (mTracker == null) {
+            GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+            mTracker = analytics.newTracker(R.xml.global_tracker);
+            if (!SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.USER_NAME).isEmpty())
+                mTracker.set("&uid", SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.USER_NAME));
+        }
+        return mTracker;
+    }
+
+    synchronized public void restartTracker() {
+        mTracker = null;
     }
 }

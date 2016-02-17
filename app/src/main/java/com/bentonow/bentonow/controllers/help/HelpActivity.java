@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.DebugUtils;
+import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
@@ -36,6 +37,12 @@ public class HelpActivity extends BaseFragmentActivity implements View.OnClickLi
         loadData();
 
         DebugUtils.logDebug(TAG, "HelpActivity");
+    }
+
+    @Override
+    protected void onResume() {
+        GoogleAnalyticsUtil.sendScreenView("Help");
+        super.onResume();
     }
 
     private void initElements() {

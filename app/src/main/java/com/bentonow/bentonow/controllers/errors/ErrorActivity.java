@@ -14,6 +14,7 @@ import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.Email;
+import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
@@ -81,7 +82,9 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
         if (sStatus.equals("sold out")) {
             getTxtTitle().setText(IosCopyDao.get("sold-out-title"));
             getTxtDescription().setText(IosCopyDao.get("sold-out-text"));
+            GoogleAnalyticsUtil.sendScreenView("Sold Out");
         } else {
+            GoogleAnalyticsUtil.sendScreenView("Closed");
             getTxtTitle().setText(IosCopyDao.get("closed-title"));
             if (hour >= 2000) {
                 getTxtDescription().setText(IosCopyDao.get("closed-text-latenight"));
@@ -91,6 +94,7 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
 
         }
         setupNextMenu();
+
 
         super.onResume();
     }
