@@ -26,13 +26,17 @@ import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.parse.InitParse;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.apache.http.Header;
 import org.json.JSONObject;
 
 
-public class MainActivity extends BaseFragmentActivity implements View.OnClickListener {
+public class MainActivity extends BaseFragmentActivity implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     static final String TAG = "MainActivity";
     public static boolean bIsOpen = false;
@@ -41,6 +45,10 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
     private Dialog mDialogPlayServices;
     private ConfirmationDialog mConfirmationDialog;
     private ConfirmationDialog mDialogNotifications;
+
+    private GoogleApiClient mGoogleApiClient;
+    private LocationRequest mLocationRequest;
+    private Location mCurrentLocation;
 
     private int retry = 0;
 
@@ -66,8 +74,6 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.SETTINGS, "");
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MEALS, "");
 
-        GoogleLocationUtil.getGoogleApiClient(false);
-
         if (BentoNowUtils.B_APPIUM_TESTING) {
             GoogleLocationUtil.setAppiumLocation(true);
             SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.APP_FIRST_RUN, true);
@@ -76,6 +82,8 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
         trackAppOpen();
 
         mOrderDao.cleanUp();
+
+        buildGoogleApiClient();
     }
 
     @Override
@@ -194,7 +202,7 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
 
     private void showEnableNotificationDialog() {
         if (mDialogNotifications == null || !mDialogNotifications.isShowing()) {
-            mDialogNotifications = new ConfirmationDialog(MainActivity.this, "Receive Notifications", "Notifications may include alerts, sounds, and icon badges. These can be configured in Settings", false);
+            mDialogNotifications = new ConfirmationDialog(MainActivity.this, IosCopyDao.get("notif-optin-exist-txt1"), IosCopyDao.get("notif-optin-exist-txt2"), false);
             mDialogNotifications.addAcceptButton(IosCopyDao.get("build-not-complete-confirmation-2"), MainActivity.this);
             mDialogNotifications.addCancelButton(IosCopyDao.get("build-not-complete-confirmation-1"), MainActivity.this);
             mDialogNotifications.show();
@@ -211,6 +219,49 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
         } catch (Exception e) {
             DebugUtils.logError(TAG, "track(): " + e.toString());
         }
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+        mGoogleApiClient.connect();
+    }
+
+    protected LocationRequest getLocationRequest() {
+        if (mLocationRequest == null) {
+            mLocationRequest = new LocationRequest();
+            mLocationRequest.setInterval(10000);
+            mLocationRequest.setFastestInterval(5000);
+            mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        }
+        return mLocationRequest;
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        DebugUtils.logError("buildGoogleApiClient", "onConnected:");
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, getLocationRequest(), MainActivity.this);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        DebugUtils.logError("buildGoogleApiClient", "onConnectionSuspended: " + i);
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        DebugUtils.logError("buildGoogleApiClient", connectionResult.toString());
+    }
+
+
+    @Override
+    public void onLocationChanged(Location location) {
+        mCurrentLocation = location;
+        DebugUtils.logDebug(TAG, "onLocationChanged: " + location.getLatitude() + "," + location.getLongitude());
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
     }
 
 
@@ -253,5 +304,4 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
             txtMessage = (TextView) findViewById(R.id.txt_message);
         return txtMessage;
     }
-
 }

@@ -145,7 +145,6 @@
                         android:paddingLeft="@dimen/home_about_point_left_padding"
                         android:paddingRight="@dimen/cero"
                         android:singleLine="true"
-                        android:text=""
                         android:textColor="@color/white"
                         android:textSize="19sp"
                         android:textStyle="bold"
@@ -183,7 +182,7 @@
             android:layout_weight="1"
             android:visibility="gone">
 
-            <com.bentonow.bentonow.ui.AutoFitTxtView
+            <com.bentonow.bentonow.ui.BackendAutoFitTextView
                 android:id="@+id/view3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -193,12 +192,12 @@
                 android:paddingLeft="@dimen/home_about_point_left_padding"
                 android:paddingRight="@dimen/cero"
                 android:singleLine="true"
-                android:text="Don\'t miss your order!"
                 android:textColor="@color/white"
                 android:textSize="19sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                app:key="notif-optin-new-txt1"/>
 
-            <com.bentonow.bentonow.ui.AutoFitTxtView
+            <com.bentonow.bentonow.ui.BackendAutoFitTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/view3"
@@ -207,10 +206,10 @@
                 android:lines="2"
                 android:paddingLeft="@dimen/home_about_point_left_padding"
                 android:paddingRight="@dimen/cero"
-                android:text="Allow push notifications to get timely updates!"
                 android:textColor="@color/white"
                 android:textSize="19sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                app:key="notif-optin-new-txt2" />
 
             <LinearLayout
                 android:id="@+id/linearLayout8"

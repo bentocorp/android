@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
+import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
@@ -41,6 +43,7 @@ import com.bentonow.bentonow.listener.InterfaceCustomerService;
 import com.bentonow.bentonow.model.DishModel;
 import com.bentonow.bentonow.model.Menu;
 import com.bentonow.bentonow.model.Order;
+import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.menu.TimesModel;
 import com.bentonow.bentonow.model.order.OrderItem;
 import com.bentonow.bentonow.service.BentoCustomerService;
@@ -49,9 +52,14 @@ import com.bentonow.bentonow.ui.BackendAutoFitTextView;
 import com.bentonow.bentonow.ui.BackendTextView;
 import com.bentonow.bentonow.ui.material.ButtonFlat;
 import com.bentonow.bentonow.ui.material.SpinnerMaterial;
+import com.crashlytics.android.Crashlytics;
+import com.google.gson.Gson;
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.mixpanel.android.mpmetrics.Tweak;
 
+import org.apache.http.Header;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -159,6 +167,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     private Menu mMenu;
     private Menu mOAPreselectedMenu;
     private Order mOrder;
+    private User mCurrentUser;
     private ArrayList<String> aMenusId = new ArrayList<>();
     private CountDownTimer mCountDown;
     private String sContinueBtn;
@@ -206,46 +215,9 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         getTxtEta().setText(String.format(getString(R.string.build_bento_eta), MenuDao.eta_min + "-" + MenuDao.eta_max));
 
         getSpinnerDate().setAdapter(getSpinnerDayAdapter());
-        /*getSpinnerDate().setOnTouchListener(new View.OnTouchListener() {
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            getSpinnerTime().onDetachedFromWindow();
-                            getSpinnerTime().setEnabled(false);
-                            getSpinnerDate().setEnabled(true);
-                            getSpinnerTime().setClickable(false);
-                        }
-                    });
-                }
-                return false;
-            }
-
-        });*/
 
         getSpinnerTime().setAdapter(getSpinnerTimeAdapter());
-        /*getSpinnerTime().setOnTouchListener(new View.OnTouchListener() {
 
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            getSpinnerDate().onDetachedFromWindow();
-                            getSpinnerDate().onDetachedFromWindow();
-                            getSpinnerTime().setEnabled(true);
-                            getSpinnerDate().setEnabled(false);
-                        }
-                    });
-                }
-                return false;
-            }
-
-        });*/
         getSpinnerDate().setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -283,6 +255,11 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         sContinueBtn = IosCopyDao.get("build-title");
 
         updateWidget();
+
+        mCurrentUser = userDao.getCurrentUser();
+
+        if (mCurrentUser != null)
+            getUserInfo();
 
     }
 
@@ -1126,6 +1103,53 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                 getSpinnerDate().onDetachedFromWindow();
                 getSpinnerDate().setEnabled(true);
                 getSpinnerDate().setClickable(true);*/
+            }
+        });
+    }
+
+    private void getUserInfo() {
+        RequestParams params = new RequestParams();
+        params.put("api_token", mCurrentUser.api_token);
+        BentoRestClient.get("/user/info", params, new TextHttpResponseHandler() {
+            @SuppressWarnings("deprecation")
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                DebugUtils.logError(TAG, "getUserInfo:  " + responseString);
+
+                DebugUtils.logError(TAG, "getUserInfo failed: " + responseString + " StatusCode: " + statusCode);
+                String sError;
+
+                try {
+                    sError = new JSONObject(responseString).getString("error");
+                } catch (Exception e) {
+                    sError = getString(R.string.error_no_internet_connection);
+                    DebugUtils.logError(TAG, "requestPromoCode(): " + e.getLocalizedMessage());
+                }
+
+                switch (statusCode) {
+                    case 0:// No internet Connection
+                        break;
+                    case 401:// Invalid Api Token
+                        WidgetsUtils.createShortToast("You session is expired, please LogIn again");
+                        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ORDER_AHEAD_SUBSCRIPTION, false);
+                        break;
+                    default:
+                        Crashlytics.log(Log.ERROR, "SendOrderError", "Code " + statusCode + " : Response " + responseString + " : Parsing " + sError);
+                        break;
+                }
+
+            }
+
+            @SuppressWarnings("deprecation")
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                DebugUtils.logDebug(TAG, "getUserInfo: " + responseString);
+                try {
+                    User mUserInfo = new Gson().fromJson(responseString, User.class);
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ORDER_AHEAD_SUBSCRIPTION, mUserInfo.has_oa_subscription.equals("1"));
+                } catch (Exception ex) {
+                    DebugUtils.logError(TAG, "getUserInfo(): " + ex.getLocalizedMessage());
+                }
             }
         });
     }

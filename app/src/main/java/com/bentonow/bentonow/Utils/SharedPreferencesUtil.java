@@ -34,6 +34,7 @@ public class SharedPreferencesUtil {
     public static final String ENABLE_ERROR_CLICK = "ENABLE_ERROR_CLICK"; //boolean
     public static final String SHOW_NOTIFICATIONS = "SHOW_NOTIFICATIONS"; //boolean
     public static final String ALREADY_SHOW_NOTIFICATIONS = "ALREADY_SHOW_NOTIFICATIONS"; //boolean
+    public static final String ORDER_AHEAD_SUBSCRIPTION = "ORDER_AHEAD_SUBSCRIPTION"; //boolean
 
     //DATA FROM SERVER
     public static final String BACKENDTEXT = "backendText"; //String

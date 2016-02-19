@@ -11,6 +11,8 @@ public class User {
     public String phone = "";
     public String coupon_code = "";
     public String api_token = "";
+    public String has_oa_subscription = "";
+
     public String stripe_token = "";
 
     public String fb_token = "";

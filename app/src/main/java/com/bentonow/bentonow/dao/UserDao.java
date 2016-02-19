@@ -14,13 +14,8 @@ import com.bentonow.bentonow.model.user.Card;
  */
 public class UserDao extends MainDao {
     public static final String TAG = "UserDao";
-
-    private DBAdapter dbAdapter;
-    private boolean success = true;
-
     public final static String TABLE_NAME = "table_user";
     public final static String ID_PK = "user_pk";
-
     private static final String FIRST_NAME = "first_name";
     private static final String LAST_NAME = "last_name";
     private static final String PASSWORD = "password";
@@ -36,15 +31,15 @@ public class UserDao extends MainDao {
     private static final String FB_GENDER = "fb_gender";
     private static final String CARD_BRAND = "card_brand";
     private static final String CARD_LAST4 = "card_last4";
-
     public static final String QUERY_TABLE = "" + "CREATE TABLE " + TABLE_NAME + " (" + ID_PK + " INTEGER PRIMARY KEY autoincrement, "
             + FIRST_NAME + " TEXT, " + LAST_NAME + " TEXT, " + PASSWORD + " TEXT, " + EMAIL + " TEXT, " + PHONE + " TEXT,"
             + COUPON_CODE + " TEXT, " + API_TOKEN + " TEXT, " + STRIPE_TOKEN + " TEXT, " + FB_TOKEN + " TEXT, " + FB_ID + " TEXT,"
             + FB_PROFILE_PIC + " TEXT," + FB_AGE_RANGE + " TEXT, " + FB_GENDER + " TEXT, " + CARD_BRAND + " TEXT, " + CARD_LAST4 + " TEXT" + ");";
-
     public final static String[] FIELDS = {ID_PK, FIRST_NAME, LAST_NAME, PASSWORD, EMAIL, PHONE,
             COUPON_CODE, API_TOKEN, STRIPE_TOKEN, FB_TOKEN, FB_ID,
             FB_PROFILE_PIC, FB_AGE_RANGE, FB_GENDER, CARD_BRAND, CARD_LAST4};
+    private DBAdapter dbAdapter;
+    private boolean success = true;
 
 
     public UserDao() {
@@ -53,6 +48,8 @@ public class UserDao extends MainDao {
 
     public boolean insertUser(User mUser) {
         DebugUtils.logDebug(TAG, "Insert User");
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ORDER_AHEAD_SUBSCRIPTION, mUser.has_oa_subscription.equals("1"));
+
         clearAllData();
 
         dbAdapter.begginTransaction();

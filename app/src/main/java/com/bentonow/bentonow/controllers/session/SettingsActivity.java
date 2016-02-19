@@ -335,6 +335,8 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
                 try {
                     User mUserInfo = new Gson().fromJson(responseString, User.class);
 
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ORDER_AHEAD_SUBSCRIPTION, mUserInfo.has_oa_subscription.equals("1"));
+
                     if (!mUserInfo.api_token.isEmpty())
                         mCurrentUser.api_token = mUserInfo.api_token;
 

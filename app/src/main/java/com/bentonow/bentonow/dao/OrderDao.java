@@ -417,7 +417,7 @@ public class OrderDao extends MainDao {
         double total_w_o_coupon;
 
         coupon_discount = mOrder.OrderDetails.coupon_discount_cents / 100;
-        delivery_fee = mOrder.OrderDetails.delivery_price;
+        delivery_fee = SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.ORDER_AHEAD_SUBSCRIPTION) ? 0 : mOrder.OrderDetails.delivery_price;
 
         for (int a = 0; a < mOrder.OrderItems.size(); a++) {
             if (mOrder.OrderItems.get(a).item_type.equals("CustomerBentoBox")) {
