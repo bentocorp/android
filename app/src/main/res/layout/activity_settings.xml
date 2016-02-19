@@ -373,6 +373,54 @@
                         android:src="@drawable/arrow_gray_right" />
 
                 </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/container_setting_notification"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/settings_row_height"
+                    android:background="@drawable/border_bottom"
+                    android:orientation="horizontal"
+                    android:weightSum="7">
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1">
+
+                        <android.support.v7.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
+                            app:cardCornerRadius="7dp"
+                            card_view:cardBackgroundColor="@color/gray_icon">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_notification" />
+                        </android.support.v7.widget.CardView>
+
+
+                    </FrameLayout>
+
+                    <com.bentonow.bentonow.ui.AutoFitTxtView
+                        style="@style/TxtSettingsRows"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="4"
+                        android:text="Notifications" />
+
+                    <Switch
+                        android:id="@+id/switch_notifications"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:paddingRight="12dp"
+                        android:text="" />
+
+
+                </LinearLayout>
             </LinearLayout>
         </ScrollView>
 

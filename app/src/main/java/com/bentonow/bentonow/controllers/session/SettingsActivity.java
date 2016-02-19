@@ -6,9 +6,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,6 +67,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
     private FontAwesomeButton btnEmail;
 
     private LogOutDialog mLogOutDialog;
+    private Switch switchNotifications;
 
     private User mCurrentUser;
 
@@ -101,6 +104,14 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
         getBtnTwitter().setOnClickListener(this);
         getBtnSms().setOnClickListener(this);
         getBtnEmail().setOnClickListener(this);
+
+        getSwitchNotifications().setChecked(SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.SHOW_NOTIFICATIONS));
+        getSwitchNotifications().setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.SHOW_NOTIFICATIONS, isChecked);
+            }
+        });
     }
 
     @Override
@@ -513,6 +524,12 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
         if (btnSms == null)
             btnSms = (FontAwesomeButton) findViewById(R.id.btn_sms);
         return btnSms;
+    }
+
+    private Switch getSwitchNotifications() {
+        if (switchNotifications == null)
+            switchNotifications = (Switch) findViewById(R.id.switch_notifications);
+        return switchNotifications;
     }
 
 }

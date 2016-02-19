@@ -22,6 +22,7 @@ import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
+import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.parse.InitParse;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -31,7 +32,7 @@ import org.apache.http.Header;
 import org.json.JSONObject;
 
 
-public class MainActivity extends BaseFragmentActivity {
+public class MainActivity extends BaseFragmentActivity implements View.OnClickListener {
 
     static final String TAG = "MainActivity";
     public static boolean bIsOpen = false;
@@ -39,6 +40,7 @@ public class MainActivity extends BaseFragmentActivity {
     private TextView txtMessage;
     private Dialog mDialogPlayServices;
     private ConfirmationDialog mConfirmationDialog;
+    private ConfirmationDialog mDialogNotifications;
 
     private int retry = 0;
 
@@ -63,6 +65,8 @@ public class MainActivity extends BaseFragmentActivity {
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.BACKENDTEXT, "");
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.SETTINGS, "");
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MEALS, "");
+
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.APP_FIRST_RUN, false);
 
         GoogleLocationUtil.getGoogleApiClient(false);
 
@@ -173,6 +177,8 @@ public class MainActivity extends BaseFragmentActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             finish();
             startActivity(intent);
+        } else if (!SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.ALREADY_SHOW_NOTIFICATIONS)) {
+            showEnableNotificationDialog();
         } else {
             if (LocationUtils.isGpsEnable(MainActivity.this)) {
                 SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.LOCATION, "");
@@ -187,6 +193,17 @@ public class MainActivity extends BaseFragmentActivity {
         }
     }
 
+
+    private void showEnableNotificationDialog() {
+        if (mDialogNotifications == null || !mDialogNotifications.isShowing()) {
+            mDialogNotifications = new ConfirmationDialog(MainActivity.this, "Receive Notifications", "Notifications may include alerts, sounds, and icon badges. These can be configured in Settings", false);
+            mDialogNotifications.addAcceptButton(IosCopyDao.get("build-not-complete-confirmation-2"), MainActivity.this);
+            mDialogNotifications.addCancelButton(IosCopyDao.get("build-not-complete-confirmation-1"), MainActivity.this);
+            mDialogNotifications.show();
+        }
+    }
+
+
     private void trackAppOpen() {
         try {
             Location mCurrentLocation = GoogleLocationUtil.getCurrentLocation();
@@ -198,11 +215,33 @@ public class MainActivity extends BaseFragmentActivity {
         }
     }
 
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.button_accept:
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ALREADY_SHOW_NOTIFICATIONS, true);
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.SHOW_NOTIFICATIONS, true);
+                openNextScreen();
+                break;
+            case R.id.button_cancel:
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ALREADY_SHOW_NOTIFICATIONS, true);
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.SHOW_NOTIFICATIONS, false);
+                openNextScreen();
+                break;
+        }
+    }
+
     @Override
     protected void onStop() {
         bIsOpen = false;
         GoogleLocationUtil.stopLocationUpdates();
         super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     private TextView getTxtVersion() {

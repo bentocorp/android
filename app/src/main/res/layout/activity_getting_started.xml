@@ -12,157 +12,243 @@
         android:src="@drawable/bg_home" />
 
     <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:id="@+id/linearLayout7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="@dimen/general_padding">
 
+
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:src="@drawable/logo_bento" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/linearLayout7"
+        android:orientation="vertical"
+        android:padding="15dp">
+
+
         <LinearLayout
+            android:id="@+id/layout_started_steps"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center_vertical"
             android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/imageView2"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:src="@drawable/logo_bento" />
-        </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_vertical"
-            android:orientation="vertical">
-
-            <com.bentonow.bentonow.ui.AutoFitTxtView
-                android:id="@+id/txt_title"
+            <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <com.bentonow.bentonow.ui.AutoFitTxtView
+                    android:id="@+id/txt_title"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:text=""
+                    android:textColor="@color/white"
+                    android:textSize="21sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/home_about_point_padding">
+
+                    <TextView
+                        android:layout_width="@dimen/point_counter_size"
+                        android:layout_height="@dimen/point_counter_size"
+                        android:background="@drawable/white_oval"
+                        android:gravity="center"
+                        android:text="1"
+                        android:textColor="@color/btn_green"
+                        android:textSize="@dimen/title1"
+                        android:textStyle="bold" />
+
+                    <com.bentonow.bentonow.ui.BackendTextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="@dimen/home_about_point_left_padding"
+                        android:paddingRight="@dimen/cero"
+                        android:singleLine="true"
+                        android:text=""
+                        android:textColor="@color/white"
+                        android:textSize="19sp"
+                        android:textStyle="bold"
+                        app:key="about-item-1" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/home_about_point_padding">
+
+                    <TextView
+                        android:layout_width="@dimen/point_counter_size"
+                        android:layout_height="@dimen/point_counter_size"
+                        android:background="@drawable/white_oval"
+                        android:gravity="center"
+                        android:text="2"
+                        android:textColor="@color/btn_green"
+                        android:textSize="@dimen/title1"
+                        android:textStyle="bold" />
+
+                    <com.bentonow.bentonow.ui.BackendTextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="@dimen/home_about_point_left_padding"
+                        android:paddingRight="@dimen/cero"
+                        android:singleLine="true"
+                        android:text=""
+                        android:textColor="@color/white"
+                        android:textSize="19sp"
+                        android:textStyle="bold"
+                        app:key="about-item-2" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/home_about_point_padding">
+
+                    <TextView
+                        android:layout_width="@dimen/point_counter_size"
+                        android:layout_height="@dimen/point_counter_size"
+                        android:background="@drawable/white_oval"
+                        android:gravity="center"
+                        android:text="3"
+                        android:textColor="@color/btn_green"
+                        android:textSize="@dimen/title1"
+                        android:textStyle="bold" />
+
+                    <com.bentonow.bentonow.ui.BackendTextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="@dimen/home_about_point_left_padding"
+                        android:paddingRight="@dimen/cero"
+                        android:singleLine="true"
+                        android:text=""
+                        android:textColor="@color/white"
+                        android:textSize="19sp"
+                        android:textStyle="bold"
+                        app:key="about-item-3" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <com.bentonow.bentonow.ui.BackendButton
+                    android:id="@+id/btn_get_started"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/btn_rounded_white"
+                    android:gravity="center"
+                    android:padding="15dp"
+                    android:text=""
+                    android:textColor="@color/dark_green"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:key="about-button" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_started_notification"
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:visibility="gone">
+
+            <com.bentonow.bentonow.ui.AutoFitTxtView
+                android:id="@+id/view3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="60dp"
+                android:paddingLeft="@dimen/home_about_point_left_padding"
+                android:paddingRight="@dimen/cero"
                 android:singleLine="true"
-                android:text=""
+                android:text="Don\'t miss your order!"
                 android:textColor="@color/white"
-                android:textSize="21sp"
+                android:textSize="19sp"
+                android:textStyle="bold" />
+
+            <com.bentonow.bentonow.ui.AutoFitTxtView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/view3"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="60dp"
+                android:lines="2"
+                android:paddingLeft="@dimen/home_about_point_left_padding"
+                android:paddingRight="@dimen/cero"
+                android:text="Allow push notifications to get timely updates!"
+                android:textColor="@color/white"
+                android:textSize="19sp"
                 android:textStyle="bold" />
 
             <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="horizontal"
-                android:padding="@dimen/home_about_point_padding">
+                android:id="@+id/linearLayout8"
+                android:layout_width="match_parent"
+                android:layout_height="68dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:weightSum="2">
 
-                <TextView
-                    android:layout_width="@dimen/point_counter_size"
-                    android:layout_height="@dimen/point_counter_size"
-                    android:background="@drawable/white_oval"
-                    android:gravity="center"
-                    android:text="1"
-                    android:textColor="@color/btn_green"
-                    android:textSize="@dimen/title1"
+                <Button
+                    android:id="@+id/btn_notification_no"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_rounded_green"
+                    android:singleLine="true"
+                    android:text="NO THANKS"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
                     android:textStyle="bold" />
 
-                <com.bentonow.bentonow.ui.BackendTextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="@dimen/home_about_point_left_padding"
-                    android:paddingRight="@dimen/cero"
+                <Button
+                    android:id="@+id/btn_notification_yes"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_rounded_white"
+                    android:textColor="@color/primary"
                     android:singleLine="true"
-                    android:text=""
-                    android:textColor="@color/white"
-                    android:textSize="19sp"
-                    android:textStyle="bold"
-                    app:key="about-item-1" />
+                    android:text="OK"
+                    android:textSize="15sp" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="horizontal"
-                android:padding="@dimen/home_about_point_padding">
 
-                <TextView
-                    android:layout_width="@dimen/point_counter_size"
-                    android:layout_height="@dimen/point_counter_size"
-                    android:background="@drawable/white_oval"
-                    android:gravity="center"
-                    android:text="2"
-                    android:textColor="@color/btn_green"
-                    android:textSize="@dimen/title1"
-                    android:textStyle="bold" />
-
-                <com.bentonow.bentonow.ui.BackendTextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingRight="@dimen/cero"
-                    android:paddingLeft="@dimen/home_about_point_left_padding"
-                    android:singleLine="true"
-                    android:text=""
-                    android:textColor="@color/white"
-                    android:textSize="19sp"
-                    android:textStyle="bold"
-                    app:key="about-item-2" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="horizontal"
-                android:padding="@dimen/home_about_point_padding">
-
-                <TextView
-                    android:layout_width="@dimen/point_counter_size"
-                    android:layout_height="@dimen/point_counter_size"
-                    android:background="@drawable/white_oval"
-                    android:gravity="center"
-                    android:text="3"
-                    android:textColor="@color/btn_green"
-                    android:textSize="@dimen/title1"
-                    android:textStyle="bold" />
-
-                <com.bentonow.bentonow.ui.BackendTextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingRight="@dimen/cero"
-                    android:paddingLeft="@dimen/home_about_point_left_padding"
-                    android:singleLine="true"
-                    android:text=""
-                    android:textColor="@color/white"
-                    android:textSize="19sp"
-                    android:textStyle="bold"
-                    app:key="about-item-3" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_vertical"
-            android:orientation="vertical">
-
-            <com.bentonow.bentonow.ui.BackendButton
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/btn_gray"
-                android:gravity="center"
-                android:onClick="onGettingStartedPressed"
-                android:padding="15dp"
-                android:text=""
-                android:textColor="@color/dark_green"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:key="about-button" />
-        </LinearLayout>
+        </RelativeLayout>
     </LinearLayout>
 
 </RelativeLayout>

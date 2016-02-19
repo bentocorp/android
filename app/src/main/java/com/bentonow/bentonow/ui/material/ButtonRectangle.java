@@ -18,12 +18,28 @@ public class ButtonRectangle extends Button {
     TextView textButton;
 
     int paddingTop, paddingBottom, paddingLeft, paddingRight;
+    int textColor = Color.parseColor("#1E88E5");
+    Integer height;
+    Integer width;
 
 
     public ButtonRectangle(Context context, AttributeSet attrs) {
         super(context, attrs);
         setDefaultProperties();
     }
+
+//	/**
+//	 * Center text in button
+//	 */
+//	boolean txtCenter = false;
+//	private void centrarTexto(){
+//		if((textButton.getWidth()+paddingLeft+paddingRight)>AndroidUtil.dpToPx(80, getResources()))
+//			setMinimumWidth(textButton.getWidth()+paddingLeft+paddingRight);
+//		setMinimumHeight(textButton.getHeight()+paddingBottom+paddingTop);
+//		textButton.setX(getWidth()/2-textButton.getWidth()/2 - paddingTop + paddingBottom);
+//		textButton.setY(getHeight()/2-textButton.getHeight()/2 - paddingLeft + paddingRight);
+//		txtCenter = true;
+//	}
 
     @Override
     protected void setDefaultProperties() {
@@ -36,7 +52,6 @@ public class ButtonRectangle extends Button {
         super.background = R.drawable.background_button_rectangle;
         super.setDefaultProperties();
     }
-
 
     // Set atributtes of XML to View
     protected void setAttributes(AttributeSet attrs) {
@@ -86,7 +101,7 @@ public class ButtonRectangle extends Button {
             textButton = new TextView(getContext());
             textButton.setText(text);
             textButton.setTextSize(14);
-            textButton.setTextColor(Color.WHITE);
+            textButton.setTextColor(textColor);
             textButton.setTypeface(null, Typeface.BOLD);
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
             params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
@@ -104,22 +119,6 @@ public class ButtonRectangle extends Button {
         rippleSpeed = attrs.getAttributeFloatValue(MATERIALDESIGNXML, "rippleSpeed", AndroidUtil.dpToPx(18, getResources()));
     }
 
-//	/**
-//	 * Center text in button
-//	 */
-//	boolean txtCenter = false;
-//	private void centrarTexto(){
-//		if((textButton.getWidth()+paddingLeft+paddingRight)>AndroidUtil.dpToPx(80, getResources()))
-//			setMinimumWidth(textButton.getWidth()+paddingLeft+paddingRight);
-//		setMinimumHeight(textButton.getHeight()+paddingBottom+paddingTop);
-//		textButton.setX(getWidth()/2-textButton.getWidth()/2 - paddingTop + paddingBottom);
-//		textButton.setY(getHeight()/2-textButton.getHeight()/2 - paddingLeft + paddingRight);
-//		txtCenter = true;
-//	}
-
-    Integer height;
-    Integer width;
-
     @Override
     protected void onDraw(Canvas canvas) {
 //		if(!txtCenter)
@@ -133,12 +132,9 @@ public class ButtonRectangle extends Button {
         }
     }
 
-    public void setText(String text) {
-        textButton.setText(text);
-    }
-
     public void setTextColor(int color) {
         textButton.setTextColor(color);
+        invalidate();
     }
 
     @Override
@@ -148,6 +144,10 @@ public class ButtonRectangle extends Button {
 
     public String getText() {
         return textButton.getText().toString();
+    }
+
+    public void setText(String text) {
+        textButton.setText(text);
     }
 
 }
