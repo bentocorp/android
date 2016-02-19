@@ -38,6 +38,9 @@
     <string name="summary_bento_oa_delivery_day">%1$s, %2$s</string>
     <string name="summary_bento_oa_delivery_time">%1$s-%2$s</string>
     <string name="summary_bento_od_delivery_time">%1$d-%2$d</string>
+    <string name="bento_api_url_autocomplete"> https://maps.googleapis.com/maps/api/place/autocomplete/json?key=%1$s&amp;input=%2$s&amp;radius=500</string>
+    <string name="bento_api_url_autocomplete_location"> https://maps.googleapis.com/maps/api/place/autocomplete/json?key=%1$s&amp;input=%2$s&amp;location=%3$f,%4$f&amp;radius=500</string>
+
 
     <string name="edit_hint_enter_phone">Enter your phone number</string>
     <string name="edit_hint_confirm_phone">Confirm your phone number</string>

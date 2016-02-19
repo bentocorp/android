@@ -52,6 +52,7 @@ import com.bentonow.bentonow.model.AutoCompleteModel;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.parse.InitParse;
 import com.bentonow.bentonow.ui.BackendTextView;
+import com.bentonow.bentonow.web.BentoNowApi;
 import com.bentonow.bentonow.web.request.RequestGetPlaceDetail;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -75,7 +76,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -133,6 +133,11 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
         mLastOrderLocation = BentoNowUtils.getOrderLocation();
 
+        if (mLastOrderLocation != null) {
+            mCurrentLocation = new Location("Current Location");
+            mCurrentLocation.setLatitude(mLastOrderLocation.latitude);
+            mCurrentLocation.setLongitude(mLastOrderLocation.longitude);
+        }
 
         buildGoogleApiClient();
         getGoogleMap().setOnMapClickListener(DeliveryLocationActivity.this);
@@ -527,7 +532,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         HttpURLConnection conn = null;
         StringBuilder jsonResults = new StringBuilder();
         try {
-            URL url = new URL("https://maps.googleapis.com/maps/api/place/autocomplete/json?key=" + getResources().getString(R.string.google_server_key) + "&input=" + URLEncoder.encode(input, "utf8"));
+            URL url = new URL(BentoNowApi.getUrlGoogleAutocomplete(mCurrentLocation, input));
 
             DebugUtils.logDebug(TAG, "URL Search: " + url.toString());
             conn = (HttpURLConnection) url.openConnection();
