@@ -23,18 +23,15 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class BaseFragmentActivity extends FragmentActivity {
 
-    private String TAG = getClass() != null ? getClass().getName() : "BaseFragmentActivity";
-
     public BentoCustomerService mBentoService = null;
     public ServiceConnection mConnection = new WebSocketServiceConnection();
     public boolean mBound = false;
-
     protected OrderDao mOrderDao = new OrderDao();
     protected BentoDao mBentoDao = new BentoDao();
     protected DishDao mDishDao = new DishDao();
     protected UserDao userDao = new UserDao();
-
     protected long lStart, lEnd;
+    private String TAG = getClass() != null ? getClass().getName() : "BaseFragmentActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,23 +45,6 @@ public class BaseFragmentActivity extends FragmentActivity {
                         .build()
         );*/
 
-    }
-
-    private class WebSocketServiceConnection implements ServiceConnection {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder binder) {
-            DebugUtils.logDebug(TAG, "Successfully bounded to " + name.getClassName());
-            BentoCustomerService.WebSocketServiceBinder webSocketServiceBinder = (BentoCustomerService.WebSocketServiceBinder) binder;
-            mBentoService = webSocketServiceBinder.getService();
-            onConnectService();
-            mBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            DebugUtils.logDebug(TAG, "Disconnected from service " + name);
-            mBound = true;
-        }
     }
 
     public void onConnectService() {
@@ -104,8 +84,10 @@ public class BaseFragmentActivity extends FragmentActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         MixpanelUtils.getMixpanelApi().flush();
+/*      RefWatcher refWatcher = BentoApplication.getRefWatcher(this);
+        refWatcher.watch(this);*/
+        super.onDestroy();
     }
 
     @Override
@@ -113,6 +95,23 @@ public class BaseFragmentActivity extends FragmentActivity {
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_APP_IN_FRONT, false);
         AppEventsLogger.deactivateApp(this);
         super.onPause();
+    }
+
+    private class WebSocketServiceConnection implements ServiceConnection {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder binder) {
+            DebugUtils.logDebug(TAG, "Successfully bounded to " + name.getClassName());
+            BentoCustomerService.WebSocketServiceBinder webSocketServiceBinder = (BentoCustomerService.WebSocketServiceBinder) binder;
+            mBentoService = webSocketServiceBinder.getService();
+            onConnectService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            DebugUtils.logDebug(TAG, "Disconnected from service " + name);
+            mBound = true;
+        }
     }
 
 }
