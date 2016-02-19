@@ -5,6 +5,8 @@
     <color name="green_pressed">#7A9E56</color>
     <color name="btn_green_trans">#5087B260</color>
     <color name="green_promo">#88AF60</color>
+    <color name="btn_green_press">#87B260</color>
+    <color name="btn_green_pressed">#789E55</color>
 
 
     <color name="gray">#7a8591</color>

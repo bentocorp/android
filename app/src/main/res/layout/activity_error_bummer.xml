@@ -74,7 +74,7 @@
             android:id="@+id/btn_submit"
             android:layout_width="fill_parent"
             android:layout_height="48dp"
-            android:background="@color/btn_green"
+            android:background="@drawable/btn_rounded_green"
             android:gravity="center"
             android:onClick="onSubmitPressed"
             android:padding="@dimen/btn_padding"

@@ -69,18 +69,18 @@
 
                     <TextView
                         android:id="@+id/txt_deliver_time_up"
+                        style="@style/TxtOpenSansRegular"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
-                        style="@style/TxtOpenSansRegular"
                         android:layout_gravity="center|bottom"
                         android:layout_weight="1"
                         android:text="15-25" />
 
                     <TextView
                         android:id="@+id/txt_deliver_time_down"
+                        style="@style/TxtOpenSansRegular"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
-                        style="@style/TxtOpenSansRegular"
                         android:layout_gravity="center|top"
                         android:layout_weight="1"
                         android:text="min" />
@@ -180,20 +180,20 @@
                 android:visibility="visible">
 
                 <com.bentonow.bentonow.ui.BackendTextView
+                    style="@style/TxtOpenSansRegular"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:padding="@dimen/btn_padding"
-                    style="@style/TxtOpenSansRegular"
                     android:textColor="@color/dark_gray"
                     app:key="complete-promo-discount" />
 
                 <TextView
                     android:id="@+id/txt_discount"
+                    style="@style/TxtOpenSansRegular"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/btn_padding"
-                    style="@style/TxtOpenSansRegular"
                     android:text="@string/zero_dollar"
                     android:textColor="@color/dark_gray" />
             </LinearLayout>
@@ -212,20 +212,20 @@
                 android:orientation="horizontal">
 
                 <com.bentonow.bentonow.ui.BackendTextView
+                    style="@style/TxtOpenSansRegular"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:padding="@dimen/btn_padding"
-                    style="@style/TxtOpenSansRegular"
                     android:textColor="@color/dark_gray"
                     app:key="complete-tax" />
 
                 <TextView
                     android:id="@+id/txt_tax"
+                    style="@style/TxtOpenSansRegular"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/btn_padding"
-                    style="@style/TxtOpenSansRegular"
                     android:text="@string/zero_dollar"
                     android:textColor="@color/dark_gray" />
             </LinearLayout>
@@ -244,21 +244,21 @@
                 android:orientation="horizontal">
 
                 <com.bentonow.bentonow.ui.BackendTextView
+                    style="@style/TxtOpenSansRegular"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    style="@style/TxtOpenSansRegular"
                     android:padding="@dimen/btn_padding"
                     android:textColor="@color/dark_gray"
                     app:key="delivery_label" />
 
                 <TextView
                     android:id="@+id/txt_delivery_price"
+                    style="@style/TxtOpenSansRegular"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/btn_padding"
                     android:text="@string/zero_dollar"
-                    style="@style/TxtOpenSansRegular"
                     android:textColor="@color/dark_gray" />
             </LinearLayout>
 
@@ -276,11 +276,11 @@
                 android:orientation="horizontal">
 
                 <com.bentonow.bentonow.ui.BackendTextView
+                    style="@style/TxtOpenSansRegular"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:padding="@dimen/btn_padding"
-                    style="@style/TxtOpenSansRegular"
                     android:textColor="@color/dark_gray"
                     app:key="complete-tip" />
 
@@ -351,12 +351,12 @@
 
                 <com.bentonow.bentonow.ui.BackendTextView
                     android:id="@+id/txt_total_fix"
+                    style="@style/TxtOpenSansRegular"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
                     android:padding="@dimen/btn_padding"
-                    style="@style/TxtOpenSansRegular"
                     android:textColor="@color/dark_gray"
                     app:key="complete-total" />
 
@@ -382,10 +382,10 @@
 
                     <TextView
                         android:id="@+id/txt_promo_total"
+                        style="@style/TxtOpenSansRegular"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="@dimen/btn_padding"
-                        style="@style/TxtOpenSansRegular"
                         android:text="@string/zero_dollar"
                         android:textColor="@color/orange" />
 
@@ -403,10 +403,10 @@
 
                 <TextView
                     android:id="@+id/txt_total"
+                    style="@style/TxtOpenSansRegular"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    style="@style/TxtOpenSansRegular"
                     android:layout_centerVertical="true"
                     android:padding="@dimen/btn_padding"
                     android:text="@string/zero_dollar"
@@ -423,17 +423,17 @@
     <LinearLayout
         android:id="@+id/footer_container"
         android:layout_width="fill_parent"
-        android:layout_height="@dimen/summary_height_row"
+        android:layout_height="48dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true">
 
         <com.bentonow.bentonow.ui.BackendButton
             android:id="@+id/btn_on_lets_eat_pressed"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/btn_green"
-            android:gravity="center"
             style="@style/TxtOpenSansBold"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/btn_rounded_green"
+            android:gravity="center"
             android:padding="@dimen/btn_padding"
             android:textColor="@color/white"
             app:key="complete-button" />

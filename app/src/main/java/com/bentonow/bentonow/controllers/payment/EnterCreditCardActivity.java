@@ -119,7 +119,7 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
                 break;
         }
 
-        btn_save.setBackgroundResource(isValid() ? R.drawable.bg_green_cornered : R.drawable.btn_dark_gray);
+        btn_save.setBackgroundResource(isValid() ? R.drawable.btn_rounded_green : R.drawable.btn_rounded_gray);
 
         getTxtBentoPrice().setText(BentoNowUtils.getNumberFromPrice(SettingsDao.getCurrent().price));
 

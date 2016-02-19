@@ -292,7 +292,7 @@
                 android:layout_marginLeft="@dimen/general_padding"
                 android:layout_marginRight="@dimen/general_padding"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/btn_dark_gray"
+                android:background="@drawable/btn_rounded_gray"
                 android:gravity="center"
                 android:onClick="onSignUpPressed"
                 android:padding="@dimen/btn_padding"

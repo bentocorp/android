@@ -117,6 +117,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_delivery_location);
+        mRequestingLocationUpdates = true;
+
         try {
             optOpenScreen = (ConstantUtils.optOpenScreen) getIntent().getExtras().getSerializable(ConstantUtils.TAG_OPEN_SCREEN);
         } catch (Exception ex) {
@@ -131,7 +133,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
         mLastOrderLocation = BentoNowUtils.getOrderLocation();
 
-        mRequestingLocationUpdates = true;
+
         buildGoogleApiClient();
         getGoogleMap().setOnMapClickListener(DeliveryLocationActivity.this);
         getMapFragment().setOnDragListener(new OnCustomDragListener() {
@@ -171,6 +173,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         updateUI();
 
         setupMap();
+
+        getBtnContinue().setOnClickListener(this);
     }
 
     @Override
@@ -201,9 +205,9 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         getProgressBar().setVisibility(View.GONE);
 
         if (getCheckIAgree().isChecked() && mOrderAddress != null) {
-            getBtnContinue().setBackgroundColor(getResources().getColor(R.color.btn_green));
+            getBtnContinue().setBackground(getResources().getDrawable(R.drawable.btn_rounded_green));
         } else {
-            getBtnContinue().setBackgroundColor(getResources().getColor(R.color.gray));
+            getBtnContinue().setBackground(getResources().getDrawable(R.drawable.btn_rounded_gray));
         }
 
         getBtnClear().setVisibility(getTxtAddress().getText().length() > 0 ? View.VISIBLE : View.GONE);
@@ -448,7 +452,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
     }
 
-    public void onContinuePressed(View view) {
+    public void onContinuePressed() {
         if (!isValidLocation())
             return;
 
@@ -702,6 +706,9 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             case R.id.button_accept:
                 getCheckIAgree().setChecked(true);
                 updateUI();
+                break;
+            case R.id.btn_continue:
+                onContinuePressed();
                 break;
         }
     }

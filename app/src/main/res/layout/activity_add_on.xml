@@ -21,12 +21,12 @@
         android:id="@+id/recycle_view_add_on"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@+id/footer_container"
         android:layout_below="@+id/ActionBarContainer"
         android:divider="@android:color/transparent"
         android:dividerHeight="0dp"
         android:scrollbars="vertical"
-        tools:listitem="@layout/list_item_add_on"
-        android:layout_above="@+id/footer_container" />
+        tools:listitem="@layout/list_item_add_on" />
 
     <RelativeLayout
         android:id="@+id/footer_container"
@@ -39,8 +39,8 @@
             android:id="@+id/btn_finalize"
             style="@style/TxtOpenSansBold"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/btn_green"
+            android:layout_height="48dp"
+            android:background="@drawable/btn_rounded_green"
             android:gravity="center"
             android:padding="@dimen/btn_padding"
             android:text="@string/btn_continue_text"

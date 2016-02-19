@@ -66,8 +66,6 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.SETTINGS, "");
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MEALS, "");
 
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.APP_FIRST_RUN, false);
-
         GoogleLocationUtil.getGoogleApiClient(false);
 
         if (BentoNowUtils.B_APPIUM_TESTING) {

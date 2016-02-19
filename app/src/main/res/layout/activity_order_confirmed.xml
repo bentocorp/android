@@ -61,9 +61,9 @@
 
             <com.bentonow.bentonow.ui.BackendButton
                 style="?android:attr/buttonBarButtonStyle"
-                android:layout_gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginTop="15dp"
                 android:background="@null"
                 android:gravity="center"
@@ -90,8 +90,8 @@
         <com.bentonow.bentonow.ui.BackendButton
             android:id="@+id/btn_view_all_orders"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="#6E7988"
+            android:layout_height="48dp"
+            android:background="@drawable/btn_rounded_gray"
             android:gravity="center"
             android:onClick="onAddAnotherBentoPressed"
             android:padding="@dimen/btn_padding"
@@ -100,12 +100,12 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="20dp"></FrameLayout>
+            android:layout_height="20dp" />
 
         <com.bentonow.bentonow.ui.BackendButton
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="#6E7988"
+            android:layout_height="48dp"
+            android:background="@drawable/btn_rounded_gray"
             android:gravity="center"
             android:onClick="onAddAnotherBentoPressed"
             android:padding="@dimen/btn_padding"

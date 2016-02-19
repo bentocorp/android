@@ -61,7 +61,7 @@ public class BentoApplication extends Application {
             DebugUtils.logError(TAG, e);
         }
 
-        refWatcher = LeakCanary.install(this);
+//        refWatcher = LeakCanary.install(this);
     }
 
     @Override

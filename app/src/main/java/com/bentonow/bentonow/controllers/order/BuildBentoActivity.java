@@ -346,7 +346,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                                 getTxtNumBento().setText("0");
                                 getActionbarRightBtn().setImageResource(R.drawable.ic_ab_bento);
                                 getLayoutAddOns().setVisibility(View.GONE);
-                                getBtnContinue().setBackgroundColor(getResources().getColor(R.color.gray));
+                                getBtnContinue().setBackground(getResources().getDrawable(R.drawable.btn_rounded_gray));
                                 getBtnAddAnotherBento().setTextColor(getResources().getColor(R.color.btn_green_trans));
                                 getBtnAddAnotherBento().setOnClickListener(null);
                                 getBtnAddOn().setTextColor(getResources().getColor(R.color.btn_green_trans));
@@ -363,7 +363,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                                 getTxtNumBento().setText(mOrderDao.countCompletedOrders(mOrder) + "");
                                 getActionbarRightBtn().setImageResource(R.drawable.ic_ab_bento_completed);
                                 getLayoutAddOns().setVisibility(View.VISIBLE);
-                                getBtnContinue().setBackgroundColor(getResources().getColor(R.color.btn_green));
+                                getBtnContinue().setBackground(getResources().getDrawable(R.drawable.btn_rounded_green));
                                 getBtnAddOn().setTextColor(getResources().getColor(R.color.btn_green));
                                 getBtnAddOn().setOnClickListener(BuildBentoActivity.this);
                                 getBtnAddAnotherBento().setTextColor(getResources().getColor(R.color.btn_green));
