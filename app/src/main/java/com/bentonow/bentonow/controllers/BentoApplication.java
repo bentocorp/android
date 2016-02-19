@@ -16,6 +16,8 @@ import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 
 import io.fabric.sdk.android.Fabric;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
@@ -30,6 +32,12 @@ public class BentoApplication extends Application {
 
     private Tracker mTracker;
 
+    private RefWatcher refWatcher;
+
+    public static RefWatcher getRefWatcher(Context context) {
+        BentoApplication application = (BentoApplication) context.getApplicationContext();
+        return application.refWatcher;
+    }
 
     @Override
     public void onCreate() {
@@ -52,6 +60,8 @@ public class BentoApplication extends Application {
         } catch (Exception e) {
             DebugUtils.logError(TAG, e);
         }
+
+        refWatcher = LeakCanary.install(this);
     }
 
     @Override
@@ -60,11 +70,9 @@ public class BentoApplication extends Application {
         MultiDex.install(this);
     }
 
-
     public void doInBackground(Runnable runnable) {
         new Thread(runnable).start();
     }
-
 
     public void webRequest(final InterfaceWebRequest interfaceWebRequest) {
         doInBackground(new Runnable() {
@@ -92,4 +100,5 @@ public class BentoApplication extends Application {
     synchronized public void restartTracker() {
         mTracker = null;
     }
+
 }

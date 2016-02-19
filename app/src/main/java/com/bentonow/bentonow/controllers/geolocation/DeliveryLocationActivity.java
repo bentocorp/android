@@ -133,7 +133,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
         mRequestingLocationUpdates = true;
         buildGoogleApiClient();
-
         getGoogleMap().setOnMapClickListener(DeliveryLocationActivity.this);
         getMapFragment().setOnDragListener(new OnCustomDragListener() {
 
@@ -166,6 +165,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
             }
         });
+
+        getGoogleMap().setMyLocationEnabled(false);
 
         updateUI();
 
@@ -779,6 +780,17 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                 stopLocationUpdates();
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        getGoogleMap().clear();
+        getGoogleMap().setOnMapClickListener(null);
+        getGoogleMap().setOnMapClickListener(null);
+        getGoogleMap().setOnCameraChangeListener(null);
+        getTxtAddress().setAdapter(null);
+        mGoogleApiClient = null;
+        super.onDestroy();
     }
 
     private MySupportMapFragment getMapFragment() {
