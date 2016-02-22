@@ -410,10 +410,11 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="4"
-                        app:key="pane-title-notif"/>
+                        app:key="pane-title-notif" />
 
                     <Switch
                         android:id="@+id/switch_notifications"
+                        style="@style/SwitchBento"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="2"

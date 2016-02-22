@@ -8,7 +8,7 @@
     <style name="Theme.BentoTheme" parent="AppTheme">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
-        <item name="colorAccent">@color/accentColor</item>
+        <item name="colorAccent">@color/primary</item>
         <item name="android:textColorPrimary">@color/textColorPrimary</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowBackground">@color/btn_green</item>
@@ -338,5 +338,10 @@
 
     <style name="CheckBoxbento" parent="android:Widget.CompoundButton.CheckBox">
         <item name="android:button">@drawable/bento_btn_check_holo_light</item>
+    </style>
+
+    //switch
+    <style name="SwitchBento">
+        <item name="colorControlActivated">@color/primary_dark</item>
     </style>
 </resources>
