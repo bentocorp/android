@@ -11,6 +11,7 @@ import android.support.v4.content.WakefulBroadcastReceiver;
 
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.NotificationUtils;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 
 
 public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
@@ -24,7 +25,8 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
             new Thread(new Runnable() {
                 public void run() {
                     try {
-                        NotificationUtils.displayNotification(intent.getExtras().getString("mp_message"));
+                        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.SHOW_NOTIFICATIONS))
+                            NotificationUtils.displayNotification(intent.getExtras().getString("mp_message"));
                     } catch (Exception e) {
                         DebugUtils.logError("GcmBroadcastReceiver", e);
                     }
