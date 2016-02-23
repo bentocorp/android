@@ -23,6 +23,8 @@ import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.dao.IosCopyDao;
+import com.bentonow.bentonow.dao.MenuDao;
+import com.bentonow.bentonow.dao.SettingsDao;
 import com.bentonow.bentonow.parse.InitParse;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -30,6 +32,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.apache.http.Header;
@@ -49,6 +52,7 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private Location mCurrentLocation;
+    private boolean bResultLocation = false;
 
     private int retry = 0;
 
@@ -74,16 +78,13 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.SETTINGS, "");
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MEALS, "");
 
+
         if (BentoNowUtils.B_APPIUM_TESTING) {
             GoogleLocationUtil.setAppiumLocation(true);
             SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.APP_FIRST_RUN, true);
         }
-
-        trackAppOpen();
-
         mOrderDao.cleanUp();
 
-        buildGoogleApiClient();
     }
 
     @Override
@@ -92,13 +93,15 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
 
         DebugUtils.logDebug(TAG, "onResume");
 
+        GoogleAnalyticsUtil.sendScreenView("Splash");
+
         if (BuildConfig.DEBUG)
             getTxtVersion().setText(AndroidUtil.getAppVersionName(this));
 
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
 
         if (resultCode == ConnectionResult.SUCCESS) {
-            loadData();
+            checkBentoStatus();
         } else {
             if (mDialogPlayServices == null || !mDialogPlayServices.isShowing()) {
                 mDialogPlayServices = GooglePlayServicesUtil.getErrorDialog(resultCode, this, 1);
@@ -106,9 +109,35 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
             }
         }
 
-        GoogleAnalyticsUtil.sendScreenView("Splash");
-
         super.onResume();
+    }
+
+    private void checkBentoStatus() {
+        if (LocationUtils.isGpsEnable(MainActivity.this)) {
+            MixpanelUtils.track("Allow Location Services");
+            buildGoogleApiClient();
+            checkAppStatus();
+        } else {
+            MixpanelUtils.track("Don't Allow Location Services");
+            if (mConfirmationDialog == null || !mConfirmationDialog.isShowing()) {
+                mConfirmationDialog = new ConfirmationDialog(MainActivity.this, "Enable GPS", "GPS is disabled in your device. Enable it?", false);
+                mConfirmationDialog.addAcceptButton("Yes", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent callGPSSettingIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivity(callGPSSettingIntent);
+                    }
+                });
+                mConfirmationDialog.addCancelButton("No", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        bResultLocation = true;
+                        checkAppStatus();
+                    }
+                });
+                mConfirmationDialog.show();
+            }
+        }
     }
 
     private void loadData() {
@@ -134,7 +163,7 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
                 if (bIsOpen) {
                     DebugUtils.logDebug(TAG, "onSuccess: " + statusCode);
                     InitParse.parseInitTwo(responseString);
-                    checkAppStatus();
+                    openNextScreen();
                 }
             }
         });
@@ -143,40 +172,28 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
     }
 
     private void checkAppStatus() {
-        DebugUtils.logDebug(TAG, "checkAppStatus");
-
-        if (BentoNowUtils.isLastVersionApp(MainActivity.this)) {
-            if (LocationUtils.isGpsEnable(MainActivity.this)) {
-                MixpanelUtils.track("Allow Location Services");
-                openNextScreen();
-            } else {
-                MixpanelUtils.track("Don't Allow Location Services");
-                if (mConfirmationDialog == null || !mConfirmationDialog.isShowing()) {
-                    mConfirmationDialog = new ConfirmationDialog(MainActivity.this, "Enable GPS", "GPS is disabled in your device. Enable it?");
-                    mConfirmationDialog.addAcceptButton("Yes", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent callGPSSettingIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                            startActivity(callGPSSettingIntent);
-                        }
-                    });
-                    mConfirmationDialog.addCancelButton("No", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            openNextScreen();
-                        }
-                    });
-                    mConfirmationDialog.show();
-                }
-            }
-
-        } else {
+        if (!BentoNowUtils.isLastVersionApp(MainActivity.this)) {
             finish();
+        } else if (bResultLocation) {
+            if (mCurrentLocation == null) {
+                if (BentoNowUtils.getOrderLocation() == null) {
+                    loadData();
+                } else {
+                    LatLng mLatLngLocation = BentoNowUtils.getOrderLocation();
+                    mCurrentLocation = new Location("Saved Location");
+                    mCurrentLocation.setLatitude(mLatLngLocation.latitude);
+                    mCurrentLocation.setLongitude(mLatLngLocation.longitude);
+                    getCurrentOrderByLocation();
+                }
+            } else {
+                getCurrentOrderByLocation();
+            }
         }
 
     }
 
     private void openNextScreen() {
+        trackAppOpen();
         if (!SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.APP_FIRST_RUN)) {
             MixpanelUtils.track("App Installed");
             Intent intent = new Intent(this, GettingStartedActivity.class);
@@ -185,18 +202,25 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
             startActivity(intent);
         } else if (!SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.ALREADY_SHOW_NOTIFICATIONS)) {
             showEnableNotificationDialog();
-        } else {
-            if (LocationUtils.isGpsEnable(MainActivity.this)) {
-                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.LOCATION, "");
-                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ADDRESS, "");
-            }
+        } else if (MenuDao.gateKeeper.getAppState().contains("map,no_service")) {
+            openDeliveryLocation();
+        } else if (MenuDao.gateKeeper.getAppState().contains("build")) {
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.POD_MODE, SettingsDao.getCurrent().pod_mode);
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.STORE_STATUS, MenuDao.gateKeeper.getAppState());
+            BentoNowUtils.saveOrderLocation(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), LocationUtils.getAddressFromLocation(mCurrentLocation));
 
-            Intent intent = new Intent(this, DeliveryLocationActivity.class);
-            intent.putExtra(ConstantUtils.TAG_OPEN_SCREEN, ConstantUtils.optOpenScreen.BUILD_BENTO);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            finish();
-            startActivity(intent);
+            BentoNowUtils.openBuildBentoActivity(MainActivity.this);
+        } else {
+            BentoNowUtils.openBuildBentoActivity(MainActivity.this);
         }
+    }
+
+    private void openDeliveryLocation() {
+        Intent intent = new Intent(this, DeliveryLocationActivity.class);
+        intent.putExtra(ConstantUtils.TAG_OPEN_SCREEN, ConstantUtils.optOpenScreen.BUILD_BENTO);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        finish();
+        startActivity(intent);
     }
 
 
@@ -212,7 +236,6 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
 
     private void trackAppOpen() {
         try {
-            Location mCurrentLocation = GoogleLocationUtil.getCurrentLocation();
             JSONObject params = new JSONObject();
             params.put("coordinates", mCurrentLocation == null ? "0.0,0.0" : mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude());
             MixpanelUtils.track("App Launched", params);
@@ -221,13 +244,48 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
         }
     }
 
+    private void getCurrentOrderByLocation() {
+        BentoRestClient.get(BentoRestClient.getInit2Url(mCurrentLocation), null, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                DebugUtils.logError(TAG, "Cannot loadData: " + responseString);
+
+                if (bIsOpen) {
+                    ++retry;
+                    DebugUtils.logDebug(TAG, "retry: " + retry);
+                    getCurrentOrderByLocation();
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getTxtMessage().setText("We seem to have trouble connecting to the network, please wait while we retry " + (retry > 0 ? "(" + retry + ") " : ""));
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                InitParse.parseInitTwo(responseString);
+
+                DebugUtils.logDebug(TAG, "getCurrentOrderByLocation AppState " + MenuDao.gateKeeper.getAppState());
+
+                openNextScreen();
+
+            }
+        });
+    }
+
     protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-        mGoogleApiClient.connect();
+        if (mGoogleApiClient == null || !mGoogleApiClient.isConnected()) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+            mGoogleApiClient.connect();
+            DebugUtils.logDebug(TAG, "buildGoogleApiClient:");
+        }
     }
 
     protected LocationRequest getLocationRequest() {
@@ -242,18 +300,28 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
 
     @Override
     public void onConnected(Bundle bundle) {
-        DebugUtils.logError("buildGoogleApiClient", "onConnected:");
+        DebugUtils.logDebug(TAG, "onConnected:");
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, getLocationRequest(), MainActivity.this);
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-        DebugUtils.logError("buildGoogleApiClient", "onConnectionSuspended: " + i);
+        DebugUtils.logError(TAG, "onConnectionSuspended: " + i);
+
+        if (!bResultLocation) {
+            bResultLocation = true;
+            checkAppStatus();
+        }
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        DebugUtils.logError("buildGoogleApiClient", connectionResult.toString());
+        DebugUtils.logError(TAG, "onConnectionFailed: " + connectionResult.toString());
+
+        if (!bResultLocation) {
+            bResultLocation = true;
+            checkAppStatus();
+        }
     }
 
 
@@ -262,6 +330,11 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
         mCurrentLocation = location;
         DebugUtils.logDebug(TAG, "onLocationChanged: " + location.getLatitude() + "," + location.getLongitude());
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+
+        if (!bResultLocation) {
+            bResultLocation = true;
+            checkAppStatus();
+        }
     }
 
 

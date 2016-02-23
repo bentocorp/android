@@ -1130,7 +1130,9 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                     case 0:// No internet Connection
                         break;
                     case 401:// Invalid Api Token
-                        WidgetsUtils.createShortToast("You session is expired, please LogIn again");
+                        if (!userDao.removeUser())
+                            userDao.clearAllData();
+
                         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ORDER_AHEAD_SUBSCRIPTION, false);
                         break;
                     default:

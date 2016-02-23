@@ -1,5 +1,7 @@
 package com.bentonow.bentonow.Utils;
 
+import android.location.Location;
+
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.controllers.BentoApplication;
 import com.google.android.gms.maps.model.LatLng;
@@ -25,42 +27,9 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 public class BentoRestClient {
-    private static class CustomSSLSocketFactory extends SSLSocketFactory {
-        SSLContext sslContext = SSLContext.getInstance("TLS");
-
-        public CustomSSLSocketFactory(KeyStore truststore) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
-            super(truststore);
-
-            TrustManager tm = new X509TrustManager() {
-                public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-                }
-
-                public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-                }
-
-                public X509Certificate[] getAcceptedIssuers() {
-                    return null;
-                }
-            };
-
-            sslContext.init(null, new TrustManager[]{tm}, null);
-        }
-
-        @Override
-        public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException {
-            return sslContext.getSocketFactory().createSocket(socket, host, port, autoClose);
-        }
-
-        @Override
-        public Socket createSocket() throws IOException {
-            return sslContext.getSocketFactory().createSocket();
-        }
-    }
-
     static final String TAG = "BentoRestClient";
     //static final String BASE_URL = BuildConfig.DEBUG ? "https://api2.dev.bentonow.com" : "https://api2.bentonow.com";
     static final String BASE_URL = BentoApplication.instance.getString(R.string.server_api_url);
-
     static AsyncHttpClient client = new AsyncHttpClient();
 
     public static void init() throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableKeyException, KeyManagementException {
@@ -117,4 +86,42 @@ public class BentoRestClient {
             return "/init2?date=" + BentoNowUtils.getTodayDateInit2() + "&copy=1&gatekeeper=1&lat=" + mLocation.latitude + "&long=" + mLocation.longitude;
     }
 
+    public static String getInit2Url(Location mLocation) {
+        if (mLocation == null)
+            return getInitUrl();
+        else
+            return "/init2?date=" + BentoNowUtils.getTodayDateInit2() + "&copy=1&gatekeeper=1&lat=" + mLocation.getLatitude() + "&long=" + mLocation.getLongitude();
+    }
+
+    private static class CustomSSLSocketFactory extends SSLSocketFactory {
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+
+        public CustomSSLSocketFactory(KeyStore truststore) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
+            super(truststore);
+
+            TrustManager tm = new X509TrustManager() {
+                public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                }
+
+                public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                }
+
+                public X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+            };
+
+            sslContext.init(null, new TrustManager[]{tm}, null);
+        }
+
+        @Override
+        public Socket createSocket(Socket socket, String host, int port, boolean autoClose) throws IOException {
+            return sslContext.getSocketFactory().createSocket(socket, host, port, autoClose);
+        }
+
+        @Override
+        public Socket createSocket() throws IOException {
+            return sslContext.getSocketFactory().createSocket();
+        }
+    }
 }

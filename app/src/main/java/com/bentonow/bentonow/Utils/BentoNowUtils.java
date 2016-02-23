@@ -392,6 +392,10 @@ public class BentoNowUtils {
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ADDRESS, new Gson().toJson(mAddress));
     }
 
+    public static void saveOrderLocation(Address mAddress) {
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ADDRESS, new Gson().toJson(mAddress));
+    }
+
     public static String getDayTimeSelected(Order mOrder) {
         String sDateTime;
         Calendar mCal = Calendar.getInstance();
