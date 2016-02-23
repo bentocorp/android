@@ -25,6 +25,7 @@ import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.dao.MenuDao;
 import com.bentonow.bentonow.dao.SettingsDao;
+import com.bentonow.bentonow.model.gatekeeper.GateKeeperModel;
 import com.bentonow.bentonow.parse.InitParse;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -78,6 +79,8 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.SETTINGS, "");
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MEALS, "");
 
+        MenuDao.gateKeeper = new GateKeeperModel();
+
 
         if (BentoNowUtils.B_APPIUM_TESTING) {
             GoogleLocationUtil.setAppiumLocation(true);
@@ -115,8 +118,9 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
     private void checkBentoStatus() {
         if (LocationUtils.isGpsEnable(MainActivity.this)) {
             MixpanelUtils.track("Allow Location Services");
-            buildGoogleApiClient();
-            checkAppStatus();
+            //  buildGoogleApiClient();
+            // checkAppStatus();
+            loadData();
         } else {
             MixpanelUtils.track("Don't Allow Location Services");
             if (mConfirmationDialog == null || !mConfirmationDialog.isShowing()) {
@@ -132,7 +136,8 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
                     @Override
                     public void onClick(View v) {
                         bResultLocation = true;
-                        checkAppStatus();
+                        // checkAppStatus();
+                        loadData();
                     }
                 });
                 mConfirmationDialog.show();
@@ -211,7 +216,7 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
 
             BentoNowUtils.openBuildBentoActivity(MainActivity.this);
         } else {
-            BentoNowUtils.openBuildBentoActivity(MainActivity.this);
+            openDeliveryLocation();
         }
     }
 
