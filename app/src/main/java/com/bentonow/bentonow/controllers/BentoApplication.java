@@ -16,7 +16,6 @@ import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
-import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
 import io.fabric.sdk.android.Fabric;
@@ -91,6 +90,8 @@ public class BentoApplication extends Application {
         if (mTracker == null) {
             GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
             mTracker = analytics.newTracker(R.xml.global_tracker);
+            mTracker.set("&tid", getString(R.string.google_analytics_api_key));
+
             if (!SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.USER_NAME).isEmpty())
                 mTracker.set("&uid", SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.USER_NAME));
         }
