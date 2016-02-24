@@ -1489,6 +1489,10 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        BentoNowUtils.goToDashboard(BuildBentoActivity.this);
+    }
 
     private AutoFitTxtView getTxtPromoName() {
         if (txtPromoName == null)
