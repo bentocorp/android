@@ -125,7 +125,11 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
 
     @Override
     protected void onResume() {
-        GoogleAnalyticsUtil.sendScreenView("Sign Up");
+        if (userDao.getCurrentUser() != null)
+            finish();
+        else {
+            GoogleAnalyticsUtil.sendScreenView("Sign Up");
+        }
         super.onResume();
     }
 
@@ -368,13 +372,15 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
         UserRequest.register(registerUser, new TextHttpResponseHandler() {
             @SuppressWarnings("deprecation")
             @Override
-            public void onFailure(int statusCode, Header[] headers, String
-                    responseString, Throwable throwable) {
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 DebugUtils.logDebug(TAG, "onRegisterPressedOnFailure statusCode:" + statusCode + " responseString: " + responseString);
 
                 dismissDialog();
 
                 switch (statusCode) {
+                    case 0:
+                        showInformationDialog("Error", getString(R.string.error_no_internet_connection), null);
+                        break;
                     case 400:
                         error = "";
 
@@ -390,9 +396,16 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
                         updateUI();
                         break;
                     case 409:
-                        mDialog = new ConfirmationDialog(SignUpActivity.this, "Error", "This email is already registered.");
-                        mDialog.addAcceptButton("OK", SignUpActivity.this);
-                        mDialog.show();
+                        showInformationDialog("Error", "This email is already registered.", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent mIntentLogIn = new Intent(SignUpActivity.this, SignInActivity.class);
+                                mIntentLogIn.putExtra("email", txt_email.getText());
+                                mIntentLogIn.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(mIntentLogIn);
+                                finish();
+                            }
+                        });
                         break;
                 }
             }
@@ -407,9 +420,6 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
     }
 
     public void onSignInPressed(View view) {
-        Intent intent = new Intent(this, SignInActivity.class);
-        intent.putExtra("settings", getIntent().getBooleanExtra("settings", false));
-        startActivity(intent);
         finish();
     }
 
@@ -425,17 +435,19 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
         startActivity(intent);
     }
 
+    private void showInformationDialog(String sTitle, String sMessage, View.OnClickListener mOnClickListener) {
+        if (mDialog == null || !mDialog.isShowing()) {
+            mDialog = new ConfirmationDialog(SignUpActivity.this, sTitle, sMessage);
+            mDialog.addAcceptButton("OK", mOnClickListener);
+            mDialog.show();
+        }
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.actionbar_left_btn:
                 onBackPressed();
-                break;
-            case R.id.btn_ok:
-                Intent intent = new Intent(this, SignInActivity.class);
-                intent.putExtra("email", txt_email.getText());
-                startActivity(intent);
-                finish();
                 break;
         }
     }
@@ -464,13 +476,11 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
 
     @Override
     public void onError(FacebookException e) {
-        if (e.toString().contains("net::ERR_NAME_NOT_RESOLVED")) {
-            mDialog = new ConfirmationDialog(SignUpActivity.this, "Error", getString(R.string.error_no_internet));
+        if (e.toString().contains("net::")) {
+            showInformationDialog("Error", getString(R.string.error_no_internet), null);
         } else
-            mDialog = new ConfirmationDialog(SignUpActivity.this, "Error", getString(R.string.error_no_facebook_sign_in));
+            showInformationDialog("Error", getString(R.string.error_no_internet), null);
 
-        mDialog.addAcceptButton("OK", null);
-        mDialog.show();
         DebugUtils.logError("FacebookException", e);
     }
 
@@ -497,7 +507,11 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
                     DebugUtils.logDebug(TAG, "fbLoginFailed: " + responseString + " statusCode: " + statusCode);
 
                     switch (statusCode) {
+                        case 0:
+                            showInformationDialog("Error", getString(R.string.error_no_internet_connection), null);
+                            break;
                         case 404:
+                            //TODO Test New Facebook User
                             DebugUtils.logError(TAG, "onCompleted(): facebook email not found");
                             BentoNowUtils.openEnterPhoneNumberActivity(SignUpActivity.this, graphResponse, optOpenScreen);
                             break;
@@ -517,9 +531,7 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
         } catch (Exception e) {
             DebugUtils.logError(TAG, e);
             dismissDialog();
-            mDialog = new ConfirmationDialog(SignUpActivity.this, "Error", "Sorry! Please share your email address through Facebook to continue.");
-            mDialog.addAcceptButton("OK", null);
-            mDialog.show();
+            showInformationDialog("Error", "Sorry! Please share your email address through Facebook to continue.", null);
         }
     }
 

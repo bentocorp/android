@@ -196,38 +196,6 @@ public class ConfirmationDialog extends android.app.Dialog {
     }
 
     @Override
-    public void dismiss() {
-        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
-
-        Animation anim = AnimationUtils.loadAnimation(context, R.anim.dialog_main_hide_amination);
-        anim.setAnimationListener(new Animation.AnimationListener() {
-
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                view.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        ConfirmationDialog.super.dismiss();
-                    }
-                });
-
-            }
-        });
-        Animation backAnim = AnimationUtils.loadAnimation(context, R.anim.dialog_root_hide_amin);
-
-        view.startAnimation(anim);
-        backView.startAnimation(backAnim);
-    }
-
-    @Override
     public void onBackPressed() {
         if (bAllowDismiss)
             super.onBackPressed();

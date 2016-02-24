@@ -95,10 +95,6 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
 
         btn_signin = (Button) findViewById(R.id.btn_signin);
 
-        if (getIntent().getStringExtra("email") != null) {
-            txt_email.setText(getIntent().getStringExtra("email"));
-        }
-
         /*if (BuildConfig.DEBUG) {
             txt_email.setText("kokushos@gmail.com");
             txt_password.setText("colossus");
@@ -112,8 +108,15 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
     protected void onResume() {
         if (userDao.getCurrentUser() != null)
             finish();
-        else
+        else {
             GoogleAnalyticsUtil.sendScreenView("Sign In");
+
+            if (getIntent().getStringExtra("email") != null) {
+                txt_email.setText(getIntent().getStringExtra("email"));
+                getIntent().removeExtra("email");
+            }
+
+        }
         super.onResume();
     }
 
@@ -365,12 +368,10 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
     @Override
     public void onError(FacebookException e) {
         if (e.toString().contains("net::")) {
-            mDialog = new ConfirmationDialog(SignInActivity.this, "Error", getString(R.string.error_no_internet));
+            showInformationDialog("Error", getString(R.string.error_no_internet), null);
         } else
-            mDialog = new ConfirmationDialog(SignInActivity.this, "Error", getString(R.string.error_no_facebook_sign_in));
+            showInformationDialog("Error", getString(R.string.error_no_internet), null);
 
-        mDialog.addAcceptButton("OK", null);
-        mDialog.show();
         DebugUtils.logError("FacebookException", e);
     }
 
@@ -397,6 +398,9 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
                     DebugUtils.logError(TAG, "fbLoginFailed: " + responseString + " statusCode: " + statusCode);
 
                     switch (statusCode) {
+                        case 0:
+                            showInformationDialog("Error", getString(R.string.error_no_internet_connection), null);
+                            break;
                         case 404:
                             DebugUtils.logError(TAG, "onCompleted(): facebook email not found");
                             BentoNowUtils.openEnterPhoneNumberActivity(SignInActivity.this, graphResponse, optOpenScreen);
@@ -404,9 +408,7 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
                         default:
                             try {
                                 String message = new JSONObject(responseString).getString("error");
-                                mDialog = new ConfirmationDialog(SignInActivity.this, "Error", message);
-                                mDialog.addAcceptButton("OK", null);
-                                mDialog.show();
+                                showInformationDialog("Error", message, null);
                             } catch (Exception e) {
                                 DebugUtils.logError(TAG, "onCompleted(): " + e.getLocalizedMessage());
                             }
@@ -424,9 +426,7 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
         } catch (Exception e) {
             DebugUtils.logError(TAG, e.toString());
             dismissDialog();
-            mDialog = new ConfirmationDialog(SignInActivity.this, "Error", "Sorry! Please share your email address through Facebook to continue.");
-            mDialog.addAcceptButton("OK", null);
-            mDialog.show();
+            showInformationDialog("Error", "Sorry! Please share your email address through Facebook to continue.", null);
         }
     }
 
@@ -435,6 +435,15 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
         super.onPause();
 
         AndroidUtil.hideKeyboard(txt_message);
+    }
+
+
+    private void showInformationDialog(String sTitle, String sMessage, View.OnClickListener mOnClickListener) {
+        if (mDialog == null || !mDialog.isShowing()) {
+            mDialog = new ConfirmationDialog(SignInActivity.this, sTitle, sMessage);
+            mDialog.addAcceptButton("OK", mOnClickListener);
+            mDialog.show();
+        }
     }
 
     private void dismissDialog() {
