@@ -29,7 +29,7 @@ import com.bentonow.bentonow.web.request.UserRequest;
 import com.google.android.gms.maps.model.LatLng;
 import com.loopj.android.http.TextHttpResponseHandler;
 
-import org.apache.http.Header;
+import cz.msebera.android.httpclient.Header;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

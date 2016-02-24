@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,37 +12,30 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.listener.ListenerDialog;
+import com.bentonow.bentonow.ui.material.ButtonFlat;
+import com.rengwuxian.materialedittext.MaterialEditText;
 
-public class EditPhoneDialog extends DialogFragment implements Animation.AnimationListener, View.OnClickListener, View.OnFocusChangeListener {
+public class EditPhoneDialog extends DialogFragment implements Animation.AnimationListener, View.OnClickListener {
 
     public static final String TAG = "EditPhoneDialog";
 
     private View rootView;
-    private FrameLayout mainLayout;
-    private RelativeLayout layoutAlertError;
-    private EditText editTextPhoneNumber = null;
-    private EditText editTextConfirmPhone = null;
-    private Button btnChange = null;
-    private Button btnCancel = null;
-    private TextView txtAlertError = null;
+    private RelativeLayout mainLayout;
+    private MaterialEditText editTextPhoneNumber = null;
+    private ButtonFlat btnChange = null;
+    private ButtonFlat btnCancel = null;
 
     private Animation anim;
-    private Animation animOut;
 
     private ListenerDialog mListenerDialog;
 
     private int numBacks = 0;
-    private boolean bChangePhone;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -82,25 +74,19 @@ public class EditPhoneDialog extends DialogFragment implements Animation.Animati
         getBtnChange().setOnClickListener(this);
         getBtnCancel().setOnClickListener(this);
 
-        getEditTextPhoneNumber().setOnFocusChangeListener(this);
-        getEditTextConfirmPhone().setOnFocusChangeListener(this);
-
         getEditTextPhoneNumber().addTextChangedListener(new TextWatcher() {
             int oldLength;
 
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-                getEditTextPhoneNumber().setTextColor(getResources().getColor(R.color.gray));
                 String phone = getEditTextPhoneNumber().getText().toString().replaceAll("[^0-9]", "");
 
                 if (oldLength != phone.length()) {
@@ -108,75 +94,28 @@ public class EditPhoneDialog extends DialogFragment implements Animation.Animati
 
                     getEditTextPhoneNumber().setText(BentoNowUtils.getPhoneFromNumber(getEditTextPhoneNumber().getText().toString()));
                     getEditTextPhoneNumber().setSelection(getEditTextPhoneNumber().getText().length());
-
-                    validate(getEditTextPhoneNumber());
                 }
+
             }
         });
 
-        getEditTextConfirmPhone().addTextChangedListener(new TextWatcher() {
-            int oldLength;
-
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                getEditTextConfirmPhone().setTextColor(getResources().getColor(R.color.gray));
-                String phone = getEditTextConfirmPhone().getText().toString().replaceAll("[^0-9]", "");
-
-                if (oldLength != phone.length()) {
-                    oldLength = phone.length();
-
-                    getEditTextConfirmPhone().setText(BentoNowUtils.getPhoneFromNumber(getEditTextConfirmPhone().getText().toString()));
-                    getEditTextConfirmPhone().setSelection(getEditTextConfirmPhone().getText().length());
-
-                    validate(getEditTextConfirmPhone());
-                }
-            }
-        });
 
         anim = AnimationUtils.loadAnimation(getActivity(), R.anim.fadein);
-        animOut = AnimationUtils.loadAnimation(getActivity(), R.anim.fadeout);
-        animOut.setAnimationListener(this);
     }
 
     private void onDismissDialog() {
         if (numBacks == 0) {
-            getLayoutMain().startAnimation(animOut);
             numBacks++;
         }
     }
 
-    private void validate(EditText view) {
-        if (BentoNowUtils.validPhoneNumber(view.getText().toString())) {
-            getLayoutAlertError().setVisibility(View.INVISIBLE);
-            view.setTextColor(getResources().getColor(R.color.gray));
-            validateMatchPhones();
+    private boolean isValidPhoneNumber() {
+        if (BentoNowUtils.validPhoneNumber(getEditTextPhoneNumber().getText().toString())) {
+            return true;
         } else {
-            getTxtAlertError().setText(getResources().getText(R.string.alert_error_enter_valid_number));
-            getLayoutAlertError().setVisibility(View.VISIBLE);
-            view.setTextColor(getResources().getColor(R.color.orange));
+            getEditTextPhoneNumber().setError(getResources().getString(R.string.alert_error_enter_valid_number));
+            return false;
         }
-    }
-
-    private void validateMatchPhones() {
-        if (BentoNowUtils.validPhoneNumber(getEditTextPhoneNumber().getText().toString()) && BentoNowUtils.validPhoneNumber(getEditTextConfirmPhone().getText().toString()))
-            if (getEditTextPhoneNumber().getText().toString().equals(getEditTextConfirmPhone().getText().toString())) {
-                getLayoutAlertError().setVisibility(View.INVISIBLE);
-                bChangePhone = true;
-            } else {
-                getTxtAlertError().setText(getResources().getText(R.string.alert_error_mismatch));
-                getLayoutAlertError().setVisibility(View.VISIBLE);
-                bChangePhone = false;
-            }
     }
 
     @Override
@@ -186,30 +125,16 @@ public class EditPhoneDialog extends DialogFragment implements Animation.Animati
         super.onStart();
     }
 
-
-    @Override
-    public void onFocusChange(View v, boolean hasFocus) {
-        switch (v.getId()) {
-            case R.id.edit_text_phone_number:
-                getEditTextPhoneNumber().setTextSize(TypedValue.COMPLEX_UNIT_SP, hasFocus ? 18 : 14);
-                break;
-            case R.id.edit_text_confirm_phone:
-                getEditTextConfirmPhone().setTextSize(TypedValue.COMPLEX_UNIT_SP, hasFocus ? 18 : 14);
-                break;
-        }
-
-    }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_cancel:
-                onDismissDialog();
+            case R.id.button_cancel:
+                dismiss();
                 break;
-            case R.id.btn_ok:
-                if (bChangePhone && mListenerDialog != null) {
+            case R.id.button_change:
+                if (isValidPhoneNumber() && mListenerDialog != null) {
                     mListenerDialog.btnOkClick(getEditTextPhoneNumber().getText().toString());
-                    onDismissDialog();
+                    dismiss();
                 }
                 break;
             default:
@@ -240,47 +165,28 @@ public class EditPhoneDialog extends DialogFragment implements Animation.Animati
         this.mListenerDialog = mListenerDialog;
     }
 
-    public FrameLayout getLayoutMain() {
+    public RelativeLayout getLayoutMain() {
         if (mainLayout == null)
-            mainLayout = (FrameLayout) rootView.findViewById(R.id.main_layout);
+            mainLayout = (RelativeLayout) rootView.findViewById(R.id.dialog_rootView);
         return mainLayout;
     }
 
-    public RelativeLayout getLayoutAlertError() {
-        if (layoutAlertError == null)
-            layoutAlertError = (RelativeLayout) rootView.findViewById(R.id.layout_alert_error);
-        return layoutAlertError;
-    }
-
-    public Button getBtnChange() {
+    public ButtonFlat getBtnChange() {
         if (btnChange == null)
-            btnChange = (Button) rootView.findViewById(R.id.btn_ok);
+            btnChange = (ButtonFlat) rootView.findViewById(R.id.button_change);
         return btnChange;
     }
 
-    public Button getBtnCancel() {
+    public ButtonFlat getBtnCancel() {
         if (btnCancel == null)
-            btnCancel = (Button) rootView.findViewById(R.id.btn_cancel);
+            btnCancel = (ButtonFlat) rootView.findViewById(R.id.button_cancel);
         return btnCancel;
     }
 
-    public EditText getEditTextConfirmPhone() {
-        if (editTextConfirmPhone == null)
-            editTextConfirmPhone = (EditText) rootView.findViewById(R.id.edit_text_confirm_phone);
-        return editTextConfirmPhone;
-    }
-
-    private EditText getEditTextPhoneNumber() {
+    private MaterialEditText getEditTextPhoneNumber() {
         if (editTextPhoneNumber == null)
-            editTextPhoneNumber = (EditText) rootView.findViewById(R.id.edit_text_phone_number);
+            editTextPhoneNumber = (MaterialEditText) rootView.findViewById(R.id.edit_text_phone);
         return editTextPhoneNumber;
-    }
-
-
-    private TextView getTxtAlertError() {
-        if (txtAlertError == null)
-            txtAlertError = (TextView) rootView.findViewById(R.id.alert_error_phone);
-        return txtAlertError;
     }
 
 }

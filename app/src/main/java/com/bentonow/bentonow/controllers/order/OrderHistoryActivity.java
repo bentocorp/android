@@ -22,7 +22,7 @@ import com.bentonow.bentonow.ui.BackendAutoFitTextView;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 
-import org.apache.http.Header;
+import cz.msebera.android.httpclient.Header;
 
 public class OrderHistoryActivity extends BaseFragmentActivity implements View.OnClickListener, ListenerOrderHistory {
 

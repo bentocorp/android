@@ -40,7 +40,7 @@ import com.facebook.login.LoginResult;
 import com.google.gson.Gson;
 import com.loopj.android.http.TextHttpResponseHandler;
 
-import org.apache.http.Header;
+import cz.msebera.android.httpclient.Header;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

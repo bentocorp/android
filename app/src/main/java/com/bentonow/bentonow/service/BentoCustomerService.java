@@ -16,7 +16,7 @@ import com.bentonow.bentonow.listener.InterfaceCustomerService;
 import com.bentonow.bentonow.parse.InitParse;
 import com.loopj.android.http.TextHttpResponseHandler;
 
-import org.apache.http.Header;
+import cz.msebera.android.httpclient.Header;
 
 
 /**

@@ -1,112 +1,77 @@
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/main_layout"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/dialog_rootView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black_60">
+    android:background="#55000000"
+    android:padding="32dp">
 
     <RelativeLayout
+        android:id="@+id/contentDialog"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/dialog_background"
+        android:padding="24dp">
 
+        <com.bentonow.bentonow.ui.BackendAutoFitTextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:key="phone-confirmation-title" />
 
-        <LinearLayout
-            android:id="@+id/container_alert"
+        <ScrollView
+            android:id="@+id/message_scrollView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:orientation="vertical"
-            android:padding="@dimen/general_padding">
+            android:layout_below="@id/title"
+            android:paddingBottom="50dp"
+            android:scrollbarSize="2dp"
+            android:scrollbarThumbVertical="@color/thumbColor">
 
-            <RelativeLayout
-                android:id="@+id/layout_alert_error"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:background="@color/alert_background"
-                android:visibility="invisible">
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-                <ImageView
-                    android:id="@+id/imageView3"
-                    android:layout_width="38dp"
-                    android:layout_height="38dp"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="8dp"
-                    android:src="@drawable/ic_action_alert_error" />
 
-                <TextView
-                    android:id="@+id/alert_error_phone"
+                <com.rengwuxian.materialedittext.MaterialEditText
+                    android:id="@+id/edit_text_phone"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="12dp"
-                    android:layout_toRightOf="@+id/imageView3"
-                    android:gravity="left|center"
-                    android:text="@string/alert_error_enter_valid_number"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/text_very_small" />
+                    android:layout_height="wrap_content"
+                    android:inputType="phone"
+                    app:met_baseColor="@color/black"
+                    app:met_errorColor="@color/red"
+                    app:met_primaryColor="@color/primary" />
 
-            </RelativeLayout>
+            </LinearLayout>
+        </ScrollView>
 
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="10dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/message_scrollView"
+            android:layout_marginTop="24dp"
+            android:gravity="right"
+            android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/edit_text_phone_number"
-                style="@style/EditTextPhone"
-                android:layout_width="fill_parent"
-                android:layout_height="48dp"
-                android:background="@drawable/bg_white_bordered"
-                android:hint="@string/edit_hint_enter_phone"
-                android:padding="@dimen/btn_padding"
-                android:textSize="@dimen/text_small" />
-
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="10dp" />
-
-            <EditText
-                android:id="@+id/edit_text_confirm_phone"
-                style="@style/EditTextPhone"
-                android:layout_width="fill_parent"
-                android:layout_height="48dp"
-                android:background="@drawable/bg_white_bordered"
-                android:hint="@string/edit_hint_confirm_phone"
-                android:padding="@dimen/btn_padding"
-                android:textSize="@dimen/text_small" />
-
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="10dp" />
-
-            <Button
-                android:id="@+id/btn_ok"
-                style="@style/Base.Widget.AppCompat.Button.Borderless"
-                android:layout_width="fill_parent"
+            <com.bentonow.bentonow.ui.material.ButtonFlat
+                android:id="@+id/button_cancel"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/background_gray_rounded_corners"
-                android:gravity="center"
-                android:padding="@dimen/btn_padding"
-                android:text="@string/change_phone_number"
-                android:textColor="@color/white"
-                android:textStyle="bold" />
+                android:background="@color/black"
+                android:text="Cancel" />
 
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="10dp" />
-
-            <Button
-                android:id="@+id/btn_cancel"
-                style="@style/Base.Widget.AppCompat.Button.Borderless"
-                android:layout_width="fill_parent"
+            <com.bentonow.bentonow.ui.material.ButtonFlat
+                android:id="@+id/button_change"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/transparent"
-                android:gravity="center"
-                android:padding="@dimen/btn_padding"
-                android:text="@string/btn_cancel_text"
-                android:textColor="@color/white"
-                android:textStyle="bold" />
+                android:background="@color/primary"
+                android:text="Change" />
         </LinearLayout>
     </RelativeLayout>
-</FrameLayout>
+
+</RelativeLayout>

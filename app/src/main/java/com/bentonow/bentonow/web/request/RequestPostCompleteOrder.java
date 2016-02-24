@@ -1,6 +1,5 @@
 package com.bentonow.bentonow.web.request;
 
-import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.dao.OrderDao;
@@ -12,7 +11,7 @@ import com.bentonow.bentonow.model.User;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 
-import org.apache.http.Header;
+import cz.msebera.android.httpclient.Header;
 
 /**
  * Created by Jose Torres on 14/05/15.

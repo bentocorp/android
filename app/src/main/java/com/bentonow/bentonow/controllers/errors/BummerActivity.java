@@ -19,7 +19,7 @@ import com.bentonow.bentonow.ui.BackendEditText;
 import com.bentonow.bentonow.web.request.UserRequest;
 import com.loopj.android.http.TextHttpResponseHandler;
 
-import org.apache.http.Header;
+import cz.msebera.android.httpclient.Header;
 import org.json.JSONObject;
 
 

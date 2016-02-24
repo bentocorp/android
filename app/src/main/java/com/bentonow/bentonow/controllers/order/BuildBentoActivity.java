@@ -59,7 +59,7 @@ import com.loopj.android.http.TextHttpResponseHandler;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.mixpanel.android.mpmetrics.Tweak;
 
-import org.apache.http.Header;
+import cz.msebera.android.httpclient.Header;
 import org.json.JSONObject;
 
 import java.util.ArrayList;

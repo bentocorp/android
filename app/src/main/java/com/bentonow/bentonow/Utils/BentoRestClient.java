@@ -10,8 +10,6 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
-import org.apache.http.conn.ssl.SSLSocketFactory;
-
 import java.io.IOException;
 import java.net.Socket;
 import java.security.KeyManagementException;
@@ -25,6 +23,8 @@ import java.security.cert.X509Certificate;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+
+import cz.msebera.android.httpclient.conn.ssl.SSLSocketFactory;
 
 public class BentoRestClient {
     static final String TAG = "BentoRestClient";

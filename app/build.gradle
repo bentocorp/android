@@ -31,12 +31,14 @@ android {
 
     buildTypes {
         release {
+            multiDexEnabled false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.main_title'), 'proguard-rules.pro'
             debuggable false
             signingConfig signingConfigs.Bento
         }
         debug {
+            multiDexEnabled false
             debuggable true
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.main_title'), 'proguard-rules.pro'
@@ -69,8 +71,13 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.google.android.gms:play-services:7.8.0'
-    compile 'com.google.maps.android:android-maps-utils:0.3.4'
+    compile 'com.google.code.gson:gson:2.3.1'
+    compile 'com.google.android.gms:play-services-location:8.4.0'
+    compile 'com.google.android.gms:play-services-maps:8.4.0'
+    compile 'com.google.android.gms:play-services-analytics:8.4.0'
+    compile 'com.android.support:multidex:1.0.1'
+    compile 'com.android.support:cardview-v7:22.1.1'
+    compile 'com.android.support:recyclerview-v7:22.1.1'
     compile 'uk.co.chrisjenx:calligraphy:2.0.2'
     compile 'com.stripe:stripe-android:1.0.0'
     compile 'com.facebook.android:facebook-android-sdk:4.1.2'
@@ -80,12 +87,8 @@ dependencies {
     }
     compile 'me.grantland:autofittextview:0.2.+'
     compile 'com.mixpanel.android:mixpanel-android:4.6.4'
-    compile 'com.loopj.android:android-async-http:1.4.8'
-    compile 'com.google.code.gson:gson:2.3.1'
-    compile 'com.android.support:multidex:1.0.1'
-    compile 'com.android.support:cardview-v7:22.1.1'
-    compile 'com.android.support:recyclerview-v7:22.1.1'
-
+    compile 'com.loopj.android:android-async-http:1.4.9'
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta1'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
+    compile 'com.rengwuxian.materialedittext:library:2.1.4'
 }

@@ -6,7 +6,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.Window;
-import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -87,12 +86,7 @@ public class ProgressDialog extends android.app.Dialog {
 
     @Override
     public void show() {
-
-        //TODO Dont show dialog if is in background
         super.show();
-        // set dialog enter animations
-        view.startAnimation(AnimationUtils.loadAnimation(context, R.anim.dialog_main_show_amination));
-        backView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.dialog_root_show_amin));
     }
 
     // GETERS & SETTERS
