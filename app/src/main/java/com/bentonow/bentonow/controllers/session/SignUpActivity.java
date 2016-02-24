@@ -40,11 +40,12 @@ import com.facebook.login.LoginResult;
 import com.google.gson.Gson;
 import com.loopj.android.http.TextHttpResponseHandler;
 
-import cz.msebera.android.httpclient.Header;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Collections;
+
+import cz.msebera.android.httpclient.Header;
 
 public class SignUpActivity extends BaseFragmentActivity implements View.OnClickListener, FacebookCallback<LoginResult>, GraphRequest.GraphJSONObjectCallback {
 
@@ -251,13 +252,16 @@ public class SignUpActivity extends BaseFragmentActivity implements View.OnClick
 
             switch (optOpenScreen) {
                 case NORMAL:
-                    onBackPressed();
+                    Intent mIntentSettings = new Intent(SignUpActivity.this, SettingsActivity.class);
+                    mIntentSettings.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(mIntentSettings);
                     break;
                 case COMPLETE_ORDER:
                     if (BentoNowUtils.isValidCompleteOrder(SignUpActivity.this))
                         BentoNowUtils.openCompleteOrderActivity(SignUpActivity.this, MenuDao.getCurrentMenu());
                     break;
             }
+
             finish();
 
         } catch (Exception e) {

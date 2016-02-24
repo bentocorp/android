@@ -39,10 +39,11 @@ import com.facebook.login.LoginResult;
 import com.google.gson.Gson;
 import com.loopj.android.http.TextHttpResponseHandler;
 
-import cz.msebera.android.httpclient.Header;
 import org.json.JSONObject;
 
 import java.util.Collections;
+
+import cz.msebera.android.httpclient.Header;
 
 
 public class SignInActivity extends BaseFragmentActivity implements View.OnClickListener, FacebookCallback<LoginResult>, GraphRequest.GraphJSONObjectCallback {
@@ -109,7 +110,10 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
 
     @Override
     protected void onResume() {
-        GoogleAnalyticsUtil.sendScreenView("Sign In");
+        if (userDao.getCurrentUser() != null)
+            finish();
+        else
+            GoogleAnalyticsUtil.sendScreenView("Sign In");
         super.onResume();
     }
 
@@ -299,7 +303,6 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
         Intent mIntentSignUp = new Intent(this, SignUpActivity.class);
         mIntentSignUp.putExtra(ConstantUtils.TAG_OPEN_SCREEN, optOpenScreen);
         startActivity(mIntentSignUp);
-        finish();
     }
 
     public void onPrivacyPolicyPressed(View view) {
