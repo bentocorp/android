@@ -303,18 +303,18 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
                     DebugUtils.logDebug(TAG, "requestPromoCode success " + responseString);
 
                     mCurrentUser.coupon_code = mOrder.CouponCode = code;
-                    int discount = 0;
+                    double dAmountOff = 0;
 
                     try {
-                        discount = Integer.parseInt(new JSONObject(responseString).getString("amountOff").replace(".", ""));
+                        dAmountOff = Double.parseDouble(new JSONObject(responseString).getString("amountOff"));
                     } catch (Exception e) {
                         DebugUtils.logError(TAG, "requestPromoCode(): " + e.getLocalizedMessage());
                     }
 
 
-                    DebugUtils.logDebug(TAG, "discount " + discount);
+                    DebugUtils.logDebug(TAG, "Coupon Discount " + dAmountOff);
 
-                    mOrder.OrderDetails.coupon_discount_cents = discount;
+                    mOrder.OrderDetails.coupon_discount_cents = (int) (dAmountOff * 100);
                     mOrderDao.updateOrder(mOrder);
 
                     trackPromoCode();
@@ -573,7 +573,8 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
         txt_credit_card.setText(mCurrentUser.card.last4);
 
         getTxtDeliveryPrice().setText(String.format(getString(R.string.money_format), (double) mOrder.OrderDetails.delivery_price));
-        txt_discount.setText(String.format(getString(R.string.money_format), (double) mOrder.OrderDetails.coupon_discount_cents / 100));
+        double dCoupon = mOrder.OrderDetails.coupon_discount_cents;
+        txt_discount.setText(String.format(getString(R.string.money_format), (dCoupon / 100.0)));
         txt_tax.setText(String.format(getString(R.string.money_format), mOrder.OrderDetails.tax_cents / 100));
         txt_tip.setText(String.format(getString(R.string.tip_percentage), (double) mOrder.OrderDetails.tip_percentage) + " %");
         txt_total.setText(String.format(getString(R.string.money_format), mOrder.OrderDetails.total_cents / 100));

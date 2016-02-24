@@ -407,6 +407,7 @@ public class OrderDao extends MainDao {
         double pre_coupon_subtotal;
         double post_coupon_subtotal;
         double coupon_discount;
+        double coupon = mOrder.OrderDetails.coupon_discount_cents;
         double tax;
         double tax_w_o_coupon;
         double subtotal_w_o_coupon;
@@ -416,7 +417,7 @@ public class OrderDao extends MainDao {
         double tax_percent = SettingsDao.getCurrent().tax_percent;
         double total_w_o_coupon;
 
-        coupon_discount = mOrder.OrderDetails.coupon_discount_cents / 100;
+        coupon_discount = (coupon / 100.0);
         delivery_fee = SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.ORDER_AHEAD_SUBSCRIPTION) ? 0 : mOrder.OrderDetails.delivery_price;
 
         for (int a = 0; a < mOrder.OrderItems.size(); a++) {
@@ -460,7 +461,6 @@ public class OrderDao extends MainDao {
             total = pre_coupon_subtotal + tax + tip - coupon_discount;
 
 
-        mOrder.OrderDetails.coupon_discount_cents = (int) Math.round(coupon_discount * 100);
         mOrder.OrderDetails.items_total = AndroidUtil.round(items_total, 2);
         mOrder.OrderDetails.subtotal = AndroidUtil.round(subtotal, 2);
         mOrder.OrderDetails.tax_cents = AndroidUtil.round(tax, 2) * 100;
@@ -475,6 +475,7 @@ public class OrderDao extends MainDao {
         DebugUtils.logDebug(TAG, "Pre-Coupon Subtotal: " + pre_coupon_subtotal);
         DebugUtils.logDebug(TAG, "Post-Coupon Subtotal: " + post_coupon_subtotal);
         DebugUtils.logDebug(TAG, "Coupon (Promo) Discount: " + coupon_discount);
+        DebugUtils.logDebug(TAG, "Coupon (Promo) Discount Cents: " + mOrder.OrderDetails.coupon_discount_cents);
         DebugUtils.logDebug(TAG, "Tax w/o coupon: " + tax_w_o_coupon);
         DebugUtils.logDebug(TAG, "Tax: " + tax);
         DebugUtils.logDebug(TAG, "Tax double: " + SettingsDao.getCurrent().tax_percent);
