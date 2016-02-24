@@ -232,34 +232,42 @@ public class InitParse extends MainParser {
             Gson gson = new Gson();
             Menu row;
 
-            if (menu != null && menu.has("lunch")) {
+            if (parseSection(menu, "lunch")) {
                 JSONObject mLunch = menu.getJSONObject("lunch");
                 if (mLunch != null && mLunch.has("Menu")) {
                     row = gson.fromJson(mLunch.getString("Menu"), Menu.class);
-                    if (mLunch.has("MenuItems")) {
+
+                    if (parseSection(mLunch, "MenuItems"))
                         row.dishModels = gson.fromJson(mLunch.getString("MenuItems"), new TypeToken<List<DishModel>>() {
                         }.getType());
-                        if (bIsToday)
-                            MenuDao.mListToday.add(row);
-                        else
-                            MenuDao.mListNextDay.add(row);
-                    }
 
+                    if (parseSection(mLunch, "OAOnlyItems"))
+                        row.oaItems = gson.fromJson(mLunch.getString("OAOnlyItems"), new TypeToken<List<DishModel>>() {
+                        }.getType());
+
+                    if (bIsToday)
+                        MenuDao.mListToday.add(row);
+                    else
+                        MenuDao.mListNextDay.add(row);
                 }
             }
 
-            if (menu != null && menu.has("dinner")) {
-                JSONObject mLunch = menu.getJSONObject("dinner");
-                if (mLunch != null && mLunch.has("Menu")) {
-                    row = gson.fromJson(mLunch.getString("Menu"), Menu.class);
-                    if (mLunch.has("MenuItems")) {
-                        row.dishModels = gson.fromJson(mLunch.getString("MenuItems"), new TypeToken<List<DishModel>>() {
+            if (parseSection(menu, "dinner")) {
+                JSONObject mDinner = menu.getJSONObject("dinner");
+                if (parseSection(mDinner, "Menu")) {
+                    row = gson.fromJson(mDinner.getString("Menu"), Menu.class);
+                    if (parseSection(mDinner, "MenuItems"))
+                        row.dishModels = gson.fromJson(mDinner.getString("MenuItems"), new TypeToken<List<DishModel>>() {
                         }.getType());
-                        if (bIsToday)
-                            MenuDao.mListToday.add(row);
-                        else
-                            MenuDao.mListNextDay.add(row);
-                    }
+
+                    if (parseSection(mDinner, "OAOnlyItems"))
+                        row.oaItems = gson.fromJson(mDinner.getString("OAOnlyItems"), new TypeToken<List<DishModel>>() {
+                        }.getType());
+
+                    if (bIsToday)
+                        MenuDao.mListToday.add(row);
+                    else
+                        MenuDao.mListNextDay.add(row);
 
                 }
             }

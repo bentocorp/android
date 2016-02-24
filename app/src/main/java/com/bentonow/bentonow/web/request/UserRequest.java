@@ -1,10 +1,7 @@
 package com.bentonow.bentonow.web.request;
 
-import android.util.Log;
-
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.DebugUtils;
-import com.bentonow.bentonow.dao.UserDao;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.user.CouponRequest;
 import com.google.gson.Gson;
@@ -12,22 +9,15 @@ import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 /**
- * Created by joseguadalupetorresfuentes on 11/11/15.
+ * Created by Kokusho Tores on 11/11/15.
  */
 public class UserRequest {
 
     public static final String TAG = "UserRequest";
 
-    public static void requestCoupon(String email, String reason, TextHttpResponseHandler response) {
-        UserDao userDao = new UserDao();
-        User mCurrent = userDao.getCurrentUser();
-
-        CouponRequest couponRequest = new CouponRequest();
-        couponRequest.email = email;
-        couponRequest.reason = reason;
-        couponRequest.api_token = mCurrent != null ? mCurrent.api_token : null;
-
-        String data = new Gson().toJson(couponRequest);
+    public static void requestCoupon(CouponRequest mCoupon, TextHttpResponseHandler response) {
+        String data = new Gson().toJson(mCoupon);
+        data = data.replace("lng", "long");
 
         RequestParams params = new RequestParams();
         params.put("data", data);

@@ -124,6 +124,14 @@ public class AddOnActivity extends BaseFragmentActivity implements View.OnClickL
                         getListAdapter().aListDish.add(dishModel);
                     }
 
+            for (DishModel dishModel : mMenu.oaItems) {
+                if (dishModel.type.equals("addon")) {
+                    dishModel.is_oa_only = 1;
+                    getListAdapter().aListDish.add(dishModel);
+                }
+            }
+
+
             getListAdapter().aListDish.addAll(aSoldDish);
 
         }

@@ -87,6 +87,8 @@ public class ProgressDialog extends android.app.Dialog {
 
     @Override
     public void show() {
+
+        //TODO Dont show dialog if is in background
         super.show();
         // set dialog enter animations
         view.startAnimation(AnimationUtils.loadAnimation(context, R.anim.dialog_main_show_amination));

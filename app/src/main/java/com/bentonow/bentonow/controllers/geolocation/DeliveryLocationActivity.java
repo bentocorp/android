@@ -50,6 +50,7 @@ import com.bentonow.bentonow.listener.ListenerWebRequest;
 import com.bentonow.bentonow.listener.OnCustomDragListener;
 import com.bentonow.bentonow.model.AutoCompleteModel;
 import com.bentonow.bentonow.model.Order;
+import com.bentonow.bentonow.model.user.CouponRequest;
 import com.bentonow.bentonow.parse.InitParse;
 import com.bentonow.bentonow.ui.BackendTextView;
 import com.bentonow.bentonow.web.BentoNowApi;
@@ -420,8 +421,14 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         DebugUtils.logDebug(TAG, "onContinuePressed AppState " + MenuDao.gateKeeper.getAppState());
 
         if (MenuDao.gateKeeper.getAppState().contains("map,no_service")) {
+            CouponRequest mCoupon = new CouponRequest();
+            mCoupon.reason = "outside of delivery zone";
+            mCoupon.address = getTxtAddress().getText().toString();
+            mCoupon.lat = String.valueOf(mLastOrderLocation.latitude);
+            mCoupon.lng = String.valueOf(mLastOrderLocation.longitude);
+
             Intent mIntentBummer = new Intent(DeliveryLocationActivity.this, BummerActivity.class);
-            mIntentBummer.putExtra(BummerActivity.TAG_INVALID_ADDRESS, getTxtAddress().getText().toString());
+            mIntentBummer.putExtra(CouponRequest.TAG, mCoupon);
             startActivity(mIntentBummer);
         } else if (MenuDao.gateKeeper.getAppState().contains("build")) {
             switch (optOpenScreen) {
@@ -903,6 +910,13 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                         if (bAllowRequest) {
                             bAllowRequest = false;
                             resultList = autocomplete(constraint.toString());
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    notifyDataSetChanged();
+                                }
+                            });
+
                             bAllowRequest = true;
 
                             // Assign the data to the FilterResults

@@ -24,6 +24,7 @@ public class ItemSideCustomWrapper {
     private AutofitTextView txt_description = null;
     private BackendAutoFitTextView btn_add_to_bento;
     private BackendAutoFitTextView btn_added;
+    private BackendAutoFitTextView txt_oa_label;
     private ProgressBarCircularIndeterminate mProgressLoading;
 
     public ItemSideCustomWrapper(View base) {
@@ -70,6 +71,12 @@ public class ItemSideCustomWrapper {
         if (btn_added == null)
             btn_added = (BackendAutoFitTextView) view.findViewById(R.id.btn_added);
         return btn_added;
+    }
+
+    public BackendAutoFitTextView getTxtOaLabel() {
+        if (txt_oa_label == null)
+            txt_oa_label = (BackendAutoFitTextView) view.findViewById(R.id.txt_oa_label);
+        return txt_oa_label;
     }
 
     public ProgressBarCircularIndeterminate getProgressLoading() {

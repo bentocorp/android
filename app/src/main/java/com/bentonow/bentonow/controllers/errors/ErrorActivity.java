@@ -22,9 +22,11 @@ import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.dao.MenuDao;
 import com.bentonow.bentonow.listener.InterfaceCustomerService;
 import com.bentonow.bentonow.model.Menu;
+import com.bentonow.bentonow.model.user.CouponRequest;
 import com.bentonow.bentonow.service.BentoCustomerService;
 import com.bentonow.bentonow.ui.BackendTextView;
 import com.bentonow.bentonow.web.request.UserRequest;
+import com.google.android.gms.maps.model.LatLng;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.apache.http.Header;
@@ -171,7 +173,18 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
             mDialog.addAcceptButton("OK", null);
             mDialog.show();
         } else {
-            UserRequest.requestCoupon(getEditTxtEmail().getText().toString(), sStatus, new TextHttpResponseHandler() {
+            CouponRequest mCoupon = new CouponRequest();
+            mCoupon.reason = sStatus;
+            mCoupon.email = getEditTxtEmail().getText().toString();
+            mCoupon.address = BentoNowUtils.getFullAddress();
+
+            LatLng mLocation = BentoNowUtils.getOrderLocation();
+            if (mLocation != null) {
+                mCoupon.lat = String.valueOf(mLocation.latitude);
+                mCoupon.lng = String.valueOf(mLocation.longitude);
+            }
+
+            UserRequest.requestCoupon(mCoupon, new TextHttpResponseHandler() {
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {

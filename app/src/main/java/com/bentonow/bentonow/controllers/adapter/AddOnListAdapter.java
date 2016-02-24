@@ -94,30 +94,15 @@ public class AddOnListAdapter extends RecyclerView.Adapter<AddOnWrapper> {
         });
 
         viewHolder.getTxtNumberAddOn().setText(String.valueOf(mDishDao.countItemsById(mDish.itemId)));
+        viewHolder.getImgGradient().setVisibility(iDishSelected == position ? View.VISIBLE : View.INVISIBLE);
 
-
-       /* if (mDishDao.isSoldOut(mDish, true, bIsMenuOD)) {
-            viewHolder.getImgSoldOut().setVisibility(View.VISIBLE);
-            viewHolder.getImgGradient().setVisibility(View.VISIBLE);
+        if (mDish.is_oa_only == 1) {
             viewHolder.getImgAddDish().setImageResource(R.drawable.ic_action_content_add_circle_outline_gray);
             viewHolder.getImgRemoveDish().setImageResource(R.drawable.ic_action_content_remove_circle_outline_gray);
             viewHolder.getImgAddDish().setOnClickListener(null);
             viewHolder.getImgRemoveDish().setOnClickListener(null);
-        } else if (!mDishDao.canBeAdded(mDish)) {
-            viewHolder.getImgSoldOut().setVisibility(View.VISIBLE);
-            viewHolder.getImgGradient().setVisibility(View.VISIBLE);
-            viewHolder.getImgAddDish().setImageResource(R.drawable.ic_action_content_add_circle_outline_gray);
-            // viewHolder.getImgRemoveDish().setImageResource(R.drawable.ic_action_content_remove_circle_outline_gray);
-            viewHolder.getImgAddDish().setOnClickListener(null);
-        } else {
-            viewHolder.getImgSoldOut().setVisibility(View.INVISIBLE);
-            viewHolder.getImgGradient().setVisibility(iDishSelected == position ? View.VISIBLE : View.INVISIBLE);
-            viewHolder.getImgAddDish().setImageResource(R.drawable.ic_action_content_add_circle_outline);
-            viewHolder.getImgRemoveDish().setImageResource(R.drawable.ic_action_content_remove_circle_outline);
-        }*/
-
-
-        if (!mDishDao.canBeAdded(mDish) || mDishDao.isSoldOut(mDish, true, bIsMenuOD)) {
+            viewHolder.getImgSoldOut().setVisibility(View.GONE);
+        } else if (!mDishDao.canBeAdded(mDish) || mDishDao.isSoldOut(mDish, true, bIsMenuOD)) {
             viewHolder.getImgSoldOut().setVisibility(View.VISIBLE);
             viewHolder.getImgGradient().setVisibility(View.VISIBLE);
 
@@ -133,12 +118,12 @@ public class AddOnListAdapter extends RecyclerView.Adapter<AddOnWrapper> {
 
         } else {
             viewHolder.getImgSoldOut().setVisibility(View.INVISIBLE);
-            viewHolder.getImgGradient().setVisibility(iDishSelected == position ? View.VISIBLE : View.INVISIBLE);
             viewHolder.getImgAddDish().setImageResource(R.drawable.ic_action_content_add_circle_outline);
             viewHolder.getImgRemoveDish().setImageResource(R.drawable.ic_action_content_remove_circle_outline);
         }
 
         viewHolder.getTxtDescription().setVisibility(iDishSelected == position ? View.VISIBLE : View.INVISIBLE);
+        viewHolder.getTxtOaLabel().setVisibility(mDish.is_oa_only == 0 || iDishSelected == position ? View.GONE : View.VISIBLE);
 
     }
 

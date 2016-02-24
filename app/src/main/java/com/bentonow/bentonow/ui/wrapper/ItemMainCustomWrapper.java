@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.ui.AutoFitTxtView;
+import com.bentonow.bentonow.ui.BackendAutoFitTextView;
 import com.bentonow.bentonow.ui.material.ProgressBarCircularIndeterminate;
 
 
@@ -26,6 +27,7 @@ public class ItemMainCustomWrapper {
     private AutoFitTxtView btn_dish_price = null;
     private AutoFitTxtView btn_add_to_bento;
     private AutoFitTxtView btn_added;
+    private BackendAutoFitTextView txt_oa_label;
     private LinearLayout wrapper_add_price = null;
     private View view_line_divider = null;
     private ProgressBarCircularIndeterminate mProgressLoading;
@@ -76,11 +78,16 @@ public class ItemMainCustomWrapper {
         return btn_dish_price;
     }
 
-
     public AutoFitTxtView getBtnAddToBento() {
         if (btn_add_to_bento == null)
             btn_add_to_bento = (AutoFitTxtView) view.findViewById(R.id.btn_add_to_bento);
         return btn_add_to_bento;
+    }
+
+    public BackendAutoFitTextView getTxtOaLabel() {
+        if (txt_oa_label == null)
+            txt_oa_label = (BackendAutoFitTextView) view.findViewById(R.id.txt_oa_label);
+        return txt_oa_label;
     }
 
     public AutoFitTxtView getBtnAdded() {

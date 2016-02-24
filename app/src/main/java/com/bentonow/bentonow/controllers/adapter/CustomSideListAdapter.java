@@ -131,7 +131,11 @@ public class CustomSideListAdapter extends ArrayAdapter<DishModel> {
         } else
             viewHolder.getTxtDescription().setVisibility(View.GONE);
 
-        if (!dishDao.canBeAdded(mDish)) {
+        if (mDish.is_oa_only == 1) {
+            viewHolder.getBtnAddToBento().setText(IosCopyDao.get("oa-only-od-btn"));
+            viewHolder.getImgSoldOut().setVisibility(View.GONE);
+            getItem(position).can_be_added = 0;
+        } else if (!dishDao.canBeAdded(mDish)) {
             viewHolder.getBtnAddToBento().setText(IosCopyDao.get("reached-max-button"));
             viewHolder.getImgSoldOut().setVisibility(View.GONE);
             getItem(position).can_be_added = 0;
@@ -144,6 +148,9 @@ public class CustomSideListAdapter extends ArrayAdapter<DishModel> {
             viewHolder.getImgSoldOut().setVisibility(View.GONE);
             getItem(position).can_be_added = 1;
         }
+
+
+        viewHolder.getTxtOaLabel().setVisibility(mDish.is_oa_only == 0 || selected ? View.GONE : View.VISIBLE);
 
         return convertView;
     }

@@ -8,12 +8,12 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.AndroidUtil;
-import com.bentonow.bentonow.Utils.BentoNowUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
+import com.bentonow.bentonow.model.user.CouponRequest;
 import com.bentonow.bentonow.ui.AutoFitTxtView;
 import com.bentonow.bentonow.ui.BackendEditText;
 import com.bentonow.bentonow.web.request.UserRequest;
@@ -31,7 +31,7 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
     private EditText txt_email;
     private AutoFitTxtView txtAddress;
 
-    private String sCurrentLocation = "";
+    private CouponRequest mCoupon;
 
 
     @Override
@@ -41,22 +41,20 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
 
         initActionbar();
 
-        sCurrentLocation = getIntent().getExtras().getString(TAG_INVALID_ADDRESS);
+        mCoupon = getIntent().getExtras().getParcelable(CouponRequest.TAG);
 
         txt_email = (BackendEditText) findViewById(R.id.txt_email);
 
-        if (sCurrentLocation == null || sCurrentLocation.isEmpty())
-            sCurrentLocation = BentoNowUtils.getFullAddress();
-
-        getTxtAddress().setText(sCurrentLocation);
+        getTxtAddress().setText(mCoupon.address);
 
         try {
             JSONObject params = new JSONObject();
-            params.put("Address", sCurrentLocation);
+            params.put("Address", mCoupon.address);
             MixpanelUtils.track("Selected Address Outside of Service Area", params);
         } catch (Exception e) {
             DebugUtils.logError(TAG, e);
         }
+
     }
 
     public void onChangePressed(View view) {
@@ -69,7 +67,10 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
             mDialog.addAcceptButton("OK", null);
             mDialog.show();
         } else {
-            UserRequest.requestCoupon(txt_email.getText().toString(), "outside of delivery zone", new TextHttpResponseHandler() {
+
+            mCoupon.email = txt_email.getText().toString();
+
+            UserRequest.requestCoupon(mCoupon, new TextHttpResponseHandler() {
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
@@ -117,7 +118,6 @@ public class BummerActivity extends BaseFragmentActivity implements View.OnClick
         MixpanelUtils.track("Viewed Out of Delivery Zone Screen");
         super.onDestroy();
     }
-
 
 
     private AutoFitTxtView getTxtAddress() {

@@ -73,6 +73,13 @@ public class SelectMainCustomActivity extends BaseFragmentActivity implements Vi
                 }
             }
 
+            for (DishModel dishModel : mMenu.oaItems) {
+                if (dishModel.type.equals("main")) {
+                    dishModel.is_oa_only = 1;
+                    getListAdapter().add(dishModel);
+                }
+            }
+
             getListAdapter().addAll(aSoldDish);
         }
     }

@@ -21,6 +21,7 @@ public class DishModel implements Parcelable {
     public String qty;
     public int count_max;
     public int can_be_added;
+    public int is_oa_only;
 
     public DishModel() {
 
@@ -40,6 +41,7 @@ public class DishModel implements Parcelable {
         qty = parcel.readString();
         count_max = parcel.readInt();
         can_be_added = parcel.readInt();
+        is_oa_only = parcel.readInt();
     }
 
     @Override
@@ -57,6 +59,7 @@ public class DishModel implements Parcelable {
         dest.writeString(qty);
         dest.writeInt(count_max);
         dest.writeInt(can_be_added);
+        dest.writeInt(is_oa_only);
     }
 
 

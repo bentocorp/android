@@ -39,9 +39,10 @@ public class StockDao {
                 }
             } catch (Exception ex) {
                 DebugUtils.logError(TAG, ex);
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
 

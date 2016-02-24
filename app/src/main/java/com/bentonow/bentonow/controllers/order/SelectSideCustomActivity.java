@@ -71,6 +71,13 @@ public class SelectSideCustomActivity extends BaseFragmentActivity implements Vi
                         getListAdapter().add(dishModel);
             }
 
+            for (DishModel dishModel : mMenu.oaItems) {
+                if (dishModel.type.equals("side")) {
+                    dishModel.is_oa_only = 1;
+                    getListAdapter().add(dishModel);
+                }
+            }
+
             getListAdapter().addAll(aSoldDish);
         }
     }

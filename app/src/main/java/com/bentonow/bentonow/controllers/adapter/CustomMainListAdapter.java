@@ -128,7 +128,7 @@ public class CustomMainListAdapter extends ArrayAdapter<DishModel> {
 
         viewHolder.getBtnAddToBento().setVisibility(!added ? View.VISIBLE : View.GONE);
 
-        viewHolder.getBtnAddToBento().setOnClickListener(new View.OnClickListener() {
+        viewHolder.getBtnAddToBento().setOnClickListener(mDish.is_oa_only == 1 ? null : new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mListener.onAddToBentoClick(position);
@@ -136,7 +136,7 @@ public class CustomMainListAdapter extends ArrayAdapter<DishModel> {
             }
         });
 
-        viewHolder.getBtnAdded().setOnClickListener(new View.OnClickListener() {
+        viewHolder.getBtnAdded().setOnClickListener(mDish.is_oa_only == 1 ? null : new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mListener.onAddedClick(position);
@@ -144,7 +144,11 @@ public class CustomMainListAdapter extends ArrayAdapter<DishModel> {
             }
         });
 
-        if (!mDishDao.canBeAdded(mDish)) {
+        if (mDish.is_oa_only == 1) {
+            viewHolder.getBtnAddToBento().setText(IosCopyDao.get("oa-only-od-btn"));
+            viewHolder.getImgSoldOut().setVisibility(View.GONE);
+            getItem(position).can_be_added = 0;
+        } else if (!mDishDao.canBeAdded(mDish)) {
             viewHolder.getBtnAddToBento().setText(IosCopyDao.get("reached-max-button"));
             viewHolder.getImgSoldOut().setVisibility(View.GONE);
             getItem(position).can_be_added = 0;
@@ -158,6 +162,7 @@ public class CustomMainListAdapter extends ArrayAdapter<DishModel> {
             getItem(position).can_be_added = 1;
         }
 
+        viewHolder.getTxtOaLabel().setVisibility(mDish.is_oa_only == 0 || selected ? View.GONE : View.VISIBLE);
 
         return convertView;
     }

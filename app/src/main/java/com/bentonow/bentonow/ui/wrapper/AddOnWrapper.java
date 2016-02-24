@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.ui.AutoFitTxtView;
+import com.bentonow.bentonow.ui.BackendAutoFitTextView;
 
 public class AddOnWrapper extends RecyclerView.ViewHolder {
 
@@ -24,8 +25,8 @@ public class AddOnWrapper extends RecyclerView.ViewHolder {
     private AutoFitTxtView txt_add_on_title = null;
     private AutoFitTxtView txt_add_on_price = null;
     private AutoFitTxtView txt_add_on_description = null;
+    private BackendAutoFitTextView txt_oa_label;
     private TextView txt_number_add_on = null;
-
 
 
     public AddOnWrapper(View base) {
@@ -75,10 +76,17 @@ public class AddOnWrapper extends RecyclerView.ViewHolder {
             txt_add_on_price = (AutoFitTxtView) view.findViewById(R.id.txt_add_on_price);
         return txt_add_on_price;
     }
+
     public AutoFitTxtView getTxtDescription() {
         if (txt_add_on_description == null)
             txt_add_on_description = (AutoFitTxtView) view.findViewById(R.id.txt_add_on_description);
         return txt_add_on_description;
+    }
+
+    public BackendAutoFitTextView getTxtOaLabel() {
+        if (txt_oa_label == null)
+            txt_oa_label = (BackendAutoFitTextView) view.findViewById(R.id.txt_oa_label);
+        return txt_oa_label;
     }
 
     public TextView getTxtNumberAddOn() {
