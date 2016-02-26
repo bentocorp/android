@@ -5,7 +5,7 @@
 package com.bentonow.bentonow.ui.wrapper;
 
 import android.view.View;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
@@ -14,7 +14,7 @@ public class ItemChildOrderHistoryWrapper {
 
     public TextView txtOrderHistoryTitle;
     public TextView txtOrderHistoryPrice;
-    public ImageButton btnEditOrder;
+    public ImageView imgOpenOrder;
     private View view = null;
 
     public ItemChildOrderHistoryWrapper(View base) {
@@ -33,10 +33,10 @@ public class ItemChildOrderHistoryWrapper {
         return txtOrderHistoryPrice;
     }
 
-    public ImageButton getBtnEditOrder() {
-        if (btnEditOrder == null)
-            btnEditOrder = (ImageButton) view.findViewById(R.id.btn_edit_order);
-        return btnEditOrder;
+    public ImageView getImgOpenOrder() {
+        if (imgOpenOrder == null)
+            imgOpenOrder = (ImageView) view.findViewById(R.id.img_open_order);
+        return imgOpenOrder;
     }
 
 }

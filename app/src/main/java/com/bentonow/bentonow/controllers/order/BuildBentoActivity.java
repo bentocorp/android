@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -52,17 +51,17 @@ import com.bentonow.bentonow.ui.BackendAutoFitTextView;
 import com.bentonow.bentonow.ui.BackendTextView;
 import com.bentonow.bentonow.ui.material.ButtonFlat;
 import com.bentonow.bentonow.ui.material.SpinnerMaterial;
-import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.mixpanel.android.mpmetrics.MixpanelAPI;
 import com.mixpanel.android.mpmetrics.Tweak;
 
-import cz.msebera.android.httpclient.Header;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+
+import cz.msebera.android.httpclient.Header;
 
 public class BuildBentoActivity extends BaseFragmentActivity implements View.OnClickListener, InterfaceCustomerService, AdapterView.OnItemClickListener {
 
@@ -1136,7 +1135,6 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ORDER_AHEAD_SUBSCRIPTION, false);
                         break;
                     default:
-                        Crashlytics.log(Log.ERROR, "SendOrderError", "Code " + statusCode + " : Response " + responseString + " : Parsing " + sError);
                         break;
                 }
 
@@ -1170,19 +1168,17 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                             onContinueOrderPressed();
                         } else {
                             mDialog = new ConfirmationDialog(BuildBentoActivity.this, null, IosCopyDao.get("build-not-complete-text"));
-                            mDialog.addAcceptButton(IosCopyDao.get("build-not-complete-confirmation-2"), BuildBentoActivity.this);
-                            mDialog.addCancelButton(IosCopyDao.get("build-not-complete-confirmation-1"), BuildBentoActivity.this);
-
+                            mDialog.addAcceptButton(IosCopyDao.get("build-not-complete-confirmation-2"), new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    autocomplete();
+                                }
+                            });
+                            mDialog.addCancelButton(IosCopyDao.get("build-not-complete-confirmation-1"), null);
                             mDialog.show();
                         }
                     else
                         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
-                    break;
-                case R.id.button_accept:
-                    if (!bShowDateTime)
-                        autocomplete();
-
-                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
                     break;
                 case R.id.btn_continue:
                     if (!bShowDateTime)
@@ -1493,6 +1489,14 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
     public void onBackPressed() {
         BentoNowUtils.goToDashboard(BuildBentoActivity.this);
     }
+
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, hasFocus);
+    }
+
 
     private AutoFitTxtView getTxtPromoName() {
         if (txtPromoName == null)

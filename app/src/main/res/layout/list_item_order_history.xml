@@ -7,14 +7,6 @@
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
-    <ImageButton
-        android:id="@+id/btn_edit_order"
-        android:layout_width="38dp"
-        android:layout_height="48dp"
-        android:background="@null"
-        android:contentDescription="@null"
-        android:src="@drawable/completeorder_cell_btn_minute"
-        android:visibility="gone" />
 
     <me.grantland.widget.AutofitTextView
         android:id="@+id/txt_order_history_title"
@@ -39,4 +31,11 @@
         android:textAppearance="@style/SmallText"
         android:textColor="#444E59" />
 
+    <ImageView
+        android:id="@+id/img_open_order"
+        android:layout_width="28dp"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:contentDescription="@null"
+        android:src="@drawable/arrow_gray_right" />
 </LinearLayout>

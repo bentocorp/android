@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.listener.ListenerOrderHistory;
 import com.bentonow.bentonow.model.order.history.OrderHistoryItemModel;
 import com.bentonow.bentonow.model.order.history.OrderHistoryItemSectionModel;
@@ -38,7 +39,7 @@ public class ExpandableListOrderHistoryAdapter extends BaseExpandableListAdapter
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return listHistorySection.get(groupPosition).getListItems();
+        return listHistorySection.get(groupPosition).getListItems().get(childPosition);
     }
 
     @Override
@@ -61,7 +62,17 @@ public class ExpandableListOrderHistoryAdapter extends BaseExpandableListAdapter
 
         viewHolder.getTxtOrderHistoryTitle().setText(mItem.getTitle());
         viewHolder.getTxtOrderHistoryPrice().setText(mItem.getPrice());
-       // viewHolder.getBtnEditOrder().setVisibility(listHistorySection.get(groupPosition).getSectionTitle().contains("Scheduled") ? View.VISIBLE : View.GONE);
+
+        if (listHistorySection.get(groupPosition).getSectionTitle().contains("Progress")) {
+            viewHolder.getImgOpenOrder().setVisibility(View.VISIBLE);
+            viewHolder.getTxtOrderHistoryTitle().setTextColor(mActivity.getResources().getColor(R.color.primary));
+            viewHolder.getTxtOrderHistoryPrice().setTextColor(mActivity.getResources().getColor(R.color.primary));
+        } else {
+            viewHolder.getImgOpenOrder().setVisibility(View.GONE);
+            viewHolder.getTxtOrderHistoryTitle().setTextColor(mActivity.getResources().getColor(R.color.gray_order_list));
+            viewHolder.getTxtOrderHistoryPrice().setTextColor(mActivity.getResources().getColor(R.color.gray_order_list));
+
+        }
 
 
         return convertView;
@@ -112,7 +123,11 @@ public class ExpandableListOrderHistoryAdapter extends BaseExpandableListAdapter
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
-        return false;
+        OrderHistoryItemSectionModel mOrderSelected = (OrderHistoryItemSectionModel) getGroup(groupPosition);
+        if (mOrderSelected.getSectionTitle().contains("Progress")) {
+            return true;
+        } else
+            return false;
     }
 
 }
