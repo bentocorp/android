@@ -21,4 +21,6 @@ public class ConstantUtils {
 
     public enum optMenuSelected {ON_DEMAND, ORDER_AHEAD, MENU_PREVIEW}
 
+    public enum optBearing {RIGHT, DOWN, LEFT, UP, NONE}
+
 }

@@ -13,6 +13,7 @@ import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +21,8 @@ import java.util.List;
  * Created by Jose Torres on 9/9/15.
  */
 public class LocationUtils {
+
+    public static final String TAG = "LocationUtils";
 
     public static String getFullAddress(Address mAddress) {
         if (mAddress == null)
@@ -124,6 +127,36 @@ public class LocationUtils {
             }
         });
         mDialog.show();
+    }
+
+    public static ConstantUtils.optBearing getBearingFromRotation(double dRotation) {
+        if (dRotation > 360)
+            dRotation = 360;
+        return ConstantUtils.optBearing.values()[(int) Math.floor(dRotation / 90)];
+    }
+
+    public static double CalculationByDistance(LatLng StartP, LatLng EndP) {
+        int Radius = 6371;// radius of earth in Km
+        double lat1 = StartP.latitude;
+        double lat2 = EndP.latitude;
+        double lon1 = StartP.longitude;
+        double lon2 = EndP.longitude;
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1))
+                * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
+                * Math.sin(dLon / 2);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        double valueResult = Radius * c;
+        double km = valueResult / 1;
+        DecimalFormat newFormat = new DecimalFormat("####");
+        int kmInDec = Integer.valueOf(newFormat.format(km));
+        double meter = valueResult % 1000;
+        int meterInDec = Integer.valueOf(newFormat.format(meter));
+        double result = Radius * c;
+        DebugUtils.logDebug(TAG, "Radius Value:: "+  result + "   KM  " + kmInDec + " Meter   " + meterInDec);
+        return Radius * c;
     }
 }
 

@@ -118,7 +118,7 @@ public class OrderHistoryActivity extends BaseFragmentActivity implements View.O
 
                         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ORDER_AHEAD_SUBSCRIPTION, false);
 
-                        onFinish();
+                        OrderHistoryActivity.this.finish();
                         return;
                     default:
                         break;
