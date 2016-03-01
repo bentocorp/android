@@ -125,6 +125,10 @@
             android:name=".service.BentoCustomerService"
             android:enabled="true"
             android:stopWithTask="true" />
+        <service
+            android:name=".service.OrderSocketService"
+            android:enabled="true"
+            android:stopWithTask="true" />
 
         <!-- Mixpanel -->
 

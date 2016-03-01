@@ -34,18 +34,25 @@
                 android:orientation="vertical"
                 android:weightSum="2">
 
-                <TextView
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp"
                     android:layout_weight="1"
-                    android:background="@color/gray"
-                    android:gravity="center"
-                    android:text="1"
-                    android:textColor="@color/white" />
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/txt_indicator_prep"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/background_circle_green"
+                        android:gravity="center"
+                        android:text="1"
+                        android:textColor="@color/white" />
+                </RelativeLayout>
+
 
                 <com.bentonow.bentonow.ui.AutoFitTxtView
+                    android:id="@+id/txt_description_prep"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_margin="3dp"
@@ -69,7 +76,7 @@
                     android:layout_height="4dp"
                     android:layout_gravity="center|top"
                     android:layout_marginTop="10dp"
-                    android:background="@color/gray_blue" />
+                    android:background="@drawable/background_circle_gray" />
 
             </FrameLayout>
 
@@ -84,7 +91,7 @@
                     android:layout_height="4dp"
                     android:layout_gravity="center|top"
                     android:layout_marginTop="10dp"
-                    android:background="@color/gray_blue" />
+                    android:background="@drawable/background_circle_gray" />
             </FrameLayout>
 
             <FrameLayout
@@ -98,7 +105,7 @@
                     android:layout_height="4dp"
                     android:layout_gravity="center|top"
                     android:layout_marginTop="10dp"
-                    android:background="@color/gray_blue" />
+                    android:background="@drawable/background_circle_gray" />
             </FrameLayout>
 
             <LinearLayout
@@ -107,16 +114,97 @@
                 android:layout_weight="5"
                 android:orientation="vertical">
 
-                <TextView
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp"
                     android:layout_weight="1"
-                    android:background="@color/gray"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/txt_indicator_delivery"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/background_circle_gray"
+                        android:gravity="center"
+                        android:text="2"
+                        android:textColor="@color/white" />
+                </RelativeLayout>
+
+                <com.bentonow.bentonow.ui.AutoFitTxtView
+                    android:id="@+id/txt_description_delivery"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
                     android:gravity="center"
-                    android:text="2"
-                    android:textColor="@color/white" />
+                    android:maxLines="1"
+                    android:text="DELIVERY"
+                    android:textColor="@color/gray"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <FrameLayout
+                    android:layout_width="4dp"
+                    android:layout_height="4dp"
+                    android:layout_gravity="center|top"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/background_circle_gray" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <FrameLayout
+                    android:layout_width="4dp"
+                    android:layout_height="4dp"
+                    android:layout_gravity="center|top"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/background_circle_gray" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <FrameLayout
+                    android:layout_width="4dp"
+                    android:layout_height="4dp"
+                    android:layout_gravity="center|top"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/background_circle_gray" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="5"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center">
+
+                    <TextView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/background_circle_gray"
+                        android:gravity="center"
+                        android:text="3"
+                        android:textColor="@color/white" />
+                </RelativeLayout>
 
                 <com.bentonow.bentonow.ui.AutoFitTxtView
                     android:layout_width="match_parent"
@@ -124,7 +212,7 @@
                     android:layout_margin="3dp"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:maxLines="1"
+                    android:lines="1"
                     android:text="ASSEMBLY"
                     android:textColor="@color/gray"
                     android:textSize="10sp" />
@@ -141,7 +229,7 @@
                     android:layout_height="4dp"
                     android:layout_gravity="center|top"
                     android:layout_marginTop="10dp"
-                    android:background="@color/gray_blue" />
+                    android:background="@drawable/background_circle_gray" />
             </FrameLayout>
 
             <FrameLayout
@@ -155,7 +243,7 @@
                     android:layout_height="4dp"
                     android:layout_gravity="center|top"
                     android:layout_marginTop="10dp"
-                    android:background="@color/gray_blue" />
+                    android:background="@drawable/background_circle_gray" />
             </FrameLayout>
 
             <FrameLayout
@@ -169,7 +257,7 @@
                     android:layout_height="4dp"
                     android:layout_gravity="center|top"
                     android:layout_marginTop="10dp"
-                    android:background="@color/gray_blue" />
+                    android:background="@drawable/background_circle_gray" />
             </FrameLayout>
 
             <LinearLayout
@@ -178,90 +266,24 @@
                 android:layout_weight="5"
                 android:orientation="vertical">
 
-                <TextView
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp"
                     android:layout_weight="1"
-                    android:background="@color/primary"
-                    android:gravity="center"
-                    android:text="3"
-                    android:textColor="@color/white" />
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/txt_indicator_pick_up"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/background_circle_gray"
+                        android:gravity="center"
+                        android:text="4"
+                        android:textColor="@color/white" />
+                </RelativeLayout>
 
                 <com.bentonow.bentonow.ui.AutoFitTxtView
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_margin="3dp"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:lines="1"
-                    android:text="DELIVERY"
-                    android:textColor="@color/primary"
-                    android:textSize="10sp" />
-            </LinearLayout>
-
-            <FrameLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <FrameLayout
-                    android:layout_width="4dp"
-                    android:layout_height="4dp"
-                    android:layout_gravity="center|top"
-                    android:layout_marginTop="10dp"
-                    android:background="@color/primary" />
-            </FrameLayout>
-
-            <FrameLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <FrameLayout
-                    android:layout_width="4dp"
-                    android:layout_height="4dp"
-                    android:layout_gravity="center|top"
-                    android:layout_marginTop="10dp"
-                    android:background="@color/primary" />
-            </FrameLayout>
-
-            <FrameLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <FrameLayout
-                    android:layout_width="4dp"
-                    android:layout_height="4dp"
-                    android:layout_gravity="center|top"
-                    android:layout_marginTop="10dp"
-                    android:background="@color/primary" />
-            </FrameLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="5"
-                android:orientation="vertical">
-
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp"
-                    android:layout_weight="1"
-                    android:background="@color/gray"
-                    android:gravity="center"
-                    android:text="4"
-                    android:textColor="@color/white" />
-
-                <com.bentonow.bentonow.ui.AutoFitTxtView
+                    android:id="@+id/txt_description_pick_up"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_margin="3dp"
@@ -281,11 +303,64 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/frameLayout">
 
-        <fragment
-            android:id="@+id/map_driver_location"
-            android:name="com.bentonow.bentonow.controllers.fragment.MySupportMapFragment"
+        <RelativeLayout
+            android:id="@+id/wrapper_status_prep"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true">
+
+
+                <ImageView
+                    android:id="@+id/imageView3"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:src="@drawable/face" />
+
+                <com.bentonow.bentonow.ui.AutoFitTxtView
+                    android:id="@+id/textView"
+                    style="@style/TextViewStatusP"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/imageView3"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="20dp"
+                    android:maxLines="1"
+                    android:text="Your Bento is here!"
+                    android:textSize="23sp" />
+
+                <com.bentonow.bentonow.ui.AutoFitTxtView
+                    android:id="@+id/textView2"
+                    style="@style/TextViewStatusD"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/textView"
+                    android:layout_centerHorizontal="true"
+                    android:layout_margin="20dp"
+                    android:gravity="center"
+                    android:maxLines="2"
+                    android:text="Please meet your driver ar the curbside to pick up your order." />
+            </RelativeLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/wrapper_status_delivery"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <fragment
+                android:id="@+id/map_driver_location"
+                android:name="com.bentonow.bentonow.controllers.fragment.MySupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </RelativeLayout>
 
     </RelativeLayout>
 

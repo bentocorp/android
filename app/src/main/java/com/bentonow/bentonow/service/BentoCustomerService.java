@@ -114,7 +114,7 @@ public class BentoCustomerService extends Service {
     }
 
     public void disconnectBentoService() {
-        DebugUtils.logDebug(TAG, "destroying WebSocketService");
+        DebugUtils.logDebug(TAG, "destroying OrderSocketService");
         getHandler();
     }
 
