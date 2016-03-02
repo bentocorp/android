@@ -320,7 +320,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                             if (mOrderDao.countCompletedOrders(mOrder) == 0) {
                                 getTxtNumBento().setVisibility(View.GONE);
                                 getTxtNumBento().setText("0");
-                                getActionbarRightBtn().setImageResource(R.drawable.ic_ab_bento);
+                                getActionbarRightBtn().setImageResource(R.drawable.vector_bento_gray);
                                 getLayoutAddOns().setVisibility(View.GONE);
                                 getBtnContinue().setBackground(getResources().getDrawable(R.drawable.btn_rounded_gray));
                                 getBtnAddAnotherBento().setTextColor(getResources().getColor(R.color.btn_green_trans));
@@ -337,7 +337,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                             } else {
                                 getTxtNumBento().setVisibility(View.VISIBLE);
                                 getTxtNumBento().setText(mOrderDao.countCompletedOrders(mOrder) + "");
-                                getActionbarRightBtn().setImageResource(R.drawable.ic_ab_bento_completed);
+                                getActionbarRightBtn().setImageResource(R.drawable.vector_bento_green);
                                 getLayoutAddOns().setVisibility(View.VISIBLE);
                                 getBtnContinue().setBackground(getResources().getDrawable(R.drawable.btn_rounded_green));
                                 getBtnAddOn().setTextColor(getResources().getColor(R.color.btn_green));
@@ -361,7 +361,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                         case MENU_PREVIEW:
                             getButtonCancel().setVisibility(bIsMenuAlreadySelected ? View.VISIBLE : View.GONE);
                             getTxtNumBento().setVisibility(View.GONE);
-                            getActionbarRightBtn().setImageResource(R.drawable.ic_ab_bento);
+                            getActionbarRightBtn().setImageResource(R.drawable.vector_bento_gray);
                             getTxtDateTimeToolbar().setText(MenuDao.gateKeeper.getAppOnDemandWidget().getTitle());
 
                             if (getMainAdapter().isEmpty()) {
@@ -803,7 +803,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
                     bShowDateTime = true;
                     getButtonCancel().setVisibility(bIsMenuAlreadySelected ? View.VISIBLE : View.GONE);
                     restartWidget();
-                    getImgDropDownUp().setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_action_navigation_arrow_drop_up));
+                    getImgDropDownUp().setBackgroundDrawable(getResources().getDrawable(R.drawable.vector_arrow_drop_up));
                     getTxtDateTimeToolbar().setTextColor(getResources().getColor(R.color.dark_blue));
                     getContainerDateTime().setVisibility(View.VISIBLE);
                     Animation dateInAnimation = AnimationUtils.loadAnimation(BuildBentoActivity.this, R.anim.date_time_in);
@@ -829,7 +829,7 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
 
                 } else if (bIsMenuAlreadySelected) {
                     bShowDateTime = false;
-                    getImgDropDownUp().setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_action_navigation_arrow_drop_down));
+                    getImgDropDownUp().setBackgroundDrawable(getResources().getDrawable(R.drawable.vector_arrow_drop_down));
                     getTxtDateTimeToolbar().setTextColor(getResources().getColor(R.color.green_promo));
                     Animation dateOutAnimation = AnimationUtils.loadAnimation(BuildBentoActivity.this, R.anim.top_slide_out);
                     dateOutAnimation.setAnimationListener(new Animation.AnimationListener() {

@@ -6,7 +6,7 @@
     android:background="@color/white"
     tools:context=".controllers.errors.NextDayMenuActivity">
 
-    <!-- bento_toolbar -->
+    <!-- toolbar_bento -->
     <LinearLayout
         android:id="@+id/ActionBarContainer"
         android:layout_width="match_parent"
@@ -14,7 +14,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true">
 
-        <include layout="@layout/bento_toolbar" />
+        <include layout="@layout/toolbar_bento" />
     </LinearLayout>
 
     <include

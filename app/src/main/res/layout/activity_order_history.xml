@@ -10,7 +10,7 @@
 
     <include
         android:id="@+id/ActionBarCont"
-        layout="@layout/bento_toolbar" />
+        layout="@layout/toolbar_bento" />
 
     <com.bentonow.bentonow.ui.BackendAutoFitTextView
         android:id="@+id/txt_empty_order_history"

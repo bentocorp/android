@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 
 import com.bentonow.bentonow.R;
-import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.listener.ListenerOrderHistory;
 import com.bentonow.bentonow.model.order.history.OrderHistoryItemModel;
 import com.bentonow.bentonow.model.order.history.OrderHistoryItemSectionModel;
@@ -127,7 +126,7 @@ public class ExpandableListOrderHistoryAdapter extends BaseExpandableListAdapter
         if (mOrderSelected.getSectionTitle().contains("Progress")) {
             return true;
         } else
-            return true;
+            return false;
     }
 
 }

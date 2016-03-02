@@ -550,11 +550,11 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
         mOrderDao.updateOrder(mOrder);
 
         if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_ORDER_AHEAD_MENU)) {
-            getImgDeliverTime().setImageResource(R.drawable.ic_action_action_today);
+            getImgDeliverTime().setImageResource(R.drawable.vector_calendar);
             getTxtDeliverTimeUp().setText(BentoNowUtils.getDaySelected(mOrder));
             getTxtDeliverTimeDown().setText(BentoNowUtils.getTimeSelected(mOrder));
         } else {
-            getImgDeliverTime().setImageResource(R.drawable.ic_action_device_access_time);
+            getImgDeliverTime().setImageResource(R.drawable.vector_schedule);
             getTxtDeliverTimeUp().setText(String.format(getString(R.string.summary_bento_od_delivery_time), MenuDao.eta_min, MenuDao.eta_max));
             getTxtDeliverTimeDown().setText("min.");
         }

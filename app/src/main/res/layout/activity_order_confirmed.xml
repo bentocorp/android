@@ -7,7 +7,7 @@
     android:background="#EAEEEE"
     tools:context="com.bentonow.bentonow.controllers.order.CompleteOrderActivity">
 
-    <!-- bento_toolbar -->
+    <!-- toolbar_bento -->
     <LinearLayout
         android:id="@+id/ActionBarContainer"
         android:layout_width="match_parent"
@@ -15,7 +15,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true">
 
-        <include layout="@layout/actionbar_center_logo" />
+        <include layout="@layout/toolbar_center_logo" />
     </LinearLayout>
 
     <!-- INI CONTAINER -->
@@ -46,7 +46,6 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Order Confirmed!"
                 android:textAppearance="@style/H1Gray"
                 app:key="completed-title" />
 
@@ -55,7 +54,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
                 android:gravity="center"
-                android:text="We'll send you text message updates while your delivery is on the way."
                 android:textAppearance="@style/NormalText"
                 app:key="completed-text" />
 

@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:background="@color/primary">
 
-    <include layout="@layout/actionbar_green_border" />
+    <include layout="@layout/toolbar_green_border" />
 
 
     <ListView

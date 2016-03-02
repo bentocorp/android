@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <include layout="@layout/bento_toolbar" />
+        <include layout="@layout/toolbar_bento" />
     </LinearLayout>
 
     <RelativeLayout

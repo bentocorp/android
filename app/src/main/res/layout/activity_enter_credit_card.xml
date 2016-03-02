@@ -9,8 +9,8 @@
     android:orientation="vertical"
     tools:context="com.bentonow.bentonow.controllers.payment.EnterCreditCardActivity">
 
-    <!-- bento_toolbar -->
-    <include layout="@layout/bento_toolbar" />
+    <!-- toolbar_bento -->
+    <include layout="@layout/toolbar_bento" />
 
     <com.bentonow.bentonow.ui.BackendTextView
         android:layout_width="fill_parent"

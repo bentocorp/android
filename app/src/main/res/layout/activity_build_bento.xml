@@ -14,38 +14,35 @@
 
         <ImageView
             android:id="@+id/actionbar_left_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            style="@style/ImageToolbarIcon"
+            android:layout_width="?android:attr/actionBarSize"
+            android:layout_height="?android:attr/actionBarSize"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:padding="15dp"
-            android:src="@drawable/ic_ab_user" />
+            android:src="@drawable/vector_user_profile" />
 
         <ImageView
             android:id="@+id/actionbar_right_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_alignParentEnd="true"
+            style="@style/ImageToolbarIcon"
+            android:layout_width="?android:attr/actionBarSize"
+            android:layout_height="?android:attr/actionBarSize"
             android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:padding="@dimen/actionbar_btns_padding"
-            android:src="@drawable/ic_ab_bento" />
+            android:layout_centerVertical="true" />
 
         <TextView
             android:id="@+id/actionbar_right_badge"
             android:layout_width="@dimen/red_rounded_width_height"
             android:layout_height="@dimen/red_rounded_width_height"
-            android:layout_alignLeft="@+id/actionbar_right_btn"
-            android:layout_alignParentTop="true"
-            android:layout_alignStart="@+id/actionbar_right_btn"
-            android:layout_marginTop="@dimen/red_rounded_margin_top"
-            android:autoText="false"
+            android:layout_marginRight="-25dp"
+            android:layout_marginTop="10dp"
+            android:layout_toLeftOf="@+id/actionbar_right_btn"
+            android:layout_toStartOf="@+id/actionbar_right_btn"
             android:background="@drawable/redondo_rojo"
             android:gravity="center"
             android:text="1"
             android:textColor="@color/white"
             android:textSize="@dimen/red_rounded_text_size"
-            android:visibility="gone" />
+            android:visibility="invisible" />
 
         <FrameLayout
             android:id="@+id/layout_date_time"

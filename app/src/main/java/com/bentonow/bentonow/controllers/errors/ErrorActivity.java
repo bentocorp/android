@@ -58,7 +58,7 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
         setContentView(R.layout.activity_error);
 
         getMenuItemInfo().setImageResource(R.drawable.vector_faq_green);
-        getMenuItemProfile().setImageResource(R.drawable.vector_person_gray);
+        getMenuItemProfile().setImageResource(R.drawable.vector_user_profile);
 
         getMenuItemInfo().setOnClickListener(ErrorActivity.this);
         getMenuItemProfile().setOnClickListener(ErrorActivity.this);

@@ -15,20 +15,20 @@
 
         <ImageView
             android:id="@+id/actionbar_left_btn"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            style="@style/ImageToolbarIcon"
+            android:layout_width="?android:attr/actionBarSize"
+            android:layout_height="?android:attr/actionBarSize"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="15dp"
             android:src="@drawable/vector_user_profile" />
 
         <ImageView
             android:id="@+id/actionbar_right_btn"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            style="@style/ImageToolbarIcon"
+            android:layout_width="?android:attr/actionBarSize"
+            android:layout_height="?android:attr/actionBarSize"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="15dp"
             android:src="@drawable/vector_faq_green" />
 
         <TextView
@@ -39,7 +39,6 @@
             android:layout_alignParentTop="true"
             android:layout_alignStart="@+id/actionbar_right_btn"
             android:layout_marginTop="@dimen/red_rounded_margin_top"
-            android:autoText="false"
             android:background="@drawable/redondo_rojo"
             android:gravity="center"
             android:text="1"
@@ -71,17 +70,15 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:background="@drawable/bg_actionbar"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="@dimen/delivery_icon_search"
-                android:layout_height="@dimen/delivery_icon_search"
-                android:layout_marginLeft="7dp"
-                android:layout_marginRight="7dp"
-                android:contentDescription="@null"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:padding="10dp"
                 android:src="@drawable/vector_search_green" />
 
             <AutoCompleteTextView
@@ -104,30 +101,24 @@
 
             <ImageView
                 android:id="@+id/btn_clear"
-                android:layout_width="@dimen/delivery_icon_search"
-                android:layout_height="@dimen/delivery_icon_search"
-                android:layout_marginLeft="7dp"
-                android:layout_marginRight="7dp"
-                android:adjustViewBounds="true"
-                android:contentDescription="@null"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
                 android:onClick="onClearPressed"
+                android:padding="10dp"
                 android:src="@drawable/vector_close_gray" />
 
             <ProgressBar
                 android:id="@+id/progressBar"
-                android:layout_width="@dimen/delivery_icon_search"
-                android:layout_height="@dimen/delivery_icon_search"
-                android:layout_marginLeft="7dp"
-                android:layout_marginRight="7dp" />
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:padding="10dp" />
 
             <ImageView
                 android:id="@+id/btn_current_location"
-                android:layout_width="@dimen/delivery_icon_search"
-                android:layout_height="@dimen/delivery_icon_search"
-                android:layout_marginLeft="7dp"
-                android:layout_marginRight="7dp"
-                android:contentDescription="@null"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
                 android:onClick="onCurrentLocationPressed"
+                android:padding="10dp"
                 android:src="@drawable/vector_near_me" />
 
         </LinearLayout>

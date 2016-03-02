@@ -8,7 +8,7 @@
 
     <include
         android:id="@+id/ActionBarCont"
-        layout="@layout/bento_toolbar" />
+        layout="@layout/toolbar_bento" />
 
     <FrameLayout
         android:id="@+id/frameLayout"
@@ -306,8 +306,7 @@
         <RelativeLayout
             android:id="@+id/wrapper_status_prep"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone">
+            android:layout_height="match_parent">
 
 
             <RelativeLayout
@@ -322,10 +321,10 @@
                     android:layout_height="150dp"
                     android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true"
-                    android:src="@drawable/face" />
+                    android:background="@drawable/vector_face_green" />
 
                 <com.bentonow.bentonow.ui.AutoFitTxtView
-                    android:id="@+id/textView"
+                    android:id="@+id/txt_order_status_title"
                     style="@style/TextViewStatusP"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -337,11 +336,11 @@
                     android:textSize="23sp" />
 
                 <com.bentonow.bentonow.ui.AutoFitTxtView
-                    android:id="@+id/textView2"
+                    android:id="@+id/txt_order_status_description"
                     style="@style/TextViewStatusD"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/textView"
+                    android:layout_below="@+id/txt_order_status_title"
                     android:layout_centerHorizontal="true"
                     android:layout_margin="20dp"
                     android:gravity="center"

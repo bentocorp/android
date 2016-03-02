@@ -12,7 +12,7 @@
         android:layout_height="?android:attr/actionBarSize"
         android:layout_alignParentTop="true">
 
-        <include layout="@layout/actionbar_green_border" />
+        <include layout="@layout/toolbar_green_border" />
     </RelativeLayout>
 
     <GridView

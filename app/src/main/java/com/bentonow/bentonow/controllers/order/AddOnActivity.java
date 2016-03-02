@@ -80,7 +80,7 @@ public class AddOnActivity extends BaseFragmentActivity implements View.OnClickL
         bIsMenuOD = !SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_ORDER_AHEAD_MENU);
 
         getMenuItemBuildBento().setVisibility(View.VISIBLE);
-        getMenuItemBuildBento().setImageResource(R.drawable.ic_ab_bento_completed);
+        getMenuItemBuildBento().setImageResource(R.drawable.vector_bento_green);
         getTxtToolbarRightBadge().setVisibility(View.VISIBLE);
 
         getActionbarLeftBtn().setOnClickListener(this);

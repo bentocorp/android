@@ -14,7 +14,7 @@
         android:layout_height="?android:attr/actionBarSize"
         android:layout_alignParentTop="true">
 
-        <include layout="@layout/bento_toolbar" />
+        <include layout="@layout/toolbar_bento" />
     </RelativeLayout>
 
     <android.support.v7.widget.RecyclerView

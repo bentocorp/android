@@ -144,7 +144,8 @@
                     android:layout_width="58dp"
                     android:layout_height="58dp"
                     android:layout_gravity="center"
-                    android:src="@drawable/ic_action_content_remove_circle_outline" />
+                    android:padding="7dp"
+                    android:src="@drawable/vector_remove_green" />
 
             </FrameLayout>
 
@@ -173,7 +174,8 @@
                     android:layout_width="58dp"
                     android:layout_height="58dp"
                     android:layout_gravity="center"
-                    android:src="@drawable/ic_action_content_add_circle_outline" />
+                    android:padding="7dp"
+                    android:src="@drawable/vector_add_green" />
             </FrameLayout>
 
         </LinearLayout>

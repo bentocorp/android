@@ -22,7 +22,7 @@
         android:layout_centerHorizontal="true"
         android:orientation="vertical">
 
-        <include layout="@layout/actionbar_center_logo" />
+        <include layout="@layout/toolbar_center_logo" />
     </LinearLayout>
 
     <!-- MAIN CONTAINER -->

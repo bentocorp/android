@@ -63,6 +63,7 @@ public class OrderHistoryActivity extends BaseFragmentActivity implements View.O
                 OrderHistoryItemModel mOrderHistory = (OrderHistoryItemModel) getExpandableListAdapter().getChild(groupPosition, childPosition);
 
                 Intent mIntentOrderStatus = new Intent(OrderHistoryActivity.this, OrderStatusActivity.class);
+                mIntentOrderStatus.putExtra(OrderHistoryItemModel.TAG, mOrderHistory);
                 startActivity(mIntentOrderStatus);
 
                 DebugUtils.logDebug(TAG, "Open Next Order: " + mOrderHistory.getTitle());
