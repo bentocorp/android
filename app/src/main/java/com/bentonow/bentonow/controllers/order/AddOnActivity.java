@@ -75,7 +75,7 @@ public class AddOnActivity extends BaseFragmentActivity implements View.OnClickL
             DebugUtils.logError(TAG, ex);
         }
 
-        getActionbarLeftBtn().setImageResource(R.drawable.ab_x_close);
+        getActionbarLeftBtn().setImageResource(R.drawable.vector_close_green);
 
         bIsMenuOD = !SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_ORDER_AHEAD_MENU);
 

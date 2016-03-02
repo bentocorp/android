@@ -6,17 +6,11 @@ package com.bentonow.bentonow.ui;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
-
-import org.w3c.dom.Text;
-
-import me.grantland.widget.AutofitTextView;
 
 public class HeaderSideFixBento extends LinearLayout {
 
@@ -25,7 +19,7 @@ public class HeaderSideFixBento extends LinearLayout {
     private ImageView img_main_side_fix;
     private ImageView img_sold_out;
     private TextView txt_title;
-    private AutofitTextView txt_description;
+    private AutoFitTxtView txt_description;
 
     public HeaderSideFixBento(Context context) {
         super(context);
@@ -61,9 +55,9 @@ public class HeaderSideFixBento extends LinearLayout {
         return txt_title;
     }
 
-    public AutofitTextView getTxtDescription() {
+    public AutoFitTxtView getTxtDescription() {
         if (txt_description == null)
-            txt_description = (AutofitTextView) getRootView().findViewById(R.id.txt_description);
+            txt_description = (AutoFitTxtView) getRootView().findViewById(R.id.txt_description);
         return txt_description;
     }
 }

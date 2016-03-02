@@ -468,10 +468,13 @@ public class OrderDao extends MainDao {
         mOrder.OrderDetails.tip_cents = AndroidUtil.round(tip, 2) * 100;
         mOrder.OrderDetails.total_cents = AndroidUtil.round(total, 2) * 100;
         mOrder.OrderDetails.total_cents_without_coupon = AndroidUtil.round(total_w_o_coupon, 2) * 100;
+        Double dObj3 = new Double(mOrder.OrderDetails.delivery_price);
+        mOrder.OrderDetails.normal_delivery_price = dObj3;
         mOrder.OrderDetails.delivery_price = delivery_fee;
 
         DebugUtils.logDebug(TAG, "Item Price: " + mOrder.OrderDetails.items_total);
         DebugUtils.logDebug(TAG, "Delivery Fee: " + delivery_fee);
+        DebugUtils.logDebug(TAG, "Delivery Fee w/o coupon: " + mOrder.OrderDetails.normal_delivery_price);
         DebugUtils.logDebug(TAG, "Pre-Coupon Subtotal: " + pre_coupon_subtotal);
         DebugUtils.logDebug(TAG, "Post-Coupon Subtotal: " + post_coupon_subtotal);
         DebugUtils.logDebug(TAG, "Coupon (Promo) Discount: " + coupon_discount);

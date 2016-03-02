@@ -121,7 +121,7 @@
                                     android:layout_height="fill_parent"
                                     android:src="@drawable/item_gradient" />
 
-                                <me.grantland.widget.AutofitTextView
+                                <com.bentonow.bentonow.ui.AutoFitTxtView
                                     android:id="@+id/txt_main_title_four"
                                     android:layout_width="fill_parent"
                                     android:layout_height="fill_parent"
@@ -201,7 +201,7 @@
                                     android:layout_height="fill_parent"
                                     android:src="@drawable/item_gradient" />
 
-                                <me.grantland.widget.AutofitTextView
+                                <com.bentonow.bentonow.ui.AutoFitTxtView
                                     android:id="@+id/txt_side1_title_four"
                                     android:layout_width="fill_parent"
                                     android:layout_height="fill_parent"
@@ -290,7 +290,7 @@
                                     android:layout_height="fill_parent"
                                     android:src="@drawable/item_gradient" />
 
-                                <me.grantland.widget.AutofitTextView
+                                <com.bentonow.bentonow.ui.AutoFitTxtView
                                     android:id="@+id/txt_side2_title_four"
                                     android:layout_width="fill_parent"
                                     android:layout_height="fill_parent"
@@ -372,7 +372,7 @@
                                     android:layout_height="fill_parent"
                                     android:src="@drawable/item_gradient" />
 
-                                <me.grantland.widget.AutofitTextView
+                                <com.bentonow.bentonow.ui.AutoFitTxtView
                                     android:id="@+id/txt_side3_title_four"
                                     android:layout_width="fill_parent"
                                     android:layout_height="fill_parent"
@@ -464,7 +464,7 @@
                             android:layout_height="fill_parent"
                             android:src="@drawable/item_gradient" />
 
-                        <me.grantland.widget.AutofitTextView
+                        <com.bentonow.bentonow.ui.AutoFitTxtView
                             android:id="@+id/txt_main_title"
                             android:layout_width="fill_parent"
                             android:layout_height="fill_parent"
@@ -542,7 +542,7 @@
                                 android:layout_height="fill_parent"
                                 android:src="@drawable/item_gradient" />
 
-                            <me.grantland.widget.AutofitTextView
+                            <com.bentonow.bentonow.ui.AutoFitTxtView
                                 android:id="@+id/txt_side1_title"
                                 android:layout_width="fill_parent"
                                 android:layout_height="fill_parent"
@@ -613,7 +613,7 @@
                                 android:layout_height="fill_parent"
                                 android:src="@drawable/item_gradient" />
 
-                            <me.grantland.widget.AutofitTextView
+                            <com.bentonow.bentonow.ui.AutoFitTxtView
                                 android:id="@+id/txt_side2_title"
                                 android:layout_width="fill_parent"
                                 android:layout_height="fill_parent"
@@ -692,7 +692,7 @@
                                 android:layout_height="fill_parent"
                                 android:src="@drawable/item_gradient" />
 
-                            <me.grantland.widget.AutofitTextView
+                            <com.bentonow.bentonow.ui.AutoFitTxtView
                                 android:id="@+id/txt_side3_title"
                                 android:layout_width="fill_parent"
                                 android:layout_height="fill_parent"
@@ -763,7 +763,7 @@
                                 android:layout_height="fill_parent"
                                 android:src="@drawable/item_gradient" />
 
-                            <me.grantland.widget.AutofitTextView
+                            <com.bentonow.bentonow.ui.AutoFitTxtView
                                 android:id="@+id/txt_side4_title"
                                 android:layout_width="fill_parent"
                                 android:layout_height="fill_parent"

@@ -22,10 +22,8 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 
-import com.freakybyte.horchataclub.R;
-
 import java.util.ArrayList;
-
+import com.bentonow.bentonow.R;
 /**
  * A helper class to enable automatically resizing {@link TextView}`s {@code textSize} to fit
  * within its bounds.

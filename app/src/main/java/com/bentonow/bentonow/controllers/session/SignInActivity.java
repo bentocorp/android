@@ -214,7 +214,7 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
         actionbar_title.setText(IosCopyDao.get("sign-in-title"));
 
         ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
-        actionbar_left_btn.setImageResource(R.drawable.ic_ab_back);
+        actionbar_left_btn.setImageResource(R.drawable.vector_navigation_left_green);
         actionbar_left_btn.setOnClickListener(this);
     }
 
@@ -226,27 +226,27 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
         // EMAIL
         if (!validEmail()) {
             txt_email.setTextColor(getResources().getColor(R.color.orange));
-            img_email.setImageResource(R.drawable.ic_signup_email_error);
+            img_email.setImageResource(R.drawable.vector_email_orange);
             if (add_local_error && txt_email.getText().length() == 0)
                 error += (error.length() > 0 ? "\n" : "") + "The email field is required.";
             else if (add_local_error)
                 error += (error.length() > 0 ? "\n" : "") + "The email must be a valid email address.";
         } else {
             txt_email.setTextColor(getResources().getColor(R.color.gray));
-            img_email.setImageResource(R.drawable.ic_signup_email);
+            img_email.setImageResource(R.drawable.vector_email_gray);
         }
 
         // PASSWORD
         if (!validPassword()) {
             txt_password.setTextColor(getResources().getColor(R.color.orange));
-            img_password.setImageResource(R.drawable.ic_signup_key_error);
+            img_password.setImageResource(R.drawable.vector_key_orange);
             if (add_local_error && txt_password.getText().length() == 0)
                 error += (error.length() > 0 ? "\n" : "") + "The password field is required.";
             else if (add_local_error)
                 error += (error.length() > 0 ? "\n" : "") + "The password must be at least 6 characters.";
         } else {
             txt_password.setTextColor(getResources().getColor(R.color.gray));
-            img_password.setImageResource(R.drawable.ic_signup_key);
+            img_password.setImageResource(R.drawable.vector_key_gray);
         }
 
         txt_message.setText(error);

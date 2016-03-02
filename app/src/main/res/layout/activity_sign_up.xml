@@ -103,17 +103,17 @@
             <!-- form group -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:background="@color/white"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/img_user"
+                    style="@style/ImageViewSignIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/ic_email_padding"
-                    android:src="@drawable/ic_signup_profile" />
+                    android:src="@drawable/vector_person_gray" />
 
                 <!-- divisor -->
                 <View
@@ -144,7 +144,7 @@
             <!-- form group -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:background="@color/white"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
@@ -153,10 +153,10 @@
 
                 <ImageView
                     android:id="@+id/img_email"
+                    style="@style/ImageViewSignIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/ic_email_padding"
-                    android:src="@drawable/ic_signup_email" />
+                    android:src="@drawable/vector_email_gray" />
 
                 <!-- divisor -->
                 <View
@@ -187,17 +187,17 @@
             <!-- form group -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:background="@color/white"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/img_phone"
+                    style="@style/ImageViewSignIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/ic_email_padding"
-                    android:src="@drawable/ic_signup_phone" />
+                    android:src="@drawable/vector_phone_gray" />
 
                 <!-- divisor -->
                 <View
@@ -245,17 +245,17 @@
             <!-- form group -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:background="@color/white"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/img_password"
+                    style="@style/ImageViewSignIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/ic_email_padding"
-                    android:src="@drawable/ic_signup_key" />
+                    android:src="@drawable/vector_key_gray" />
 
                 <!-- divisor -->
                 <View

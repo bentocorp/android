@@ -41,4 +41,8 @@
     <dimen name="h1">32sp</dimen>
     <dimen name="settings_row_height">48dp</dimen>
     <dimen name="setting_ico_padd">10dp</dimen>
+    <dimen name="delivery_icon_search">20dp</dimen>
+    <dimen name="toolbar_menu_item">24dp</dimen>
+    <dimen name="sign_icon_margin">10dp</dimen>
+
 </resources>

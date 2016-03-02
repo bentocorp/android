@@ -8,7 +8,7 @@
     android:orientation="horizontal">
 
 
-    <me.grantland.widget.AutofitTextView
+    <com.bentonow.bentonow.ui.AutoFitTxtView
         android:id="@+id/txt_order_history_title"
         android:layout_width="0dp"
         android:layout_height="match_parent"
@@ -37,5 +37,5 @@
         android:layout_height="wrap_content"
         android:background="@null"
         android:contentDescription="@null"
-        android:src="@drawable/arrow_gray_right" />
+        android:src="@drawable/vector_navigation_right_gray" />
 </LinearLayout>

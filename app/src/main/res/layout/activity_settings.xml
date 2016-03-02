@@ -59,7 +59,7 @@
                         android:layout_height="20dp"
                         android:layout_gravity="center"
                         android:layout_marginLeft="10dp"
-                        android:src="@drawable/ic_action_editor_mode_edit" />
+                        android:src="@drawable/vector_edit_green" />
 
                 </LinearLayout>
 
@@ -121,7 +121,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_gravity="center"
-                                android:src="@drawable/ic_action_action_shopping_cart" />
+                                android:layout_margin="3dp"
+                                android:src="@drawable/vector_shopping_cart" />
                         </android.support.v7.widget.CardView>
 
 
@@ -139,7 +140,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:padding="12dp"
-                        android:src="@drawable/arrow_gray_right" />
+                        android:src="@drawable/vector_navigation_right_gray" />
 
                 </LinearLayout>
 
@@ -167,7 +168,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_gravity="center"
-                                android:src="@drawable/ic_action_action_credit_card" />
+                                android:layout_margin="3dp"
+                                android:src="@drawable/vector_credit_card_white" />
                         </android.support.v7.widget.CardView>
 
 
@@ -185,7 +187,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:padding="12dp"
-                        android:src="@drawable/arrow_gray_right" />
+                        android:src="@drawable/vector_navigation_right_gray" />
 
                 </LinearLayout>
 
@@ -213,7 +215,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_gravity="center"
-                                android:src="@drawable/ic_action_social_person" />
+                                android:src="@drawable/vector_person_white" />
                         </android.support.v7.widget.CardView>
 
 
@@ -231,7 +233,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:padding="12dp"
-                        android:src="@drawable/arrow_gray_right" />
+                        android:src="@drawable/vector_navigation_right_gray" />
 
                 </LinearLayout>
 
@@ -259,7 +261,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_gravity="center"
-                                android:src="@drawable/ic_action_question_mark" />
+                                android:layout_margin="4dp"
+                                android:src="@drawable/vector_faq_white" />
                         </android.support.v7.widget.CardView>
 
 
@@ -277,7 +280,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:padding="12dp"
-                        android:src="@drawable/arrow_gray_right" />
+                        android:src="@drawable/vector_navigation_right_gray" />
 
                 </LinearLayout>
 
@@ -305,7 +308,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_gravity="center"
-                                android:src="@drawable/ic_action_communication_email" />
+                                android:layout_margin="3dp"
+                                android:src="@drawable/vector_email_white" />
                         </android.support.v7.widget.CardView>
 
 
@@ -323,7 +327,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:padding="12dp"
-                        android:src="@drawable/arrow_gray_right" />
+                        android:src="@drawable/vector_navigation_right_gray" />
 
                 </LinearLayout>
 
@@ -352,7 +356,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_gravity="center"
-                                android:src="@drawable/ic_action_maps_local_phone" />
+                                android:layout_margin="3dp"
+                                android:src="@drawable/vector_call" />
                         </android.support.v7.widget.CardView>
 
 
@@ -370,7 +375,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:padding="12dp"
-                        android:src="@drawable/arrow_gray_right" />
+                        android:src="@drawable/vector_navigation_right_gray" />
 
                 </LinearLayout>
 

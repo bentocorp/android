@@ -12,20 +12,19 @@
 
         <ImageView
             android:id="@+id/actionbar_left_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="@dimen/toolbar_menu_item"
+            android:layout_height="@dimen/toolbar_menu_item"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:padding="@dimen/actionbar_btns_padding" />
+            android:layout_marginLeft="@dimen/actionbar_btns_padding" />
 
         <ImageView
             android:id="@+id/actionbar_right_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_alignParentEnd="true"
+            android:layout_width="@dimen/toolbar_menu_item"
+            android:layout_height="@dimen/toolbar_menu_item"
             android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:padding="@dimen/actionbar_btns_padding" />
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/actionbar_btns_padding" />
 
         <TextView
             android:id="@+id/actionbar_right_badge"

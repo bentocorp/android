@@ -21,7 +21,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Filter;
 import android.widget.Filterable;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -37,7 +36,6 @@ import com.bentonow.bentonow.Utils.LocationUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
-import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
 import com.bentonow.bentonow.controllers.errors.BummerActivity;
@@ -46,15 +44,14 @@ import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.dao.MenuDao;
 import com.bentonow.bentonow.dao.SettingsDao;
-import com.bentonow.bentonow.listener.ListenerWebRequest;
 import com.bentonow.bentonow.listener.OnCustomDragListener;
 import com.bentonow.bentonow.model.AutoCompleteModel;
 import com.bentonow.bentonow.model.Order;
 import com.bentonow.bentonow.model.user.CouponRequest;
+import com.bentonow.bentonow.parse.GooglePlaceJsonParser;
 import com.bentonow.bentonow.parse.InitParse;
 import com.bentonow.bentonow.ui.BackendTextView;
 import com.bentonow.bentonow.web.BentoNowApi;
-import com.bentonow.bentonow.web.request.RequestGetPlaceDetail;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -67,7 +64,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.wsdcamp.anim.FadeInOut;
 
-import cz.msebera.android.httpclient.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -81,6 +77,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import cz.msebera.android.httpclient.Header;
+
 public class DeliveryLocationActivity extends BaseFragmentActivity implements GoogleMap.OnMapClickListener, View.OnClickListener, AdapterView.OnItemClickListener, View.OnKeyListener,
         TextView.OnEditorActionListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
@@ -92,8 +90,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private BackendTextView txtAlertAgree;
     private CheckBox check_i_agree;
     private Button btn_continue;
-    private ImageButton btn_clear;
-    private ImageButton btn_current_location;
+    private ImageView btn_clear;
+    private ImageView btn_current_location;
     private ImageView actionbar_right_btn;
     private ImageView actionbar_left_btn;
     private ProgressBar progressBar;
@@ -194,15 +192,15 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         actionbar_title.setText(getResources().getString(R.string.delivery_location_actionbar_title));
 
         if (optOpenScreen == ConstantUtils.optOpenScreen.SUMMARY) {
-            getImageView().setImageResource(R.drawable.ic_ab_back);
+            getImageView().setImageResource(R.drawable.vector_navigation_left_green);
         } else {
-            getImageView().setImageResource(R.drawable.ic_ab_user);
+            getImageView().setImageResource(R.drawable.vector_user_profile);
         }
 
 
         getImageView().setOnClickListener(this);
 
-        getHelpMark().setImageResource(R.drawable.ic_ab_help);
+        getHelpMark().setImageResource(R.drawable.vector_faq_green);
         getHelpMark().setOnClickListener(this);
     }
 
@@ -587,6 +585,39 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private void getExactLocationByPlaceId(final String sAddress, final String sPlaceId) {
         showCustomDialog(R.string.searching_label);
 
+        BentoRestClient.getCustom(BentoNowApi.getPlaceDetailUrl(sPlaceId), null, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                DebugUtils.logError(TAG, "Cannot loadData: " + responseString);
+                checkAddress(sAddress);
+                onFinish();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, final String responseString) {
+                final LatLng mLocation = GooglePlaceJsonParser.parseLocation(responseString);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+
+                    public void run() {
+                        if (mLocation != null)
+                            moveMapToCenter(mLocation, sAddress);
+                        else
+                            checkAddress(sAddress);
+                    }
+                });
+                onFinish();
+
+            }
+
+            @Override
+            public void onFinish() {
+                dismissDialog();
+            }
+        });
+
+/*
         BentoApplication.instance.webRequest(new RequestGetPlaceDetail(sPlaceId, new ListenerWebRequest() {
             @Override
             public void onError(String sError, int statusCode) {
@@ -611,7 +642,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             public void onComplete() {
                 dismissDialog();
             }
-        }));
+        }));*/
 
     }
 
@@ -854,15 +885,15 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         return actionbar_right_btn;
     }
 
-    private ImageButton getBtnClear() {
+    private ImageView getBtnClear() {
         if (btn_clear == null)
-            btn_clear = (ImageButton) findViewById(R.id.btn_clear);
+            btn_clear = (ImageView) findViewById(R.id.btn_clear);
         return btn_clear;
     }
 
-    private ImageButton getBtnCurrentLocation() {
+    private ImageView getBtnCurrentLocation() {
         if (btn_current_location == null)
-            btn_current_location = (ImageButton) findViewById(R.id.btn_current_location);
+            btn_current_location = (ImageView) findViewById(R.id.btn_current_location);
         return btn_current_location;
     }
 

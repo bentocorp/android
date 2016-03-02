@@ -27,7 +27,7 @@ public class OrderConfirmedActivity extends BaseFragmentActivity implements View
 
         MixpanelUtils.track("Viewed Order Confirmation Screen");
 
-        getMenuItemRight().setImageResource(R.drawable.ic_ab_help);
+        getMenuItemRight().setImageResource(R.drawable.vector_faq_green);
         getMenuItemRight().setOnClickListener(this);
 
         getBtnViewAllOrders().setOnClickListener(this);

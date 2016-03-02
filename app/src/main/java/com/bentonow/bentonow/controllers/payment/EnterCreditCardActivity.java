@@ -98,7 +98,7 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
         actionbar_title.setText(IosCopyDao.get("complete-enter-credit-card"));
 
         ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
-        actionbar_left_btn.setImageResource(R.drawable.ab_x_close);
+        actionbar_left_btn.setImageResource(R.drawable.vector_close_green);
         actionbar_left_btn.setOnClickListener(this);
     }
 
@@ -155,7 +155,7 @@ public class EnterCreditCardActivity extends BaseFragmentActivity implements Vie
                     img_credit_card.setImageResource(R.drawable.card_jcb);
                     break;
                 default:
-                    img_credit_card.setImageResource(R.drawable.card_empty);
+                    img_credit_card.setImageResource(R.drawable.vector_credit_card_gray);
                     break;
             }
         }

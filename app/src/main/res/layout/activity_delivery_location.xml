@@ -15,21 +15,21 @@
 
         <ImageView
             android:id="@+id/actionbar_left_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:padding="15dp"
-            android:src="@drawable/ic_ab_user" />
+            android:layout_marginLeft="15dp"
+            android:src="@drawable/vector_user_profile" />
 
         <ImageView
             android:id="@+id/actionbar_right_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_alignParentEnd="true"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:padding="@dimen/actionbar_btns_padding" />
+            android:layout_centerVertical="true"
+            android:layout_marginRight="15dp"
+            android:src="@drawable/vector_faq_green" />
 
         <TextView
             android:id="@+id/actionbar_right_badge"
@@ -77,10 +77,12 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/delivery_icon_search"
+                android:layout_height="@dimen/delivery_icon_search"
+                android:layout_marginLeft="7dp"
+                android:layout_marginRight="7dp"
                 android:contentDescription="@null"
-                android:src="@drawable/ic_search" />
+                android:src="@drawable/vector_search_green" />
 
             <AutoCompleteTextView
                 android:id="@+id/txt_address"
@@ -100,34 +102,33 @@
                 <requestFocus />
             </AutoCompleteTextView>
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/btn_clear"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/delivery_icon_search"
+                android:layout_height="@dimen/delivery_icon_search"
+                android:layout_marginLeft="7dp"
+                android:layout_marginRight="7dp"
                 android:adjustViewBounds="true"
-                android:background="@null"
                 android:contentDescription="@null"
                 android:onClick="onClearPressed"
-                android:padding="7sp"
-                android:src="@drawable/creditcard_btn_clear" />
+                android:src="@drawable/vector_close_gray" />
 
             <ProgressBar
                 android:id="@+id/progressBar"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:padding="7sp" />
+                android:layout_width="@dimen/delivery_icon_search"
+                android:layout_height="@dimen/delivery_icon_search"
+                android:layout_marginLeft="7dp"
+                android:layout_marginRight="7dp" />
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/btn_current_location"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@null"
+                android:layout_width="@dimen/delivery_icon_search"
+                android:layout_height="@dimen/delivery_icon_search"
+                android:layout_marginLeft="7dp"
+                android:layout_marginRight="7dp"
                 android:contentDescription="@null"
                 android:onClick="onCurrentLocationPressed"
-                android:padding="7sp"
-                android:paddingLeft="1dp"
-                android:paddingRight="9dp"
-                android:src="@drawable/ic_curr_loc" />
+                android:src="@drawable/vector_near_me" />
 
         </LinearLayout>
 
@@ -194,15 +195,15 @@
             android:text="@string/iagree_label"
             app:key="delivery-agree" />
 
-        <ImageButton
+        <ImageView
             android:id="@+id/btn_help"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@null"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:contentDescription="@null"
             android:onClick="onHelpPressed"
-            android:padding="10dp"
-            android:src="@drawable/ic_help" />
+            android:src="@drawable/vector_faq_green" />
 
         <LinearLayout
             android:layout_width="0dp"

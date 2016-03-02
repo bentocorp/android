@@ -9,15 +9,15 @@ import android.widget.ImageView;
 
 import com.bentonow.bentonow.R;
 
-import me.grantland.widget.AutofitTextView;
+import com.bentonow.bentonow.ui.AutoFitTxtView;
 
 public class ItemSideFixWrapper {
 
     private View base = null;
 
     private ImageView img_dish_side_fix = null;
-    private AutofitTextView txt_title = null;
-    private AutofitTextView txt_description = null;
+    private AutoFitTxtView txt_title = null;
+    private AutoFitTxtView txt_description = null;
 
     public ItemSideFixWrapper(View base) {
         this.base = base;
@@ -30,15 +30,15 @@ public class ItemSideFixWrapper {
         return img_dish_side_fix;
     }
 
-    public AutofitTextView getTxtDescription() {
+    public AutoFitTxtView getTxtDescription() {
         if (txt_description == null)
-            txt_description = (AutofitTextView) base.findViewById(R.id.txt_description);
+            txt_description = (AutoFitTxtView) base.findViewById(R.id.txt_description);
         return txt_description;
     }
 
-    public AutofitTextView getTxtTitle() {
+    public AutoFitTxtView getTxtTitle() {
         if (txt_title == null)
-            txt_title = (AutofitTextView) base.findViewById(R.id.txt_title);
+            txt_title = (AutoFitTxtView) base.findViewById(R.id.txt_title);
         return txt_title;
     }
 

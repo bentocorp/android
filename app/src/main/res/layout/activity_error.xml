@@ -77,7 +77,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/ic_email_padding"
-                android:src="@drawable/ic_email" />
+                android:src="@drawable/vector_email_gray" />
 
             <EditText
                 android:id="@+id/txt_email"

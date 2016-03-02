@@ -107,11 +107,11 @@ public class EnterPhoneNumberActivity extends BaseFragmentActivity implements Vi
         actionbar_title.setText(IosCopyDao.get("phone-confirmation-title"));
 
         ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
-        actionbar_left_btn.setImageResource(R.drawable.ic_ab_back);
+        actionbar_left_btn.setImageResource(R.drawable.vector_navigation_left_green);
         actionbar_left_btn.setOnClickListener(this);
 
         ImageView actionbar_right_btn = (ImageView) findViewById(R.id.actionbar_right_btn);
-        actionbar_right_btn.setImageResource(R.drawable.ic_ab_help);
+        actionbar_right_btn.setImageResource(R.drawable.vector_faq_green);
         actionbar_right_btn.setOnClickListener(this);
     }
 
@@ -251,10 +251,10 @@ public class EnterPhoneNumberActivity extends BaseFragmentActivity implements Vi
 
         if (!isValid()) {
             txt_phone.setTextColor(getResources().getColor(R.color.orange));
-            img_phone.setImageResource(R.drawable.ic_signup_phone_error);
+            img_phone.setImageResource(R.drawable.vector_phone_orange);
         } else {
             txt_phone.setTextColor(getResources().getColor(R.color.gray));
-            img_phone.setImageResource(R.drawable.ic_signup_phone);
+            img_phone.setImageResource(R.drawable.vector_phone_gray);
         }
     }
 

@@ -8,10 +8,9 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.ui.AutoFitTxtView;
 import com.bentonow.bentonow.ui.BackendAutoFitTextView;
 import com.bentonow.bentonow.ui.material.ProgressBarCircularIndeterminate;
-
-import me.grantland.widget.AutofitTextView;
 
 public class ItemSideCustomWrapper {
 
@@ -20,8 +19,8 @@ public class ItemSideCustomWrapper {
     private ImageView img_dish_main_custom = null;
     private ImageView img_gradient = null;
     private ImageView img_sold_out = null;
-    private AutofitTextView txt_title = null;
-    private AutofitTextView txt_description = null;
+    private AutoFitTxtView txt_title = null;
+    private AutoFitTxtView txt_description = null;
     private BackendAutoFitTextView btn_add_to_bento;
     private BackendAutoFitTextView btn_added;
     private BackendAutoFitTextView txt_oa_label;
@@ -49,15 +48,15 @@ public class ItemSideCustomWrapper {
         return img_sold_out;
     }
 
-    public AutofitTextView getTxtDescription() {
+    public AutoFitTxtView getTxtDescription() {
         if (txt_description == null)
-            txt_description = (AutofitTextView) view.findViewById(R.id.txt_description);
+            txt_description = (AutoFitTxtView) view.findViewById(R.id.txt_description);
         return txt_description;
     }
 
-    public AutofitTextView getTxtTitle() {
+    public AutoFitTxtView getTxtTitle() {
         if (txt_title == null)
-            txt_title = (AutofitTextView) view.findViewById(R.id.txt_title);
+            txt_title = (AutoFitTxtView) view.findViewById(R.id.txt_title);
         return txt_title;
     }
 

@@ -87,7 +87,7 @@ public class SelectSideCustomActivity extends BaseFragmentActivity implements Vi
         actionbar_title.setText(getResources().getString(R.string.bento_builder_actionbar_title));
 
         ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
-        actionbar_left_btn.setImageResource(R.drawable.ic_ab_back);
+        actionbar_left_btn.setImageResource(R.drawable.vector_navigation_left_green);
         actionbar_left_btn.setOnClickListener(this);
     }
 

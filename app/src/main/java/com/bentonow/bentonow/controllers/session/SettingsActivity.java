@@ -133,7 +133,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
         actionbar_title.setText("Settings");
 
         ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
-        actionbar_left_btn.setImageResource(R.drawable.ab_x_close);
+        actionbar_left_btn.setImageResource(R.drawable.vector_close_green);
         actionbar_left_btn.setOnClickListener(this);
 
     }

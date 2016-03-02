@@ -60,7 +60,7 @@
                 app:key="oa-only-od-banner"
                 autofit:minTextSize="8sp" />
 
-            <me.grantland.widget.AutofitTextView
+            <com.bentonow.bentonow.ui.AutoFitTxtView
                 android:id="@+id/txt_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -74,7 +74,7 @@
                 android:textAppearance="@style/BentoBuilderBoxMainName"
                 autofit:minTextSize="8sp" />
 
-            <me.grantland.widget.AutofitTextView
+            <com.bentonow.bentonow.ui.AutoFitTxtView
                 android:id="@+id/txt_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

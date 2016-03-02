@@ -93,7 +93,7 @@ public class HelpActivity extends BaseFragmentActivity implements View.OnClickLi
         }
 
         ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
-        actionbar_left_btn.setImageResource(R.drawable.ic_ab_back);
+        actionbar_left_btn.setImageResource(R.drawable.vector_navigation_left_green);
         actionbar_left_btn.setOnClickListener(this);
 
     }

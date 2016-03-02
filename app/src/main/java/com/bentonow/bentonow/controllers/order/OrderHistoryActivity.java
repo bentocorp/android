@@ -52,7 +52,7 @@ public class OrderHistoryActivity extends BaseFragmentActivity implements View.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_history);
 
-        getMenuItemLeft().setImageResource(R.drawable.ic_ab_back);
+        getMenuItemLeft().setImageResource(R.drawable.vector_navigation_left_green);
         getMenuItemLeft().setOnClickListener(OrderHistoryActivity.this);
         getToolbarTitle().setText(IosCopyDao.get("pane-title-orders"));
 

@@ -55,7 +55,7 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@null"
                 android:padding="@dimen/ic_email_padding"
-                android:src="@drawable/ic_email" />
+                android:src="@drawable/vector_email_gray" />
 
             <com.bentonow.bentonow.ui.BackendEditText
                 android:id="@+id/txt_email"

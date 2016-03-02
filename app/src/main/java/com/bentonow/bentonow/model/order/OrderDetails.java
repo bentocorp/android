@@ -7,6 +7,7 @@ public class OrderDetails {
     public double tip_cents = 0;
     public double total_cents = 0;
     public double delivery_price = 0;
+    public double normal_delivery_price = 0;
     public double items_total = 0;
     public double tax_percentage = 0;
     public double subtotal = 0;

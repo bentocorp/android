@@ -310,6 +310,13 @@
         <item name="fontPath">fonts/OpenSans-Bold.ttf</item>
     </style>
 
+    //ImageView
+
+    <style name="ImageViewSignIcon">
+        <item name="android:layout_marginLeft">@dimen/sign_icon_margin</item>
+        <item name="android:layout_marginRight">@dimen/sign_icon_margin</item>
+    </style>
+
     <style name="EditTextPhone">
         <item name="android:textCursorDrawable">@null</item>
         <item name="android:textColor">@color/gray</item>
@@ -352,6 +359,7 @@
     </style>
 
     //switch
+
     <style name="SwitchBento">
         <item name="colorControlActivated">@color/primary_dark</item>
     </style>

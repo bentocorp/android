@@ -44,7 +44,7 @@
         <!-- form group -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:background="@color/white"
             android:gravity="center_vertical"
             android:orientation="horizontal"
@@ -56,7 +56,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/ic_email_padding"
-                android:src="@drawable/ic_signup_phone" />
+                android:src="@drawable/vector_phone_gray" />
 
             <!-- divisor -->
             <View
@@ -79,13 +79,13 @@
                 android:id="@+id/txt_phone"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
+                android:layout_gravity="center|left"
                 android:background="@color/transparent"
                 android:digits="1234567890"
                 android:focusableInTouchMode="true"
                 android:gravity="center_vertical"
                 android:inputType="phone"
                 android:maxLength="16"
-                android:layout_gravity="center|left"
                 android:paddingRight="@dimen/btn_padding"
                 android:singleLine="true"
                 android:textColor="@color/gray"

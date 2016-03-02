@@ -8,9 +8,6 @@ import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.dao.IosCopyDao;
-import com.bentonow.bentonow.model.BackendText;
-
-import me.grantland.widget.AutofitHelper;
 
 public class BackendAutoFitTextView extends TextView implements AutofitHelper.OnTextSizeChangeListener {
 

@@ -5,7 +5,6 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.widget.TextView;
 
-import me.grantland.widget.AutofitHelper;
 
 public class AutoFitTxtView extends TextView implements AutofitHelper.OnTextSizeChangeListener {
 
