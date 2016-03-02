@@ -110,13 +110,13 @@
 
             <ImageView
                 android:id="@+id/img_credit_card"
-                android:layout_width="@dimen/summary_height_row"
-                android:layout_height="@dimen/summary_height_row"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/btn_padding"
                 android:adjustViewBounds="true"
                 android:contentDescription="@null"
-                android:paddingLeft="@dimen/btn_padding"
-                android:src="@drawable/card_empty" />
+                android:src="@drawable/vector_credit_card_gray" />
 
             <TextView
                 android:id="@+id/txt_credit_card"
@@ -173,11 +173,10 @@
 
             <LinearLayout
                 android:id="@+id/container_discount"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="@dimen/summary_height_row"
-                android:background="@color/white"
-                android:orientation="horizontal"
-                android:visibility="visible">
+                android:layout_toLeftOf="@+id/txt_total"
+                android:background="@color/white">
 
                 <com.bentonow.bentonow.ui.BackendTextView
                     style="@style/TxtOpenSansRegular"
@@ -251,6 +250,15 @@
                     android:padding="@dimen/btn_padding"
                     android:textColor="@color/dark_gray"
                     app:key="delivery_label" />
+
+                <TextView
+                    android:id="@+id/txt_delivery_price_total"
+                    style="@style/TxtOpenSansRegular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/btn_padding"
+                    android:text="@string/zero_dollar"
+                    android:textColor="@color/orange" />
 
                 <TextView
                     android:id="@+id/txt_delivery_price"
@@ -372,33 +380,16 @@
                     android:onClick="showAddPromoCodeDialog"
                     android:textSize="13sp" />
 
-
-                <RelativeLayout
-                    android:id="@+id/layout_wrapper_discount"
+                <TextView
+                    android:id="@+id/txt_promo_total"
+                    style="@style/TxtOpenSansRegular"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_toLeftOf="@+id/txt_total">
-
-                    <TextView
-                        android:id="@+id/txt_promo_total"
-                        style="@style/TxtOpenSansRegular"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="@dimen/btn_padding"
-                        android:text="@string/zero_dollar"
-                        android:textColor="@color/orange" />
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="1dp"
-                        android:layout_alignLeft="@+id/txt_promo_total"
-                        android:layout_alignRight="@+id/txt_promo_total"
-                        android:layout_centerInParent="true"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp"
-                        android:src="@color/orange" />
-                </RelativeLayout>
+                    android:layout_toLeftOf="@+id/txt_total"
+                    android:padding="@dimen/btn_padding"
+                    android:text="@string/zero_dollar"
+                    android:textColor="@color/orange" />
 
 
                 <TextView

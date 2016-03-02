@@ -3,6 +3,7 @@ package com.bentonow.bentonow.controllers.order;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
@@ -51,11 +52,12 @@ import com.crashlytics.android.Crashlytics;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 
-import cz.msebera.android.httpclient.Header;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cz.msebera.android.httpclient.Header;
 
 public class CompleteOrderActivity extends BaseFragmentActivity implements View.OnClickListener, InterfaceCustomerService, ListenerCompleteOrder {
 
@@ -66,6 +68,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
     private TextView txt_credit_card;
     private TextView txt_discount;
     private TextView txt_tax;
+    private TextView txt_delivery_price_total;
     private TextView txt_delivery_price;
     private TextView txt_tip;
     private TextView txt_total;
@@ -136,7 +139,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
         actionbar_title.setText(IosCopyDao.get("complete-title"));
 
         ImageView actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
-        actionbar_left_btn.setImageResource(R.drawable.ic_ab_back);
+        actionbar_left_btn.setImageResource(R.drawable.vector_navigation_left_green);
         actionbar_left_btn.setOnClickListener(this);
     }
 
@@ -560,23 +563,27 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
             getBtnAddPromoCode().setTextColor(getResources().getColor(R.color.orange));
             getBtnAddPromoCode().setText("REMOVE PROMO");
             getTxtPromoTotal().setText(String.format(getString(R.string.money_format), mOrder.OrderDetails.total_cents_without_coupon / 100));
-            getLayoutWrapperDiscount().setVisibility(View.VISIBLE);
+            getTxtPromoTotal().setPaintFlags(getTxtPromoTotal().getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            getTxtPromoTotal().setVisibility(View.VISIBLE);
             container_discount.setVisibility(View.VISIBLE);
         } else {
             getBtnAddPromoCode().setText(IosCopyDao.get("complete-add-promo"));
             getBtnAddPromoCode().setTextColor(getResources().getColor(R.color.btn_green));
-            getLayoutWrapperDiscount().setVisibility(View.GONE);
+            getTxtPromoTotal().setVisibility(View.GONE);
             container_discount.setVisibility(View.GONE);
         }
 
         txt_address.setText(BentoNowUtils.getStreetAddress());
         txt_credit_card.setText(mCurrentUser.card.last4);
 
-        getTxtDeliveryPrice().setText(String.format(getString(R.string.money_format), (double) mOrder.OrderDetails.delivery_price));
+        getTxtDeliveryPrice().setText(String.format(getString(R.string.money_format), mOrder.OrderDetails.delivery_price));
+        getTxtDeliveryPriceTotal().setText(String.format(getString(R.string.money_format), mOrder.OrderDetails.normal_delivery_price));
+        getTxtDeliveryPriceTotal().setVisibility(SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.ORDER_AHEAD_SUBSCRIPTION) ? View.VISIBLE : View.GONE);
+        getTxtDeliveryPriceTotal().setPaintFlags(getTxtDeliveryPriceTotal().getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         double dCoupon = mOrder.OrderDetails.coupon_discount_cents;
         txt_discount.setText(String.format(getString(R.string.money_format), (dCoupon / 100.0)));
         txt_tax.setText(String.format(getString(R.string.money_format), mOrder.OrderDetails.tax_cents / 100));
-        txt_tip.setText(String.format(getString(R.string.tip_percentage), (double) mOrder.OrderDetails.tip_percentage) + " %");
+        txt_tip.setText(String.format(getString(R.string.tip_percentage), mOrder.OrderDetails.tip_percentage) + " %");
         txt_total.setText(String.format(getString(R.string.money_format), mOrder.OrderDetails.total_cents / 100));
 
 
@@ -602,7 +609,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
                 card = R.drawable.card_jcb;
                 break;
             default:
-                card = R.drawable.card_empty;
+                card = R.drawable.vector_credit_card_gray;
                 break;
         }
 
@@ -874,10 +881,10 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
         return btn_add_promo_code;
     }
 
-    private RelativeLayout getLayoutWrapperDiscount() {
-        if (layoutWrapperDiscount == null)
-            layoutWrapperDiscount = (RelativeLayout) findViewById(R.id.layout_wrapper_discount);
-        return layoutWrapperDiscount;
+    private TextView getTxtDeliveryPriceTotal() {
+        if (txt_delivery_price_total == null)
+            txt_delivery_price_total = (TextView) findViewById(R.id.txt_delivery_price_total);
+        return txt_delivery_price_total;
     }
 
     private TextView getTxtPromoTotal() {
