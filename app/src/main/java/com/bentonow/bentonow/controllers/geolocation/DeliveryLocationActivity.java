@@ -5,7 +5,6 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -74,8 +73,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -151,7 +148,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                     case MotionEvent.ACTION_UP:
                         final long now = SystemClock.uptimeMillis();
                         if (now - lastTouched > SCROLL_TIME)
-                            locationMapChanged(getGoogleMap().getCameraPosition().target, false);
+                            forceMoveMapLocation(getGoogleMap().getCameraPosition().target, false);
 
                         break;
                     default:
@@ -165,7 +162,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             public void onCameraChange(CameraPosition cameraPosition) {
                 DebugUtils.logDebug(TAG, "Camera Position: " + cameraPosition.zoom);
                 if (previousZoomLevel != cameraPosition.zoom) {
-                    locationMapChanged(cameraPosition.target, false);
+                    forceMoveMapLocation(cameraPosition.target, false);
                 }
                 previousZoomLevel = cameraPosition.zoom;
 
@@ -205,8 +202,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
     void updateUI() {
-
-        getProgressBar().setVisibility(View.GONE);
+       // getProgressBar().setVisibility(View.GONE);
 
         if (getCheckIAgree().isChecked() && mOrderAddress != null) {
             getBtnContinue().setBackground(getResources().getDrawable(R.drawable.btn_rounded_green));
@@ -236,20 +232,19 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
 
-    private void locationMapChanged(final LatLng latLng, final boolean bMovedMap) {
-        DebugUtils.logDebug(TAG, "locationMapChanged");
+    private void forceMoveMapLocation(final LatLng latLng, final boolean bMovedMap) {
+        restartSearch();
+
         if (latLng != null) {
             mLastOrderLocation = latLng;
-            mOrderAddress = null;
 
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    scanLocation(latLng);
                     if (bMovedMap)
                         getGoogleMap().animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, previousZoomLevel));
 
-                    AndroidUtil.hideKeyboard(getProgressBar());
+                    getAddressByLocation(latLng, "");
                 }
             });
 
@@ -259,55 +254,54 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
     @Override
     public void onMapClick(final LatLng latLng) {
-        locationMapChanged(latLng, true);
+        forceMoveMapLocation(latLng, true);
     }
 
     private void markerLocation(LatLng latLng) {
+        restartSearch();
         mLastOrderLocation = latLng;
         getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, previousZoomLevel));
-        scanLocation(latLng);
+        getAddressByLocation(latLng, "");
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-    private void moveMapToCenter(LatLng mLocation, String sAddress) {
-        mOrderAddress = LocationUtils.getAddressFromLocation(mLocation);
-
-        if (mOrderAddress != null) {
-            mLastOrderLocation = mLocation;
-            getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(mLocation, previousZoomLevel));
-            if (AndroidUtil.isJellyBean())
-                getTxtAddress().setText(sAddress, false);
-            else
-                getTxtAddress().setText(sAddress);
-
-        } else {
-
-        }
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                AndroidUtil.hideKeyboard(getProgressBar());
-                updateUI();
-            }
-        });
-
-
+    private void moveMapToCenter(final LatLng mLocation) {
+        mLastOrderLocation = mLocation;
+        getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(mLocation, previousZoomLevel));
     }
 
+
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-    private void scanLocation(final LatLng mLocation) {
-        getBtnClear().setVisibility(View.INVISIBLE);
+    private void getAddressByLocation(final String sAddress) {
+        getBtnClear().setVisibility(View.GONE);
         getProgressBar().setVisibility(View.VISIBLE);
 
         new Thread(new Runnable() {
             @Override
             public void run() {
-                mOrderAddress = LocationUtils.getAddressFromLocation(mLocation);
-                final String sCustomAddress = LocationUtils.getCustomAddress(mOrderAddress);
 
-                if (sCustomAddress.isEmpty()) {
-                    mOrderAddress = null;
+                try {
+                    mOrderAddress = LocationUtils.getAddressFromString(sAddress);
+                    mLastOrderLocation = new LatLng(mOrderAddress.getLatitude(), mOrderAddress.getLongitude());
+                    moveMapToCenter(mLastOrderLocation);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (AndroidUtil.isJellyBean())
+                                getTxtAddress().setText(sAddress, false);
+                            else
+                                getTxtAddress().setText(sAddress);
+
+                            updateUI();
+                            AndroidUtil.hideKeyboard(getProgressBar());
+                        }
+                    });
+
+                } catch (Exception ex) {
+                    DebugUtils.logError(TAG, "getAddressByLocation: " + ex.toString());
+
+                    WidgetsUtils.createShortToast(R.string.error_location_address);
 
                     runOnUiThread(new Runnable() {
                         @Override
@@ -318,9 +312,29 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                                 getTxtAddress().setText("");
 
                             updateUI();
+                            AndroidUtil.hideKeyboard(getProgressBar());
+
                         }
                     });
-                } else {
+                }
+
+            }
+        }).start();
+
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private void getAddressByLocation(final LatLng mLocation, final String sAddress) {
+        getBtnClear().setVisibility(View.GONE);
+        getProgressBar().setVisibility(View.VISIBLE);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    mOrderAddress = LocationUtils.getAddressFromLocation(mLocation);
+                    final String sCustomAddress = LocationUtils.getCustomAddress(mOrderAddress);
+
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -332,6 +346,25 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                             updateUI();
                         }
                     });
+
+                } catch (Exception ex) {
+                    DebugUtils.logError(TAG, "getAddressByLocation: " + ex.toString());
+
+                    if (sAddress.isEmpty()) {
+                        WidgetsUtils.createShortToast(R.string.error_location_place);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (AndroidUtil.isJellyBean())
+                                    getTxtAddress().setText("", false);
+                                else
+                                    getTxtAddress().setText("");
+
+                                updateUI();
+                            }
+                        });
+                    } else
+                        getAddressByLocation(sAddress);
                 }
 
             }
@@ -341,12 +374,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     public void onClearPressed(View view) {
-        if (AndroidUtil.isJellyBean())
-            getTxtAddress().setText("", false);
-        else
-            getTxtAddress().setText("");
-
-        mOrderAddress = null;
+        restartSearch();
 
         AndroidUtil.hideKeyboard(getProgressBar());
         updateUI();
@@ -589,22 +617,24 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 DebugUtils.logError(TAG, "Cannot loadData: " + responseString);
-                checkAddress(sAddress);
+                getAddressByLocation(sAddress);
                 onFinish();
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, final String responseString) {
-                final LatLng mLocation = GooglePlaceJsonParser.parseLocation(responseString);
+                DebugUtils.logDebug(TAG, "Location: " + responseString);
+                mLastOrderLocation = GooglePlaceJsonParser.parseLocation(responseString);
 
                 runOnUiThread(new Runnable() {
                     @Override
 
                     public void run() {
-                        if (mLocation != null)
-                            moveMapToCenter(mLocation, sAddress);
-                        else
-                            checkAddress(sAddress);
+                        if (mLastOrderLocation != null) {
+                            moveMapToCenter(mLastOrderLocation);
+                            getAddressByLocation(mLastOrderLocation, sAddress);
+                        } else
+                            getAddressByLocation(sAddress);
                     }
                 });
                 onFinish();
@@ -647,29 +677,14 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-    private void checkAddress(String sAddress) {
-        // DebugUtils.logDebug(TAG, "checkAddress(): " + str);
-        Geocoder geoCoderClick = new Geocoder(DeliveryLocationActivity.this, Locale.getDefault());
-        try {
-            List<Address> addresses = geoCoderClick.getFromLocationName(sAddress, 5);
-            if (addresses.size() > 0) {
-                moveMapToCenter(new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude()), sAddress);
-            } else {
-                WidgetsUtils.createShortToast(R.string.error_location_place);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (AndroidUtil.isJellyBean())
-                            getTxtAddress().setText("", false);
-                        else
-                            getTxtAddress().setText("");
-                    }
-                });
-                DebugUtils.logDebug(TAG, "No Address Found");
-            }
-        } catch (IOException e) {
-            DebugUtils.logError(TAG, e);
-        }
+    private void restartSearch() {
+        if (AndroidUtil.isJellyBean())
+            getTxtAddress().setText("", false);
+        else
+            getTxtAddress().setText("");
+
+        mOrderAddress = null;
+        mLastOrderLocation = null;
     }
 
     private void dismissDialog() {
@@ -760,6 +775,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     public void onItemClick(AdapterView<?> adapterView, View view, final int position, long id) {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getTxtAddress().getWindowToken(), 0);
+        restartSearch();
         getExactLocationByPlaceId(resultList.get(position).getAddress(), resultList.get(position).getPlaceId());
     }
 
@@ -791,7 +807,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         if (optOpenScreen == ConstantUtils.optOpenScreen.BUILD_BENTO) {
             mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             if (mCurrentLocation != null) {
-
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

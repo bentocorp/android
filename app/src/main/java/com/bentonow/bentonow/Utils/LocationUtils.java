@@ -16,6 +16,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Jose Torres on 9/9/15.
@@ -87,7 +88,6 @@ public class LocationUtils {
         return mAddress;
     }
 
-
     public static Address getAddressFromLocation(LatLng mCurrentLocation) {
         List<Address> addresses = new ArrayList<>();
         Address mAddress = null;
@@ -101,6 +101,24 @@ public class LocationUtils {
 
         if (!addresses.isEmpty()) {
             mAddress = addresses.get(0);
+        }
+
+        return mAddress;
+    }
+
+
+    public static Address getAddressFromString(String sAddress) {
+        Address mAddress = null;
+        List<Address> addresses = new ArrayList<>();
+        Geocoder geoCoder = new Geocoder(BentoApplication.instance, Locale.US);
+
+        try {
+            addresses.addAll(geoCoder.getFromLocationName(sAddress, 1));
+            if (!addresses.isEmpty())
+                return addresses.get(0);
+
+        } catch (Exception e) {
+            DebugUtils.logError(TAG, "getAddressFromString()" + e);
         }
 
         return mAddress;
@@ -155,7 +173,7 @@ public class LocationUtils {
         double meter = valueResult % 1000;
         int meterInDec = Integer.valueOf(newFormat.format(meter));
         double result = Radius * c;
-        DebugUtils.logDebug(TAG, "Radius Value:: "+  result + "   KM  " + kmInDec + " Meter   " + meterInDec);
+        DebugUtils.logDebug(TAG, "Radius Value:: " + result + "   KM  " + kmInDec + " Meter   " + meterInDec);
         return Radius * c;
     }
 }

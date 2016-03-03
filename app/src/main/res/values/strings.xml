@@ -53,6 +53,7 @@
     <string name="error_phone_request">There was an problem at changing your phone, try it again later</string>
     <string name="error_sold_out_items">There are sold out items, please change them before continue \n%s</string>
     <string name="error_location_place">Please move the map to set your location</string>
+    <string name="error_location_address">Please enter your address again</string>
 
 
     <string name="cardNumber">1234 5678 9012 3456</string>
