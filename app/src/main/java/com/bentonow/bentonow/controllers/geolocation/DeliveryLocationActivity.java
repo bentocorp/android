@@ -202,7 +202,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
     void updateUI() {
-       // getProgressBar().setVisibility(View.GONE);
+        getProgressBar().setVisibility(View.GONE);
 
         if (getCheckIAgree().isChecked() && mOrderAddress != null) {
             getBtnContinue().setBackground(getResources().getDrawable(R.drawable.btn_rounded_green));

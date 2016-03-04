@@ -126,7 +126,7 @@ public class ExpandableListOrderHistoryAdapter extends BaseExpandableListAdapter
         if (mOrderSelected.getSectionTitle().contains("Progress")) {
             return true;
         } else
-            return false;
+            return true;
     }
 
 }

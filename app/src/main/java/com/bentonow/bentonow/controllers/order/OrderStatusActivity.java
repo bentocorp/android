@@ -71,10 +71,12 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
 
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
-    private Location mCurrentLocation;
+    private Location mOrderLocation;
     private LatLng mDriverLocation;
     private Marker mDriverMarker;
     private MarkerOptions mDriverMarkerOpts;
+    private Marker mOrderMarker;
+    private MarkerOptions mOrderMarkerOpts;
     private ArrayList<MarkerOptions> aMarker = new ArrayList<>();
     private ArrayList<LatLng> lEmulateRoute = new ArrayList<>();
 
@@ -106,28 +108,29 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         getMenuItemLeft().setImageResource(R.drawable.vector_navigation_left_green);
         getMenuItemLeft().setOnClickListener(OrderStatusActivity.this);
 
-        mDriverLocation = new LatLng(19.396282, -99.140303);
+        mOrder.setLat("37.8262328");
+        mOrder.setLng("-122.3726696");
 
-        lEmulateRoute.add(new LatLng(19.396282, -99.140303));
-        lEmulateRoute.add(new LatLng(19.396048, -99.140333));
-        lEmulateRoute.add(new LatLng(19.394832, -99.140531));
-        lEmulateRoute.add(new LatLng(19.394499, -99.140853));
-        lEmulateRoute.add(new LatLng(19.394578, -99.141564));
-        lEmulateRoute.add(new LatLng(19.394928, -99.144131));
-        lEmulateRoute.add(new LatLng(19.394113, -99.144200));
-        lEmulateRoute.add(new LatLng(19.392109, -99.144512));
-        lEmulateRoute.add(new LatLng(19.389153, -99.144994));
-        lEmulateRoute.add(new LatLng(19.389225, -99.145780));
-        lEmulateRoute.add(new LatLng(19.389554, -99.147931));
-        lEmulateRoute.add(new LatLng(19.390077, -99.151515));
-        lEmulateRoute.add(new LatLng(19.390785, -99.156482));
-        lEmulateRoute.add(new LatLng(19.392914, -99.167340));
-        lEmulateRoute.add(new LatLng(19.394030, -99.172366));
-        lEmulateRoute.add(new LatLng(19.391637, -99.173099));
-        lEmulateRoute.add(new LatLng(19.390037, -99.173619));
-        lEmulateRoute.add(new LatLng(19.390116, -99.173788));
-        lEmulateRoute.add(new LatLng(19.389665, -99.173959));
-        lEmulateRoute.add(new LatLng(19.389368, -99.173997));
+        mOrderLocation = new Location("Order Location");
+        mOrderLocation.setLatitude(Double.parseDouble(mOrder.getLat()));
+        mOrderLocation.setLongitude(Double.parseDouble(mOrder.getLng()));
+
+
+        mDriverLocation = new LatLng(37.7648009, -122.4196905);
+        lEmulateRoute.add(new LatLng(37.7699536, -122.4199623));
+        lEmulateRoute.add(new LatLng(37.7699536, -122.4199623));
+        lEmulateRoute.add(new LatLng(37.76976700000001, -122.4181974));
+        lEmulateRoute.add(new LatLng(37.7692352, -122.417882));
+        lEmulateRoute.add(new LatLng(37.7690925, -122.409333));
+        lEmulateRoute.add(new LatLng(37.7709375, -122.4057751));
+        lEmulateRoute.add(new LatLng(37.8083016, -122.36696));
+        lEmulateRoute.add(new LatLng(37.8093742, -122.3699022));
+        lEmulateRoute.add(new LatLng(37.81645049999999, -122.3716935));
+        lEmulateRoute.add(new LatLng(37.8226519, -122.3761121));
+        lEmulateRoute.add(new LatLng(37.8245082, -122.3718595));
+        lEmulateRoute.add(new LatLng(37.8261384, -122.3729018));
+
+        updateStatus("delivery");
 
         mHandler = new Handler();
         mLoadingTask = new Runnable() {
@@ -183,19 +186,17 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
             builder.include(marker.getPosition());
         }
         LatLngBounds bounds = builder.build();
-        int padding = 100; // offset from edges of the map in pixels
+        int padding = 200; // offset from edges of the map in pixels
         CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-        googleMap.animateCamera(cu);
+        if (iPositionStart >= 1)
+            googleMap.animateCamera(cu);
 
         mHandler.postDelayed(mLoadingTask, 1000 * 3);
     }
 
     private void updateMarkers() {
-      /*  aMarker.clear();
-        googleMap.clear();
-
-        googleMap.addMarker(mMarkerDriver);
-        */
+        aMarker.clear();
+        // googleMap.clear();
 
 
         final long duration = 1000;
@@ -208,6 +209,11 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         final LatLng startLatLng = proj.fromScreenLocation(startPoint);
 
         getDriverMarker().setRotation((float) fRotation);
+        getDriverMarkerOpts().position(mDriverLocation);
+
+        aMarker.add(getOrderMarkerOpts());
+        aMarker.add(getDriverMarkerOpts());
+        // googleMap.addMarker(getDriverMarkerOpts());
 
         final Interpolator interpolator = new LinearInterpolator();
         handler.post(new Runnable() {
@@ -218,6 +224,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
                 double lng = t * mDriverLocation.longitude + (1 - t) * startLatLng.longitude;
                 double lat = t * mDriverLocation.latitude + (1 - t) * startLatLng.latitude;
                 getDriverMarker().setPosition(new LatLng(lat, lng));
+                getDriverMarkerOpts().position(new LatLng(lat, lng));
                 if (t < 1.0) {
                     // Post again 10ms later.
                     handler.postDelayed(this, 10);
@@ -247,7 +254,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         }*/
 
 
-        if (LocationUtils.CalculationByDistance(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), mDriverLocation) < 0.03) {
+        if (LocationUtils.CalculationByDistance(new LatLng(mOrderLocation.getLatitude(), mOrderLocation.getLongitude()), mDriverLocation) < 0.03) {
             WidgetsUtils.createLongToast("Your order is almost here, get ready");
         }
 
@@ -327,17 +334,16 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
     public void onMapReady(GoogleMap map) {
         map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         map.setMyLocationEnabled(false);
-        map.setTrafficEnabled(true);
+        map.setTrafficEnabled(false);
         map.setIndoorEnabled(true);
         map.setBuildingsEnabled(true);
         map.getUiSettings().setZoomControlsEnabled(false);
         googleMap = map;
 
-        getDriverMarker();
+        googleMap.addMarker(getOrderMarkerOpts());
+        updateMarkers();
 
-        aMarker.add(getDriverMarkerOpts());
-
-        buildGoogleApiClient();
+        //buildGoogleApiClient();
     }
 
 
@@ -382,11 +388,14 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
 
     @Override
     public void onLocationChanged(Location location) {
-        mCurrentLocation = location;
+        mOrderLocation = location;
+        mOrderLocation = new Location("Location");
+        mOrderLocation.setLatitude(37.75717119999999);
+        mOrderLocation.setLongitude(-122.3924873);
         DebugUtils.logDebug(TAG, "onLocationChanged: " + location.getLatitude() + "," + location.getLongitude());
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
 
-        MarkerOptions mMarkerUser = new MarkerOptions().position(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())).title("Kokusho Location");
+        MarkerOptions mMarkerUser = new MarkerOptions().position(new LatLng(mOrderLocation.getLatitude(), mOrderLocation.getLongitude())).title("Kokusho Location");
         mMarkerUser.icon(BitmapDescriptorFactory.fromResource(R.drawable.point));
         aMarker.add(mMarkerUser);
         googleMap.addMarker(mMarkerUser);
@@ -422,6 +431,13 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         return mDriverMarker;
     }
 
+    private Marker getOrderMarker() {
+        if (mOrderMarker == null) {
+            mOrderMarker = googleMap.addMarker(getOrderMarkerOpts());
+        }
+        return mOrderMarker;
+    }
+
     private MarkerOptions getDriverMarkerOpts() {
         if (mDriverMarkerOpts == null) {
             mDriverMarkerOpts = (new MarkerOptions().position(mDriverLocation).title("Driver Location"));
@@ -429,6 +445,16 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
             mDriverMarkerOpts.flat(true);
         }
         return mDriverMarkerOpts;
+    }
+
+    private MarkerOptions getOrderMarkerOpts() {
+        if (mOrderMarkerOpts == null) {
+            mOrderMarkerOpts = (new MarkerOptions().position(mDriverLocation).title("Order Location"));
+            mOrderMarkerOpts.icon(BitmapDescriptorFactory.fromResource(R.drawable.center_map));
+            mOrderMarkerOpts.position(new LatLng(mOrderLocation.getLatitude(), mOrderLocation.getLongitude()));
+            mOrderMarkerOpts.flat(true);
+        }
+        return mOrderMarkerOpts;
     }
 
     private ImageView getMenuItemLeft() {
