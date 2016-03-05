@@ -4,6 +4,7 @@ import android.location.Location;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.controllers.BentoApplication;
+import com.bentonow.bentonow.web.BentoNowApi;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
@@ -61,6 +62,12 @@ public class BentoRestClient {
         DebugUtils.logDebug(TAG, "[GET] " + url);
         DebugUtils.logDebug(TAG, "[params] " + (params != null ? params.toString() : "null"));
         client.get(url, params, responseHandler);
+    }
+
+    public static void getDirections(String dOriginLat, String dOriginLong, String dEndLat, String dEndLong, AsyncHttpResponseHandler responseHandler) {
+        String sUrl = BentoNowApi.getUrlGoogleDirections(dOriginLat, dOriginLong, dEndLat, dEndLong);
+        DebugUtils.logDebug(TAG, "[GET] " + sUrl);
+        client.get(sUrl, null, responseHandler);
     }
 
     private static String getAbsoluteUrl(String relativeUrl) {

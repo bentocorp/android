@@ -4,48 +4,51 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.view.View;
-import android.view.animation.Interpolator;
-import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
-import com.bentonow.bentonow.Utils.LocationUtils;
-import com.bentonow.bentonow.Utils.WidgetsUtils;
+import com.bentonow.bentonow.Utils.maps.CustomMarker;
+import com.bentonow.bentonow.Utils.maps.LatLngInterpolator;
+import com.bentonow.bentonow.Utils.maps.LocationUtils;
+import com.bentonow.bentonow.Utils.maps.MarkerAnimation;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.fragment.MySupportMapFragment;
 import com.bentonow.bentonow.dao.IosCopyDao;
+import com.bentonow.bentonow.model.User;
+import com.bentonow.bentonow.model.map.WaypointModel;
 import com.bentonow.bentonow.model.order.history.OrderHistoryItemModel;
+import com.bentonow.bentonow.parse.GoogleDirectionParser;
 import com.bentonow.bentonow.service.OrderSocketService;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.loopj.android.http.TextHttpResponseHandler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
-public class OrderStatusActivity extends BaseFragmentActivity implements View.OnClickListener, OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+import cz.msebera.android.httpclient.Header;
+
+public class OrderStatusActivity extends BaseFragmentActivity implements View.OnClickListener, OnMapReadyCallback {
 
     private static final String TAG = "OrderStatusActivity";
     private Handler mHandler;
@@ -69,19 +72,24 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
     private OrderSocketService webSocketService = null;
     private ServiceConnection mConnection = new OrderStatusServiceConnection();
 
-    private GoogleApiClient mGoogleApiClient;
-    private LocationRequest mLocationRequest;
     private Location mOrderLocation;
     private LatLng mDriverLocation;
     private Marker mDriverMarker;
     private MarkerOptions mDriverMarkerOpts;
     private Marker mOrderMarker;
     private MarkerOptions mOrderMarkerOpts;
-    private ArrayList<MarkerOptions> aMarker = new ArrayList<>();
-    private ArrayList<LatLng> lEmulateRoute = new ArrayList<>();
+    private WaypointModel mWaypoint;
+    private ArrayList<LatLng> aListDriver = new ArrayList<>();
+
+    private HashMap markersHashMap;
+    private Iterator<Entry> iter;
+    private CameraUpdate cu;
+    private CustomMarker customMarkerOne, customMarkerTwo;
 
     private OrderHistoryItemModel mOrder;
+    private User mCurrentUser;
     private int iPositionStart = 0;
+    private int iDuration = 1000;
     private double fRotation;
 
     public static double degToRad(double deg) {
@@ -102,6 +110,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         getActionbarTitle().setText("Order Status");
 
         mOrder = getIntent().getParcelableExtra(OrderHistoryItemModel.TAG);
+        mCurrentUser = userDao.getCurrentUser();
 
         getMapFragment();
 
@@ -115,9 +124,9 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         mOrderLocation.setLatitude(Double.parseDouble(mOrder.getLat()));
         mOrderLocation.setLongitude(Double.parseDouble(mOrder.getLng()));
 
-
         mDriverLocation = new LatLng(37.7648009, -122.4196905);
-        lEmulateRoute.add(new LatLng(37.7699536, -122.4199623));
+
+       /* lEmulateRoute.add(new LatLng(37.7699536, -122.4199623));
         lEmulateRoute.add(new LatLng(37.7699536, -122.4199623));
         lEmulateRoute.add(new LatLng(37.76976700000001, -122.4181974));
         lEmulateRoute.add(new LatLng(37.7692352, -122.417882));
@@ -128,28 +137,36 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         lEmulateRoute.add(new LatLng(37.81645049999999, -122.3716935));
         lEmulateRoute.add(new LatLng(37.8226519, -122.3761121));
         lEmulateRoute.add(new LatLng(37.8245082, -122.3718595));
-        lEmulateRoute.add(new LatLng(37.8261384, -122.3729018));
+        lEmulateRoute.add(new LatLng(37.8261384, -122.3729018));*/
 
         updateStatus("delivery");
 
         mHandler = new Handler();
         mLoadingTask = new Runnable() {
             public void run() {
-                if (iPositionStart + 1 < lEmulateRoute.size()) {
+                if (iPositionStart < aListDriver.size() + 1) {
 
-                    double lon1 = degToRad(lEmulateRoute.get(iPositionStart).longitude);
-                    double lon2 = degToRad(lEmulateRoute.get(iPositionStart + 1).longitude);
-                    double lat1 = degToRad(lEmulateRoute.get(iPositionStart).latitude);
-                    double lat2 = degToRad(lEmulateRoute.get(iPositionStart + 1).latitude);
+                   /* double lon1 = degToRad(mWaypoint.getaSteps().get(iPositionStart).getStart_location_lat());
+                    double lon2 = degToRad(mWaypoint.getaSteps().get(iPositionStart).getEnd_location_lat());
+                    double lat1 = degToRad(mWaypoint.getaSteps().get(iPositionStart).getStart_location_lng());
+                    double lat2 = degToRad(mWaypoint.getaSteps().get(iPositionStart).getEnd_location_lng());*/
+                    double lon1 = degToRad(aListDriver.get(iPositionStart).latitude);
+                    double lon2 = degToRad(aListDriver.get(iPositionStart + 1).latitude);
+                    double lat1 = degToRad(aListDriver.get(iPositionStart).longitude);
+                    double lat2 = degToRad(aListDriver.get(iPositionStart + 1).longitude);
+
+                    //iDuration = mWaypoint.getaSteps().get(iPositionStart).getDuration();
 
                     double a = Math.sin(lon2 - lon1) * Math.cos(lat2);
                     double b = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1);
-                    fRotation = radToDeg(Math.atan2(a, b)) - 90; // bearing
+                    //   fRotation = radToDeg(Math.atan2(a, b)) - 90; // bearing
 
-                    DebugUtils.logDebug(TAG, "bearing: " + fRotation);
-                    DebugUtils.logDebug(TAG, "bearing float: " + (float) fRotation);
+                    //   DebugUtils.logDebug(TAG, "bearing: " + fRotation);
+                    //    DebugUtils.logDebug(TAG, "bearing float: " + (float) fRotation);
 
-                    mDriverLocation = lEmulateRoute.get(iPositionStart + 1);
+                    // mDriverLocation = new LatLng(mWaypoint.getaSteps().get(iPositionStart).getStart_location_lat(), mWaypoint.getaSteps().get(iPositionStart).getStart_location_lng());
+                    mDriverLocation = new LatLng(aListDriver.get(iPositionStart).latitude, aListDriver.get(iPositionStart).longitude);
+
 
                     DebugUtils.logDebug(TAG, "Change Route");
 
@@ -180,86 +197,50 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         super.onResume();
     }
 
-    private void updateMapLocation() {
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        for (MarkerOptions marker : aMarker) {
-            builder.include(marker.getPosition());
-        }
-        LatLngBounds bounds = builder.build();
-        int padding = 200; // offset from edges of the map in pixels
-        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-        if (iPositionStart >= 1)
-            googleMap.animateCamera(cu);
+    private void getDirectionsByLocation() {
+        BentoRestClient.getDirections("37.7648009", "-122.4196905", mOrder.getLat(), mOrder.getLng(), new TextHttpResponseHandler() {
+            @SuppressWarnings("deprecation")
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                DebugUtils.logError(TAG, "getUserInfo:  " + responseString);
 
-        mHandler.postDelayed(mLoadingTask, 1000 * 3);
+            }
+
+            @SuppressWarnings("deprecation")
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                DebugUtils.logDebug(TAG, "getDirectionsByLocation: Status Code" + statusCode);
+
+                mWaypoint = GoogleDirectionParser.parseDirections(responseString);
+
+                aListDriver = LocationUtils.decodePoly(mWaypoint.getPoints());
+
+                if (mWaypoint != null) {
+                    DebugUtils.logDebug(TAG, "getDirectionsByLocation: Num Steps: " + mWaypoint.getaSteps().size());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            updateMapLocation();
+                        }
+                    });
+                }
+
+            }
+        });
+    }
+
+    private void updateMapLocation() {
+        zoomAnimateLevelToFitMarkers(200);
+
+        mHandler.postDelayed(mLoadingTask, iDuration);
     }
 
     private void updateMarkers() {
-        aMarker.clear();
-        // googleMap.clear();
-
-
-        final long duration = 1000;
-        final Handler handler = new Handler();
-
-        final long start = SystemClock.uptimeMillis();
-        Projection proj = googleMap.getProjection();
-
-        Point startPoint = proj.toScreenLocation(getDriverMarker().getPosition());
-        final LatLng startLatLng = proj.fromScreenLocation(startPoint);
-
-        getDriverMarker().setRotation((float) fRotation);
-        getDriverMarkerOpts().position(mDriverLocation);
-
-        aMarker.add(getOrderMarkerOpts());
-        aMarker.add(getDriverMarkerOpts());
-        // googleMap.addMarker(getDriverMarkerOpts());
-
-        final Interpolator interpolator = new LinearInterpolator();
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                long elapsed = SystemClock.uptimeMillis() - start;
-                float t = interpolator.getInterpolation((float) elapsed / duration);
-                double lng = t * mDriverLocation.longitude + (1 - t) * startLatLng.longitude;
-                double lat = t * mDriverLocation.latitude + (1 - t) * startLatLng.latitude;
-                getDriverMarker().setPosition(new LatLng(lat, lng));
-                getDriverMarkerOpts().position(new LatLng(lat, lng));
-                if (t < 1.0) {
-                    // Post again 10ms later.
-                    handler.postDelayed(this, 10);
-                } else {
-                    // animation ended
-                }
-            }
-        });
-
-
-        /*switch (LocationUtils.getBearingFromRotation(fRotation)) {
-            case RIGHT:
-                mMarkerDriver.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_action_maps_local_shipping_right));
-                break;
-            case DOWN:
-                mMarkerDriver.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_action_maps_local_shipping_down));
-                break;
-            case LEFT:
-                mMarkerDriver.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_action_maps_local_shipping_left));
-                break;
-            case UP:
-                mMarkerDriver.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_action_maps_local_shipping_up));
-                break;
-            case NONE:
-                mMarkerDriver.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_action_maps_local_shipping_right));
-                break;
-        }*/
-
-
-        if (LocationUtils.CalculationByDistance(new LatLng(mOrderLocation.getLatitude(), mOrderLocation.getLongitude()), mDriverLocation) < 0.03) {
-            WidgetsUtils.createLongToast("Your order is almost here, get ready");
-        }
+        //customMarkerOne.setRotation((float) fRotation);
+        animateMarker(customMarkerOne, mDriverLocation, (float) fRotation);
 
         updateMapLocation();
-
     }
 
     private void updateStatus(String sOrderStatus) {
@@ -318,6 +299,78 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
+    //this is method to help us set up a Marker that stores the Markers we want to plot on the map
+    public void setUpMarkersHashMap() {
+        if (markersHashMap == null) {
+            markersHashMap = new HashMap();
+        }
+    }
+
+    //this is method to help us add a Marker to the map
+    public void addMarker(CustomMarker customMarker) {
+        MarkerOptions markerOption = new MarkerOptions().position(new LatLng(customMarker.getCustomMarkerLatitude(), customMarker.getCustomMarkerLongitude())).icon(BitmapDescriptorFactory.fromResource(R.drawable.location_marker_hi)).flat(true);
+
+        Marker newMark = googleMap.addMarker(markerOption);
+        addMarkerToHashMap(customMarker, newMark);
+    }
+
+    //this is method to help us add a Marker into the hashmap that stores the Markers
+    public void addMarkerToHashMap(CustomMarker customMarker, Marker marker) {
+        setUpMarkersHashMap();
+        markersHashMap.put(customMarker, marker);
+    }
+
+
+    //this is method to help us find a Marker that is stored into the hashmap
+    public Marker findMarker(CustomMarker customMarker) {
+        iter = markersHashMap.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry mEntry = (Map.Entry) iter.next();
+            CustomMarker key = (CustomMarker) mEntry.getKey();
+            if (customMarker.getCustomMarkerId().equals(key.getCustomMarkerId())) {
+                Marker value = (Marker) mEntry.getValue();
+                return value;
+            }
+        }
+        return null;
+    }
+
+    //this is method to animate the Marker. There are flavours for all Android versions
+    public void animateMarker(CustomMarker customMarker, LatLng latlng, float fRotation) {
+        if (findMarker(customMarker) != null) {
+
+            LatLngInterpolator latlonInter = new LatLngInterpolator.Spherical();
+            latlonInter.interpolate(20, new LatLng(customMarker.getCustomMarkerLatitude(), customMarker.getCustomMarkerLongitude()), latlng);
+
+            customMarker.setCustomMarkerLatitude(latlng.latitude);
+            customMarker.setCustomMarkerLongitude(latlng.longitude);
+
+            MarkerAnimation.animateMarkerToICS(findMarker(customMarker), new LatLng(customMarker.getCustomMarkerLatitude(), customMarker.getCustomMarkerLongitude()), fRotation, iDuration, latlonInter);
+
+        }
+    }
+
+    //this is method to help us fit the Markers into specific bounds for camera position
+    public void zoomAnimateLevelToFitMarkers(int padding) {
+        LatLngBounds.Builder b = new LatLngBounds.Builder();
+        iter = markersHashMap.entrySet().iterator();
+
+        while (iter.hasNext()) {
+            Map.Entry mEntry = iter.next();
+            CustomMarker key = (CustomMarker) mEntry.getKey();
+            LatLng ll = new LatLng(key.getCustomMarkerLatitude(), key.getCustomMarkerLongitude());
+            b.include(ll);
+        }
+        LatLngBounds bounds = b.build();
+
+        // Change the padding as per needed
+        cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+        cu = CameraUpdateFactory.newLatLngZoom(mDriverLocation, 17);
+
+        googleMap.animateCamera(cu, iDuration, null);
+
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -340,72 +393,14 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         map.getUiSettings().setZoomControlsEnabled(false);
         googleMap = map;
 
-        googleMap.addMarker(getOrderMarkerOpts());
-        updateMarkers();
+        customMarkerOne = new CustomMarker("Driver Marker", mDriverLocation.latitude, mDriverLocation.longitude);
+        customMarkerTwo = new CustomMarker("Order Marker", mOrderLocation.getLatitude(), mOrderLocation.getLongitude());
 
-        //buildGoogleApiClient();
-    }
+        addMarker(customMarkerTwo);
+        addMarker(customMarkerOne);
 
+        getDirectionsByLocation();
 
-    protected synchronized void buildGoogleApiClient() {
-        if (mGoogleApiClient == null || !mGoogleApiClient.isConnected()) {
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-            mGoogleApiClient.connect();
-            DebugUtils.logDebug(TAG, "buildGoogleApiClient:");
-        }
-    }
-
-    protected LocationRequest getLocationRequest() {
-        if (mLocationRequest == null) {
-            mLocationRequest = new LocationRequest();
-            mLocationRequest.setInterval(10000);
-            mLocationRequest.setFastestInterval(5000);
-            mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        }
-        return mLocationRequest;
-    }
-
-    @Override
-    public void onConnected(Bundle bundle) {
-        DebugUtils.logDebug(TAG, "onConnected:");
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, getLocationRequest(), OrderStatusActivity.this);
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        DebugUtils.logError(TAG, "onConnectionSuspended: " + i);
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        DebugUtils.logError(TAG, "onConnectionFailed: " + connectionResult.toString());
-    }
-
-
-    @Override
-    public void onLocationChanged(Location location) {
-        mOrderLocation = location;
-        mOrderLocation = new Location("Location");
-        mOrderLocation.setLatitude(37.75717119999999);
-        mOrderLocation.setLongitude(-122.3924873);
-        DebugUtils.logDebug(TAG, "onLocationChanged: " + location.getLatitude() + "," + location.getLongitude());
-        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-
-        MarkerOptions mMarkerUser = new MarkerOptions().position(new LatLng(mOrderLocation.getLatitude(), mOrderLocation.getLongitude())).title("Kokusho Location");
-        mMarkerUser.icon(BitmapDescriptorFactory.fromResource(R.drawable.point));
-        aMarker.add(mMarkerUser);
-        googleMap.addMarker(mMarkerUser);
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                updateMarkers();
-            }
-        });
     }
 
     @Override

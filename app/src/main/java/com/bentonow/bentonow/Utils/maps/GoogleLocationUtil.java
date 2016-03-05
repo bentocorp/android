@@ -1,10 +1,12 @@
-package com.bentonow.bentonow.Utils;
+package com.bentonow.bentonow.Utils.maps;
 
 import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
 
 import com.bentonow.bentonow.BuildConfig;
+import com.bentonow.bentonow.Utils.BentoNowUtils;
+import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.controllers.BentoApplication;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;

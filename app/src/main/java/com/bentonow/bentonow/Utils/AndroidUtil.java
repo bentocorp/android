@@ -24,6 +24,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class AndroidUtil {
 
+    public static final String TAG = "AndroidUtil";
+
     public static void showKeyboard(final Context context, final EditText view) {
         view.requestFocus();
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -85,6 +87,11 @@ public class AndroidUtil {
     public static String getSecondsFromMillis(long lMilliseconds) {
         long lSeconds = TimeUnit.MILLISECONDS.toSeconds(lMilliseconds) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(lMilliseconds));
         return lSeconds < 9 ? "0" + lSeconds : String.valueOf(lSeconds);
+    }
+
+    public static long getMillisFromSeconds(int seconds) {
+        DebugUtils.logDebug(TAG, "Millis: " + TimeUnit.SECONDS.toMillis(seconds));
+        return TimeUnit.SECONDS.toMillis(seconds);
     }
 
     public static InputFilter getInputFilterEmoji() {

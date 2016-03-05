@@ -40,6 +40,7 @@
     <string name="summary_bento_od_delivery_time">%1$d-%2$d</string>
     <string name="bento_api_url_autocomplete"> https://maps.googleapis.com/maps/api/place/autocomplete/json?key=%1$s&amp;input=%2$s&amp;radius=500</string>
     <string name="bento_api_url_autocomplete_location"> https://maps.googleapis.com/maps/api/place/autocomplete/json?key=%1$s&amp;input=%2$s&amp;location=%3$f,%4$f&amp;radius=500</string>
+    <string name="google_api_url_direction">https://maps.googleapis.com/maps/api/directions/json?origin=%1$s,%2$s&amp;destination=%3$s,%4$s&amp;key=%5$s&amp;units=metric</string>
 
 
     <string name="edit_hint_enter_phone">Enter your phone number</string>
