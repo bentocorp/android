@@ -50,6 +50,7 @@ public class Order {
         String sLocation = SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.LOCATION);
         String sAddress = SharedPreferencesUtil.getStringPreference(SharedPreferencesUtil.ADDRESS);
 
+
         location = new Gson().fromJson(sLocation, LatLng.class);
         address = new Gson().fromJson(sAddress, Address.class);
 

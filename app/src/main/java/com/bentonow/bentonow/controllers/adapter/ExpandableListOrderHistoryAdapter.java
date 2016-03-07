@@ -124,9 +124,9 @@ public class ExpandableListOrderHistoryAdapter extends BaseExpandableListAdapter
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         OrderHistoryItemSectionModel mOrderSelected = (OrderHistoryItemSectionModel) getGroup(groupPosition);
         if (mOrderSelected.getSectionTitle().contains("Progress")) {
-            return true;
+            return false;
         } else
-            return true;
+            return false;
     }
 
 }

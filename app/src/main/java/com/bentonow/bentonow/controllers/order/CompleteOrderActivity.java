@@ -416,6 +416,9 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
             mOrder.Platform = "Android";
             mOrder.AppVersion = "1.20";
 
+            if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.ORDER_AHEAD_SUBSCRIPTION))
+                mOrder.OrderDetails.delivery_price = 0;
+
             mOrderDao.updateOrder(mOrder);
 
             for (int a = 0; a < mOrder.OrderItems.size(); a++) {
@@ -576,8 +579,8 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
         txt_address.setText(BentoNowUtils.getStreetAddress());
         txt_credit_card.setText(mCurrentUser.card.last4);
 
-        getTxtDeliveryPrice().setText(String.format(getString(R.string.money_format), mOrder.OrderDetails.delivery_price));
-        getTxtDeliveryPriceTotal().setText(String.format(getString(R.string.money_format), mOrder.OrderDetails.normal_delivery_price));
+        getTxtDeliveryPrice().setText(String.format(getString(R.string.money_format), SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.ORDER_AHEAD_SUBSCRIPTION) ? 0 : mOrder.OrderDetails.delivery_price));
+        getTxtDeliveryPriceTotal().setText(String.format(getString(R.string.money_format), mOrder.OrderDetails.delivery_price));
         getTxtDeliveryPriceTotal().setVisibility(SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.ORDER_AHEAD_SUBSCRIPTION) ? View.VISIBLE : View.GONE);
         getTxtDeliveryPriceTotal().setPaintFlags(getTxtDeliveryPriceTotal().getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         double dCoupon = mOrder.OrderDetails.coupon_discount_cents;

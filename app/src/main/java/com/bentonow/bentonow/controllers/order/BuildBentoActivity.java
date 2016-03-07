@@ -1060,11 +1060,18 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
             OrderItem item = mOrder.OrderItems.get(orderIndex);
 
             JSONObject params = new JSONObject();
-            params.put("main", item.items.get(0) == null ? "0" : item.items.get(0).itemId);
-            params.put("side1", item.items.get(1) == null ? "0" : item.items.get(1).itemId);
-            params.put("side2", item.items.get(2) == null ? "0" : item.items.get(2).itemId);
-            params.put("side3", item.items.get(3) == null ? "0" : item.items.get(3).itemId);
-            params.put("side4", item.items.get(4) == null ? "0" : item.items.get(4).itemId);
+            if (item.items.size() == 4) {
+                params.put("main", item.items.get(0) == null ? "0" : item.items.get(0).itemId);
+                params.put("side1", item.items.get(1) == null ? "0" : item.items.get(1).itemId);
+                params.put("side2", item.items.get(2) == null ? "0" : item.items.get(2).itemId);
+                params.put("side3", item.items.get(3) == null ? "0" : item.items.get(3).itemId);
+            } else {
+                params.put("main", item.items.get(0) == null ? "0" : item.items.get(0).itemId);
+                params.put("side1", item.items.get(1) == null ? "0" : item.items.get(1).itemId);
+                params.put("side2", item.items.get(2) == null ? "0" : item.items.get(2).itemId);
+                params.put("side3", item.items.get(3) == null ? "0" : item.items.get(3).itemId);
+                params.put("side4", item.items.get(4) == null ? "0" : item.items.get(4).itemId);
+            }
 
             MixpanelUtils.track("Bento Requested", params);
         } catch (Exception e) {

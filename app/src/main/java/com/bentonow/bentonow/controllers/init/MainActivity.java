@@ -15,10 +15,10 @@ import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
-import com.bentonow.bentonow.Utils.maps.GoogleLocationUtil;
-import com.bentonow.bentonow.Utils.maps.LocationUtils;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
+import com.bentonow.bentonow.Utils.maps.GoogleLocationUtil;
+import com.bentonow.bentonow.Utils.maps.LocationUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
@@ -36,8 +36,9 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.loopj.android.http.TextHttpResponseHandler;
 
-import cz.msebera.android.httpclient.Header;
 import org.json.JSONObject;
+
+import cz.msebera.android.httpclient.Header;
 
 
 public class MainActivity extends BaseFragmentActivity implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
@@ -78,6 +79,8 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.BACKENDTEXT, "");
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.SETTINGS, "");
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.MEALS, "");
+
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.CLEAR_ORDERS_FROM_SUMMARY, false);
 
         MenuDao.gateKeeper = new GateKeeperModel();
 

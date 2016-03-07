@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#EAEEEE"
-    tools:context="com.bentonow.bentonow.controllers.order.CompleteOrderActivity">
+    tools:context="com.bentonow.bentonow.controllers.order.OrderConfirmedActivity">
 
     <!-- toolbar_bento -->
     <LinearLayout
@@ -91,7 +91,6 @@
             android:layout_height="48dp"
             android:background="@drawable/btn_rounded_gray"
             android:gravity="center"
-            android:onClick="onAddAnotherBentoPressed"
             android:padding="@dimen/btn_padding"
             android:textColor="@color/white"
             app:key="btn-view-all-orders" />
