@@ -24,6 +24,7 @@ import com.bentonow.bentonow.Utils.maps.MarkerAnimation;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.fragment.MySupportMapFragment;
 import com.bentonow.bentonow.dao.IosCopyDao;
+import com.bentonow.bentonow.listener.OrderStatusListener;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.map.WaypointModel;
 import com.bentonow.bentonow.model.order.history.OrderHistoryItemModel;
@@ -48,7 +49,7 @@ import java.util.Map.Entry;
 
 import cz.msebera.android.httpclient.Header;
 
-public class OrderStatusActivity extends BaseFragmentActivity implements View.OnClickListener, OnMapReadyCallback {
+public class OrderStatusActivity extends BaseFragmentActivity implements View.OnClickListener, OnMapReadyCallback, OrderStatusListener {
 
     private static final String TAG = "OrderStatusActivity";
     private Handler mHandler;
@@ -74,33 +75,22 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
 
     private Location mOrderLocation;
     private LatLng mDriverLocation;
-    private Marker mDriverMarker;
     private MarkerOptions mDriverMarkerOpts;
-    private Marker mOrderMarker;
     private MarkerOptions mOrderMarkerOpts;
     private WaypointModel mWaypoint;
     private ArrayList<LatLng> aListDriver = new ArrayList<>();
 
     private HashMap markersHashMap;
-    private Iterator<Entry> iter;
-    private CameraUpdate cu;
-    private CustomMarker customMarkerOne, customMarkerTwo;
+    private Iterator<Entry> markerIterator;
+    private CameraUpdate cameraUpdate;
+    private CustomMarker customMarkerDriver;
+    private CustomMarker customMarkerOrder;
 
     private OrderHistoryItemModel mOrder;
     private User mCurrentUser;
     private int iPositionStart = 0;
     private int iDuration = 1000;
     private double fRotation;
-
-    public static double degToRad(double deg) {
-        return deg * Math.PI / 180.0;
-    }
-
-    public static double radToDeg(double rad) {
-        rad = rad * (180.0 / Math.PI);
-        if (rad < 0) rad = 360.0 + rad;
-        return rad;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,49 +107,29 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         getMenuItemLeft().setImageResource(R.drawable.vector_navigation_left_green);
         getMenuItemLeft().setOnClickListener(OrderStatusActivity.this);
 
-        mOrder.setLat("37.8262328");
-        mOrder.setLng("-122.3726696");
-
         mOrderLocation = new Location("Order Location");
         mOrderLocation.setLatitude(Double.parseDouble(mOrder.getLat()));
         mOrderLocation.setLongitude(Double.parseDouble(mOrder.getLng()));
 
-        mDriverLocation = new LatLng(37.7648009, -122.4196905);
-
-       /* lEmulateRoute.add(new LatLng(37.7699536, -122.4199623));
-        lEmulateRoute.add(new LatLng(37.7699536, -122.4199623));
-        lEmulateRoute.add(new LatLng(37.76976700000001, -122.4181974));
-        lEmulateRoute.add(new LatLng(37.7692352, -122.417882));
-        lEmulateRoute.add(new LatLng(37.7690925, -122.409333));
-        lEmulateRoute.add(new LatLng(37.7709375, -122.4057751));
-        lEmulateRoute.add(new LatLng(37.8083016, -122.36696));
-        lEmulateRoute.add(new LatLng(37.8093742, -122.3699022));
-        lEmulateRoute.add(new LatLng(37.81645049999999, -122.3716935));
-        lEmulateRoute.add(new LatLng(37.8226519, -122.3761121));
-        lEmulateRoute.add(new LatLng(37.8245082, -122.3718595));
-        lEmulateRoute.add(new LatLng(37.8261384, -122.3729018));*/
-
-        updateStatus("delivery");
-
         mHandler = new Handler();
         mLoadingTask = new Runnable() {
             public void run() {
-                if (iPositionStart < aListDriver.size() + 1) {
+                if (aListDriver.size() - 1 > iPositionStart) {
 
                    /* double lon1 = degToRad(mWaypoint.getaSteps().get(iPositionStart).getStart_location_lat());
                     double lon2 = degToRad(mWaypoint.getaSteps().get(iPositionStart).getEnd_location_lat());
                     double lat1 = degToRad(mWaypoint.getaSteps().get(iPositionStart).getStart_location_lng());
                     double lat2 = degToRad(mWaypoint.getaSteps().get(iPositionStart).getEnd_location_lng());*/
-                    double lon1 = degToRad(aListDriver.get(iPositionStart).latitude);
-                    double lon2 = degToRad(aListDriver.get(iPositionStart + 1).latitude);
-                    double lat1 = degToRad(aListDriver.get(iPositionStart).longitude);
-                    double lat2 = degToRad(aListDriver.get(iPositionStart + 1).longitude);
+                    double lon1 = LocationUtils.degToRad(aListDriver.get(iPositionStart).latitude);
+                    double lon2 = LocationUtils.degToRad(aListDriver.get(iPositionStart + 1).latitude);
+                    double lat1 = LocationUtils.degToRad(aListDriver.get(iPositionStart).longitude);
+                    double lat2 = LocationUtils.degToRad(aListDriver.get(iPositionStart + 1).longitude);
 
                     //iDuration = mWaypoint.getaSteps().get(iPositionStart).getDuration();
 
                     double a = Math.sin(lon2 - lon1) * Math.cos(lat2);
                     double b = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1);
-                    //   fRotation = radToDeg(Math.atan2(a, b)) - 90; // bearing
+                    fRotation = LocationUtils.radToDeg(Math.atan2(a, b)); // bearing
 
                     //   DebugUtils.logDebug(TAG, "bearing: " + fRotation);
                     //    DebugUtils.logDebug(TAG, "bearing float: " + (float) fRotation);
@@ -216,7 +186,6 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
                 aListDriver = LocationUtils.decodePoly(mWaypoint.getPoints());
 
                 if (mWaypoint != null) {
-                    DebugUtils.logDebug(TAG, "getDirectionsByLocation: Num Steps: " + mWaypoint.getaSteps().size());
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -231,19 +200,16 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
     }
 
     private void updateMapLocation() {
-        zoomAnimateLevelToFitMarkers(200);
-
-        mHandler.postDelayed(mLoadingTask, iDuration);
+        zoomAnimateLevelToFitMarkers(100);
     }
 
     private void updateMarkers() {
-        //customMarkerOne.setRotation((float) fRotation);
-        animateMarker(customMarkerOne, mDriverLocation, (float) fRotation);
-
+        animateMarker(getDriverMarker(), mDriverLocation, (float) fRotation);
         updateMapLocation();
     }
 
     private void updateStatus(String sOrderStatus) {
+        sOrderStatus = sOrderStatus.toLowerCase();
         switch (sOrderStatus) {
             case "assign":
             case "prep":
@@ -299,33 +265,30 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
-    //this is method to help us set up a Marker that stores the Markers we want to plot on the map
     public void setUpMarkersHashMap() {
         if (markersHashMap == null) {
             markersHashMap = new HashMap();
         }
     }
 
-    //this is method to help us add a Marker to the map
-    public void addMarker(CustomMarker customMarker) {
-        MarkerOptions markerOption = new MarkerOptions().position(new LatLng(customMarker.getCustomMarkerLatitude(), customMarker.getCustomMarkerLongitude())).icon(BitmapDescriptorFactory.fromResource(R.drawable.location_marker_hi)).flat(true);
-
+    public void addMarker(CustomMarker customMarker, boolean bIsDriver) {
+        MarkerOptions markerOption = new MarkerOptions().position(new LatLng(customMarker.getCustomMarkerLatitude(), customMarker.getCustomMarkerLongitude())).flat(true);
+        markerOption.icon(bIsDriver ? BitmapDescriptorFactory.fromResource(R.drawable.marker_car) : BitmapDescriptorFactory.fromResource(R.drawable.location_marker_hi));
+        markerOption.anchor(0.5f, 0.5f);
         Marker newMark = googleMap.addMarker(markerOption);
         addMarkerToHashMap(customMarker, newMark);
     }
 
-    //this is method to help us add a Marker into the hashmap that stores the Markers
     public void addMarkerToHashMap(CustomMarker customMarker, Marker marker) {
         setUpMarkersHashMap();
         markersHashMap.put(customMarker, marker);
     }
 
 
-    //this is method to help us find a Marker that is stored into the hashmap
     public Marker findMarker(CustomMarker customMarker) {
-        iter = markersHashMap.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry mEntry = (Map.Entry) iter.next();
+        markerIterator = markersHashMap.entrySet().iterator();
+        while (markerIterator.hasNext()) {
+            Map.Entry mEntry = markerIterator.next();
             CustomMarker key = (CustomMarker) mEntry.getKey();
             if (customMarker.getCustomMarkerId().equals(key.getCustomMarkerId())) {
                 Marker value = (Marker) mEntry.getValue();
@@ -335,7 +298,6 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         return null;
     }
 
-    //this is method to animate the Marker. There are flavours for all Android versions
     public void animateMarker(CustomMarker customMarker, LatLng latlng, float fRotation) {
         if (findMarker(customMarker) != null) {
 
@@ -350,25 +312,32 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         }
     }
 
-    //this is method to help us fit the Markers into specific bounds for camera position
     public void zoomAnimateLevelToFitMarkers(int padding) {
         LatLngBounds.Builder b = new LatLngBounds.Builder();
-        iter = markersHashMap.entrySet().iterator();
+        markerIterator = markersHashMap.entrySet().iterator();
 
-        while (iter.hasNext()) {
-            Map.Entry mEntry = iter.next();
+        while (markerIterator.hasNext()) {
+            Map.Entry mEntry = markerIterator.next();
             CustomMarker key = (CustomMarker) mEntry.getKey();
             LatLng ll = new LatLng(key.getCustomMarkerLatitude(), key.getCustomMarkerLongitude());
             b.include(ll);
         }
         LatLngBounds bounds = b.build();
 
-        // Change the padding as per needed
-        cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-        cu = CameraUpdateFactory.newLatLngZoom(mDriverLocation, 17);
+        //cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+        cameraUpdate = CameraUpdateFactory.newLatLngZoom(mDriverLocation, 17);
 
-        googleMap.animateCamera(cu, iDuration, null);
+        googleMap.animateCamera(cameraUpdate, iDuration, new GoogleMap.CancelableCallback() {
+            @Override
+            public void onFinish() {
+                mHandler.post(mLoadingTask);
+            }
 
+            @Override
+            public void onCancel() {
+
+            }
+        });
     }
 
     @Override
@@ -393,14 +362,9 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         map.getUiSettings().setZoomControlsEnabled(false);
         googleMap = map;
 
-        customMarkerOne = new CustomMarker("Driver Marker", mDriverLocation.latitude, mDriverLocation.longitude);
-        customMarkerTwo = new CustomMarker("Order Marker", mOrderLocation.getLatitude(), mOrderLocation.getLongitude());
+        addMarker(getOrderMarker(), false);
 
-        addMarker(customMarkerTwo);
-        addMarker(customMarkerOne);
-
-        getDirectionsByLocation();
-
+        updateStatus(mOrder.getOrder_status());
     }
 
     @Override
@@ -420,36 +384,47 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         bindService();
     }
 
-    private Marker getDriverMarker() {
-        if (mDriverMarker == null)
-            mDriverMarker = googleMap.addMarker(getDriverMarkerOpts());
-        return mDriverMarker;
+    @Override
+    public void onConnectionError(String sError) {
+
     }
 
-    private Marker getOrderMarker() {
-        if (mOrderMarker == null) {
-            mOrderMarker = googleMap.addMarker(getOrderMarkerOpts());
-        }
-        return mOrderMarker;
+    @Override
+    public void onAuthenticationFailure(String sError) {
+
     }
 
-    private MarkerOptions getDriverMarkerOpts() {
-        if (mDriverMarkerOpts == null) {
-            mDriverMarkerOpts = (new MarkerOptions().position(mDriverLocation).title("Driver Location"));
-            mDriverMarkerOpts.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_car));
-            mDriverMarkerOpts.flat(true);
-        }
-        return mDriverMarkerOpts;
+    @Override
+    public void onAuthenticationSuccess() {
+        webSocketService.onNodeEventListener();
+
+        webSocketService.trackDriver(mOrder.getDriverId());
+       /* addMarker(getDriverMarker(), true);
+
+        getDirectionsByLocation();*/
     }
 
-    private MarkerOptions getOrderMarkerOpts() {
-        if (mOrderMarkerOpts == null) {
-            mOrderMarkerOpts = (new MarkerOptions().position(mDriverLocation).title("Order Location"));
-            mOrderMarkerOpts.icon(BitmapDescriptorFactory.fromResource(R.drawable.center_map));
-            mOrderMarkerOpts.position(new LatLng(mOrderLocation.getLatitude(), mOrderLocation.getLongitude()));
-            mOrderMarkerOpts.flat(true);
-        }
-        return mOrderMarkerOpts;
+    @Override
+    public void onDisconnect(boolean onPurpose) {
+
+    }
+
+    @Override
+    public void onReconnecting() {
+
+    }
+
+
+    private CustomMarker getDriverMarker() {
+        if (customMarkerDriver == null)
+            customMarkerDriver = new CustomMarker("Driver Marker", mDriverLocation.latitude, mDriverLocation.longitude);
+        return customMarkerDriver;
+    }
+
+    private CustomMarker getOrderMarker() {
+        if (customMarkerOrder == null)
+            customMarkerOrder = new CustomMarker("Order Marker", mOrderLocation.getLatitude(), mOrderLocation.getLongitude());
+        return customMarkerOrder;
     }
 
     private ImageView getMenuItemLeft() {
@@ -532,14 +507,14 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         return txtOrderStatusDescription;
     }
 
-
     private class OrderStatusServiceConnection implements ServiceConnection {
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
             DebugUtils.logDebug(TAG, "Successfully bounded to " + name.getClassName());
             OrderSocketService.WebSocketServiceBinder webSocketServiceBinder = (OrderSocketService.WebSocketServiceBinder) binder;
             webSocketService = webSocketServiceBinder.getService();
-            webSocketService.onNodeEventListener();
+            webSocketService.setWebSocketLister(OrderStatusActivity.this);
+            webSocketService.connectWebSocket(mCurrentUser.email, mCurrentUser.api_token);
 
             mBound = true;
         }

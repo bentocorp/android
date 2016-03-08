@@ -207,7 +207,7 @@ public class LocationUtils {
             lng += dlng;
             dLat = ((double) lat / 1E5);
             dLng = ((double) lng / 1E5);
-            DebugUtils.logDebug(TAG, "Latitude:: " + dLat + " Longitude:: " + dLng);
+          //  DebugUtils.logDebug(TAG, "Latitude:: " + dLat + " Longitude:: " + dLng);
             LatLng p = new LatLng(dLat, dLng);
             poly.add(p);
         }
@@ -216,5 +216,17 @@ public class LocationUtils {
 
         return poly;
     }
+
+
+    public static double degToRad(double deg) {
+        return deg * Math.PI / 180.0;
+    }
+
+    public static double radToDeg(double rad) {
+        rad = rad * (180.0 / Math.PI);
+        if (rad < 0) rad = 360.0 + rad;
+        return rad;
+    }
+
 }
 

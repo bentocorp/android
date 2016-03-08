@@ -39,5 +39,19 @@ public class BentoNowApi {
         return BentoApplication.instance.getString(R.string.google_api_url_direction, dOriginLat, dOriginLong, dEndLat, dEndLong, BentoApplication.instance.getString(R.string.google_server_key));
     }
 
+    public static String getOrderStatusNode() {
+        return BentoApplication.instance.getString(R.string.node_url);
+    }
+
+    public static String getOrderStatusNode(String sUsername, String sPassword) {
+        String sUrl = String.format("/api/authenticate?username=%s&token=%s&type=customer", sUsername, sPassword);
+        return sUrl;
+    }
+
+    public static String getDriverTrackUrl(String sDriverId) {
+        String sUrl = String.format("/api/track?clientId=d-%s", sDriverId);
+        return sUrl;
+    }
+
 
 }

@@ -5,9 +5,13 @@ package com.bentonow.bentonow.listener;
  */
 public interface OrderStatusListener {
     void onConnectionError(String sError);
+
     void onAuthenticationFailure(String sError);
-    void onAuthenticationSuccess(String sToken);
+
+    void onAuthenticationSuccess();
+
     void onDisconnect(boolean onPurpose);
+
     void onReconnecting();
 
 

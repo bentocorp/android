@@ -70,7 +70,7 @@ public class MarkerAnimation {
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     public static void animateMarkerToICS(Marker marker, LatLng finalPosition, float fRotation, int duration, final LatLngInterpolator latLngInterpolator) {
-      //  marker.setRotation(fRotation);
+        marker.setRotation(fRotation);
         TypeEvaluator<LatLng> typeEvaluator = new TypeEvaluator<LatLng>() {
             @Override
             public LatLng evaluate(float fraction, LatLng startValue, LatLng endValue) {

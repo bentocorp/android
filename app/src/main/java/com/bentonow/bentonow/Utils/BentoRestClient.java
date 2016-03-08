@@ -100,13 +100,6 @@ public class BentoRestClient {
             return "/init2?date=" + BentoNowUtils.getTodayDateInit2() + "&copy=1&gatekeeper=1&lat=" + mLocation.getLatitude() + "&long=" + mLocation.getLongitude();
     }
 
-    public static String getOrderStatusNode() {
-        return "URl";
-    }
-
-    public static String getOrderStatusNode(String sUser, String sPassword) {
-        return "URl";
-    }
 
     private static class CustomSSLSocketFactory extends SSLSocketFactory {
         SSLContext sslContext = SSLContext.getInstance("TLS");

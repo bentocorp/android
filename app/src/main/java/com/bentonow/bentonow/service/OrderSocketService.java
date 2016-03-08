@@ -5,12 +5,11 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
-import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.listener.OrderStatusListener;
-
-import org.bentocorp.api.APIResponse;
-import org.bentocorp.api.Authenticate;
+import com.bentonow.bentonow.model.socket.ResponseSocketModel;
+import com.bentonow.bentonow.parse.SocketResponseParser;
+import com.bentonow.bentonow.web.BentoNowApi;
 
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
@@ -45,7 +44,8 @@ public class OrderSocketService extends Service {
     private boolean mReconnecting = false;
     private String sTransportError = "";
     private String sTransportClosed = "";
-    private Calendar mCalPong;
+    private String sToken = "";
+    private Calendar mCalLoc;
     private OrderStatusListener mSocketListener;
 
 
@@ -100,7 +100,7 @@ public class OrderSocketService extends Service {
                 opts.reconnectionDelayMax = 1000;
                 opts.timeout = 5000;
 
-                mSocket = IO.socket(BentoRestClient.getOrderStatusNode(), opts);
+                mSocket = IO.socket(BentoNowApi.getOrderStatusNode(), opts);
                 socketAuthenticate(username, password);
                 mSocket.connect();
             } catch (Exception e) {
@@ -117,24 +117,22 @@ public class OrderSocketService extends Service {
             @Override
             public void call(Object[] args) {
                 try {
-                    // stopCountDownRestart();
-                    String sPath = BentoRestClient.getOrderStatusNode(sUser, sPass);
+                    sToken = sPass;
+                    String sPath = BentoNowApi.getOrderStatusNode(sUser, sPass);
                     DebugUtils.logDebug(TAG, "Connecting: " + sPath);
                     mSocket.emit("get", sPath, new Ack() {
                         @Override
                         public void call(Object[] args) {
                             try {
+                                DebugUtils.logDebug(TAG, "socketAuthenticate: " + args[0].toString());
+                                ResponseSocketModel mResponseSocket = SocketResponseParser.parseResponse(args[0].toString());
 
-                              /*  APIResponse<Authenticate> res = mapper.readValue(args[0].toString(), new TypeReference<APIResponse<Authenticate>>() {
-                                });
-                                if (res.code != 0) {
+                                if (mResponseSocket.getCode() != 0) {
                                     if (mSocketListener != null)
-                                        mSocketListener.onAuthenticationFailure(res.msg);
-                                    DebugUtils.logError(TAG, "socketAuthenticate: " + res.msg);
+                                        mSocketListener.onAuthenticationFailure(mResponseSocket.getMsg());
+                                    DebugUtils.logError(TAG, "socketAuthenticate: " + mResponseSocket.getMsg());
                                     mSocket.disconnect();
                                 } else {
-                                    final String sToken = res.ret.token;
-                                    DebugUtils.logDebug(TAG, "Token: " + sToken);
                                     sTransportClosed = "";
                                     sTransportError = "";
                                     bIsTransportClosed = false;
@@ -142,9 +140,9 @@ public class OrderSocketService extends Service {
                                     mReconnecting = false;
 
                                     if (mSocketListener != null)
-                                        mSocketListener.onAuthenticationSuccess(sToken);
+                                        mSocketListener.onAuthenticationSuccess();
 
-                                }*/
+                                }
                             } catch (Exception e) {
                                 if (mSocketListener != null)
                                     mSocketListener.onAuthenticationFailure(e.getMessage());
@@ -276,14 +274,26 @@ public class OrderSocketService extends Service {
         if (mSocket != null) {
             removeNodeListener();
 
-            DebugUtils.logDebug(TAG, "Pong: Subscribed");
-            mSocket.on("pong", new Emitter.Listener() {
+            DebugUtils.logDebug(TAG, "Push: Subscribed");
+            mSocket.on("push", new Emitter.Listener() {
                 @Override
                 public void call(Object[] args) {
                     try {
-                        mCalPong = Calendar.getInstance();
+                        DebugUtils.logDebug(TAG, "Push: " + args[0].toString());
                     } catch (Exception e) {
-                        DebugUtils.logError(TAG, "Pong: " + e.toString());
+                        DebugUtils.logError(TAG, "Push: " + e.toString());
+                    }
+                }
+            });
+
+            DebugUtils.logDebug(TAG, "Loc: Subscribed");
+            mSocket.on("loc", new Emitter.Listener() {
+                @Override
+                public void call(Object[] args) {
+                    try {
+                        DebugUtils.logDebug(TAG, "Loc: " + args[0].toString());
+                    } catch (Exception e) {
+                        DebugUtils.logError(TAG, "Loc: " + e.toString());
                     }
                 }
             });
@@ -295,6 +305,32 @@ public class OrderSocketService extends Service {
             mSocket.off("push");
             mSocket.off("pong");
         }
+
+    }
+
+    public void trackDriver(String sDriverId) {
+        String sUrl = BentoNowApi.getDriverTrackUrl(sDriverId);
+        DebugUtils.logDebug(TAG, "TrackDriver:: " + sUrl);
+        mSocket.emit("get", sUrl, new Ack() {
+            @Override
+            public void call(Object... args) {
+                try {
+                    DebugUtils.logDebug(TAG, "Track: " + args[0].toString());
+                    mCalLoc = Calendar.getInstance();
+
+                } catch (Exception e) {
+                    DebugUtils.logError(TAG, "Track: " + e.toString());
+                }
+            }
+        });
+    }
+
+    public void setWebSocketLister(OrderStatusListener mListener) {
+        mSocketListener = mListener;
+    }
+
+    public boolean isSocketListener() {
+        return mSocketListener != null;
     }
 
     public void disconnectWebSocket() {
@@ -308,14 +344,6 @@ public class OrderSocketService extends Service {
             mSocket.disconnect();
         }
 
-    }
-
-    public void setWebSocketLister(OrderStatusListener mListener) {
-        mSocketListener = mListener;
-    }
-
-    public boolean isSocketListener() {
-        return mSocketListener != null;
     }
 
     @Override
