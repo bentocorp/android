@@ -18,6 +18,7 @@ public class OrderHistoryItemModel implements Parcelable {
     private String lng;
     private String lat;
     private String order_status;
+    private String orderId;
 
     public OrderHistoryItemModel() {
 
@@ -30,6 +31,7 @@ public class OrderHistoryItemModel implements Parcelable {
         lng = parcel.readString();
         lat = parcel.readString();
         order_status = parcel.readString();
+        orderId = parcel.readString();
     }
 
     @Override
@@ -40,6 +42,7 @@ public class OrderHistoryItemModel implements Parcelable {
         dest.writeString(lng);
         dest.writeString(lat);
         dest.writeString(order_status);
+        dest.writeString(orderId);
     }
 
     @Override
@@ -106,5 +109,13 @@ public class OrderHistoryItemModel implements Parcelable {
 
     public void setOrder_status(String order_status) {
         this.order_status = order_status;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 }
