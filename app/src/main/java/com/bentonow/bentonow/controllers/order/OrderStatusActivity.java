@@ -75,8 +75,6 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
 
     private Location mOrderLocation;
     private LatLng mDriverLocation;
-    private MarkerOptions mDriverMarkerOpts;
-    private MarkerOptions mOrderMarkerOpts;
     private WaypointModel mWaypoint;
     private ArrayList<LatLng> aListDriver = new ArrayList<>();
 
@@ -89,7 +87,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
     private OrderHistoryItemModel mOrder;
     private User mCurrentUser;
     private int iPositionStart = 0;
-    private int iDuration = 1000;
+    private int iDuration = 2000;
     private double fRotation;
 
     @Override
@@ -110,6 +108,8 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         mOrderLocation = new Location("Order Location");
         mOrderLocation.setLatitude(Double.parseDouble(mOrder.getLat()));
         mOrderLocation.setLongitude(Double.parseDouble(mOrder.getLng()));
+
+        updateStatus(mOrder.getOrder_status());
 
         mHandler = new Handler();
         mLoadingTask = new Runnable() {
@@ -135,7 +135,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
                     //    DebugUtils.logDebug(TAG, "bearing float: " + (float) fRotation);
 
                     // mDriverLocation = new LatLng(mWaypoint.getaSteps().get(iPositionStart).getStart_location_lat(), mWaypoint.getaSteps().get(iPositionStart).getStart_location_lng());
-                    mDriverLocation = new LatLng(aListDriver.get(iPositionStart).latitude, aListDriver.get(iPositionStart).longitude);
+                    //mDriverLocation = new LatLng(aListDriver.get(iPositionStart).latitude, aListDriver.get(iPositionStart).longitude);
 
 
                     DebugUtils.logDebug(TAG, "Change Route");
@@ -151,7 +151,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            updateStatus("pickup");
+                            //updateStatus("pickup");
                         }
                     });
                     DebugUtils.logError(TAG, "Didnt Change Route");
@@ -206,58 +206,64 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
     private void updateMarkers() {
         animateMarker(getDriverMarker(), mDriverLocation, (float) fRotation);
         updateMapLocation();
+        //cameraUpdate = CameraUpdateFactory.newLatLngZoom(mDriverLocation, 17);
     }
 
-    private void updateStatus(String sOrderStatus) {
-        sOrderStatus = sOrderStatus.toLowerCase();
-        switch (sOrderStatus) {
-            case "assign":
-            case "prep":
-                getWrapperStatusPrep().setVisibility(View.VISIBLE);
-                getWrapperStatusDelivery().setVisibility(View.GONE);
+    private void updateStatus(final String sOrderStatus) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                switch (sOrderStatus) {
+                    case "Assigned":
+                    case "prep":
+                        getWrapperStatusPrep().setVisibility(View.VISIBLE);
+                        getWrapperStatusDelivery().setVisibility(View.GONE);
 
-                getTxtOrderStatusTitle().setText(IosCopyDao.get("prep_status_title"));
-                getTxtOrderStatusDescription().setText(IosCopyDao.get("prep_status_description"));
+                        getTxtOrderStatusTitle().setText(IosCopyDao.get("prep_status_title"));
+                        getTxtOrderStatusDescription().setText(IosCopyDao.get("prep_status_description"));
 
-                getTxtIndicatorPrep().setBackground(getResources().getDrawable(R.drawable.background_circle_green));
-                getTxtDescriptionPrep().setTextColor(getResources().getColor(R.color.primary));
+                        getTxtIndicatorPrep().setBackground(getResources().getDrawable(R.drawable.background_circle_green));
+                        getTxtDescriptionPrep().setTextColor(getResources().getColor(R.color.primary));
 
-                getTxtIndicatorDelivery().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
-                getTxtDescriptionDelivery().setTextColor(getResources().getColor(R.color.gray));
-                getTxtIndicatorPickUp().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
-                getTxtDescriptionPickUp().setTextColor(getResources().getColor(R.color.gray));
-                break;
-            case "delivery":
-                getWrapperStatusDelivery().setVisibility(View.VISIBLE);
-                getWrapperStatusPrep().setVisibility(View.GONE);
+                        getTxtIndicatorDelivery().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
+                        getTxtDescriptionDelivery().setTextColor(getResources().getColor(R.color.gray));
+                        getTxtIndicatorPickUp().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
+                        getTxtDescriptionPickUp().setTextColor(getResources().getColor(R.color.gray));
+                        break;
+                    case "En Route":
+                        getWrapperStatusDelivery().setVisibility(View.VISIBLE);
+                        getWrapperStatusPrep().setVisibility(View.GONE);
 
-                getTxtIndicatorDelivery().setBackground(getResources().getDrawable(R.drawable.background_circle_green));
-                getTxtDescriptionDelivery().setTextColor(getResources().getColor(R.color.gray));
+                        getTxtIndicatorDelivery().setBackground(getResources().getDrawable(R.drawable.background_circle_green));
+                        getTxtDescriptionDelivery().setTextColor(getResources().getColor(R.color.primary));
 
-                getTxtIndicatorPrep().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
-                getTxtDescriptionPrep().setTextColor(getResources().getColor(R.color.primary));
-                getTxtIndicatorPickUp().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
-                getTxtDescriptionPickUp().setTextColor(getResources().getColor(R.color.primary));
-                break;
-            case "pickup":
-                getWrapperStatusPrep().setVisibility(View.VISIBLE);
-                getWrapperStatusDelivery().setVisibility(View.GONE);
+                        getTxtIndicatorPrep().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
+                        getTxtDescriptionPrep().setTextColor(getResources().getColor(R.color.gray));
+                        getTxtIndicatorPickUp().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
+                        getTxtDescriptionPickUp().setTextColor(getResources().getColor(R.color.gray));
+                        break;
+                    case "pickup":
+                        getWrapperStatusPrep().setVisibility(View.VISIBLE);
+                        getWrapperStatusDelivery().setVisibility(View.GONE);
 
-                getTxtOrderStatusTitle().setText(IosCopyDao.get("pickup_status_title"));
-                getTxtOrderStatusDescription().setText(IosCopyDao.get("pickup_status_description"));
+                        getTxtOrderStatusTitle().setText(IosCopyDao.get("pickup_status_title"));
+                        getTxtOrderStatusDescription().setText(IosCopyDao.get("pickup_status_description"));
 
-                getTxtIndicatorPickUp().setBackground(getResources().getDrawable(R.drawable.background_circle_green));
-                getTxtDescriptionPickUp().setTextColor(getResources().getColor(R.color.gray));
+                        getTxtIndicatorPickUp().setBackground(getResources().getDrawable(R.drawable.background_circle_green));
+                        getTxtDescriptionPickUp().setTextColor(getResources().getColor(R.color.primary));
 
-                getTxtIndicatorDelivery().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
-                getTxtDescriptionDelivery().setTextColor(getResources().getColor(R.color.gray));
-                getTxtIndicatorPrep().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
-                getTxtDescriptionPrep().setTextColor(getResources().getColor(R.color.gray));
-                break;
-            default:
-                DebugUtils.logError(TAG, "Unhandled Status:: " + sOrderStatus);
-                break;
-        }
+                        getTxtIndicatorDelivery().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
+                        getTxtDescriptionDelivery().setTextColor(getResources().getColor(R.color.gray));
+                        getTxtIndicatorPrep().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
+                        getTxtDescriptionPrep().setTextColor(getResources().getColor(R.color.gray));
+                        break;
+                    default:
+                        DebugUtils.logError(TAG, "Unhandled Status:: " + sOrderStatus);
+                        break;
+                }
+            }
+        });
+
     }
 
     private void bindService() {
@@ -313,6 +319,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
     }
 
     public void zoomAnimateLevelToFitMarkers(int padding) {
+        //   DebugUtils.logDebug(TAG, "Change Route");
         LatLngBounds.Builder b = new LatLngBounds.Builder();
         markerIterator = markersHashMap.entrySet().iterator();
 
@@ -324,8 +331,8 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         }
         LatLngBounds bounds = b.build();
 
-        //cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-        cameraUpdate = CameraUpdateFactory.newLatLngZoom(mDriverLocation, 17);
+        cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+        //cameraUpdate = CameraUpdateFactory.newLatLngZoom(mDriverLocation, 17);
 
         googleMap.animateCamera(cameraUpdate, iDuration, new GoogleMap.CancelableCallback() {
             @Override
@@ -339,6 +346,33 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
             }
         });
     }
+
+
+    @Override
+    public void onDriverLocation(double lat, double lng) {
+        if (mDriverLocation == null) {
+            mDriverLocation = new LatLng(lat, lng);
+            if (googleMap != null)
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        addMarker(getDriverMarker(), true);
+                        getDirectionsByLocation();
+                        //updateMarkers();
+                    }
+                });
+        } else {
+           /* mDriverLocation = new LatLng(lat, lng);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    updateMarkers();
+                }
+            });*/
+        }
+
+    }
+
 
     @Override
     public void onClick(View v) {
@@ -364,13 +398,19 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
 
         addMarker(getOrderMarker(), false);
 
-        updateStatus(mOrder.getOrder_status());
+        if (mDriverLocation != null)
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    addMarker(getDriverMarker(), true);
+                    updateMarkers();
+                }
+            });
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        DebugUtils.logDebug(TAG, "OnDestroy()");
+    protected void onPause() {
+        super.onPause();
         // Unbind from the service
         if (mBound) {
             unbindService(mConnection);
@@ -396,8 +436,6 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
 
     @Override
     public void onAuthenticationSuccess() {
-        webSocketService.onNodeEventListener();
-
         webSocketService.trackDriver(mOrder.getDriverId());
        /* addMarker(getDriverMarker(), true);
 
@@ -413,7 +451,6 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
     public void onReconnecting() {
 
     }
-
 
     private CustomMarker getDriverMarker() {
         if (customMarkerDriver == null)
@@ -514,6 +551,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
             OrderSocketService.WebSocketServiceBinder webSocketServiceBinder = (OrderSocketService.WebSocketServiceBinder) binder;
             webSocketService = webSocketServiceBinder.getService();
             webSocketService.setWebSocketLister(OrderStatusActivity.this);
+            webSocketService.setTrackingOrder(mOrder);
             webSocketService.connectWebSocket(mCurrentUser.email, mCurrentUser.api_token);
 
             mBound = true;

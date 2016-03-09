@@ -1,6 +1,7 @@
 package com.bentonow.bentonow.parse;
 
 import com.bentonow.bentonow.Utils.DebugUtils;
+import com.bentonow.bentonow.model.socket.GlocSocketModel;
 import com.bentonow.bentonow.model.socket.ResponseSocketModel;
 
 import org.json.JSONObject;
@@ -23,6 +24,7 @@ public class SocketResponseParser extends MainParser {
 
             mResponseSocket.setCode(jsonResponse.getInt("code"));
             mResponseSocket.setMsg(jsonResponse.getString("msg"));
+            mResponseSocket.setRet(jsonResponse.getString("ret"));
 
         } catch (Exception ex) {
             DebugUtils.logDebug(TAG, ex);
@@ -31,6 +33,77 @@ public class SocketResponseParser extends MainParser {
 
 
         return mResponseSocket;
+
+    }
+
+
+    public static String parseToken(String sRet) {
+
+        JSONObject jsonResponse;
+
+        try {
+            jsonResponse = new JSONObject(sRet);
+
+            return jsonResponse.getString("token");
+        } catch (Exception ex) {
+            DebugUtils.logDebug(TAG, ex);
+            return "";
+        }
+
+    }
+
+    public static boolean parseTrack(String sRet) {
+
+        JSONObject jsonResponse;
+
+        try {
+            jsonResponse = new JSONObject(sRet);
+
+            return jsonResponse.getBoolean("connected");
+        } catch (Exception ex) {
+            DebugUtils.logDebug(TAG, ex);
+            return false;
+        }
+
+    }
+
+    public static GlocSocketModel parseGloc(String sRet) {
+        GlocSocketModel mGloc = null;
+
+        JSONObject jsonResponse;
+
+        try {
+            jsonResponse = new JSONObject(sRet);
+            mGloc = new GlocSocketModel();
+
+            mGloc.setLat(jsonResponse.getString("lat"));
+            mGloc.setLng(jsonResponse.getString("lng"));
+
+            return mGloc;
+        } catch (Exception ex) {
+            DebugUtils.logDebug(TAG, ex);
+            return mGloc;
+        }
+
+    }
+
+    public static GlocSocketModel parseLoc(String sRet) {
+        GlocSocketModel mGloc = null;
+
+        JSONObject jsonResponse;
+
+        try {
+            jsonResponse = new JSONObject(sRet);
+            mGloc = new GlocSocketModel();
+
+            mGloc.setLat(jsonResponse.getString("lat"));
+            mGloc.setLng(jsonResponse.getString("lng"));
+
+            return mGloc;
+        } catch (Exception ex) {
+            DebugUtils.logDebug(TAG, ex);
+            return mGloc;
+        }
 
     }
 }

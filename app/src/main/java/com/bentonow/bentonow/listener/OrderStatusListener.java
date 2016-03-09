@@ -14,5 +14,7 @@ public interface OrderStatusListener {
 
     void onReconnecting();
 
+    void onDriverLocation(double lat, double lng);
+
 
 }

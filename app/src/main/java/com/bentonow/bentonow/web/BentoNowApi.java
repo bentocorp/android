@@ -48,10 +48,19 @@ public class BentoNowApi {
         return sUrl;
     }
 
-    public static String getDriverTrackUrl(String sDriverId) {
-        String sUrl = String.format("/api/track?clientId=d-%s", sDriverId);
+    public static String getDriverTrackUrl(String sDriverId, String sUid) {
+        String sUrl = String.format("/api/track?clientId=d-%s&uid=%s", sDriverId, sUid);
         return sUrl;
     }
 
+    public static String getDriverTrackGloc(String sDriverId, String sToken) {
+        String sUrl = String.format("/api/gloc?token=%s&clientId=d-%s", sToken, sDriverId);
+        return sUrl;
+    }
+
+    public static String getDriverUntrack(String sDriverId, String sUid) {
+        String sUrl = String.format("/api/untrack?uid=%s&clientId=d-%s", sUid, sDriverId);
+        return sUrl;
+    }
 
 }

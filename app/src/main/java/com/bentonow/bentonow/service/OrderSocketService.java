@@ -7,6 +7,8 @@ import android.os.IBinder;
 
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.listener.OrderStatusListener;
+import com.bentonow.bentonow.model.order.history.OrderHistoryItemModel;
+import com.bentonow.bentonow.model.socket.GlocSocketModel;
 import com.bentonow.bentonow.model.socket.ResponseSocketModel;
 import com.bentonow.bentonow.parse.SocketResponseParser;
 import com.bentonow.bentonow.web.BentoNowApi;
@@ -45,8 +47,10 @@ public class OrderSocketService extends Service {
     private String sTransportError = "";
     private String sTransportClosed = "";
     private String sToken = "";
+    private String sDriverId = "";
     private Calendar mCalLoc;
     private OrderStatusListener mSocketListener;
+    private OrderHistoryItemModel mOrder;
 
 
     private TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
@@ -66,7 +70,7 @@ public class OrderSocketService extends Service {
     @Override
     public void onCreate() {
         DebugUtils.logDebug(TAG, "Creating new OrderSocketService");
-
+        mCalLoc = Calendar.getInstance();
     }
 
     public void connectWebSocket(String username, String password) {
@@ -117,7 +121,6 @@ public class OrderSocketService extends Service {
             @Override
             public void call(Object[] args) {
                 try {
-                    sToken = sPass;
                     String sPath = BentoNowApi.getOrderStatusNode(sUser, sPass);
                     DebugUtils.logDebug(TAG, "Connecting: " + sPath);
                     mSocket.emit("get", sPath, new Ack() {
@@ -139,7 +142,9 @@ public class OrderSocketService extends Service {
                                     bIsTransportError = false;
                                     mReconnecting = false;
 
-                                    if (mSocketListener != null)
+                                    sToken = SocketResponseParser.parseToken(mResponseSocket.getRet());
+
+                                    if (mSocketListener != null && !sToken.isEmpty())
                                         mSocketListener.onAuthenticationSuccess();
 
                                 }
@@ -291,10 +296,16 @@ public class OrderSocketService extends Service {
                 @Override
                 public void call(Object[] args) {
                     try {
-                        DebugUtils.logDebug(TAG, "Loc: " + args[0].toString());
+                        GlocSocketModel mGloc = SocketResponseParser.parseGloc(args[0].toString());
+                        if (mGloc != null) {
+                            mCalLoc = Calendar.getInstance();
+                            mSocketListener.onDriverLocation(Double.parseDouble(mGloc.getLat()),
+                                    Double.parseDouble(mGloc.getLng()));
+                        }
                     } catch (Exception e) {
                         DebugUtils.logError(TAG, "Loc: " + e.toString());
                     }
+
                 }
             });
         }
@@ -308,19 +319,72 @@ public class OrderSocketService extends Service {
 
     }
 
-    public void trackDriver(String sDriverId) {
-        String sUrl = BentoNowApi.getDriverTrackUrl(sDriverId);
+    public void trackDriver(final String sDriverId) {
+        this.sDriverId = sDriverId;
+        String sUrl = BentoNowApi.getDriverTrackUrl(sDriverId, mOrder.getOrderId());
         DebugUtils.logDebug(TAG, "TrackDriver:: " + sUrl);
         mSocket.emit("get", sUrl, new Ack() {
             @Override
             public void call(Object... args) {
                 try {
-                    DebugUtils.logDebug(TAG, "Track: " + args[0].toString());
-                    mCalLoc = Calendar.getInstance();
+                    ResponseSocketModel mResponse = SocketResponseParser.parseResponse(args[0].toString());
+
+                    switch (mResponse.getCode()) {
+                        case 0:
+                            onNodeEventListener();
+                            break;
+                        default:
+                            DebugUtils.logError(TAG, "Track: " + args[0].toString());
+                            break;
+                    }
 
                 } catch (Exception e) {
                     DebugUtils.logError(TAG, "Track: " + e.toString());
                 }
+                trackGloc(sDriverId);
+            }
+        });
+    }
+
+    public void trackGloc(String sDriverId) {
+        String sUrl = BentoNowApi.getDriverTrackGloc(sDriverId, sToken);
+        DebugUtils.logDebug(TAG, "TrackGloc:: " + sUrl);
+        mSocket.emit("get", sUrl, new Ack() {
+            @Override
+            public void call(Object... args) {
+                try {
+
+                    ResponseSocketModel mResponse = SocketResponseParser.parseResponse(args[0].toString());
+                    switch (mResponse.getCode()) {
+                        case 0:
+                            GlocSocketModel mGloc = SocketResponseParser.parseGloc(mResponse.getRet());
+                            if (mGloc != null) {
+                                mCalLoc = Calendar.getInstance();
+                                mSocketListener.onDriverLocation(Double.parseDouble(mGloc.getLat()),
+                                        Double.parseDouble(mGloc.getLng()));
+                            } else
+                                DebugUtils.logError(TAG, "Gloc: " + args[0].toString());
+                            break;
+                        default:
+                            DebugUtils.logError(TAG, "Gloc: " + args[0].toString());
+                            break;
+                    }
+
+                } catch (Exception e) {
+                    DebugUtils.logError(TAG, "Gloc: " + e.toString());
+                }
+            }
+        });
+    }
+
+    public void untrack() {
+        String sUrl = BentoNowApi.getDriverUntrack(sDriverId, mOrder.getOrderId());
+        DebugUtils.logDebug(TAG, "Untrack:: " + sUrl);
+        mSocket.emit("get", sUrl, new Ack() {
+            @Override
+            public void call(Object... args) {
+                DebugUtils.logDebug(TAG, "Untrack: " + args[0].toString());
+                disconnectWebSocket();
             }
         });
     }
@@ -359,7 +423,8 @@ public class OrderSocketService extends Service {
     @Override
     public void onDestroy() {
         DebugUtils.logDebug(TAG, "destroying OrderSocketService");
-        disconnectWebSocket();
+        untrack();
+        super.onDestroy();
     }
 
     // Called when all clients have disconnected
@@ -382,6 +447,10 @@ public class OrderSocketService extends Service {
         public OrderSocketService getService() {
             return OrderSocketService.this;
         }
+    }
+
+    public void setTrackingOrder(OrderHistoryItemModel mOrder) {
+        this.mOrder = mOrder;
     }
 
 }
