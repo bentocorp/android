@@ -75,6 +75,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
 
     private Location mOrderLocation;
     private LatLng mDriverLocation;
+    private LatLng mDriverLastLocation;
     private WaypointModel mWaypoint;
     private ArrayList<LatLng> aListDriver = new ArrayList<>();
 
@@ -89,6 +90,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
     private int iPositionStart = 0;
     private int iDuration = 2000;
     private double fRotation;
+    private boolean bUseGoogleDirections;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,16 +116,12 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         mHandler = new Handler();
         mLoadingTask = new Runnable() {
             public void run() {
-                if (aListDriver.size() - 1 > iPositionStart) {
+                if (aListDriver.size() > iPositionStart && bUseGoogleDirections) {
 
-                   /* double lon1 = degToRad(mWaypoint.getaSteps().get(iPositionStart).getStart_location_lat());
-                    double lon2 = degToRad(mWaypoint.getaSteps().get(iPositionStart).getEnd_location_lat());
-                    double lat1 = degToRad(mWaypoint.getaSteps().get(iPositionStart).getStart_location_lng());
-                    double lat2 = degToRad(mWaypoint.getaSteps().get(iPositionStart).getEnd_location_lng());*/
-                    double lon1 = LocationUtils.degToRad(aListDriver.get(iPositionStart).latitude);
-                    double lon2 = LocationUtils.degToRad(aListDriver.get(iPositionStart + 1).latitude);
-                    double lat1 = LocationUtils.degToRad(aListDriver.get(iPositionStart).longitude);
-                    double lat2 = LocationUtils.degToRad(aListDriver.get(iPositionStart + 1).longitude);
+                    double lon1 = LocationUtils.degToRad(mDriverLastLocation.latitude);
+                    double lon2 = LocationUtils.degToRad(aListDriver.get(iPositionStart).latitude);
+                    double lat1 = LocationUtils.degToRad(mDriverLastLocation.longitude);
+                    double lat2 = LocationUtils.degToRad(aListDriver.get(iPositionStart).longitude);
 
                     //iDuration = mWaypoint.getaSteps().get(iPositionStart).getDuration();
 
@@ -135,8 +133,8 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
                     //    DebugUtils.logDebug(TAG, "bearing float: " + (float) fRotation);
 
                     // mDriverLocation = new LatLng(mWaypoint.getaSteps().get(iPositionStart).getStart_location_lat(), mWaypoint.getaSteps().get(iPositionStart).getStart_location_lng());
-                    //mDriverLocation = new LatLng(aListDriver.get(iPositionStart).latitude, aListDriver.get(iPositionStart).longitude);
-
+                    mDriverLastLocation = new LatLng(mDriverLocation.latitude, mDriverLocation.longitude);
+                    mDriverLocation = new LatLng(aListDriver.get(iPositionStart).latitude, aListDriver.get(iPositionStart).longitude);
 
                     DebugUtils.logDebug(TAG, "Change Route");
 
@@ -168,7 +166,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
     }
 
     private void getDirectionsByLocation() {
-        BentoRestClient.getDirections("37.7648009", "-122.4196905", mOrder.getLat(), mOrder.getLng(), new TextHttpResponseHandler() {
+        BentoRestClient.getDirections(mDriverLocation.latitude, mDriverLocation.longitude, mOrder.getLat(), mOrder.getLng(), new TextHttpResponseHandler() {
             @SuppressWarnings("deprecation")
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
@@ -183,13 +181,12 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
 
                 mWaypoint = GoogleDirectionParser.parseDirections(responseString);
 
-                aListDriver = LocationUtils.decodePoly(mWaypoint.getPoints());
-
                 if (mWaypoint != null) {
+                    iPositionStart = 0;
+                    aListDriver = LocationUtils.decodePoly(mWaypoint.getPoints());
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-
                             updateMapLocation();
                         }
                     });
@@ -266,6 +263,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
 
     }
 
+
     private void bindService() {
         Intent intent = new Intent(this, OrderSocketService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
@@ -313,7 +311,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
             customMarker.setCustomMarkerLatitude(latlng.latitude);
             customMarker.setCustomMarkerLongitude(latlng.longitude);
 
-            MarkerAnimation.animateMarkerToICS(findMarker(customMarker), new LatLng(customMarker.getCustomMarkerLatitude(), customMarker.getCustomMarkerLongitude()), fRotation, iDuration, latlonInter);
+            MarkerAnimation.animateMarkerToICS(findMarker(customMarker), new LatLng(customMarker.getCustomMarkerLatitude(), customMarker.getCustomMarkerLongitude()), fRotation, bUseGoogleDirections ? iDuration : 0, latlonInter);
 
         }
     }
@@ -337,7 +335,10 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         googleMap.animateCamera(cameraUpdate, iDuration, new GoogleMap.CancelableCallback() {
             @Override
             public void onFinish() {
-                mHandler.post(mLoadingTask);
+                mHandler.removeCallbacks(mLoadingTask);
+
+                if (bUseGoogleDirections)
+                    mHandler.postDelayed(mLoadingTask, iDuration);
             }
 
             @Override
@@ -347,11 +348,21 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         });
     }
 
+    @Override
+    public void trackDriverByGoogleMaps() {
+        bUseGoogleDirections = true;
+        if (mDriverLocation != null) {
+            getDirectionsByLocation();
+        }
+    }
 
     @Override
-    public void onDriverLocation(double lat, double lng) {
+    public void trackDriverByGloc(double lat, double lng) {
+        bUseGoogleDirections = true;
+
         if (mDriverLocation == null) {
             mDriverLocation = new LatLng(lat, lng);
+            mDriverLastLocation = new LatLng(lat, lng);
             if (googleMap != null)
                 runOnUiThread(new Runnable() {
                     @Override
@@ -362,15 +373,22 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
                     }
                 });
         } else {
-           /* mDriverLocation = new LatLng(lat, lng);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    updateMarkers();
-                }
-            });*/
+            mDriverLocation = new LatLng(lat, lng);
+            getDirectionsByLocation();
         }
+    }
 
+    @Override
+    public void onDriverLocation(double lat, double lng) {
+        bUseGoogleDirections = false;
+        mHandler.removeCallbacks(mLoadingTask);
+        mDriverLocation = new LatLng(lat, lng);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                updateMarkers();
+            }
+        });
     }
 
 
@@ -416,6 +434,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
             unbindService(mConnection);
             mBound = false;
         }
+        mHandler.removeCallbacks(mLoadingTask);
     }
 
     @Override

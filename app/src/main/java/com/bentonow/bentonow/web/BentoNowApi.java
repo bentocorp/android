@@ -35,8 +35,8 @@ public class BentoNowApi {
 
     }
 
-    public static String getUrlGoogleDirections(String dOriginLat, String dOriginLong, String dEndLat, String dEndLong) {
-        return BentoApplication.instance.getString(R.string.google_api_url_direction, dOriginLat, dOriginLong, dEndLat, dEndLong, BentoApplication.instance.getString(R.string.google_server_key));
+    public static String getUrlGoogleDirections(double dOriginLat, double dOriginLong, String dEndLat, String dEndLong) {
+        return BentoApplication.instance.getString(R.string.google_api_url_direction, dOriginLat+"", dOriginLong+"", dEndLat, dEndLong, BentoApplication.instance.getString(R.string.google_server_key));
     }
 
     public static String getOrderStatusNode() {

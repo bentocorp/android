@@ -64,7 +64,7 @@ public class BentoRestClient {
         client.get(url, params, responseHandler);
     }
 
-    public static void getDirections(String dOriginLat, String dOriginLong, String dEndLat, String dEndLong, AsyncHttpResponseHandler responseHandler) {
+    public static void getDirections(double dOriginLat, double dOriginLong, String dEndLat, String dEndLong, AsyncHttpResponseHandler responseHandler) {
         String sUrl = BentoNowApi.getUrlGoogleDirections(dOriginLat, dOriginLong, dEndLat, dEndLong);
         DebugUtils.logDebug(TAG, "[GET] " + sUrl);
         client.get(sUrl, null, responseHandler);

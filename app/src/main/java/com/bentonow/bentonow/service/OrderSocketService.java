@@ -3,6 +3,7 @@ package com.bentonow.bentonow.service;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 
 import com.bentonow.bentonow.Utils.DebugUtils;
@@ -39,6 +40,8 @@ public class OrderSocketService extends Service {
 
     private final WebSocketServiceBinder binder = new WebSocketServiceBinder();
     private Socket mSocket = null;
+    private Handler mHandler;
+    private Runnable mRunnable;
     private boolean connecting = false;
     private boolean disconnectingPurposefully = false;
     private boolean bIsTransportError = false;
@@ -71,6 +74,14 @@ public class OrderSocketService extends Service {
     public void onCreate() {
         DebugUtils.logDebug(TAG, "Creating new OrderSocketService");
         mCalLoc = Calendar.getInstance();
+        mHandler = new Handler();
+        mRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (connecting)
+                    checkServiceStatus();
+            }
+        };
     }
 
     public void connectWebSocket(String username, String password) {
@@ -146,6 +157,8 @@ public class OrderSocketService extends Service {
 
                                     if (mSocketListener != null && !sToken.isEmpty())
                                         mSocketListener.onAuthenticationSuccess();
+
+                                    startDriverLocationTimer();
 
                                 }
                             } catch (Exception e) {
@@ -296,12 +309,11 @@ public class OrderSocketService extends Service {
                 @Override
                 public void call(Object[] args) {
                     try {
+                        DebugUtils.logDebug(TAG, "Loc: " + args[0].toString());
                         GlocSocketModel mGloc = SocketResponseParser.parseGloc(args[0].toString());
-                        if (mGloc != null) {
-                            mCalLoc = Calendar.getInstance();
-                            mSocketListener.onDriverLocation(Double.parseDouble(mGloc.getLat()),
-                                    Double.parseDouble(mGloc.getLng()));
-                        }
+                        mCalLoc = Calendar.getInstance();
+                        // mSocketListener.onDriverLocation(37.806698, -122.419831);
+                        mSocketListener.onDriverLocation(Double.parseDouble(mGloc.getLat()), Double.parseDouble(mGloc.getLng()));
                     } catch (Exception e) {
                         DebugUtils.logError(TAG, "Loc: " + e.toString());
                     }
@@ -353,15 +365,14 @@ public class OrderSocketService extends Service {
             @Override
             public void call(Object... args) {
                 try {
-
                     ResponseSocketModel mResponse = SocketResponseParser.parseResponse(args[0].toString());
                     switch (mResponse.getCode()) {
                         case 0:
                             GlocSocketModel mGloc = SocketResponseParser.parseGloc(mResponse.getRet());
                             if (mGloc != null) {
                                 mCalLoc = Calendar.getInstance();
-                                mSocketListener.onDriverLocation(Double.parseDouble(mGloc.getLat()),
-                                        Double.parseDouble(mGloc.getLng()));
+                                // mSocketListener.onDriverLocation(37.806698, -122.419831);
+                                mSocketListener.trackDriverByGloc(Double.parseDouble(mGloc.getLat()), Double.parseDouble(mGloc.getLng()));
                             } else
                                 DebugUtils.logError(TAG, "Gloc: " + args[0].toString());
                             break;
@@ -389,6 +400,26 @@ public class OrderSocketService extends Service {
         });
     }
 
+    private void startDriverLocationTimer() {
+        mHandler.postDelayed(mRunnable, 20000);
+    }
+
+    public void checkServiceStatus() {
+        if (mCalLoc == null)
+            mCalLoc = Calendar.getInstance();
+
+        Calendar mCalNow = Calendar.getInstance();
+        long lSeconds = (mCalNow.getTimeInMillis() - mCalLoc.getTimeInMillis()) / 1000;
+
+        if (lSeconds > 5 && !sToken.isEmpty()) {
+            mCalLoc = Calendar.getInstance();
+            DebugUtils.logDebug(TAG, "Exception after: " + lSeconds + " seconds.");
+            mSocketListener.trackDriverByGoogleMaps();
+        }
+
+        startDriverLocationTimer();
+    }
+
     public void setWebSocketLister(OrderStatusListener mListener) {
         mSocketListener = mListener;
     }
@@ -400,6 +431,7 @@ public class OrderSocketService extends Service {
     public void disconnectWebSocket() {
         disconnectingPurposefully = true;
         connecting = false;
+        mHandler.removeCallbacks(mRunnable);
 
         if (mSocket != null) {
             DebugUtils.logDebug(TAG, "disconnecting");
@@ -436,6 +468,9 @@ public class OrderSocketService extends Service {
         return true;
     }
 
+    public void setTrackingOrder(OrderHistoryItemModel mOrder) {
+        this.mOrder = mOrder;
+    }
 
     public static class RelaxedHostNameVerifier implements HostnameVerifier {
         public boolean verify(String hostname, SSLSession session) {
@@ -447,10 +482,6 @@ public class OrderSocketService extends Service {
         public OrderSocketService getService() {
             return OrderSocketService.this;
         }
-    }
-
-    public void setTrackingOrder(OrderHistoryItemModel mOrder) {
-        this.mOrder = mOrder;
     }
 
 }

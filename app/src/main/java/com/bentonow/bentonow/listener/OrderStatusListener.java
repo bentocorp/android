@@ -16,5 +16,8 @@ public interface OrderStatusListener {
 
     void onDriverLocation(double lat, double lng);
 
+    void trackDriverByGoogleMaps();
+
+    void trackDriverByGloc(double lat, double lng);
 
 }

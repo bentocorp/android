@@ -81,7 +81,7 @@ public class SocketResponseParser extends MainParser {
 
             return mGloc;
         } catch (Exception ex) {
-            DebugUtils.logDebug(TAG, ex);
+            DebugUtils.logError(TAG, ex);
             return mGloc;
         }
 
