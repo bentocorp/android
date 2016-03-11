@@ -19,6 +19,7 @@ public class OrderHistoryItemModel implements Parcelable {
     private String lat;
     private String order_status;
     private String orderId;
+    private String driverName;
 
     public OrderHistoryItemModel() {
 
@@ -32,6 +33,7 @@ public class OrderHistoryItemModel implements Parcelable {
         lat = parcel.readString();
         order_status = parcel.readString();
         orderId = parcel.readString();
+        driverName = parcel.readString();
     }
 
     @Override
@@ -43,6 +45,7 @@ public class OrderHistoryItemModel implements Parcelable {
         dest.writeString(lat);
         dest.writeString(order_status);
         dest.writeString(orderId);
+        dest.writeString(driverName);
     }
 
     @Override
@@ -104,7 +107,7 @@ public class OrderHistoryItemModel implements Parcelable {
     }
 
     public String getOrder_status() {
-        return order_status;
+        return order_status == null ? "" : order_status;
     }
 
     public void setOrder_status(String order_status) {
@@ -112,10 +115,18 @@ public class OrderHistoryItemModel implements Parcelable {
     }
 
     public String getOrderId() {
-        return orderId;
+        return orderId == null ? "" : orderId;
     }
 
     public void setOrderId(String orderId) {
         this.orderId = orderId;
+    }
+
+    public String getDriverName() {
+        return driverName;
+    }
+
+    public void setDriverName(String driverName) {
+        this.driverName = driverName;
     }
 }

@@ -17,6 +17,7 @@ import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.maps.CustomMarker;
 import com.bentonow.bentonow.Utils.maps.LatLngInterpolator;
 import com.bentonow.bentonow.Utils.maps.LocationUtils;
@@ -28,7 +29,10 @@ import com.bentonow.bentonow.listener.OrderStatusListener;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.map.WaypointModel;
 import com.bentonow.bentonow.model.order.history.OrderHistoryItemModel;
+import com.bentonow.bentonow.model.order.history.OrderHistoryItemSectionModel;
+import com.bentonow.bentonow.model.order.history.OrderHistoryModel;
 import com.bentonow.bentonow.parse.GoogleDirectionParser;
+import com.bentonow.bentonow.parse.OrderHistoryJsonParser;
 import com.bentonow.bentonow.service.OrderSocketService;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -39,6 +43,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import java.util.ArrayList;
@@ -63,6 +68,8 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
     private TextView txtDescriptionPickUp;
     private TextView txtOrderStatusTitle;
     private TextView txtOrderStatusDescription;
+    private TextView txtDriverName;
+    private TextView txtDriverEta;
 
     private ImageView menuItemLeft;
     private GoogleMap googleMap;
@@ -88,7 +95,8 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
     private OrderHistoryItemModel mOrder;
     private User mCurrentUser;
     private int iPositionStart = 0;
-    private int iDuration = 2000;
+    private int iDurationDirections = 0;
+    private int iPadding = 100;
     private double fRotation;
     private boolean bUseGoogleDirections;
 
@@ -111,7 +119,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         mOrderLocation.setLatitude(Double.parseDouble(mOrder.getLat()));
         mOrderLocation.setLongitude(Double.parseDouble(mOrder.getLng()));
 
-        updateStatus(mOrder.getOrder_status());
+        updateStatus(false);
 
         mHandler = new Handler();
         mLoadingTask = new Runnable() {
@@ -184,9 +192,18 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
                 if (mWaypoint != null) {
                     iPositionStart = 0;
                     aListDriver = LocationUtils.decodePoly(mWaypoint.getPoints());
+                    try {
+                        iDurationDirections = (mWaypoint.getDuration() / aListDriver.size()) * 1000;
+                    } catch (Exception ex) {
+                    }
+                    iDurationDirections = 2000;
+
+                    DebugUtils.logDebug(TAG, "Duration in Millis:: " + iDurationDirections);
+
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            getTxtDriverEta().setText(String.format(getString(R.string.order_status_eta), LocationUtils.getStringSecondsLeft(mWaypoint.getDuration())));
                             updateMapLocation();
                         }
                     });
@@ -196,8 +213,58 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         });
     }
 
+    @Override
+    public void getOrderHistory() {
+        RequestParams params = new RequestParams();
+        params.put("api_token", mCurrentUser.api_token);
+
+        BentoRestClient.get("/user/orderhistory", params, new TextHttpResponseHandler() {
+            @SuppressWarnings("deprecation")
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                DebugUtils.logError(TAG, "getOrderHistoryByUser failed: " + responseString + " StatusCode: " + statusCode);
+            }
+
+            @SuppressWarnings("deprecation")
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                DebugUtils.logDebug(TAG, "getOrderHistoryByUser: " + responseString);
+                OrderHistoryModel mOrderHistory = OrderHistoryJsonParser.parseOrderHistory(responseString);
+
+                boolean bIsStillInProgress = false;
+
+                for (OrderHistoryItemSectionModel mOrderSection : mOrderHistory.getListHistorySection()) {
+                    if (mOrderSection.getSectionTitle().contains("In Progress")) {
+                        for (OrderHistoryItemModel mOrderItem : mOrderSection.getListItems()) {
+                            if (mOrderItem.getOrderId().equals(mOrderItem.getOrderId())) {
+                                bIsStillInProgress = true;
+                                if (!mOrder.getOrder_status().equals(mOrderItem.getOrder_status())) {
+                                    mOrder = mOrderItem;
+                                    updateStatus(true);
+                                    DebugUtils.logDebug(TAG, "New Order Status:: " + mOrder.getOrder_status());
+                                }
+                                break;
+                            }
+                        }
+
+                    }
+                }
+
+                if (!bIsStillInProgress) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ORDER_HISTORY_FORCE_REFRESH, true);
+                            OrderStatusActivity.this.finish();
+                        }
+                    });
+                }
+            }
+        });
+    }
+
     private void updateMapLocation() {
-        zoomAnimateLevelToFitMarkers(100);
+        zoomAnimateLevelToFitMarkers();
     }
 
     private void updateMarkers() {
@@ -206,13 +273,12 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         //cameraUpdate = CameraUpdateFactory.newLatLngZoom(mDriverLocation, 17);
     }
 
-    private void updateStatus(final String sOrderStatus) {
+    private void updateStatus(final boolean isRequestData) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                switch (sOrderStatus) {
+                switch (mOrder.getOrder_status()) {
                     case "Assigned":
-                    case "prep":
                         getWrapperStatusPrep().setVisibility(View.VISIBLE);
                         getWrapperStatusDelivery().setVisibility(View.GONE);
 
@@ -231,6 +297,8 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
                         getWrapperStatusDelivery().setVisibility(View.VISIBLE);
                         getWrapperStatusPrep().setVisibility(View.GONE);
 
+                        getTxtDriverName().setText("Driver: " + mOrder.getDriverName());
+
                         getTxtIndicatorDelivery().setBackground(getResources().getDrawable(R.drawable.background_circle_green));
                         getTxtDescriptionDelivery().setTextColor(getResources().getColor(R.color.primary));
 
@@ -238,8 +306,12 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
                         getTxtDescriptionPrep().setTextColor(getResources().getColor(R.color.gray));
                         getTxtIndicatorPickUp().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
                         getTxtDescriptionPickUp().setTextColor(getResources().getColor(R.color.gray));
+
+                        if (isRequestData)
+                            webSocketService.trackDriver(mOrder.getDriverId());
+
                         break;
-                    case "pickup":
+                    case "Arrived":
                         getWrapperStatusPrep().setVisibility(View.VISIBLE);
                         getWrapperStatusDelivery().setVisibility(View.GONE);
 
@@ -255,7 +327,8 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
                         getTxtDescriptionPrep().setTextColor(getResources().getColor(R.color.gray));
                         break;
                     default:
-                        DebugUtils.logError(TAG, "Unhandled Status:: " + sOrderStatus);
+                        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ORDER_HISTORY_FORCE_REFRESH, true);
+                        finish();
                         break;
                 }
             }
@@ -279,7 +352,9 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         MarkerOptions markerOption = new MarkerOptions().position(new LatLng(customMarker.getCustomMarkerLatitude(), customMarker.getCustomMarkerLongitude())).flat(true);
         markerOption.icon(bIsDriver ? BitmapDescriptorFactory.fromResource(R.drawable.marker_car) : BitmapDescriptorFactory.fromResource(R.drawable.location_marker_hi));
         markerOption.anchor(0.5f, 0.5f);
+
         Marker newMark = googleMap.addMarker(markerOption);
+
         addMarkerToHashMap(customMarker, newMark);
     }
 
@@ -303,20 +378,22 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
     }
 
     public void animateMarker(CustomMarker customMarker, LatLng latlng, float fRotation) {
+        getTxtDriverEta().setText(String.format(getString(R.string.order_status_eta), LocationUtils.getStringSecondsLeft((iDurationDirections) / 1000 * (aListDriver.size() - iPositionStart))));
+        // findMarker(customMarker).setSnippet(LocationUtils.getStringSecondsLeft((iDurationDirections) / 1000 * (aListDriver.size() - iPositionStart)));
+        // findMarker(customMarker).showInfoWindow();
         if (findMarker(customMarker) != null) {
-
             LatLngInterpolator latlonInter = new LatLngInterpolator.Spherical();
             latlonInter.interpolate(20, new LatLng(customMarker.getCustomMarkerLatitude(), customMarker.getCustomMarkerLongitude()), latlng);
 
             customMarker.setCustomMarkerLatitude(latlng.latitude);
             customMarker.setCustomMarkerLongitude(latlng.longitude);
 
-            MarkerAnimation.animateMarkerToICS(findMarker(customMarker), new LatLng(customMarker.getCustomMarkerLatitude(), customMarker.getCustomMarkerLongitude()), fRotation, bUseGoogleDirections ? iDuration : 0, latlonInter);
+            MarkerAnimation.animateMarkerToICS(findMarker(customMarker), new LatLng(customMarker.getCustomMarkerLatitude(), customMarker.getCustomMarkerLongitude()), fRotation, latlonInter);
 
         }
     }
 
-    public void zoomAnimateLevelToFitMarkers(int padding) {
+    public void zoomAnimateLevelToFitMarkers() {
         //   DebugUtils.logDebug(TAG, "Change Route");
         LatLngBounds.Builder b = new LatLngBounds.Builder();
         markerIterator = markersHashMap.entrySet().iterator();
@@ -329,16 +406,16 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         }
         LatLngBounds bounds = b.build();
 
-        cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+        cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, iPadding);
         //cameraUpdate = CameraUpdateFactory.newLatLngZoom(mDriverLocation, 17);
 
-        googleMap.animateCamera(cameraUpdate, iDuration, new GoogleMap.CancelableCallback() {
+        googleMap.animateCamera(cameraUpdate, iPositionStart == 0 ? 2000 : iDurationDirections, new GoogleMap.CancelableCallback() {
             @Override
             public void onFinish() {
                 mHandler.removeCallbacks(mLoadingTask);
 
                 if (bUseGoogleDirections)
-                    mHandler.postDelayed(mLoadingTask, iDuration);
+                    mHandler.post(mLoadingTask);
             }
 
             @Override
@@ -349,9 +426,15 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
     }
 
     @Override
+    public void onPush(String sResponse) {
+        getOrderHistory();
+    }
+
+    @Override
     public void trackDriverByGoogleMaps() {
         bUseGoogleDirections = true;
-        if (mDriverLocation != null) {
+
+        if (mDriverLocation != null && mOrder.getOrder_status().equals("En Route")) {
             getDirectionsByLocation();
         }
     }
@@ -360,35 +443,65 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
     public void trackDriverByGloc(double lat, double lng) {
         bUseGoogleDirections = true;
 
-        if (mDriverLocation == null) {
-            mDriverLocation = new LatLng(lat, lng);
-            mDriverLastLocation = new LatLng(lat, lng);
-            if (googleMap != null)
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        addMarker(getDriverMarker(), true);
-                        getDirectionsByLocation();
-                        //updateMarkers();
-                    }
-                });
-        } else {
-            mDriverLocation = new LatLng(lat, lng);
-            getDirectionsByLocation();
-        }
+        if (mOrder.getOrder_status().equals("En Route"))
+            if (mDriverLocation == null) {
+                mDriverLocation = new LatLng(lat, lng);
+                mDriverLastLocation = new LatLng(lat, lng);
+                if (googleMap != null)
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            addMarker(getDriverMarker(), true);
+                            getDirectionsByLocation();
+                            //updateMarkers();
+                        }
+                    });
+            } else {
+                mDriverLocation = new LatLng(lat, lng);
+                getDirectionsByLocation();
+            }
     }
 
     @Override
     public void onDriverLocation(double lat, double lng) {
         bUseGoogleDirections = false;
-        mHandler.removeCallbacks(mLoadingTask);
-        mDriverLocation = new LatLng(lat, lng);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                updateMarkers();
-            }
-        });
+        if (mOrder.getOrder_status().equals("En Route")) {
+            mHandler.removeCallbacks(mLoadingTask);
+            mDriverLocation = new LatLng(lat, lng);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    updateMarkers();
+                }
+            });
+
+            BentoRestClient.getDirections(mDriverLocation.latitude, mDriverLocation.longitude, mOrder.getLat(), mOrder.getLng(), new TextHttpResponseHandler() {
+                @SuppressWarnings("deprecation")
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    DebugUtils.logError(TAG, "getUserInfo:  " + responseString);
+
+                }
+
+                @SuppressWarnings("deprecation")
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                    DebugUtils.logDebug(TAG, "getDirectionsByLocation: Status Code" + statusCode);
+
+                    mWaypoint = GoogleDirectionParser.parseDirections(responseString);
+
+                    if (mWaypoint != null) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                getTxtDriverEta().setText(LocationUtils.getStringSecondsLeft(mWaypoint.getDuration()));
+                            }
+                        });
+                    }
+
+                }
+            });
+        }
     }
 
 
@@ -561,6 +674,18 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         if (txtOrderStatusDescription == null)
             txtOrderStatusDescription = (TextView) findViewById(R.id.txt_order_status_description);
         return txtOrderStatusDescription;
+    }
+
+    private TextView getTxtDriverName() {
+        if (txtDriverName == null)
+            txtDriverName = (TextView) findViewById(R.id.txt_driver_name);
+        return txtDriverName;
+    }
+
+    private TextView getTxtDriverEta() {
+        if (txtDriverEta == null)
+            txtDriverEta = (TextView) findViewById(R.id.txt_driver_eta);
+        return txtDriverEta;
     }
 
     private class OrderStatusServiceConnection implements ServiceConnection {

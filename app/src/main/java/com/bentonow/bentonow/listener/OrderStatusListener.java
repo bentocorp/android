@@ -20,4 +20,8 @@ public interface OrderStatusListener {
 
     void trackDriverByGloc(double lat, double lng);
 
+    void onPush(String sResponse);
+
+    void getOrderHistory();
+
 }

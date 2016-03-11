@@ -354,11 +354,37 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <LinearLayout
+                android:id="@+id/linearLayout9"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_alignParentBottom="true"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <TextView
+                    android:id="@+id/txt_driver_name"
+                    style="@style/TxtOrderStatusEta"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Driver" />
+
+                <TextView
+                    android:id="@+id/txt_driver_eta"
+                    style="@style/TxtOrderStatusEta"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Eta:" />
+            </LinearLayout>
+
             <fragment
                 android:id="@+id/map_driver_location"
                 android:name="com.bentonow.bentonow.controllers.fragment.MySupportMapFragment"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:layout_above="@+id/linearLayout9" />
         </RelativeLayout>
 
     </RelativeLayout>

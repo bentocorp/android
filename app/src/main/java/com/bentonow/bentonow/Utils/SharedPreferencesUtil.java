@@ -35,6 +35,7 @@ public class SharedPreferencesUtil {
     public static final String SHOW_NOTIFICATIONS = "SHOW_NOTIFICATIONS"; //boolean
     public static final String ALREADY_SHOW_NOTIFICATIONS = "ALREADY_SHOW_NOTIFICATIONS"; //boolean
     public static final String ORDER_AHEAD_SUBSCRIPTION = "ORDER_AHEAD_SUBSCRIPTION"; //boolean
+    public static final String ORDER_HISTORY_FORCE_REFRESH = "ORDER_HISTORY_FORCE_REFRESH"; //boolean
 
     //DATA FROM SERVER
     public static final String BACKENDTEXT = "backendText"; //String

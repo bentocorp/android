@@ -1,6 +1,7 @@
 package com.bentonow.bentonow.Utils;
 
 import android.location.Location;
+import android.os.Looper;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.controllers.BentoApplication;
@@ -10,6 +11,7 @@ import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.SyncHttpClient;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -31,7 +33,8 @@ public class BentoRestClient {
     static final String TAG = "BentoRestClient";
     //static final String BASE_URL = BuildConfig.DEBUG ? "https://api2.dev.bentonow.com" : "https://api2.bentonow.com";
     static final String BASE_URL = BentoApplication.instance.getString(R.string.server_api_url);
-    static AsyncHttpClient client = new AsyncHttpClient();
+    public static AsyncHttpClient syncHttpClient= new SyncHttpClient();
+    public static AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
 
     public static void init() throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableKeyException, KeyManagementException {
         // We initialize a default Keystore
@@ -43,31 +46,40 @@ public class BentoRestClient {
         // We set that all host names are allowed in the socket factory
         socketFactory.setHostnameVerifier(CustomSSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
         // We set the SSL Factory
-        client.setSSLSocketFactory(socketFactory);
+        getClient().setSSLSocketFactory(socketFactory);
+    }
+
+
+    private static AsyncHttpClient getClient()
+    {
+        // Return the synchronous HTTP client when the thread is not prepared
+        if (Looper.myLooper() == null)
+            return syncHttpClient;
+        return asyncHttpClient;
     }
 
     public static void get(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
         DebugUtils.logDebug(TAG, "[GET] " + getAbsoluteUrl(url));
         DebugUtils.logDebug(TAG, "[params] " + (params != null ? params.toString() : "null"));
-        client.get(getAbsoluteUrl(url), params, responseHandler);
+        getClient().get(getAbsoluteUrl(url), params, responseHandler);
     }
 
     public static void post(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
         DebugUtils.logDebug(TAG, "[POST] " + getAbsoluteUrl(url));
         DebugUtils.logDebug(TAG, "[params] " + (params != null ? params.toString() : "null"));
-        client.post(getAbsoluteUrl(url), params, responseHandler);
+        getClient().post(getAbsoluteUrl(url), params, responseHandler);
     }
 
     public static void getCustom(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
         DebugUtils.logDebug(TAG, "[GET] " + url);
         DebugUtils.logDebug(TAG, "[params] " + (params != null ? params.toString() : "null"));
-        client.get(url, params, responseHandler);
+        getClient().get(url, params, responseHandler);
     }
 
     public static void getDirections(double dOriginLat, double dOriginLong, String dEndLat, String dEndLong, AsyncHttpResponseHandler responseHandler) {
         String sUrl = BentoNowApi.getUrlGoogleDirections(dOriginLat, dOriginLong, dEndLat, dEndLong);
         DebugUtils.logDebug(TAG, "[GET] " + sUrl);
-        client.get(sUrl, null, responseHandler);
+        getClient().get(sUrl, null, responseHandler);
     }
 
     private static String getAbsoluteUrl(String relativeUrl) {

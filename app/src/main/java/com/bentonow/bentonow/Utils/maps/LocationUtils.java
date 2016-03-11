@@ -41,6 +41,14 @@ public class LocationUtils {
         return sAddress;
     }
 
+    public static String getStringSecondsLeft(int iSeconds) {
+        int hours = iSeconds / 3600;
+        int minutes = (iSeconds % 3600) / 60;
+        int seconds = iSeconds % 60;
+
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    }
+
     public static String getStreetAddress(Address mAddress) {
         if (mAddress == null) return "";
         return mAddress.getThoroughfare() + ", " + mAddress.getSubThoroughfare();
@@ -207,7 +215,7 @@ public class LocationUtils {
             lng += dlng;
             dLat = ((double) lat / 1E5);
             dLng = ((double) lng / 1E5);
-          //  DebugUtils.logDebug(TAG, "Latitude:: " + dLat + " Longitude:: " + dLng);
+            //  DebugUtils.logDebug(TAG, "Latitude:: " + dLat + " Longitude:: " + dLng);
             LatLng p = new LatLng(dLat, dLng);
             poly.add(p);
         }

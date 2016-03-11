@@ -7,7 +7,9 @@ import android.os.SystemClock;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 
+import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.AndroidUtil;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.nineoldandroids.animation.ObjectAnimator;
@@ -69,8 +71,9 @@ public class MarkerAnimation {
     }
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    public static void animateMarkerToICS(Marker marker, LatLng finalPosition, float fRotation, int duration, final LatLngInterpolator latLngInterpolator) {
+    public static void animateMarkerToICS(Marker marker, LatLng finalPosition, float fRotation, final LatLngInterpolator latLngInterpolator) {
         marker.setRotation(fRotation);
+
         TypeEvaluator<LatLng> typeEvaluator = new TypeEvaluator<LatLng>() {
             @Override
             public LatLng evaluate(float fraction, LatLng startValue, LatLng endValue) {
@@ -79,7 +82,7 @@ public class MarkerAnimation {
         };
         Property<Marker, LatLng> property = Property.of(Marker.class, LatLng.class, "position");
         ObjectAnimator animator = ObjectAnimator.ofObject(marker, property, typeEvaluator, finalPosition);
-        animator.setDuration(duration);
+        animator.setDuration(2000);
         animator.start();
     }
 }

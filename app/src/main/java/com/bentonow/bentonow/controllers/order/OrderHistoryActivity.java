@@ -94,6 +94,12 @@ public class OrderHistoryActivity extends BaseFragmentActivity implements View.O
     @Override
     protected void onResume() {
         GoogleAnalyticsUtil.sendScreenView("Order History");
+
+        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.ORDER_HISTORY_FORCE_REFRESH)) {
+            getOrderHistoryByUser();
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ORDER_HISTORY_FORCE_REFRESH, false);
+        }
+
         super.onResume();
     }
 

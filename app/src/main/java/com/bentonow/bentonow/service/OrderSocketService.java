@@ -42,6 +42,7 @@ public class OrderSocketService extends Service {
     private Socket mSocket = null;
     private Handler mHandler;
     private Runnable mRunnable;
+    private Runnable mRunnableOrderHistory;
     private boolean connecting = false;
     private boolean disconnectingPurposefully = false;
     private boolean bIsTransportError = false;
@@ -80,6 +81,15 @@ public class OrderSocketService extends Service {
             public void run() {
                 if (connecting)
                     checkServiceStatus();
+            }
+        };
+        mRunnableOrderHistory = new Runnable() {
+            @Override
+            public void run() {
+                if (mSocketListener != null)
+                    mSocketListener.getOrderHistory();
+
+                checkOrderHistoryStatus();
             }
         };
     }
@@ -159,6 +169,7 @@ public class OrderSocketService extends Service {
                                         mSocketListener.onAuthenticationSuccess();
 
                                     startDriverLocationTimer();
+                                    checkOrderHistoryStatus();
 
                                 }
                             } catch (Exception e) {
@@ -298,6 +309,7 @@ public class OrderSocketService extends Service {
                 public void call(Object[] args) {
                     try {
                         DebugUtils.logDebug(TAG, "Push: " + args[0].toString());
+                        mSocketListener.onPush(args[0].toString());
                     } catch (Exception e) {
                         DebugUtils.logError(TAG, "Push: " + e.toString());
                     }
@@ -401,7 +413,7 @@ public class OrderSocketService extends Service {
     }
 
     private void startDriverLocationTimer() {
-        mHandler.postDelayed(mRunnable, 20000);
+        mHandler.postDelayed(mRunnable, 1000 * 60);
     }
 
     public void checkServiceStatus() {
@@ -418,6 +430,10 @@ public class OrderSocketService extends Service {
         }
 
         startDriverLocationTimer();
+    }
+
+    private void checkOrderHistoryStatus() {
+        mHandler.postDelayed(mRunnableOrderHistory, 30000);
     }
 
     public void setWebSocketLister(OrderStatusListener mListener) {
