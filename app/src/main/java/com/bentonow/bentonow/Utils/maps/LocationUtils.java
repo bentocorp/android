@@ -46,7 +46,8 @@ public class LocationUtils {
         int minutes = (iSeconds % 3600) / 60;
         int seconds = iSeconds % 60;
 
-        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        // return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        return String.valueOf(minutes);
     }
 
     public static String getStreetAddress(Address mAddress) {
@@ -160,7 +161,7 @@ public class LocationUtils {
     public static ConstantUtils.optBearing getBearingFromRotation(double dRotation) {
         if (dRotation > 360)
             dRotation = 360;
-        return ConstantUtils.optBearing.values()[(int) Math.floor(dRotation / 90)];
+        return ConstantUtils.optBearing.values()[(int) Math.floor(dRotation / 45)];
     }
 
     public static double CalculationByDistance(LatLng StartP, LatLng EndP) {
