@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/base_relative_layout"
     android:layout_width="match_parent"
@@ -72,6 +73,7 @@
                 android:orientation="vertical">
 
                 <FrameLayout
+                    android:id="@+id/frame_prep_one"
                     android:layout_width="4dp"
                     android:layout_height="4dp"
                     android:layout_gravity="center|top"
@@ -87,6 +89,7 @@
                 android:orientation="vertical">
 
                 <FrameLayout
+                    android:id="@+id/frame_prep_two"
                     android:layout_width="4dp"
                     android:layout_height="4dp"
                     android:layout_gravity="center|top"
@@ -101,6 +104,7 @@
                 android:orientation="vertical">
 
                 <FrameLayout
+                    android:id="@+id/frame_prep_three"
                     android:layout_width="4dp"
                     android:layout_height="4dp"
                     android:layout_gravity="center|top"
@@ -150,6 +154,7 @@
                 android:orientation="vertical">
 
                 <FrameLayout
+                    android:id="@+id/frame_del_one"
                     android:layout_width="4dp"
                     android:layout_height="4dp"
                     android:layout_gravity="center|top"
@@ -164,6 +169,7 @@
                 android:orientation="vertical">
 
                 <FrameLayout
+                    android:id="@+id/frame_del_two"
                     android:layout_width="4dp"
                     android:layout_height="4dp"
                     android:layout_gravity="center|top"
@@ -178,6 +184,7 @@
                 android:orientation="vertical">
 
                 <FrameLayout
+                    android:id="@+id/frame_del_three"
                     android:layout_width="4dp"
                     android:layout_height="4dp"
                     android:layout_gravity="center|top"
@@ -198,6 +205,7 @@
                     android:gravity="center">
 
                     <TextView
+                        android:id="@+id/txt_indicator_assembly"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:background="@drawable/background_circle_gray"
@@ -207,6 +215,7 @@
                 </RelativeLayout>
 
                 <com.bentonow.bentonow.ui.AutoFitTxtView
+                    android:id="@+id/txt_description_assembly"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_margin="3dp"
@@ -225,6 +234,7 @@
                 android:orientation="vertical">
 
                 <FrameLayout
+                    android:id="@+id/frame_ass_one"
                     android:layout_width="4dp"
                     android:layout_height="4dp"
                     android:layout_gravity="center|top"
@@ -239,6 +249,7 @@
                 android:orientation="vertical">
 
                 <FrameLayout
+                    android:id="@+id/frame_ass_two"
                     android:layout_width="4dp"
                     android:layout_height="4dp"
                     android:layout_gravity="center|top"
@@ -253,6 +264,7 @@
                 android:orientation="vertical">
 
                 <FrameLayout
+                    android:id="@+id/frame_ass_three"
                     android:layout_width="4dp"
                     android:layout_height="4dp"
                     android:layout_gravity="center|top"
@@ -308,51 +320,73 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true">
+                android:layout_height="match_parent"
+                android:layout_above="@+id/btn_add_other_bento"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true">
 
-
-                <ImageView
-                    android:id="@+id/imageView3"
-                    android:layout_width="150dp"
-                    android:layout_height="150dp"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true"
-                    android:background="@drawable/vector_face_green" />
-
-                <com.bentonow.bentonow.ui.AutoFitTxtView
-                    android:id="@+id/txt_order_status_title"
-                    style="@style/TextViewStatusP"
-                    android:layout_width="wrap_content"
+                <RelativeLayout
+                    android:id="@+id/relativeLayout2"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/imageView3"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="20dp"
-                    android:maxLines="1"
-                    android:text="Your Bento is here!"
-                    android:textSize="23sp" />
+                    android:layout_centerInParent="true">
 
-                <com.bentonow.bentonow.ui.AutoFitTxtView
-                    android:id="@+id/txt_order_status_description"
-                    style="@style/TextViewStatusD"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/txt_order_status_title"
-                    android:layout_centerHorizontal="true"
-                    android:layout_margin="20dp"
-                    android:gravity="center"
-                    android:maxLines="2"
-                    android:text="Please meet your driver ar the curbside to pick up your order." />
+
+                    <ImageView
+                        android:id="@+id/imageView3"
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:background="@drawable/vector_face_green" />
+
+                    <com.bentonow.bentonow.ui.AutoFitTxtView
+                        android:id="@+id/txt_order_status_title"
+                        style="@style/TextViewStatusP"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/imageView3"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="20dp"
+                        android:maxLines="1"
+                        android:text="Your Bento is here!" />
+
+                    <com.bentonow.bentonow.ui.AutoFitTxtView
+                        android:id="@+id/txt_order_status_description"
+                        style="@style/TextViewStatusD"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/txt_order_status_title"
+                        android:layout_centerHorizontal="true"
+                        android:layout_margin="20dp"
+                        android:gravity="center"
+                        android:maxLines="2"
+                        android:text="Please meet your driver ar the curbside to pick up your order." />
+                </RelativeLayout>
             </RelativeLayout>
+
+
+            <com.bentonow.bentonow.ui.BackendButton
+                android:id="@+id/btn_add_other_bento"
+                style="@style/TxtOpenSansBold"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/btn_rounded_green"
+                android:text="New Button"
+                android:textColor="@color/white"
+                app:key="completed-button" />
         </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/wrapper_status_delivery"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:visibility="gone">
 
             <fragment
                 android:id="@+id/map_driver_location"

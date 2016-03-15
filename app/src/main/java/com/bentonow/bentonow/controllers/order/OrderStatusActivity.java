@@ -9,12 +9,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.BentoRestClient;
+import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
@@ -24,7 +26,9 @@ import com.bentonow.bentonow.Utils.maps.LocationUtils;
 import com.bentonow.bentonow.Utils.maps.MarkerAnimation;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.fragment.MySupportMapFragment;
+import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.dao.IosCopyDao;
+import com.bentonow.bentonow.dao.MenuDao;
 import com.bentonow.bentonow.listener.OrderStatusListener;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.map.WaypointModel;
@@ -34,6 +38,7 @@ import com.bentonow.bentonow.model.order.history.OrderHistoryModel;
 import com.bentonow.bentonow.parse.GoogleDirectionParser;
 import com.bentonow.bentonow.parse.OrderHistoryJsonParser;
 import com.bentonow.bentonow.service.OrderSocketService;
+import com.bentonow.bentonow.ui.BackendButton;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -66,8 +71,20 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
     private TextView txtDescriptionDelivery;
     private TextView txtIndicatorPickUp;
     private TextView txtDescriptionPickUp;
+    private TextView txtDescriptionAssembly;
     private TextView txtOrderStatusTitle;
     private TextView txtOrderStatusDescription;
+    private TextView txtIndicatorAssembly;
+    private BackendButton btnAddOtherBento;
+    private FrameLayout frameLayoutPrepOne;
+    private FrameLayout frameLayoutPrepTwo;
+    private FrameLayout frameLayoutPrepThree;
+    private FrameLayout frameLayoutDelOne;
+    private FrameLayout frameLayoutDelTwo;
+    private FrameLayout frameLayoutDelThree;
+    private FrameLayout frameLayoutAssOne;
+    private FrameLayout frameLayoutAssTwo;
+    private FrameLayout frameLayoutAssThree;
 
     private ImageView menuItemLeft;
     private GoogleMap googleMap;
@@ -97,6 +114,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
     private int iPadding = 300;
     private double fRotation;
     private boolean bUseGoogleDirections;
+    private boolean bGetGoogleDirections = true;
     private String sEta = "";
 
     @Override
@@ -113,6 +131,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
 
         getMenuItemLeft().setImageResource(R.drawable.vector_navigation_left_green);
         getMenuItemLeft().setOnClickListener(OrderStatusActivity.this);
+        getBtnAddOtherBento().setOnClickListener(OrderStatusActivity.this);
 
         mOrderLocation = new Location("Order Location");
         mOrderLocation.setLatitude(Double.parseDouble(mOrder.getLat()));
@@ -178,7 +197,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 DebugUtils.logError(TAG, "getUserInfo:  " + responseString);
-
+                bGetGoogleDirections = true;
             }
 
             @SuppressWarnings("deprecation")
@@ -263,7 +282,9 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
     }
 
     private void updateMapLocation() {
-        zoomAnimateLevelToFitMarkers();
+        if (mOrder.getOrder_status().equals("En Route")) {
+            zoomAnimateLevelToFitMarkers();
+        }
     }
 
     private void updateMarkers() {
@@ -287,6 +308,16 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
                         getTxtIndicatorPrep().setBackground(getResources().getDrawable(R.drawable.background_circle_green));
                         getTxtDescriptionPrep().setTextColor(getResources().getColor(R.color.primary));
 
+                        getFrameLayoutPrepOne().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
+                        getFrameLayoutPrepTwo().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
+                        getFrameLayoutPrepThree().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
+                        getFrameLayoutDelOne().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
+                        getFrameLayoutDelTwo().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
+                        getFrameLayoutDelThree().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
+                        getFrameLayoutAssOne().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
+                        getFrameLayoutAssTwo().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
+                        getFrameLayoutAssThree().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
+
                         getTxtIndicatorDelivery().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
                         getTxtDescriptionDelivery().setTextColor(getResources().getColor(R.color.gray));
                         getTxtIndicatorPickUp().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
@@ -298,9 +329,20 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
 
                         getTxtIndicatorDelivery().setBackground(getResources().getDrawable(R.drawable.background_circle_green));
                         getTxtDescriptionDelivery().setTextColor(getResources().getColor(R.color.primary));
+                        getTxtIndicatorPrep().setBackground(getResources().getDrawable(R.drawable.background_circle_green));
+                        getTxtDescriptionPrep().setTextColor(getResources().getColor(R.color.primary));
 
-                        getTxtIndicatorPrep().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
-                        getTxtDescriptionPrep().setTextColor(getResources().getColor(R.color.gray));
+                        getFrameLayoutPrepOne().setBackground(getResources().getDrawable(R.drawable.background_circle_green));
+                        getFrameLayoutPrepTwo().setBackground(getResources().getDrawable(R.drawable.background_circle_green));
+                        getFrameLayoutPrepThree().setBackground(getResources().getDrawable(R.drawable.background_circle_green));
+
+                        getFrameLayoutDelOne().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
+                        getFrameLayoutDelTwo().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
+                        getFrameLayoutDelThree().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
+                        getFrameLayoutAssOne().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
+                        getFrameLayoutAssTwo().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
+                        getFrameLayoutAssThree().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
+
                         getTxtIndicatorPickUp().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
                         getTxtDescriptionPickUp().setTextColor(getResources().getColor(R.color.gray));
 
@@ -317,11 +359,24 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
 
                         getTxtIndicatorPickUp().setBackground(getResources().getDrawable(R.drawable.background_circle_green));
                         getTxtDescriptionPickUp().setTextColor(getResources().getColor(R.color.primary));
+                        getTxtIndicatorAssembly().setBackground(getResources().getDrawable(R.drawable.background_circle_green));
+                        getTxtDescriptionAssembly().setTextColor(getResources().getColor(R.color.primary));
+                        getTxtIndicatorDelivery().setBackground(getResources().getDrawable(R.drawable.background_circle_green));
+                        getTxtDescriptionDelivery().setTextColor(getResources().getColor(R.color.primary));
+                        getTxtIndicatorPrep().setBackground(getResources().getDrawable(R.drawable.background_circle_green));
+                        getTxtDescriptionPrep().setTextColor(getResources().getColor(R.color.primary));
 
-                        getTxtIndicatorDelivery().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
-                        getTxtDescriptionDelivery().setTextColor(getResources().getColor(R.color.gray));
-                        getTxtIndicatorPrep().setBackground(getResources().getDrawable(R.drawable.background_circle_gray));
-                        getTxtDescriptionPrep().setTextColor(getResources().getColor(R.color.gray));
+
+                        getFrameLayoutPrepOne().setBackground(getResources().getDrawable(R.drawable.background_circle_green));
+                        getFrameLayoutPrepTwo().setBackground(getResources().getDrawable(R.drawable.background_circle_green));
+                        getFrameLayoutPrepThree().setBackground(getResources().getDrawable(R.drawable.background_circle_green));
+                        getFrameLayoutDelOne().setBackground(getResources().getDrawable(R.drawable.background_circle_green));
+                        getFrameLayoutDelTwo().setBackground(getResources().getDrawable(R.drawable.background_circle_green));
+                        getFrameLayoutDelThree().setBackground(getResources().getDrawable(R.drawable.background_circle_green));
+                        getFrameLayoutAssOne().setBackground(getResources().getDrawable(R.drawable.background_circle_green));
+                        getFrameLayoutAssTwo().setBackground(getResources().getDrawable(R.drawable.background_circle_green));
+                        getFrameLayoutAssThree().setBackground(getResources().getDrawable(R.drawable.background_circle_green));
+
                         break;
                     default:
                         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ORDER_HISTORY_FORCE_REFRESH, true);
@@ -408,21 +463,26 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
 
         cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, iPadding);
         //cameraUpdate = CameraUpdateFactory.newLatLngZoom(mDriverLocation, 17);
+        try {
+            googleMap.animateCamera(cameraUpdate, iPositionStart == 0 ? 2000 : iDurationDirections, new GoogleMap.CancelableCallback() {
+                @Override
+                public void onFinish() {
+                    mHandler.removeCallbacks(mLoadingTask);
 
-        googleMap.animateCamera(cameraUpdate, iPositionStart == 0 ? 2000 : iDurationDirections, new GoogleMap.CancelableCallback() {
-            @Override
-            public void onFinish() {
-                mHandler.removeCallbacks(mLoadingTask);
+                    if (bUseGoogleDirections)
+                        mHandler.post(mLoadingTask);
+                }
 
-                if (bUseGoogleDirections)
-                    mHandler.post(mLoadingTask);
-            }
+                @Override
+                public void onCancel() {
 
-            @Override
-            public void onCancel() {
+                }
+            });
+        } catch (Exception ex) {
 
-            }
-        });
+        }
+
+
     }
 
     @Override
@@ -505,6 +565,20 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         switch (v.getId()) {
             case R.id.actionbar_left_btn:
                 onBackPressed();
+                break;
+            case R.id.btn_add_other_bento:
+                if (MenuDao.gateKeeper.getAppState().contains("build")) {
+                    Intent iBuildBento = new Intent(OrderStatusActivity.this, BuildBentoActivity.class);
+                    iBuildBento.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(iBuildBento);
+                    finish();
+                } else {
+                    Intent intent = new Intent(this, DeliveryLocationActivity.class);
+                    intent.putExtra(ConstantUtils.TAG_OPEN_SCREEN, ConstantUtils.optOpenScreen.BUILD_BENTO);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    finish();
+                    startActivity(intent);
+                }
                 break;
             default:
                 DebugUtils.logError(TAG, v.getId() + "");
@@ -662,6 +736,18 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         return txtDescriptionPickUp;
     }
 
+    private TextView getTxtIndicatorAssembly() {
+        if (txtIndicatorAssembly == null)
+            txtIndicatorAssembly = (TextView) findViewById(R.id.txt_indicator_assembly);
+        return txtIndicatorAssembly;
+    }
+
+    private TextView getTxtDescriptionAssembly() {
+        if (txtDescriptionAssembly == null)
+            txtDescriptionAssembly = (TextView) findViewById(R.id.txt_description_assembly);
+        return txtDescriptionAssembly;
+    }
+
     private TextView getTxtOrderStatusTitle() {
         if (txtOrderStatusTitle == null)
             txtOrderStatusTitle = (TextView) findViewById(R.id.txt_order_status_title);
@@ -672,6 +758,66 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         if (txtOrderStatusDescription == null)
             txtOrderStatusDescription = (TextView) findViewById(R.id.txt_order_status_description);
         return txtOrderStatusDescription;
+    }
+
+    private BackendButton getBtnAddOtherBento() {
+        if (btnAddOtherBento == null)
+            btnAddOtherBento = (BackendButton) findViewById(R.id.btn_add_other_bento);
+        return btnAddOtherBento;
+    }
+
+    private FrameLayout getFrameLayoutPrepOne() {
+        if (frameLayoutPrepOne == null)
+            frameLayoutPrepOne = (FrameLayout) findViewById(R.id.frame_prep_one);
+        return frameLayoutPrepOne;
+    }
+
+    private FrameLayout getFrameLayoutPrepTwo() {
+        if (frameLayoutPrepTwo == null)
+            frameLayoutPrepTwo = (FrameLayout) findViewById(R.id.frame_prep_two);
+        return frameLayoutPrepTwo;
+    }
+
+    private FrameLayout getFrameLayoutPrepThree() {
+        if (frameLayoutPrepThree == null)
+            frameLayoutPrepThree = (FrameLayout) findViewById(R.id.frame_prep_three);
+        return frameLayoutPrepThree;
+    }
+
+    private FrameLayout getFrameLayoutDelOne() {
+        if (frameLayoutDelOne == null)
+            frameLayoutDelOne = (FrameLayout) findViewById(R.id.frame_del_one);
+        return frameLayoutDelOne;
+    }
+
+    private FrameLayout getFrameLayoutDelTwo() {
+        if (frameLayoutDelTwo == null)
+            frameLayoutDelTwo = (FrameLayout) findViewById(R.id.frame_del_two);
+        return frameLayoutDelTwo;
+    }
+
+    private FrameLayout getFrameLayoutDelThree() {
+        if (frameLayoutDelThree == null)
+            frameLayoutDelThree = (FrameLayout) findViewById(R.id.frame_del_three);
+        return frameLayoutDelThree;
+    }
+
+    private FrameLayout getFrameLayoutAssOne() {
+        if (frameLayoutAssOne == null)
+            frameLayoutAssOne = (FrameLayout) findViewById(R.id.frame_ass_one);
+        return frameLayoutAssOne;
+    }
+
+    private FrameLayout getFrameLayoutAssTwo() {
+        if (frameLayoutAssTwo == null)
+            frameLayoutAssTwo = (FrameLayout) findViewById(R.id.frame_ass_two);
+        return frameLayoutAssTwo;
+    }
+
+    private FrameLayout getFrameLayoutAssThree() {
+        if (frameLayoutAssThree == null)
+            frameLayoutAssThree = (FrameLayout) findViewById(R.id.frame_ass_three);
+        return frameLayoutAssThree;
     }
 
     private class OrderStatusServiceConnection implements ServiceConnection {

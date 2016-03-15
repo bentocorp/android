@@ -377,6 +377,7 @@ public class OrderSocketService extends Service {
             @Override
             public void call(Object... args) {
                 try {
+                    DebugUtils.logDebug(TAG, "Get Track Gloc");
                     ResponseSocketModel mResponse = SocketResponseParser.parseResponse(args[0].toString());
                     switch (mResponse.getCode()) {
                         case 0:
