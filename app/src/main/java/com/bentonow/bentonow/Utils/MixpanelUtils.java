@@ -51,6 +51,7 @@ public class MixpanelUtils {
         getMixpanelApi().getPeople().set("$email", mUser.email);
         getMixpanelApi().getPeople().set("$phone", mUser.phone);
         getMixpanelApi().getPeople().set("$created", BentoNowUtils.getMixpanelDate());
+        getMixpanelApi().getPeople().set("optin_daily_lunch_reminder", SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.SHOW_DAILY_NOTIFICATIONS));
         getMixpanelApi().getPeople().set("Last Login Address", BentoNowUtils.getFullAddress());
         trackRevenue(0, mUser);
     }

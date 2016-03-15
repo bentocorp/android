@@ -50,6 +50,7 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
     private Dialog mDialogPlayServices;
     private ConfirmationDialog mConfirmationDialog;
     private ConfirmationDialog mDialogNotifications;
+    private ConfirmationDialog mDialogDailyNotifications;
 
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
@@ -84,12 +85,13 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
 
         MenuDao.gateKeeper = new GateKeeperModel();
 
-
         if (BentoNowUtils.B_APPIUM_TESTING) {
             GoogleLocationUtil.setAppiumLocation(true);
             SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.APP_FIRST_RUN, true);
         }
         mOrderDao.cleanUp();
+
+        MixpanelUtils.logInUser(userDao.getCurrentUser());
 
     }
 
@@ -210,6 +212,8 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
             startActivity(intent);
         } else if (!SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.ALREADY_SHOW_NOTIFICATIONS)) {
             showEnableNotificationDialog();
+        } else if (!SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.ALREADY_SHOW_DAILY_NOTIFICATIONS)) {
+            showEnableDailyNotificationDialog();
         } else if (MenuDao.gateKeeper.getAppState().contains("map,no_service")) {
             openDeliveryLocation();
         } else if (MenuDao.gateKeeper.getAppState().contains("build")) {
@@ -231,13 +235,37 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
         startActivity(intent);
     }
 
-
     private void showEnableNotificationDialog() {
         if (mDialogNotifications == null || !mDialogNotifications.isShowing()) {
             mDialogNotifications = new ConfirmationDialog(MainActivity.this, IosCopyDao.get("notif-optin-exist-txt1"), IosCopyDao.get("notif-optin-exist-txt2"), false);
             mDialogNotifications.addAcceptButton(IosCopyDao.get("build-not-complete-confirmation-2"), MainActivity.this);
             mDialogNotifications.addCancelButton(IosCopyDao.get("build-not-complete-confirmation-1"), MainActivity.this);
             mDialogNotifications.show();
+        }
+    }
+
+    private void showEnableDailyNotificationDialog() {
+        if (mDialogDailyNotifications == null || !mDialogDailyNotifications.isShowing()) {
+            mDialogDailyNotifications = new ConfirmationDialog(MainActivity.this, IosCopyDao.get("notif-optin-exist-txt1"), IosCopyDao.get("daily_reminder_question"), false);
+            mDialogDailyNotifications.addAcceptButton(IosCopyDao.get("build-not-complete-confirmation-2"), new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.SHOW_DAILY_NOTIFICATIONS, true);
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ALREADY_SHOW_DAILY_NOTIFICATIONS, true);
+                    MixpanelUtils.logInUser(userDao.getCurrentUser());
+                    openNextScreen();
+                }
+            });
+            mDialogDailyNotifications.addCancelButton(IosCopyDao.get("build-not-complete-confirmation-1"), new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.SHOW_DAILY_NOTIFICATIONS, false);
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ALREADY_SHOW_DAILY_NOTIFICATIONS, true);
+                    MixpanelUtils.logInUser(userDao.getCurrentUser());
+                    openNextScreen();
+                }
+            });
+            mDialogDailyNotifications.show();
         }
     }
 

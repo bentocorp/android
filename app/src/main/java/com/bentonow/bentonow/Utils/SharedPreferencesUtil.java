@@ -33,7 +33,9 @@ public class SharedPreferencesUtil {
     public static final String ENABLE_SETTINGS_CLICK = "ENABLE_SETTINGS_CLICK"; //boolean
     public static final String ENABLE_ERROR_CLICK = "ENABLE_ERROR_CLICK"; //boolean
     public static final String SHOW_NOTIFICATIONS = "SHOW_NOTIFICATIONS"; //boolean
+    public static final String SHOW_DAILY_NOTIFICATIONS = "SHOW_DAILY_NOTIFICATIONS"; //boolean
     public static final String ALREADY_SHOW_NOTIFICATIONS = "ALREADY_SHOW_NOTIFICATIONS"; //boolean
+    public static final String ALREADY_SHOW_DAILY_NOTIFICATIONS = "ALREADY_SHOW_DAILY_NOTIFICATIONS"; //boolean
     public static final String ORDER_AHEAD_SUBSCRIPTION = "ORDER_AHEAD_SUBSCRIPTION"; //boolean
     public static final String ORDER_HISTORY_FORCE_REFRESH = "ORDER_HISTORY_FORCE_REFRESH"; //boolean
 

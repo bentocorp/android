@@ -38,12 +38,13 @@ import com.google.gson.Gson;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 
-import cz.msebera.android.httpclient.Header;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
+
+import cz.msebera.android.httpclient.Header;
 
 
 public class SettingsActivity extends BaseFragmentActivity implements View.OnClickListener {
@@ -59,6 +60,8 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
     private LinearLayout containerSettingsEmail;
     private LinearLayout containerSettingsCall;
     private LinearLayout containerSettingsCreditCard;
+    private LinearLayout containerDailyNotification;
+    private LinearLayout containerNotification;
     private RelativeLayout containerUser;
     private TextView txtLogout;
     private FontAwesomeButton btnFacebook;
@@ -68,6 +71,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
 
     private LogOutDialog mLogOutDialog;
     private Switch switchNotifications;
+    private Switch switchDailyNotifications;
 
     private User mCurrentUser;
 
@@ -112,6 +116,14 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
                 SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.SHOW_NOTIFICATIONS, isChecked);
             }
         });
+        getSwitchDailyNotifications().setChecked(SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.SHOW_DAILY_NOTIFICATIONS));
+        getSwitchDailyNotifications().setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.SHOW_DAILY_NOTIFICATIONS, isChecked);
+                MixpanelUtils.logInUser(mCurrentUser);
+            }
+        });
     }
 
     @Override
@@ -143,6 +155,9 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
         getContainerSettingsSignIn().setVisibility(mCurrentUser != null ? View.GONE : View.VISIBLE);
         getContainerSettingsCreditCard().setVisibility(View.GONE);
         getContainerSettingsOrders().setVisibility(mCurrentUser != null ? View.VISIBLE : View.GONE);
+        getContainerDailyNotification().setVisibility(mCurrentUser != null ? View.VISIBLE : View.GONE);
+        getContainerDailyNotification().setVisibility(mCurrentUser != null ? View.VISIBLE : View.GONE);
+        getContainerNotification().setVisibility(mCurrentUser != null ? View.VISIBLE : View.GONE);
 
         if (mCurrentUser != null) {
             ((TextView) findViewById(R.id.txt_name)).setText(mCurrentUser.lastname != null ? mCurrentUser.firstname + " " + mCurrentUser.lastname : mCurrentUser.firstname);
@@ -490,6 +505,20 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
         return containerSettingsCreditCard;
     }
 
+    private LinearLayout getContainerDailyNotification() {
+        if (containerDailyNotification == null)
+            containerDailyNotification = (LinearLayout) findViewById(R.id.container_setting_daily_notification);
+
+        return containerDailyNotification;
+    }
+
+    private LinearLayout getContainerNotification() {
+        if (containerNotification == null)
+            containerNotification = (LinearLayout) findViewById(R.id.container_setting_notification);
+
+        return containerNotification;
+    }
+
     private RelativeLayout getContainerUser() {
         if (containerUser == null)
             containerUser = (RelativeLayout) findViewById(R.id.container_user);
@@ -532,6 +561,12 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
         if (switchNotifications == null)
             switchNotifications = (Switch) findViewById(R.id.switch_notifications);
         return switchNotifications;
+    }
+
+    private Switch getSwitchDailyNotifications() {
+        if (switchDailyNotifications == null)
+            switchDailyNotifications = (Switch) findViewById(R.id.switch_daily_notifications);
+        return switchDailyNotifications;
     }
 
 }

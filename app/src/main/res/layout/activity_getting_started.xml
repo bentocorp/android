@@ -195,9 +195,10 @@
                 android:textColor="@color/white"
                 android:textSize="19sp"
                 android:textStyle="bold"
-                app:key="notif-optin-new-txt1"/>
+                app:key="notif-optin-new-txt1" />
 
             <com.bentonow.bentonow.ui.BackendAutoFitTextView
+                android:id="@+id/txt_notification_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/view3"
@@ -240,9 +241,9 @@
                     android:layout_margin="10dp"
                     android:layout_weight="1"
                     android:background="@drawable/btn_rounded_white"
-                    android:textColor="@color/primary"
                     android:singleLine="true"
                     android:text="OK"
+                    android:textColor="@color/primary"
                     android:textSize="15sp" />
             </LinearLayout>
 
