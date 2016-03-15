@@ -17,6 +17,7 @@ import com.bentonow.bentonow.controllers.BentoApplication;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -139,5 +140,9 @@ public class AndroidUtil {
 
     public static boolean isEmailValid(String email) {
         return isValidField(email) && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+    public static int getRandomFromRange(int min, int max) {
+        return new Random().nextInt((max - min)) + min;
     }
 }

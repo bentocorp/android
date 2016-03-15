@@ -221,7 +221,25 @@ public class BuildBentoActivity extends BaseFragmentActivity implements View.OnC
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (bShowAppOnAhead) {
-                    updateDayOASpinner(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(i), 0);
+                    int iTimeSelected = 0;
+
+                    switch (MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(i).DefaultTimeMode) {
+                        case "random":
+                            iTimeSelected = AndroidUtil.getRandomFromRange(0,
+                                    MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(i).listTimeModel.size());
+                            break;
+                        case "useDefault":
+                            for (int a = 0; a < MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(i).listTimeModel.size(); a++) {
+                                if (MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(i).listTimeModel.get(a).isDefault) {
+                                    iTimeSelected = a;
+                                    break;
+                                }
+                            }
+                            break;
+                        //case "first"
+                    }
+
+                    updateDayOASpinner(MenuDao.gateKeeper.getAvailableServices().mOrderAhead.availableMenus.get(i), iTimeSelected);
                     getSpinnerDayAdapter().iSelectedPosition = i;
                     SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_BUILD_BENTO_CLICK, true);
                 }

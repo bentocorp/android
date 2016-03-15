@@ -384,6 +384,9 @@ public class InitParse extends MainParser {
                                                 mMenu.listTimeModel.add(listTime.get(b));
                                         }
                                     }
+                                    if (jsonMenu.has("DefaultTimeMode"))
+                                        mMenu.DefaultTimeMode = jsonMenu.getString("DefaultTimeMode");
+
                                     mOrderAhead.availableMenus.add(mMenu);
                                 }
                             }

@@ -14,6 +14,7 @@ public class TimesModel implements Parcelable {
     public boolean available;
     public String delivery_price = "";
     public boolean isSelected;
+    public boolean isDefault;
 
 
     public TimesModel() {
@@ -26,6 +27,7 @@ public class TimesModel implements Parcelable {
         available = parcel.readInt() == 1;
         delivery_price = parcel.readString();
         isSelected = parcel.readInt() == 1;
+        isDefault = parcel.readInt() == 1;
     }
 
     @Override
@@ -35,6 +37,7 @@ public class TimesModel implements Parcelable {
         dest.writeInt(available ? 1 : 0);
         dest.writeString(delivery_price);
         dest.writeInt(isSelected ? 1 : 0);
+        dest.writeInt(isDefault ? 1 : 0);
     }
 
 
