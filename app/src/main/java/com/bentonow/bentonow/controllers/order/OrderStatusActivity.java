@@ -111,7 +111,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
     private User mCurrentUser;
     private int iPositionStart = 0;
     private int iDurationDirections = 0;
-    private int iPadding = 300;
+    private int iPadding = 200;
     private double fRotation;
     private boolean bUseGoogleDirections;
     private boolean bGetGoogleDirections = true;
@@ -257,6 +257,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
                             if (mOrderItem.getOrderId().equals(mOrderItem.getOrderId())) {
                                 bIsStillInProgress = true;
                                 if (!mOrder.getOrder_status().equals(mOrderItem.getOrder_status())) {
+                                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ORDER_HISTORY_FORCE_REFRESH, true);
                                     mOrder = mOrderItem;
                                     updateStatus(true);
                                     DebugUtils.logDebug(TAG, "New Order Status:: " + mOrder.getOrder_status());
@@ -269,10 +270,10 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
                 }
 
                 if (!bIsStillInProgress) {
+                    SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ORDER_HISTORY_FORCE_REFRESH, true);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ORDER_HISTORY_FORCE_REFRESH, true);
                             OrderStatusActivity.this.finish();
                         }
                     });
@@ -528,6 +529,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         if (mOrder.getOrder_status().equals("En Route")) {
             mHandler.removeCallbacks(mLoadingTask);
             mDriverLocation = new LatLng(lat, lng);
+            iPositionStart = 0;
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -551,7 +553,13 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
                     mWaypoint = GoogleDirectionParser.parseDirections(responseString);
 
                     if (mWaypoint != null) {
-                        sEta = LocationUtils.getStringSecondsLeft(mWaypoint.getDuration());
+                        sEta = String.format(getString(R.string.order_status_eta), LocationUtils.getStringSecondsLeft(mWaypoint.getDuration()));
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                findMarker(getDriverMarker()).setSnippet(sEta);
+                            }
+                        });
                     }
 
                 }
