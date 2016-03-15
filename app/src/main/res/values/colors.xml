@@ -28,7 +28,6 @@
     <color name="thumbColor">#66aaaaaa</color>
     <color name="orange_banner">#e66633</color>
 
-
     <color name="transparent">#00660066</color>
     <color name="divisor">#50909090</color>
     <color name="dark_gray">#7a8591</color>
@@ -79,5 +78,7 @@
     <color name="accentColor_60">#99FFC107</color>
     <color name="accentColor_70">#C8FFC107</color>
     <color name="accentColor_90">#E5FFC107</color>
+
+    <color name="gray_pressed_state">#EDF0F0</color>
 
 </resources>

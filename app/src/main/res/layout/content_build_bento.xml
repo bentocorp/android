@@ -82,6 +82,7 @@
                         android:id="@+id/build_main_four"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:background="@drawable/btn_white_normal"
                         android:orientation="vertical">
 
                         <RelativeLayout
@@ -96,7 +97,6 @@
                                 android:layout_height="match_parent"
                                 android:layout_centerHorizontal="true"
                                 android:layout_centerVertical="true"
-                                android:background="@null"
                                 android:gravity="center"
                                 android:text="@string/add_main_dish"
                                 android:textColor="@color/btn_green"
@@ -164,6 +164,7 @@
                         android:id="@+id/btn_bento_side_1_four"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:background="@drawable/btn_white_normal"
                         android:orientation="vertical">
 
                         <RelativeLayout
@@ -253,6 +254,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="fill_parent"
                         android:layout_weight="1"
+                        android:background="@drawable/btn_white_normal"
                         android:orientation="vertical">
 
                         <RelativeLayout
@@ -338,6 +340,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="fill_parent"
                         android:layout_weight="1"
+                        android:background="@drawable/btn_white_normal"
                         android:orientation="vertical">
 
                         <RelativeLayout
@@ -423,7 +426,6 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:background="@drawable/btn_gray"
             android:orientation="vertical"
             android:weightSum="3">
 
@@ -432,6 +434,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:background="@drawable/btn_white_square"
                 android:orientation="vertical">
 
                 <RelativeLayout
@@ -509,7 +512,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
-                    android:background="@drawable/btn_gray_square"
+                    android:background="@drawable/btn_white_square"
                     android:orientation="vertical">
 
                     <RelativeLayout
@@ -579,7 +582,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
-                    android:background="@drawable/btn_gray_square"
+                    android:background="@drawable/btn_white_square"
                     android:orientation="vertical">
 
                     <RelativeLayout
@@ -659,7 +662,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
-                    android:background="@drawable/btn_build_side_3"
+                    android:background="@drawable/btn_white_square"
                     android:orientation="vertical">
 
                     <RelativeLayout
@@ -730,7 +733,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
-                    android:background="@drawable/btn_build_side_4"
+                    android:background="@drawable/btn_white_square"
                     android:orientation="vertical">
 
                     <RelativeLayout

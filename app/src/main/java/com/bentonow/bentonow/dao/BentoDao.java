@@ -55,6 +55,7 @@ public class BentoDao extends MainDao {
 
     public OrderItem getNewBento(ConstantUtils.optItemType optItemType) {
         MixpanelUtils.track("Began Building A Bento");
+
         int iNumBento = SettingsDao.getCurrent().pod_mode.equals("4") ? 4 : 5;
 
         OrderItem mOrder = new OrderItem();
