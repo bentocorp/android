@@ -89,7 +89,7 @@
             android:id="@+id/btn_view_all_orders"
             android:layout_width="fill_parent"
             android:layout_height="48dp"
-            android:background="@drawable/btn_rounded_gray"
+            android:background="@drawable/btn_rounded_green"
             android:gravity="center"
             android:padding="@dimen/btn_padding"
             android:textColor="@color/white"
@@ -102,7 +102,7 @@
         <com.bentonow.bentonow.ui.BackendButton
             android:layout_width="fill_parent"
             android:layout_height="48dp"
-            android:background="@drawable/btn_rounded_gray"
+            android:background="@drawable/btn_rounded_green"
             android:gravity="center"
             android:onClick="onAddAnotherBentoPressed"
             android:padding="@dimen/btn_padding"
