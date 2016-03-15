@@ -191,7 +191,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
         super.onResume();
     }
 
-    void track(String error) {
+    void trackCompleteOrder(String error) {
         try {
             JSONObject params = new JSONObject();
             if (mOrder == null || mOrder.OrderItems == null) {
@@ -207,7 +207,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
             params.put("status", error == null ? "success" : "failure");
             params.put("status_error", error);
 
-            MixpanelUtils.track("Placed An Order", params);
+            MixpanelUtils.track(bIsMenuOD ? "Ordered On-demand" : "Ordered Order-ahead", params);
         } catch (Exception e) {
             DebugUtils.logError(TAG, e);
         }
@@ -499,6 +499,8 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
 
                     dismissDialog();
 
+                    trackCompleteOrder(error);
+
                     if (!error.equals("")) {
                         mDialog = new ConfirmationDialog(CompleteOrderActivity.this, null, error);
                         mDialog.addAcceptButton("OK", null);
@@ -509,7 +511,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    track(null);
+                    trackCompleteOrder(null);
 
                     MixpanelUtils.trackRevenue(mOrder.OrderDetails.total_cents / 100, mCurrentUser);
 
