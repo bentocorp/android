@@ -36,11 +36,14 @@ public class BentoNowApi {
     }
 
     public static String getUrlGoogleDirections(double dOriginLat, double dOriginLong, String dEndLat, String dEndLong) {
-        return BentoApplication.instance.getString(R.string.google_api_url_direction, dOriginLat+"", dOriginLong+"", dEndLat, dEndLong, BentoApplication.instance.getString(R.string.google_server_key));
+        return BentoApplication.instance.getString(R.string.google_api_url_direction, dOriginLat + "", dOriginLong + "", dEndLat, dEndLong, BentoApplication.instance.getString(R.string.google_server_key));
     }
 
     public static String getOrderStatusNode() {
+        //Todo return to previous
         return BentoApplication.instance.getString(R.string.node_url);
+        //DebugUtils.logDebug("URL:", "https://node.bentonow.com:8443");
+        //return "https://node.bentonow.com:8443";
     }
 
     public static String getOrderStatusNode(String sUsername, String sPassword) {
@@ -58,7 +61,7 @@ public class BentoNowApi {
         return sUrl;
     }
 
-    public static String getDriverUntrack(String sDriverId, String sUid) {
+    public static String getDriverUntrack(String sUid, String sDriverId) {
         String sUrl = String.format("/api/untrack?uid=%s&clientId=d-%s", sUid, sDriverId);
         return sUrl;
     }

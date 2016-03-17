@@ -465,13 +465,13 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, iPadding);
         //cameraUpdate = CameraUpdateFactory.newLatLngZoom(mDriverLocation, 17);
         try {
-            googleMap.animateCamera(cameraUpdate, iPositionStart == 0 ? 2000 : iDurationDirections, new GoogleMap.CancelableCallback() {
+            googleMap.animateCamera(cameraUpdate, iPositionStart == 0 ? 1000 : iDurationDirections, new GoogleMap.CancelableCallback() {
                 @Override
                 public void onFinish() {
-                    mHandler.removeCallbacks(mLoadingTask);
+                   /* mHandler.removeCallbacks(mLoadingTask);
 
                     if (bUseGoogleDirections)
-                        mHandler.post(mLoadingTask);
+                        mHandler.post(mLoadingTask);*/
                 }
 
                 @Override

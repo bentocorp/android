@@ -142,7 +142,9 @@ public class OrderSocketService extends Service {
             @Override
             public void call(Object[] args) {
                 try {
+                    //Todo Return to previous
                     String sPath = BentoNowApi.getOrderStatusNode(sUser, sPass);
+                    //String sPath = BentoNowApi.getOrderStatusNode("kokushos@gmail.com", "$2y$10$SjHiW26uzryMQird4XVMIOmWI/Fa.nXhpcD3cBINGxgnJ36M3qtYW");
                     DebugUtils.logDebug(TAG, "Connecting: " + sPath);
                     mSocket.emit("get", sPath, new Ack() {
                         @Override
@@ -323,9 +325,12 @@ public class OrderSocketService extends Service {
                     try {
                         DebugUtils.logDebug(TAG, "Loc: " + args[0].toString());
                         GlocSocketModel mGloc = SocketResponseParser.parseGloc(args[0].toString());
-                        mCalLoc = Calendar.getInstance();
-                        // mSocketListener.onDriverLocation(37.806698, -122.419831);
-                        mSocketListener.onDriverLocation(Double.parseDouble(mGloc.getLat()), Double.parseDouble(mGloc.getLng()));
+                        if (mGloc.getClientId().equals(sDriverId)) {
+                            mCalLoc = Calendar.getInstance();
+                            // mSocketListener.onDriverLocation(37.806698, -122.419831);
+                            mSocketListener.onDriverLocation(Double.parseDouble(mGloc.getLat()), Double.parseDouble(mGloc.getLng()));
+                        } else
+                            unTrackDriver(mGloc.getClientId());
                     } catch (Exception e) {
                         DebugUtils.logError(TAG, "Loc: " + e.toString());
                     }
@@ -344,8 +349,11 @@ public class OrderSocketService extends Service {
     }
 
     public void trackDriver(final String sDriverId) {
+        //Todo Return
         this.sDriverId = sDriverId;
         String sUrl = BentoNowApi.getDriverTrackUrl(sDriverId, mOrder.getOrderId());
+        //String sUrl = BentoNowApi.getDriverTrackUrl("62", "o-23341");
+
         DebugUtils.logDebug(TAG, "TrackDriver:: " + sUrl);
         mSocket.emit("get", sUrl, new Ack() {
             @Override
@@ -371,7 +379,9 @@ public class OrderSocketService extends Service {
     }
 
     public void trackGloc(String sDriverId) {
+        //Todo Return
         String sUrl = BentoNowApi.getDriverTrackGloc(sDriverId, sToken);
+        //String sUrl = BentoNowApi.getDriverTrackGloc("62", sToken);
         DebugUtils.logDebug(TAG, "TrackGloc:: " + sUrl);
         mSocket.emit("get", sUrl, new Ack() {
             @Override
@@ -402,13 +412,26 @@ public class OrderSocketService extends Service {
     }
 
     public void untrack() {
-        String sUrl = BentoNowApi.getDriverUntrack(sDriverId, mOrder.getOrderId());
+        //TODO return
+        String sUrl = BentoNowApi.getDriverUntrack(mOrder.getOrderId(), sDriverId);
+        // String sUrl = BentoNowApi.getDriverUntrack("o-23341", "62");
         DebugUtils.logDebug(TAG, "Untrack:: " + sUrl);
         mSocket.emit("get", sUrl, new Ack() {
             @Override
             public void call(Object... args) {
                 DebugUtils.logDebug(TAG, "Untrack: " + args[0].toString());
                 disconnectWebSocket();
+            }
+        });
+    }
+
+    private void unTrackDriver(String driverId) {
+        String sUrl = BentoNowApi.getDriverUntrack(mOrder.getOrderId(), driverId);
+        DebugUtils.logDebug(TAG, "Untrack:: " + sUrl);
+        mSocket.emit("get", sUrl, new Ack() {
+            @Override
+            public void call(Object... args) {
+                DebugUtils.logDebug(TAG, "Untrack: " + args[0].toString());
             }
         });
     }
@@ -434,7 +457,7 @@ public class OrderSocketService extends Service {
     }
 
     private void checkOrderHistoryStatus() {
-        mHandler.postDelayed(mRunnableOrderHistory, 30000);
+        // mHandler.postDelayed(mRunnableOrderHistory, 30000);
     }
 
     public void setWebSocketLister(OrderStatusListener mListener) {

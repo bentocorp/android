@@ -67,6 +67,21 @@ public class SocketResponseParser extends MainParser {
 
     }
 
+    public static String parseDriverPush(String sRet) {
+
+        JSONObject jsonResponse;
+
+        try {
+            jsonResponse = new JSONObject(sRet);
+
+            return jsonResponse.getString("clientId");
+        } catch (Exception ex) {
+            DebugUtils.logDebug(TAG, ex);
+            return "";
+        }
+
+    }
+
     public static GlocSocketModel parseGloc(String sRet) {
         GlocSocketModel mGloc = null;
 
@@ -78,6 +93,9 @@ public class SocketResponseParser extends MainParser {
 
             mGloc.setLat(jsonResponse.getString("lat"));
             mGloc.setLng(jsonResponse.getString("lng"));
+            mGloc.setClientId(jsonResponse.getString("clientId"));
+            if (mGloc.getClientId().contains("d-"))
+                mGloc.setClientId(mGloc.getClientId().replace("d-", ""));
 
             return mGloc;
         } catch (Exception ex) {

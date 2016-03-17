@@ -6,6 +6,7 @@ package com.bentonow.bentonow.model.socket;
 public class GlocSocketModel {
     private String lat;
     private String lng;
+    private String clientId;
 
     public String getLat() {
         return lat;
@@ -21,5 +22,13 @@ public class GlocSocketModel {
 
     public void setLng(String lng) {
         this.lng = lng;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
     }
 }
