@@ -72,37 +72,28 @@ public class MarkerAnimation {
     }
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    public static void animateMarkerToICS(Marker mMarkerDriver, LatLng finalPosition, float fRotation, final LatLngInterpolator latLngInterpolator, String sSnippet) {
+    public static void animateMarkerToICS(Marker mMarkerDriver, LatLng finalPosition, float fRotation, final LatLngInterpolator latLngInterpolator, String sSnippet, int iAnimation) {
         // marker.setRotation(fRotation);
-        switch (LocationUtils.getBearingFromRotation(fRotation)) {
-            case UP_RIGHT:
-                mMarkerDriver.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_car_up_right));
-                break;
-            case RIGHT:
-                mMarkerDriver.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_car));
-                break;
-            case DOWN_RIGHT:
-                mMarkerDriver.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_car_down_righ));
-                break;
-            case DOWN:
-                mMarkerDriver.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_car_down));
-                break;
-            case DOWN_LEFT:
-                mMarkerDriver.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_car_down_left));
-                break;
-            case LEFT:
-                mMarkerDriver.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_car_left));
-                break;
-            case LEFT_UP:
-                mMarkerDriver.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_car_left_up));
-                break;
-            case UP:
-                mMarkerDriver.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_car_up));
-                break;
-            case NONE:
-                mMarkerDriver.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_car));
-                break;
-        }
+
+        if (fRotation == 0) {
+
+        } else if (fRotation <= 45) {
+            mMarkerDriver.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_car_up_right));
+        } else if (fRotation <= 90) {
+            mMarkerDriver.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_car_up));
+        } else if (fRotation <= 135) {
+            mMarkerDriver.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_car_left_up));
+        } else if (fRotation <= 180) {
+            mMarkerDriver.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_car_left));
+        } else if (fRotation <= 225) {
+            mMarkerDriver.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_car_down_left));
+        } else if (fRotation <= 270) {
+            mMarkerDriver.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_car_down));
+        } else if (fRotation <= 315) {
+            mMarkerDriver.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_car_down_righ));
+        } else
+            mMarkerDriver.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_car));
+
         mMarkerDriver.setSnippet(sSnippet);
         mMarkerDriver.showInfoWindow();
 
@@ -114,7 +105,7 @@ public class MarkerAnimation {
         };
         Property<Marker, LatLng> property = Property.of(Marker.class, LatLng.class, "position");
         ObjectAnimator animator = ObjectAnimator.ofObject(mMarkerDriver, property, typeEvaluator, finalPosition);
-        animator.setDuration(2000);
+        animator.setDuration(iAnimation);
         animator.start();
     }
 }

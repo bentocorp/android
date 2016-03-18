@@ -38,6 +38,9 @@ public class OrderSocketService extends Service {
 
     public static final String TAG = "OrderSocketService";
 
+    //TODO Return to false
+    public static final boolean bIsProductionTesting = true;
+
     private final WebSocketServiceBinder binder = new WebSocketServiceBinder();
     private Socket mSocket = null;
     private Handler mHandler;
@@ -142,9 +145,8 @@ public class OrderSocketService extends Service {
             @Override
             public void call(Object[] args) {
                 try {
-                    //Todo Return to previous
-                    String sPath = BentoNowApi.getOrderStatusNode(sUser, sPass);
-                    //String sPath = BentoNowApi.getOrderStatusNode("kokushos@gmail.com", "$2y$10$SjHiW26uzryMQird4XVMIOmWI/Fa.nXhpcD3cBINGxgnJ36M3qtYW");
+                    String sPath = bIsProductionTesting ?
+                            BentoNowApi.getOrderStatusNode("kokushos@gmail.com", "$2y$10$SjHiW26uzryMQird4XVMIOmWI/Fa.nXhpcD3cBINGxgnJ36M3qtYW") : BentoNowApi.getOrderStatusNode(sUser, sPass);
                     DebugUtils.logDebug(TAG, "Connecting: " + sPath);
                     mSocket.emit("get", sPath, new Ack() {
                         @Override
@@ -349,10 +351,8 @@ public class OrderSocketService extends Service {
     }
 
     public void trackDriver(final String sDriverId) {
-        //Todo Return
-        this.sDriverId = sDriverId;
-        String sUrl = BentoNowApi.getDriverTrackUrl(sDriverId, mOrder.getOrderId());
-        //String sUrl = BentoNowApi.getDriverTrackUrl("62", "o-23341");
+        this.sDriverId = bIsProductionTesting ? "64" : sDriverId;
+        String sUrl = bIsProductionTesting ? BentoNowApi.getDriverTrackUrl("64", "o-23341") : BentoNowApi.getDriverTrackUrl(sDriverId, mOrder.getOrderId());
 
         DebugUtils.logDebug(TAG, "TrackDriver:: " + sUrl);
         mSocket.emit("get", sUrl, new Ack() {
@@ -379,9 +379,7 @@ public class OrderSocketService extends Service {
     }
 
     public void trackGloc(String sDriverId) {
-        //Todo Return
-        String sUrl = BentoNowApi.getDriverTrackGloc(sDriverId, sToken);
-        //String sUrl = BentoNowApi.getDriverTrackGloc("62", sToken);
+        String sUrl = bIsProductionTesting ? BentoNowApi.getDriverTrackGloc("64", sToken) : BentoNowApi.getDriverTrackGloc(sDriverId, sToken);
         DebugUtils.logDebug(TAG, "TrackGloc:: " + sUrl);
         mSocket.emit("get", sUrl, new Ack() {
             @Override
@@ -412,17 +410,15 @@ public class OrderSocketService extends Service {
     }
 
     public void untrack() {
-        //TODO return
-        String sUrl = BentoNowApi.getDriverUntrack(mOrder.getOrderId(), sDriverId);
-        // String sUrl = BentoNowApi.getDriverUntrack("o-23341", "62");
+        String sUrl = bIsProductionTesting ? BentoNowApi.getDriverUntrack("o-23341", "64") : BentoNowApi.getDriverUntrack(mOrder.getOrderId(), sDriverId);
         DebugUtils.logDebug(TAG, "Untrack:: " + sUrl);
         mSocket.emit("get", sUrl, new Ack() {
             @Override
             public void call(Object... args) {
                 DebugUtils.logDebug(TAG, "Untrack: " + args[0].toString());
-                disconnectWebSocket();
             }
         });
+        disconnectWebSocket();
     }
 
     private void unTrackDriver(String driverId) {
@@ -457,7 +453,7 @@ public class OrderSocketService extends Service {
     }
 
     private void checkOrderHistoryStatus() {
-        // mHandler.postDelayed(mRunnableOrderHistory, 30000);
+         mHandler.postDelayed(mRunnableOrderHistory, 30000);
     }
 
     public void setWebSocketLister(OrderStatusListener mListener) {

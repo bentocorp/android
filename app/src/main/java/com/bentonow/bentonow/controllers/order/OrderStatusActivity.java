@@ -143,22 +143,11 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         mLoadingTask = new Runnable() {
             public void run() {
                 if (aListDriver.size() > iPositionStart && bUseGoogleDirections) {
-
-                    double lon1 = LocationUtils.degToRad(mDriverLastLocation.longitude);
-                    double lon2 = LocationUtils.degToRad(aListDriver.get(iPositionStart).longitude);
-                    double lat1 = LocationUtils.degToRad(mDriverLastLocation.latitude);
-                    double lat2 = LocationUtils.degToRad(aListDriver.get(iPositionStart).latitude);
-
                     //iDuration = mWaypoint.getaSteps().get(iPositionStart).getDuration();
 
-                    double a = Math.sin(lon2 - lon1) * Math.cos(lat2);
-                    double b = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1);
-                    fRotation = LocationUtils.radToDeg(Math.atan2(a, b)); // bearing
-
-                    //   DebugUtils.logDebug(TAG, "bearing: " + fRotation);
-                    //    DebugUtils.logDebug(TAG, "bearing float: " + (float) fRotation);
-
+                    fRotation = LocationUtils.getRotationFromLocations(aListDriver.get(iPositionStart), mDriverLastLocation);
                     // mDriverLocation = new LatLng(mWaypoint.getaSteps().get(iPositionStart).getStart_location_lat(), mWaypoint.getaSteps().get(iPositionStart).getStart_location_lng());
+
                     mDriverLastLocation = new LatLng(mDriverLocation.latitude, mDriverLocation.longitude);
                     mDriverLocation = new LatLng(aListDriver.get(iPositionStart).latitude, aListDriver.get(iPositionStart).longitude);
 
@@ -167,7 +156,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            updateMarkers();
+                            updateMarkers(2000);
                         }
                     });
 
@@ -288,8 +277,8 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         }
     }
 
-    private void updateMarkers() {
-        animateMarker(getDriverMarker(), mDriverLocation, (float) fRotation);
+    private void updateMarkers(int iAnimate) {
+        animateMarker(getDriverMarker(), mDriverLocation, (float) fRotation, iAnimate);
         updateMapLocation();
         //cameraUpdate = CameraUpdateFactory.newLatLngZoom(mDriverLocation, 17);
     }
@@ -433,7 +422,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         return null;
     }
 
-    public void animateMarker(CustomMarker customMarker, LatLng latlng, float fRotation) {
+    public void animateMarker(CustomMarker customMarker, LatLng latlng, float fRotation, int iAnimate) {
         sEta = String.format(getString(R.string.order_status_eta), LocationUtils.getStringSecondsLeft((iDurationDirections) / 1000 * (aListDriver.size() - iPositionStart)));
         // findMarker(customMarker).setSnippet(LocationUtils.getStringSecondsLeft((iDurationDirections) / 1000 * (aListDriver.size() - iPositionStart)));
         // findMarker(customMarker).showInfoWindow();
@@ -444,7 +433,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
             customMarker.setCustomMarkerLatitude(latlng.latitude);
             customMarker.setCustomMarkerLongitude(latlng.longitude);
 
-            MarkerAnimation.animateMarkerToICS(findMarker(customMarker), new LatLng(customMarker.getCustomMarkerLatitude(), customMarker.getCustomMarkerLongitude()), fRotation, latlonInter, sEta);
+            MarkerAnimation.animateMarkerToICS(findMarker(customMarker), new LatLng(customMarker.getCustomMarkerLatitude(), customMarker.getCustomMarkerLongitude()), fRotation, latlonInter, sEta, iAnimate);
 
         }
     }
@@ -528,12 +517,13 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         bUseGoogleDirections = false;
         if (mOrder.getOrder_status().equals("En Route")) {
             mHandler.removeCallbacks(mLoadingTask);
+            fRotation = LocationUtils.getRotationFromLocations(mDriverLocation, new LatLng(lat, lng));
             mDriverLocation = new LatLng(lat, lng);
             iPositionStart = 0;
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    updateMarkers();
+                    updateMarkers(5000);
                 }
             });
 
@@ -614,7 +604,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
                 @Override
                 public void run() {
                     addMarker(getDriverMarker(), true);
-                    updateMarkers();
+                    updateMarkers(2000);
                 }
             });
     }

@@ -237,5 +237,27 @@ public class LocationUtils {
         return rad;
     }
 
+    public static double getRotationFromLocations(LatLng mLastLocation, LatLng mCurrentLocation) {
+        double lat1 = LocationUtils.degToRad(mLastLocation.latitude);
+        double lon1 = LocationUtils.degToRad(mLastLocation.longitude);
+
+        double lon2 = LocationUtils.degToRad(mCurrentLocation.longitude);
+        double lat2 = LocationUtils.degToRad(mCurrentLocation.latitude);
+
+        double dLon = lon2 - lon1;
+
+        double x = Math.sin(dLon) * Math.cos(lat2);
+        double y = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+
+        double dBearing = LocationUtils.radToDeg(Math.atan2(y, x));
+
+        if (dBearing < 0) {
+            dBearing += 2 * Math.PI;
+        }
+        DebugUtils.logDebug(TAG, "Bearing:: " + dBearing);
+
+        return dBearing; // bearing
+    }
+
 }
 

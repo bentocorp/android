@@ -6,6 +6,7 @@ import android.location.Location;
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.controllers.BentoApplication;
+import com.bentonow.bentonow.service.OrderSocketService;
 
 import java.net.URLEncoder;
 
@@ -40,10 +41,7 @@ public class BentoNowApi {
     }
 
     public static String getOrderStatusNode() {
-        //Todo return to previous
-        return BentoApplication.instance.getString(R.string.node_url);
-        //DebugUtils.logDebug("URL:", "https://node.bentonow.com:8443");
-        //return "https://node.bentonow.com:8443";
+        return OrderSocketService.bIsProductionTesting ? "https://node.bentonow.com:8443" : BentoApplication.instance.getString(R.string.node_url);
     }
 
     public static String getOrderStatusNode(String sUsername, String sPassword) {
