@@ -39,7 +39,7 @@ public class OrderSocketService extends Service {
     public static final String TAG = "OrderSocketService";
 
     //TODO Return to false
-    public static final boolean bIsProductionTesting = true;
+    public static final boolean bIsProductionTesting = false;
 
     private final WebSocketServiceBinder binder = new WebSocketServiceBinder();
     private Socket mSocket = null;
@@ -51,6 +51,7 @@ public class OrderSocketService extends Service {
     private boolean bIsTransportError = false;
     private boolean bIsTransportClosed = false;
     private boolean mReconnecting = false;
+    private boolean bIsDriverTracking = false;
     private String sTransportError = "";
     private String sTransportClosed = "";
     private String sToken = "";
@@ -313,7 +314,7 @@ public class OrderSocketService extends Service {
                 public void call(Object[] args) {
                     try {
                         DebugUtils.logDebug(TAG, "Push: " + args[0].toString());
-                        mSocketListener.onPush(args[0].toString());
+                        // mSocketListener.onPush(args[0].toString());
                     } catch (Exception e) {
                         DebugUtils.logError(TAG, "Push: " + e.toString());
                     }
@@ -354,28 +355,32 @@ public class OrderSocketService extends Service {
         this.sDriverId = bIsProductionTesting ? "64" : sDriverId;
         String sUrl = bIsProductionTesting ? BentoNowApi.getDriverTrackUrl("64", "o-23341") : BentoNowApi.getDriverTrackUrl(sDriverId, mOrder.getOrderId());
 
-        DebugUtils.logDebug(TAG, "TrackDriver:: " + sUrl);
-        mSocket.emit("get", sUrl, new Ack() {
-            @Override
-            public void call(Object... args) {
-                try {
-                    ResponseSocketModel mResponse = SocketResponseParser.parseResponse(args[0].toString());
+        if (!bIsDriverTracking) {
+            DebugUtils.logDebug(TAG, "TrackDriver:: " + sUrl);
+            mSocket.emit("get", sUrl, new Ack() {
+                @Override
+                public void call(Object... args) {
+                    try {
+                        ResponseSocketModel mResponse = SocketResponseParser.parseResponse(args[0].toString());
 
-                    switch (mResponse.getCode()) {
-                        case 0:
-                            onNodeEventListener();
-                            break;
-                        default:
-                            DebugUtils.logError(TAG, "Track: " + args[0].toString());
-                            break;
+                        switch (mResponse.getCode()) {
+                            case 0:
+                                bIsDriverTracking = true;
+                                onNodeEventListener();
+                                break;
+                            default:
+                                DebugUtils.logError(TAG, "Track: " + args[0].toString());
+                                break;
+                        }
+
+                    } catch (Exception e) {
+                        DebugUtils.logError(TAG, "Track: " + e.toString());
                     }
-
-                } catch (Exception e) {
-                    DebugUtils.logError(TAG, "Track: " + e.toString());
+                    trackGloc(sDriverId);
                 }
-                trackGloc(sDriverId);
-            }
-        });
+            });
+        }
+
     }
 
     public void trackGloc(String sDriverId) {
@@ -433,6 +438,7 @@ public class OrderSocketService extends Service {
     }
 
     private void startDriverLocationTimer() {
+        mHandler.removeCallbacks(mRunnable);
         mHandler.postDelayed(mRunnable, 1000 * 60);
     }
 
@@ -453,7 +459,7 @@ public class OrderSocketService extends Service {
     }
 
     private void checkOrderHistoryStatus() {
-         mHandler.postDelayed(mRunnableOrderHistory, 30000);
+        mHandler.postDelayed(mRunnableOrderHistory, 30000);
     }
 
     public void setWebSocketLister(OrderStatusListener mListener) {

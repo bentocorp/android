@@ -457,10 +457,10 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
             googleMap.animateCamera(cameraUpdate, iPositionStart == 0 ? 1000 : iDurationDirections, new GoogleMap.CancelableCallback() {
                 @Override
                 public void onFinish() {
-                   /* mHandler.removeCallbacks(mLoadingTask);
+                    mHandler.removeCallbacks(mLoadingTask);
 
                     if (bUseGoogleDirections)
-                        mHandler.post(mLoadingTask);*/
+                        mHandler.post(mLoadingTask);
                 }
 
                 @Override

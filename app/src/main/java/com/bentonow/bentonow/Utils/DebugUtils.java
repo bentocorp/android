@@ -30,7 +30,7 @@ public class DebugUtils {
 
     public static void logError(Exception e) {
         if (DEBUG && e != null)
-            Log.e(TAG, e.toString());
+            Log.e(TAG, e.getMessage());
     }
 
     public static void logError(String sText) {
@@ -45,7 +45,7 @@ public class DebugUtils {
 
     public static void logError(String method, Exception e) {
         if (DEBUG && method != null && e != null)
-            Log.e(String.valueOf(method), e.toString());
+            Log.e(String.valueOf(method), e.getMessage());
     }
 
     public static void logError(String sClass, String method, String sText) {
@@ -55,7 +55,7 @@ public class DebugUtils {
 
     public static void logError(String sClass, String method, Exception ex) {
         if (DEBUG && method != null && ex != null)
-            Log.e(sClass + " :: " + String.valueOf(method), ex.toString());
+            Log.e(sClass + " :: " + String.valueOf(method), ex.getMessage());
     }
 
     public static void logDebug(String sText) {
@@ -112,7 +112,7 @@ public class DebugUtils {
                 newLine = "\n";
             }
         } catch (Exception ee) {
-            e.printStackTrace();
+            e.getMessage();
         }
     }
 
