@@ -48,12 +48,6 @@ public class OrderSocketService extends Service {
     private Runnable mRunnableOrderHistory;
     private boolean connecting = false;
     private boolean disconnectingPurposefully = false;
-    private boolean bIsTransportError = false;
-    private boolean bIsTransportClosed = false;
-    private boolean mReconnecting = false;
-    private boolean bIsDriverTracking = false;
-    private String sTransportError = "";
-    private String sTransportClosed = "";
     private String sToken = "";
     private String sDriverId = "";
     private Calendar mCalLoc;
@@ -162,12 +156,6 @@ public class OrderSocketService extends Service {
                                     DebugUtils.logError(TAG, "socketAuthenticate: " + mResponseSocket.getMsg());
                                     mSocket.disconnect();
                                 } else {
-                                    sTransportClosed = "";
-                                    sTransportError = "";
-                                    bIsTransportClosed = false;
-                                    bIsTransportError = false;
-                                    mReconnecting = false;
-
                                     sToken = SocketResponseParser.parseToken(mResponseSocket.getRet());
 
                                     if (mSocketListener != null && !sToken.isEmpty())
@@ -210,8 +198,6 @@ public class OrderSocketService extends Service {
                     if (mObject.toString().contains("disconnect"))
                         mSocket.connect();
                 }
-
-                mReconnecting = true;
 
                 if (mSocketListener != null)
                     mSocketListener.onDisconnect(disconnectingPurposefully);
@@ -287,16 +273,12 @@ public class OrderSocketService extends Service {
                     @Override
                     public void call(Object... args) {
                         Map<String, List<String>> headers = (Map<String, List<String>>) args[0];
-                        sTransportError = headers.toString();
-                        bIsTransportError = true;
                         DebugUtils.logError(TAG, "Transport.EVENT_ERROR: " + headers.toString());
                     }
                 }).on(Transport.EVENT_CLOSE, new Emitter.Listener() {
                     @Override
                     public void call(Object... args) {
                         Map<String, List<String>> headers = (Map<String, List<String>>) args[0];
-                        sTransportClosed = headers.toString();
-                        bIsTransportClosed = true;
                         DebugUtils.logError(TAG, "Transport.EVENT_CLOSE: " + headers.toString());
                     }
                 });
@@ -314,7 +296,7 @@ public class OrderSocketService extends Service {
                 public void call(Object[] args) {
                     try {
                         DebugUtils.logDebug(TAG, "Push: " + args[0].toString());
-                        // mSocketListener.onPush(args[0].toString());
+                        mSocketListener.onPush(args[0].toString());
                     } catch (Exception e) {
                         DebugUtils.logError(TAG, "Push: " + e.toString());
                     }
@@ -330,7 +312,6 @@ public class OrderSocketService extends Service {
                         GlocSocketModel mGloc = SocketResponseParser.parseGloc(args[0].toString());
                         if (mGloc.getClientId().equals(sDriverId)) {
                             mCalLoc = Calendar.getInstance();
-                            // mSocketListener.onDriverLocation(37.806698, -122.419831);
                             mSocketListener.onDriverLocation(Double.parseDouble(mGloc.getLat()), Double.parseDouble(mGloc.getLng()));
                         } else
                             unTrackDriver(mGloc.getClientId());
@@ -355,31 +336,29 @@ public class OrderSocketService extends Service {
         this.sDriverId = bIsProductionTesting ? "64" : sDriverId;
         String sUrl = bIsProductionTesting ? BentoNowApi.getDriverTrackUrl("64", "o-23341") : BentoNowApi.getDriverTrackUrl(sDriverId, mOrder.getOrderId());
 
-        if (!bIsDriverTracking) {
-            DebugUtils.logDebug(TAG, "TrackDriver:: " + sUrl);
-            mSocket.emit("get", sUrl, new Ack() {
-                @Override
-                public void call(Object... args) {
-                    try {
-                        ResponseSocketModel mResponse = SocketResponseParser.parseResponse(args[0].toString());
+        DebugUtils.logDebug(TAG, "TrackDriver:: " + sUrl);
+        mSocket.emit("get", sUrl, new Ack() {
+            @Override
+            public void call(Object... args) {
+                try {
+                    ResponseSocketModel mResponse = SocketResponseParser.parseResponse(args[0].toString());
 
-                        switch (mResponse.getCode()) {
-                            case 0:
-                                bIsDriverTracking = true;
-                                onNodeEventListener();
-                                break;
-                            default:
-                                DebugUtils.logError(TAG, "Track: " + args[0].toString());
-                                break;
-                        }
-
-                    } catch (Exception e) {
-                        DebugUtils.logError(TAG, "Track: " + e.toString());
+                    switch (mResponse.getCode()) {
+                        case 0:
+                            onNodeEventListener();
+                            break;
+                        default:
+                            DebugUtils.logError(TAG, "Track: " + args[0].toString());
+                            break;
                     }
-                    trackGloc(sDriverId);
+
+                } catch (Exception e) {
+                    DebugUtils.logError(TAG, "Track: " + e.toString());
                 }
-            });
-        }
+
+                trackGloc(sDriverId);
+            }
+        });
 
     }
 
@@ -397,7 +376,6 @@ public class OrderSocketService extends Service {
                             GlocSocketModel mGloc = SocketResponseParser.parseGloc(mResponse.getRet());
                             if (mGloc != null) {
                                 mCalLoc = Calendar.getInstance();
-                                // mSocketListener.onDriverLocation(37.806698, -122.419831);
                                 mSocketListener.trackDriverByGloc(Double.parseDouble(mGloc.getLat()), Double.parseDouble(mGloc.getLng()));
                             } else
                                 DebugUtils.logError(TAG, "Gloc: " + args[0].toString());
@@ -501,7 +479,6 @@ public class OrderSocketService extends Service {
         super.onDestroy();
     }
 
-    // Called when all clients have disconnected
     @Override
     public boolean onUnbind(Intent intent) {
         if (mSocket == null || !mSocket.connected()) {

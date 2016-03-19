@@ -14,6 +14,7 @@ import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.AndroidUtil;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.controllers.BentoApplication;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -79,7 +80,7 @@ public class MarkerAnimation {
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     public static void animateMarkerToICS(Marker mMarkerDriver, LatLng finalPosition, float fRotation, final LatLngInterpolator latLngInterpolator, String sSnippet, int iAnimation) {
         // marker.setRotation(fRotation);
-        if (fRotation != 0) {
+       /* if (fRotation != 0) {
             try {
                 Bitmap bmpOriginal = BitmapFactory.decodeResource(BentoApplication.instance.getResources(), R.drawable.marker_car);
                 Bitmap bmResult = Bitmap.createBitmap(bmpOriginal.getWidth(), bmpOriginal.getHeight(), Bitmap.Config.ARGB_8888);
@@ -91,7 +92,7 @@ public class MarkerAnimation {
             } catch (Exception ex) {
                 DebugUtils.logError(ex);
             }
-        }
+        }*/
 
        /* if (fRotation == 0) {
 
@@ -115,7 +116,7 @@ public class MarkerAnimation {
         mMarkerDriver.setSnippet(sSnippet);
         mMarkerDriver.showInfoWindow();
 
-        TypeEvaluator<LatLng> typeEvaluator = new TypeEvaluator<LatLng>() {
+        /*TypeEvaluator<LatLng> typeEvaluator = new TypeEvaluator<LatLng>() {
             @Override
             public LatLng evaluate(float fraction, LatLng startValue, LatLng endValue) {
                 return latLngInterpolator.interpolate(fraction, startValue, endValue);
@@ -124,6 +125,8 @@ public class MarkerAnimation {
         Property<Marker, LatLng> property = Property.of(Marker.class, LatLng.class, "position");
         ObjectAnimator animator = ObjectAnimator.ofObject(mMarkerDriver, property, typeEvaluator, finalPosition);
         animator.setDuration(iAnimation);
-        animator.start();
+        animator.start();*/
+
+
     }
 }

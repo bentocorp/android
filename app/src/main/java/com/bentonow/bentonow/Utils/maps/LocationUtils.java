@@ -246,14 +246,17 @@ public class LocationUtils {
 
         double dLon = lon2 - lon1;
 
-        double x = Math.sin(dLon) * Math.cos(lat2);
-        double y = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+        double y = Math.sin(dLon) * Math.cos(lat2);
+        double x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
 
-        double dBearing = LocationUtils.radToDeg(Math.atan2(y, x));
+        double dBearing = Math.atan2(y, x);
 
         if (dBearing < 0) {
             dBearing += 2 * Math.PI;
         }
+
+        dBearing = radToDeg(dBearing);
+
         DebugUtils.logDebug(TAG, "Bearing:: " + dBearing);
 
         return dBearing; // bearing

@@ -4,11 +4,18 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.view.View;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -21,10 +28,9 @@ import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.maps.CustomMarker;
-import com.bentonow.bentonow.Utils.maps.LatLngInterpolator;
 import com.bentonow.bentonow.Utils.maps.LocationUtils;
-import com.bentonow.bentonow.Utils.maps.MarkerAnimation;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
+import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.controllers.fragment.MySupportMapFragment;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.dao.IosCopyDao;
@@ -43,6 +49,7 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -54,7 +61,6 @@ import com.loopj.android.http.TextHttpResponseHandler;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import cz.msebera.android.httpclient.Header;
@@ -114,7 +120,6 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
     private int iPadding = 200;
     private double fRotation;
     private boolean bUseGoogleDirections;
-    private boolean bGetGoogleDirections = true;
     private String sEta = "";
 
     @Override
@@ -143,10 +148,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         mLoadingTask = new Runnable() {
             public void run() {
                 if (aListDriver.size() > iPositionStart && bUseGoogleDirections) {
-                    //iDuration = mWaypoint.getaSteps().get(iPositionStart).getDuration();
-
                     fRotation = LocationUtils.getRotationFromLocations(aListDriver.get(iPositionStart), mDriverLastLocation);
-                    // mDriverLocation = new LatLng(mWaypoint.getaSteps().get(iPositionStart).getStart_location_lat(), mWaypoint.getaSteps().get(iPositionStart).getStart_location_lng());
 
                     mDriverLastLocation = new LatLng(mDriverLocation.latitude, mDriverLocation.longitude);
                     mDriverLocation = new LatLng(aListDriver.get(iPositionStart).latitude, aListDriver.get(iPositionStart).longitude);
@@ -156,17 +158,11 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            updateMarkers(2000);
+                            updateMarkers();
                         }
                     });
 
                 } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            //updateStatus("pickup");
-                        }
-                    });
                     DebugUtils.logError(TAG, "Didnt Change Route");
                 }
                 iPositionStart++;
@@ -185,8 +181,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
             @SuppressWarnings("deprecation")
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                DebugUtils.logError(TAG, "getUserInfo:  " + responseString);
-                bGetGoogleDirections = true;
+                DebugUtils.logError(TAG, "getDirectionsByLocation:  " + responseString);
             }
 
             @SuppressWarnings("deprecation")
@@ -199,6 +194,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
                 if (mWaypoint != null) {
                     iPositionStart = 0;
                     aListDriver = LocationUtils.decodePoly(mWaypoint.getPoints());
+
                     try {
                         iDurationDirections = (mWaypoint.getDuration() / aListDriver.size()) * 1000;
                     } catch (Exception ex) {
@@ -211,7 +207,9 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
                         @Override
                         public void run() {
                             sEta = String.format(getString(R.string.order_status_eta), LocationUtils.getStringSecondsLeft(mWaypoint.getDuration()));
-                            updateMapLocation();
+
+                            if (!LocationUtils.getStringSecondsLeft(mWaypoint.getDuration()).equals("0"))
+                                updateMarkers();
                         }
                     });
                 }
@@ -271,16 +269,11 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         });
     }
 
-    private void updateMapLocation() {
+    private void updateMarkers() {
         if (mOrder.getOrder_status().equals("En Route")) {
+            animateMarker(getDriverMarker(), mDriverLocation, (float) fRotation);
             zoomAnimateLevelToFitMarkers();
         }
-    }
-
-    private void updateMarkers(int iAnimate) {
-        animateMarker(getDriverMarker(), mDriverLocation, (float) fRotation, iAnimate);
-        updateMapLocation();
-        //cameraUpdate = CameraUpdateFactory.newLatLngZoom(mDriverLocation, 17);
     }
 
     private void updateStatus(final boolean isRequestData) {
@@ -384,12 +377,6 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
-    public void setUpMarkersHashMap() {
-        if (markersHashMap == null) {
-            markersHashMap = new HashMap();
-        }
-    }
-
     public void addMarker(CustomMarker customMarker, boolean bIsDriver) {
         MarkerOptions markerOption = new MarkerOptions().position(new LatLng(customMarker.getCustomMarkerLatitude(), customMarker.getCustomMarkerLongitude())).flat(true);
         markerOption.icon(bIsDriver ? BitmapDescriptorFactory.fromResource(R.drawable.marker_car) : BitmapDescriptorFactory.fromResource(R.drawable.location_marker_hi));
@@ -404,7 +391,9 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
     }
 
     public void addMarkerToHashMap(CustomMarker customMarker, Marker marker) {
-        setUpMarkersHashMap();
+        if (markersHashMap == null)
+            markersHashMap = new HashMap();
+
         markersHashMap.put(customMarker, marker);
     }
 
@@ -412,7 +401,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
     public Marker findMarker(CustomMarker customMarker) {
         markerIterator = markersHashMap.entrySet().iterator();
         while (markerIterator.hasNext()) {
-            Map.Entry mEntry = markerIterator.next();
+            Entry mEntry = markerIterator.next();
             CustomMarker key = (CustomMarker) mEntry.getKey();
             if (customMarker.getCustomMarkerId().equals(key.getCustomMarkerId())) {
                 Marker value = (Marker) mEntry.getValue();
@@ -422,54 +411,87 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         return null;
     }
 
-    public void animateMarker(CustomMarker customMarker, LatLng latlng, float fRotation, int iAnimate) {
-        sEta = String.format(getString(R.string.order_status_eta), LocationUtils.getStringSecondsLeft((iDurationDirections) / 1000 * (aListDriver.size() - iPositionStart)));
-        // findMarker(customMarker).setSnippet(LocationUtils.getStringSecondsLeft((iDurationDirections) / 1000 * (aListDriver.size() - iPositionStart)));
-        // findMarker(customMarker).showInfoWindow();
+    public void animateMarker(final CustomMarker customMarker, final LatLng latlng, float fRotation) {
+        if (fRotation != 0) {
+            try {
+                Bitmap bmpOriginal = BitmapFactory.decodeResource(BentoApplication.instance.getResources(), R.drawable.marker_car);
+                Bitmap bmResult = Bitmap.createBitmap(bmpOriginal.getWidth(), bmpOriginal.getHeight(), Bitmap.Config.ARGB_8888);
+                Canvas tempCanvas = new Canvas(bmResult);
+                tempCanvas.rotate(fRotation, bmpOriginal.getWidth() / 2, bmpOriginal.getHeight() / 2);
+                tempCanvas.drawBitmap(bmpOriginal, 0, 0, null);
+
+                findMarker(customMarker).setIcon(BitmapDescriptorFactory.fromBitmap(bmResult));
+            } catch (Exception ex) {
+                DebugUtils.logError(ex);
+            }
+        }
+
+        findMarker(customMarker).setSnippet(sEta);
+
+        customMarker.setCustomMarkerLatitude(latlng.latitude);
+        customMarker.setCustomMarkerLongitude(latlng.longitude);
+
         if (findMarker(customMarker) != null) {
-            LatLngInterpolator latlonInter = new LatLngInterpolator.Spherical();
-            latlonInter.interpolate(20, new LatLng(customMarker.getCustomMarkerLatitude(), customMarker.getCustomMarkerLongitude()), latlng);
 
-            customMarker.setCustomMarkerLatitude(latlng.latitude);
-            customMarker.setCustomMarkerLongitude(latlng.longitude);
+            final Handler handler = new Handler();
+            final long start = SystemClock.uptimeMillis();
+            Projection proj = googleMap.getProjection();
+            Point startPoint = proj.toScreenLocation(findMarker(customMarker).getPosition());
+            final LatLng startLatLng = proj.fromScreenLocation(startPoint);
+            final long duration = 500;
 
-            MarkerAnimation.animateMarkerToICS(findMarker(customMarker), new LatLng(customMarker.getCustomMarkerLatitude(), customMarker.getCustomMarkerLongitude()), fRotation, latlonInter, sEta, iAnimate);
+            final Interpolator interpolator = new LinearInterpolator();
+
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    long elapsed = SystemClock.uptimeMillis() - start;
+                    float t = interpolator.getInterpolation((float) elapsed / duration);
+                    double lng = t * latlng.longitude + (1 - t) * startLatLng.longitude;
+                    double lat = t * latlng.latitude + (1 - t) * startLatLng.latitude;
+
+                    findMarker(customMarker).setPosition(new LatLng(lat, lng));
+                    findMarker(customMarker).showInfoWindow();
+
+                    if (t < 1.0) {
+                        handler.postDelayed(this, 16);
+                    }
+                }
+            });
 
         }
     }
 
     public void zoomAnimateLevelToFitMarkers() {
-        //   DebugUtils.logDebug(TAG, "Change Route");
         LatLngBounds.Builder b = new LatLngBounds.Builder();
         markerIterator = markersHashMap.entrySet().iterator();
 
         while (markerIterator.hasNext()) {
-            Map.Entry mEntry = markerIterator.next();
+            Entry mEntry = markerIterator.next();
             CustomMarker key = (CustomMarker) mEntry.getKey();
             LatLng ll = new LatLng(key.getCustomMarkerLatitude(), key.getCustomMarkerLongitude());
             b.include(ll);
         }
+
         LatLngBounds bounds = b.build();
 
         cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, iPadding);
-        //cameraUpdate = CameraUpdateFactory.newLatLngZoom(mDriverLocation, 17);
+
         try {
-            googleMap.animateCamera(cameraUpdate, iPositionStart == 0 ? 1000 : iDurationDirections, new GoogleMap.CancelableCallback() {
+            runOnUiThread(new Runnable() {
                 @Override
-                public void onFinish() {
-                    mHandler.removeCallbacks(mLoadingTask);
-
-                    if (bUseGoogleDirections)
-                        mHandler.post(mLoadingTask);
-                }
-
-                @Override
-                public void onCancel() {
-
+                public void run() {
+                    googleMap.animateCamera(cameraUpdate);
                 }
             });
-        } catch (Exception ex) {
 
+            mHandler.removeCallbacks(mLoadingTask);
+
+            if (bUseGoogleDirections)
+                mHandler.postDelayed(mLoadingTask, iPositionStart == 0 ? 1000 : iDurationDirections);
+
+        } catch (Exception ex) {
+            DebugUtils.logError(TAG, ex);
         }
 
 
@@ -492,7 +514,6 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
     @Override
     public void trackDriverByGloc(double lat, double lng) {
         bUseGoogleDirections = true;
-
         if (mOrder.getOrder_status().equals("En Route"))
             if (mDriverLocation == null) {
                 mDriverLocation = new LatLng(lat, lng);
@@ -503,7 +524,6 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
                         public void run() {
                             addMarker(getDriverMarker(), true);
                             getDirectionsByLocation();
-                            //updateMarkers();
                         }
                     });
             } else {
@@ -523,7 +543,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    updateMarkers(5000);
+                    updateMarkers();
                 }
             });
 
@@ -543,6 +563,12 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
                     mWaypoint = GoogleDirectionParser.parseDirections(responseString);
 
                     if (mWaypoint != null) {
+                        try {
+                            iDurationDirections = (mWaypoint.getDuration() / LocationUtils.decodePoly(mWaypoint.getPoints()).size()) * 1000;
+                        } catch (Exception ex) {
+                            iDurationDirections = 1898;
+                        }
+
                         sEta = String.format(getString(R.string.order_status_eta), LocationUtils.getStringSecondsLeft(mWaypoint.getDuration()));
                         runOnUiThread(new Runnable() {
                             @Override
@@ -604,7 +630,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
                 @Override
                 public void run() {
                     addMarker(getDriverMarker(), true);
-                    updateMarkers(2000);
+                    updateMarkers();
                 }
             });
     }
@@ -612,7 +638,6 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
     @Override
     protected void onPause() {
         super.onPause();
-        // Unbind from the service
         if (mBound) {
             unbindService(mConnection);
             mBound = false;
@@ -639,9 +664,6 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
     @Override
     public void onAuthenticationSuccess() {
         webSocketService.trackDriver(mOrder.getDriverId());
-       /* addMarker(getDriverMarker(), true);
-
-        getDirectionsByLocation();*/
     }
 
     @Override
