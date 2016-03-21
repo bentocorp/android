@@ -167,48 +167,51 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_above="@+id/btn_continue"
         android:background="@color/white"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="5dp">
+        android:gravity="center_vertical">
 
-        <com.bentonow.bentonow.ui.BackendTextView
-            android:layout_width="wrap_content"
+        <com.bentonow.bentonow.ui.BackendAutoFitTextView
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_toLeftOf="@+id/btn_help"
             android:gravity="center_vertical"
-            android:paddingEnd="10dp"
-            android:paddingStart="10dp"
+            android:lines="1"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:text="@string/iagree_label"
             app:key="delivery-agree" />
 
         <ImageView
             android:id="@+id/btn_help"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="25dp"
+            android:layout_toLeftOf="@+id/chck_iagree"
+            android:layout_toStartOf="@+id/chck_iagree"
             android:contentDescription="@null"
             android:onClick="onHelpPressed"
             android:src="@drawable/vector_faq_green" />
 
-        <LinearLayout
-            android:layout_width="0dp"
+        <CheckBox
+            android:id="@+id/chck_iagree"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="end">
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:onClick="onAgreePressed" />
 
-            <CheckBox
-                android:id="@+id/chck_iagree"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="onAgreePressed" />
-        </LinearLayout>
-    </LinearLayout>
+    </RelativeLayout>
 
     <com.bentonow.bentonow.ui.BackendButton
         android:id="@+id/btn_continue"

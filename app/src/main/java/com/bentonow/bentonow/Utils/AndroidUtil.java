@@ -14,6 +14,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.bentonow.bentonow.controllers.BentoApplication;
+import com.google.android.gms.common.GoogleApiAvailability;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -145,4 +146,5 @@ public class AndroidUtil {
     public static int getRandomFromRange(int min, int max) {
         return new Random().nextInt((max - min)) + min;
     }
+
 }

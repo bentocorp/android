@@ -1,6 +1,6 @@
 package com.bentonow.bentonow.controllers.init;
 
-import android.app.Dialog;
+import android.app.Activity;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
@@ -17,6 +17,7 @@ import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
+import com.bentonow.bentonow.Utils.WidgetsUtils;
 import com.bentonow.bentonow.Utils.maps.GoogleLocationUtil;
 import com.bentonow.bentonow.Utils.maps.LocationUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
@@ -27,8 +28,9 @@ import com.bentonow.bentonow.dao.MenuDao;
 import com.bentonow.bentonow.dao.SettingsDao;
 import com.bentonow.bentonow.model.gatekeeper.GateKeeperModel;
 import com.bentonow.bentonow.parse.InitParse;
+import com.bentonow.bentonow.ui.material.ProgressBarCircularIndeterminate;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -45,9 +47,11 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
 
     static final String TAG = "MainActivity";
     public static boolean bIsOpen = false;
+    public static final int REQUEST_GOOGLE_PLAY_SERVICES = 1001;
+
     private TextView txtVersion;
     private TextView txtMessage;
-    private Dialog mDialogPlayServices;
+    private ProgressBarCircularIndeterminate homeLoader;
     private ConfirmationDialog mConfirmationDialog;
     private ConfirmationDialog mDialogNotifications;
     private ConfirmationDialog mDialogDailyNotifications;
@@ -93,6 +97,8 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
 
         MixpanelUtils.logInUser(userDao.getCurrentUser());
 
+        startRegistrationService();
+
     }
 
     @Override
@@ -106,25 +112,24 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
         if (BuildConfig.DEBUG)
             getTxtVersion().setText(AndroidUtil.getAppVersionName(this));
 
-        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
-
-        if (resultCode == ConnectionResult.SUCCESS) {
-            checkBentoStatus();
-        } else {
-            if (mDialogPlayServices == null || !mDialogPlayServices.isShowing()) {
-                mDialogPlayServices = GooglePlayServicesUtil.getErrorDialog(resultCode, this, 1);
-                mDialogPlayServices.show();
-            }
-        }
-
         super.onResume();
     }
+
+    private void startRegistrationService() {
+        GoogleApiAvailability api = GoogleApiAvailability.getInstance();
+        int code = api.isGooglePlayServicesAvailable(this);
+        if (code == ConnectionResult.SUCCESS) {
+            onActivityResult(REQUEST_GOOGLE_PLAY_SERVICES, Activity.RESULT_OK, null);
+        } else if (api.isUserResolvableError(code) && api.showErrorDialogFragment(this, code, REQUEST_GOOGLE_PLAY_SERVICES)) {
+        } else {
+            WidgetsUtils.createShortToast(GoogleApiAvailability.getInstance().getErrorString(code));
+        }
+    }
+
 
     private void checkBentoStatus() {
         if (LocationUtils.isGpsEnable(MainActivity.this)) {
             MixpanelUtils.track("Allow Location Services");
-            //  buildGoogleApiClient();
-            // checkAppStatus();
             loadData();
         } else {
             MixpanelUtils.track("Don't Allow Location Services");
@@ -141,7 +146,6 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
                     @Override
                     public void onClick(View v) {
                         bResultLocation = true;
-                        // checkAppStatus();
                         loadData();
                     }
                 });
@@ -151,6 +155,12 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
     }
 
     private void loadData() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                getHomeLoader().setVisibility(View.VISIBLE);
+            }
+        });
         BentoRestClient.get(BentoRestClient.getInitUrl(), null, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
@@ -373,6 +383,19 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_GOOGLE_PLAY_SERVICES:
+                if (resultCode == Activity.RESULT_OK) {
+                    checkBentoStatus();
+                }
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
 
     @Override
     public void onClick(View view) {
@@ -413,4 +436,11 @@ public class MainActivity extends BaseFragmentActivity implements View.OnClickLi
             txtMessage = (TextView) findViewById(R.id.txt_message);
         return txtMessage;
     }
+
+    private ProgressBarCircularIndeterminate getHomeLoader() {
+        if (homeLoader == null)
+            homeLoader = (ProgressBarCircularIndeterminate) findViewById(R.id.home_preloader);
+        return homeLoader;
+    }
+
 }
