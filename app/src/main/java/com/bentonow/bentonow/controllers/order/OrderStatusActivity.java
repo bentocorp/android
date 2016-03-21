@@ -7,15 +7,11 @@ import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.view.View;
-import android.view.animation.Interpolator;
-import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -29,12 +25,14 @@ import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.maps.CustomMarker;
 import com.bentonow.bentonow.Utils.maps.LocationUtils;
+import com.bentonow.bentonow.Utils.maps.MarkerAnimation;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.controllers.fragment.MySupportMapFragment;
 import com.bentonow.bentonow.controllers.geolocation.DeliveryLocationActivity;
 import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.dao.MenuDao;
+import com.bentonow.bentonow.listener.LatLngInterpolator;
 import com.bentonow.bentonow.listener.OrderStatusListener;
 import com.bentonow.bentonow.model.User;
 import com.bentonow.bentonow.model.map.WaypointModel;
@@ -49,7 +47,6 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -57,6 +54,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
+import com.nineoldandroids.animation.Animator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,7 +63,8 @@ import java.util.Map.Entry;
 
 import cz.msebera.android.httpclient.Header;
 
-public class OrderStatusActivity extends BaseFragmentActivity implements View.OnClickListener, OnMapReadyCallback, OrderStatusListener {
+public class OrderStatusActivity extends BaseFragmentActivity implements View.OnClickListener,
+        OnMapReadyCallback, OrderStatusListener {
 
     private static final String TAG = "OrderStatusActivity";
     private Handler mHandler;
@@ -270,10 +269,8 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
     }
 
     private void updateMarkers() {
-        if (mOrder.getOrder_status().equals("En Route")) {
+        if (mOrder.getOrder_status().equals("En Route"))
             animateMarker(getDriverMarker(), mDriverLocation, (float) fRotation);
-            zoomAnimateLevelToFitMarkers();
-        }
     }
 
     private void updateStatus(final boolean isRequestData) {
@@ -412,54 +409,55 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
     }
 
     public void animateMarker(final CustomMarker customMarker, final LatLng latlng, float fRotation) {
-        if (fRotation != 0) {
-            try {
-                Bitmap bmpOriginal = BitmapFactory.decodeResource(BentoApplication.instance.getResources(), R.drawable.marker_car);
-                Bitmap bmResult = Bitmap.createBitmap(bmpOriginal.getWidth(), bmpOriginal.getHeight(), Bitmap.Config.ARGB_8888);
-                Canvas tempCanvas = new Canvas(bmResult);
-                tempCanvas.rotate(fRotation, bmpOriginal.getWidth() / 2, bmpOriginal.getHeight() / 2);
-                tempCanvas.drawBitmap(bmpOriginal, 0, 0, null);
-
-                findMarker(customMarker).setIcon(BitmapDescriptorFactory.fromBitmap(bmResult));
-            } catch (Exception ex) {
-                DebugUtils.logError(ex);
-            }
-        }
-
-        findMarker(customMarker).setSnippet(sEta);
-
-        customMarker.setCustomMarkerLatitude(latlng.latitude);
-        customMarker.setCustomMarkerLongitude(latlng.longitude);
-
         if (findMarker(customMarker) != null) {
+            if (fRotation != 0) {
+                try {
+                    Bitmap bmpOriginal = BitmapFactory.decodeResource(BentoApplication.instance.getResources(), R.drawable.marker_car);
+                    Bitmap bmResult = Bitmap.createBitmap(bmpOriginal.getWidth(), bmpOriginal.getHeight(), Bitmap.Config.ARGB_8888);
+                    Canvas tempCanvas = new Canvas(bmResult);
+                    tempCanvas.rotate(fRotation, bmpOriginal.getWidth() / 2, bmpOriginal.getHeight() / 2);
+                    tempCanvas.drawBitmap(bmpOriginal, 0, 0, null);
 
-            final Handler handler = new Handler();
-            final long start = SystemClock.uptimeMillis();
-            Projection proj = googleMap.getProjection();
-            Point startPoint = proj.toScreenLocation(findMarker(customMarker).getPosition());
-            final LatLng startLatLng = proj.fromScreenLocation(startPoint);
-            final long duration = 500;
+                    findMarker(customMarker).setIcon(BitmapDescriptorFactory.fromBitmap(bmResult));
+                } catch (Exception ex) {
+                    DebugUtils.logError(ex);
+                }
+            }
 
-            final Interpolator interpolator = new LinearInterpolator();
+            findMarker(customMarker).setSnippet(sEta);
 
-            handler.post(new Runnable() {
+            LatLngInterpolator latlonInter = new LatLngInterpolator.Spherical();
+            latlonInter.interpolate(200, new LatLng(customMarker.getCustomMarkerLatitude(), customMarker.getCustomMarkerLongitude()), latlng);
+
+            customMarker.setCustomMarkerLatitude(latlng.latitude);
+            customMarker.setCustomMarkerLongitude(latlng.longitude);
+
+            MarkerAnimation.animateMarkerToICS(findMarker(customMarker), new LatLng(customMarker.getCustomMarkerLatitude(),
+                    customMarker.getCustomMarkerLongitude()), latlonInter, new Animator.AnimatorListener() {
                 @Override
-                public void run() {
-                    long elapsed = SystemClock.uptimeMillis() - start;
-                    float t = interpolator.getInterpolation((float) elapsed / duration);
-                    double lng = t * latlng.longitude + (1 - t) * startLatLng.longitude;
-                    double lat = t * latlng.latitude + (1 - t) * startLatLng.latitude;
+                public void onAnimationStart(Animator animation) {
+                }
 
-                    findMarker(customMarker).setPosition(new LatLng(lat, lng));
-                    findMarker(customMarker).showInfoWindow();
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            zoomAnimateLevelToFitMarkers();
+                        }
+                    });
+                }
 
-                    if (t < 1.0) {
-                        handler.postDelayed(this, 16);
-                    }
+                @Override
+                public void onAnimationCancel(Animator animation) {
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
                 }
             });
-
         }
+
     }
 
     public void zoomAnimateLevelToFitMarkers() {

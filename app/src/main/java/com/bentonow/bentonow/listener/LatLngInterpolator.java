@@ -1,7 +1,6 @@
-package com.bentonow.bentonow.Utils.maps;
+package com.bentonow.bentonow.listener;
 
 import com.google.android.gms.maps.model.LatLng;
-
 import static java.lang.Math.asin;
 import static java.lang.Math.atan2;
 import static java.lang.Math.cos;
@@ -10,12 +9,11 @@ import static java.lang.Math.sin;
 import static java.lang.Math.sqrt;
 import static java.lang.Math.toDegrees;
 import static java.lang.Math.toRadians;
-
 /**
- * Created by kokusho on 3/4/16.
+ * Created by Kokusho on 20/03/16.
  */
-
 public interface LatLngInterpolator {
+
     public LatLng interpolate(float fraction, LatLng a, LatLng b);
 
     public class Linear implements LatLngInterpolator {
