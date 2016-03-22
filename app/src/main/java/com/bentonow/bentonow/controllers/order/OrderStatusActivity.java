@@ -617,6 +617,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
         map.setBuildingsEnabled(true);
         map.getUiSettings().setZoomControlsEnabled(false);
         googleMap = map;
+        googleMap.getUiSettings().setAllGesturesEnabled(false);
 
         addMarker(getOrderMarker(), false);
 

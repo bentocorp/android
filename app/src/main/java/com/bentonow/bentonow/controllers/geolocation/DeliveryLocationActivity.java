@@ -31,9 +31,9 @@ import com.bentonow.bentonow.Utils.BentoRestClient;
 import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
-import com.bentonow.bentonow.Utils.maps.LocationUtils;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.WidgetsUtils;
+import com.bentonow.bentonow.Utils.maps.LocationUtils;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
@@ -446,48 +446,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
         DebugUtils.logDebug(TAG, "onContinuePressed AppState " + MenuDao.gateKeeper.getAppState());
 
-        if (MenuDao.gateKeeper.getAppState().contains("map,no_service")) {
-            CouponRequest mCoupon = new CouponRequest();
-            mCoupon.reason = "outside of delivery zone";
-            mCoupon.address = getTxtAddress().getText().toString();
-            mCoupon.lat = String.valueOf(mLastOrderLocation.latitude);
-            mCoupon.lng = String.valueOf(mLastOrderLocation.longitude);
-
-            Intent mIntentBummer = new Intent(DeliveryLocationActivity.this, BummerActivity.class);
-            mIntentBummer.putExtra(CouponRequest.TAG, mCoupon);
-            startActivity(mIntentBummer);
-        } else if (MenuDao.gateKeeper.getAppState().contains("build")) {
-            switch (optOpenScreen) {
-                case COMPLETE_ORDER:
-                    if (BentoNowUtils.isValidCompleteOrder(DeliveryLocationActivity.this))
-                        BentoNowUtils.openCompleteOrderActivity(DeliveryLocationActivity.this, MenuDao.getCurrentMenu());
-                    break;
-                case BUILD_BENTO:
-                    BentoNowUtils.openBuildBentoActivity(DeliveryLocationActivity.this);
-                    break;
-                case SUMMARY:
-                    BentoNowUtils.saveOrderLocation(mLastOrderLocation, mOrderAddress);
-                    if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_ORDER_AHEAD_MENU))
-                        BentoNowUtils.openBuildBentoActivity(DeliveryLocationActivity.this);
-                    else
-                        onBackPressed();
-                    break;
-                default:
-                    onBackPressed();
-                    break;
-            }
-            finish();
-        } else if (MenuDao.gateKeeper.getAppState().contains("closed_wall")) {
-            BentoNowUtils.openErrorActivity(DeliveryLocationActivity.this);
-            finish();
-        } else if (MenuDao.gateKeeper.getAppState().contains("sold")) {
-            BentoNowUtils.openErrorActivity(DeliveryLocationActivity.this);
-            finish();
-        } else {
-            DebugUtils.logError(TAG, "Unknown State: " + MenuDao.gateKeeper.getAppState());
-        }
-
-
+        nextStepViaAppState(MenuDao.gateKeeper.getAppState());
     }
 
     public void onContinuePressed() {
@@ -522,15 +481,17 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                 switch (optOpenScreen) {
                     case SUMMARY:
                         Order mCurrentOrder = mOrderDao.getCurrentOrder();
-                        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.IS_ORDER_AHEAD_MENU))
-                            if (mCurrentOrder != null && responseString.contains("\"menu_id\":\"" + mCurrentOrder.MenuId + "\"")) {
+                        if (mCurrentOrder != null)
+                            if (responseString.contains("\"menu_id\":\"" + mCurrentOrder.MenuId + "\"")) {
                                 BentoNowUtils.saveOrderLocation(mLastOrderLocation, mOrderAddress);
                                 onBackPressed();
                             } else {
-                                getMenusByLocation(responseString);
+                                String sAppState = InitParse.getAppState(responseString);
+                                if (sAppState.contains("build"))
+                                    showChangeMenuDialog(responseString);
+                                else
+                                    nextStepViaAppState(sAppState);
                             }
-                        else
-                            getMenusByLocation(responseString);
                         break;
                     default:
                         getMenusByLocation(responseString);
@@ -544,6 +505,46 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                 dismissDialog();
             }
         });
+    }
+
+    private void nextStepViaAppState(String sAppState) {
+        if (sAppState.contains("map,no_service")) {
+            CouponRequest mCoupon = new CouponRequest();
+            mCoupon.reason = "outside of delivery zone";
+            mCoupon.address = getTxtAddress().getText().toString();
+            mCoupon.lat = String.valueOf(mLastOrderLocation.latitude);
+            mCoupon.lng = String.valueOf(mLastOrderLocation.longitude);
+
+            Intent mIntentBummer = new Intent(DeliveryLocationActivity.this, BummerActivity.class);
+            mIntentBummer.putExtra(CouponRequest.TAG, mCoupon);
+            startActivity(mIntentBummer);
+        } else if (sAppState.contains("build")) {
+            switch (optOpenScreen) {
+                case COMPLETE_ORDER:
+                    if (BentoNowUtils.isValidCompleteOrder(DeliveryLocationActivity.this))
+                        BentoNowUtils.openCompleteOrderActivity(DeliveryLocationActivity.this, MenuDao.getCurrentMenu());
+                    break;
+                case BUILD_BENTO:
+                    BentoNowUtils.openBuildBentoActivity(DeliveryLocationActivity.this);
+                    break;
+                case SUMMARY:
+                    BentoNowUtils.saveOrderLocation(mLastOrderLocation, mOrderAddress);
+                    BentoNowUtils.openBuildBentoActivity(DeliveryLocationActivity.this);
+                    break;
+                default:
+                    onBackPressed();
+                    break;
+            }
+            finish();
+        } else if (sAppState.contains("closed_wall")) {
+            BentoNowUtils.openErrorActivity(DeliveryLocationActivity.this);
+            finish();
+        } else if (sAppState.contains("sold")) {
+            BentoNowUtils.openErrorActivity(DeliveryLocationActivity.this);
+            finish();
+        } else {
+            DebugUtils.logError(TAG, "Unknown State: " + MenuDao.gateKeeper.getAppState());
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -647,33 +648,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             }
         });
 
-/*
-        BentoApplication.instance.webRequest(new RequestGetPlaceDetail(sPlaceId, new ListenerWebRequest() {
-            @Override
-            public void onError(String sError, int statusCode) {
-                checkAddress(sAddress);
-                onComplete();
-            }
-
-            @Override
-            public void onResponse(final Object oResponse, int statusCode) {
-                runOnUiThread(new Runnable() {
-                    @Override
-
-                    public void run() {
-                        moveMapToCenter((LatLng) oResponse, sAddress);
-                    }
-                });
-                onComplete();
-            }
-
-
-            @Override
-            public void onComplete() {
-                dismissDialog();
-            }
-        }));*/
-
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -685,6 +659,21 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
         mOrderAddress = null;
         mLastOrderLocation = null;
+    }
+
+    private void showChangeMenuDialog(final String sResponse) {
+        if (mConfirmationDialog == null || !mConfirmationDialog.isShowing()) {
+            mConfirmationDialog = new ConfirmationDialog(DeliveryLocationActivity.this, "Change Menu", "If you change delivery zone, you will have to create an order again, do you want to continue?");
+            mConfirmationDialog.addAcceptButton(IosCopyDao.get("build-not-complete-confirmation-2"), new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    getMenusByLocation(sResponse);
+                }
+            });
+            mConfirmationDialog.addCancelButton(IosCopyDao.get("build-not-complete-confirmation-1"), null);
+            mConfirmationDialog.show();
+        }
+
     }
 
     private void dismissDialog() {

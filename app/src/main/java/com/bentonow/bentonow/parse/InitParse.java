@@ -405,4 +405,26 @@ public class InitParse extends MainParser {
 
         DebugUtils.logDebug(TAG, "GateKeeper Saved: " + (MenuDao.gateKeeper != null));
     }
+
+    public static String getAppState(String sResponse) {
+        JSONObject jsonInit;
+
+        try {
+            jsonInit = new JSONObject(sResponse);
+
+            String sGateKeeper = jsonInit.getString("/gatekeeper/here/{lat}/{long}");
+
+            if (sGateKeeper == null || sGateKeeper.equals("null") || sGateKeeper.isEmpty())
+                return "";
+
+            JSONObject jsonGateKeeper = new JSONObject(sGateKeeper);
+
+            if (jsonGateKeeper.has("appState"))
+                return jsonGateKeeper.getString("appState");
+
+        } catch (Exception e) {
+            DebugUtils.logError(TAG, "getAppState: " + e.getMessage());
+        }
+        return "";
+    }
 }
