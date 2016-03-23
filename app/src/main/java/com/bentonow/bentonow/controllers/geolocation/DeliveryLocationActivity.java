@@ -64,7 +64,6 @@ import com.loopj.android.http.TextHttpResponseHandler;
 import com.wsdcamp.anim.FadeInOut;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -81,7 +80,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
     public static final String TAG = "DeliveryLocationAct";
     private static final long SCROLL_TIME = 100L;
-    private GoogleMap googleMap; // Might be null if Google Play services APK is not available.
+    private GoogleMap googleMap;
     private MySupportMapFragment mapFragment;
     private AutoCompleteTextView txt_address;
     private BackendTextView txtAlertAgree;
@@ -604,8 +603,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                 mAutocomplete.setPlaceId(list.getJSONObject(i).getString("place_id"));
                 resultList.add(mAutocomplete);
             }
-        } catch (JSONException e) {
-            DebugUtils.logError(TAG, "Cannot process JSON results", e);
+        } catch (Exception e) {
+            DebugUtils.logError(TAG, "Cannot process JSON results: " + e.getMessage());
         }
 
         return resultList;
@@ -929,7 +928,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         public String getItem(int index) {
             try {
                 return resultList.get(index).getAddress();
-            } catch (IndexOutOfBoundsException ignore) {
+            } catch (Exception ignore) {
                 return "";
             }
         }
@@ -941,36 +940,12 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                 protected FilterResults performFiltering(CharSequence constraint) {
                     FilterResults filterResults = new FilterResults();
                     if (constraint != null) {
-                        // Retrieve the autocomplete results.
                         if (bAllowRequest) {
                             bAllowRequest = false;
                             resultList = autocomplete(constraint.toString());
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    notifyDataSetChanged();
-                                }
-                            });
 
-                            bAllowRequest = true;
-
-                            // Assign the data to the FilterResults
                             filterResults.values = resultList;
                             filterResults.count = resultList.size();
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    notifyDataSetChanged();
-                                    if (!sTextToSearch.isEmpty()) {
-                                        sTextToSearch = "";
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
-                                            getTxtAddress().setText(getTxtAddress().getText().toString(), true);
-                                        else
-                                            getTxtAddress().setText(getTxtAddress().getText().toString());
-                                    }
-                                }
-                            });
-
 
                         } else {
                             sTextToSearch = getTxtAddress().getText().toString();
@@ -992,6 +967,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                             }
                         }
                     });
+
+                    bAllowRequest = true;
                 }
             };
         }
