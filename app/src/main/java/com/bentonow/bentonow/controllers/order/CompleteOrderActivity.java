@@ -120,6 +120,7 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
         txt_total = (TextView) findViewById(R.id.txt_total);
 
         getBtnOnLetsEatPressed().setOnClickListener(this);
+        getBtnAddPromoCode().setOnClickListener(this);
 
         img_credit_card = (ImageView) findViewById(R.id.img_credit_card);
 
@@ -369,6 +370,9 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
                 break;
             case R.id.btn_on_lets_eat_pressed:
                 onLetsEatPressed();
+                break;
+            case R.id.btn_add_promo_code:
+                showAddPromoCodeDialog();
                 break;
             default:
                 DebugUtils.logError(TAG, "View Id wasnt found: " + v.getId());
@@ -621,39 +625,34 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
         img_credit_card.setImageResource(card);
         txt_credit_card.setText(mCurrentUser.card.last4 != null ? mCurrentUser.card.last4 : "");
 
-/*        if (edit) {
-            btn_delete.setTextColor(getResources().getColor(R.color.btn_green));
-            btn_delete.setText(IosCopyDao.get("complete-done"));
-        } else {
-            btn_delete.setTextColor(getResources().getColor(R.color.orange));
-            btn_delete.setText(IosCopyDao.get("complete-edit"));
-        }*/
     }
 
-    public void showAddPromoCodeDialog(View v) {
+    public void showAddPromoCodeDialog() {
         if (mOrder.OrderDetails.coupon_discount_cents > 0) {
             mOrder.OrderDetails.coupon_discount_cents = 0;
             updateViewsUI();
         } else {
-            mDialogCoupon = new CouponDialog(this);
-            mDialogCoupon.setmDialogListener(new ListenerDialog() {
-                @Override
-                public void btnOkClick(final String sPromoCode) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            requestPromoCode(sPromoCode);
-                        }
-                    });
-                }
+            if (mDialogCoupon == null || !mDialogCoupon.isShowing()) {
+                mDialogCoupon = new CouponDialog(this);
+                mDialogCoupon.setmDialogListener(new ListenerDialog() {
+                    @Override
+                    public void btnOkClick(final String sPromoCode) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                requestPromoCode(sPromoCode);
+                            }
+                        });
+                    }
 
-                @Override
-                public void btnOnCancel() {
+                    @Override
+                    public void btnOnCancel() {
 
-                }
-            });
+                    }
+                });
 
-            mDialogCoupon.show();
+                mDialogCoupon.show();
+            }
         }
     }
 
