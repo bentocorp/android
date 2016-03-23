@@ -58,6 +58,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.loopj.android.http.TextHttpResponseHandler;
@@ -76,7 +77,7 @@ import java.util.ArrayList;
 import cz.msebera.android.httpclient.Header;
 
 public class DeliveryLocationActivity extends BaseFragmentActivity implements GoogleMap.OnMapClickListener, View.OnClickListener, AdapterView.OnItemClickListener, View.OnKeyListener,
-        TextView.OnEditorActionListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+        TextView.OnEditorActionListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback {
 
     public static final String TAG = "DeliveryLocationAct";
     private static final long SCROLL_TIME = 100L;
@@ -134,45 +135,9 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             mCurrentLocation.setLongitude(mLastOrderLocation.longitude);
         }
 
-        buildGoogleApiClient();
-        getGoogleMap().setOnMapClickListener(DeliveryLocationActivity.this);
-        getMapFragment().setOnDragListener(new OnCustomDragListener() {
-
-            @Override
-            public void onDrag(MotionEvent motionEvent) {
-                switch (motionEvent.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        lastTouched = SystemClock.uptimeMillis();
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        final long now = SystemClock.uptimeMillis();
-                        if (now - lastTouched > SCROLL_TIME)
-                            forceMoveMapLocation(getGoogleMap().getCameraPosition().target, false);
-
-                        break;
-                    default:
-                        break;
-                }
-            }
-        });
-
-        getGoogleMap().setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
-            @Override
-            public void onCameraChange(CameraPosition cameraPosition) {
-                DebugUtils.logDebug(TAG, "Camera Position: " + cameraPosition.zoom);
-                if (previousZoomLevel != cameraPosition.zoom) {
-                    forceMoveMapLocation(cameraPosition.target, false);
-                }
-                previousZoomLevel = cameraPosition.zoom;
-
-            }
-        });
-
-        getGoogleMap().setMyLocationEnabled(false);
+        getMapFragment();
 
         updateUI();
-
-        setupMap();
 
         getBtnContinue().setOnClickListener(this);
     }
@@ -240,8 +205,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if (bMovedMap)
-                        getGoogleMap().animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, previousZoomLevel));
+                    if (bMovedMap && googleMap != null)
+                        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, previousZoomLevel));
 
                     getAddressByLocation(latLng, "");
                 }
@@ -252,6 +217,55 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
     @Override
+    public void onMapReady(GoogleMap map) {
+        map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        map.setMyLocationEnabled(false);
+        map.setTrafficEnabled(false);
+        map.setIndoorEnabled(true);
+        map.setBuildingsEnabled(true);
+        map.getUiSettings().setZoomControlsEnabled(false);
+        googleMap = map;
+
+        googleMap.setOnMapClickListener(DeliveryLocationActivity.this);
+        getMapFragment().setOnDragListener(new OnCustomDragListener() {
+
+            @Override
+            public void onDrag(MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        lastTouched = SystemClock.uptimeMillis();
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        final long now = SystemClock.uptimeMillis();
+                        if (now - lastTouched > SCROLL_TIME)
+                            forceMoveMapLocation(googleMap.getCameraPosition().target, false);
+
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+
+        googleMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition cameraPosition) {
+                DebugUtils.logDebug(TAG, "Camera Position: " + cameraPosition.zoom);
+                if (previousZoomLevel != cameraPosition.zoom) {
+                    forceMoveMapLocation(cameraPosition.target, false);
+                }
+                previousZoomLevel = cameraPosition.zoom;
+
+            }
+        });
+
+
+        buildGoogleApiClient();
+        setupMap();
+
+    }
+
+    @Override
     public void onMapClick(final LatLng latLng) {
         forceMoveMapLocation(latLng, true);
     }
@@ -259,14 +273,14 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private void markerLocation(LatLng latLng) {
         restartSearch();
         mLastOrderLocation = latLng;
-        getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, previousZoomLevel));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, previousZoomLevel));
         getAddressByLocation(latLng, "");
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void moveMapToCenter(final LatLng mLocation) {
         mLastOrderLocation = mLocation;
-        getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(mLocation, previousZoomLevel));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mLocation, previousZoomLevel));
     }
 
 
@@ -398,7 +412,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
     private void updateCurrentLocation() {
-        if (mLastOrderLocation == null || getGoogleMap() == null)
+        if (mLastOrderLocation == null || googleMap == null)
             return;
         markerLocation(mLastOrderLocation);
     }
@@ -837,25 +851,24 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
     @Override
     protected void onDestroy() {
-        getGoogleMap().clear();
-        getGoogleMap().setOnMapClickListener(null);
-        getGoogleMap().setOnMapClickListener(null);
-        getGoogleMap().setOnCameraChangeListener(null);
+        if (googleMap != null) {
+            googleMap.clear();
+            googleMap.setOnMapClickListener(null);
+            googleMap.setOnMapClickListener(null);
+            googleMap.setOnCameraChangeListener(null);
+        }
+
         getTxtAddress().setAdapter(null);
         mGoogleApiClient = null;
         super.onDestroy();
     }
 
     private MySupportMapFragment getMapFragment() {
-        if (mapFragment == null)
+        if (mapFragment == null) {
             mapFragment = ((MySupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapCurrentLocation));
+            mapFragment.getMapAsync(DeliveryLocationActivity.this);
+        }
         return mapFragment;
-    }
-
-    private GoogleMap getGoogleMap() {
-        if (googleMap == null)
-            googleMap = getMapFragment().getMap();
-        return googleMap;
     }
 
     private BackendTextView getTxtAlertAgree() {
