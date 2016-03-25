@@ -282,7 +282,7 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
         }
     }
 
-    public void onTwitterPressed(View v) {
+    public void onTwitterPressed() {
         String tweetUrl = String.format("https://twitter.com/intent/tweet?text=%s", urlEncode(message));
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(tweetUrl));
 
@@ -429,6 +429,9 @@ public class SettingsActivity extends BaseFragmentActivity implements View.OnCli
                     break;
                 case R.id.btn_facebook:
                     onFacebookPressed();
+                    break;
+                case R.id.btn_twitter:
+                    onTwitterPressed();
                     break;
                 case R.id.btn_email:
                     onEmailPressed();
