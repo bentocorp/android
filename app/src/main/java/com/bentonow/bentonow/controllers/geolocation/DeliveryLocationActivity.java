@@ -94,9 +94,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private ProgressBar progressBar;
     private ProgressDialog mProgressDialog;
     private ConfirmationDialog mConfirmationDialog;
-    private boolean mRequestingLocationUpdates;
     private GoogleApiClient mGoogleApiClient;
-    private Location mCurrentLocation;
+    private LatLng mCurrentLocation;
     private LocationRequest mLocationRequest;
     private LatLng mLastOrderLocation;
     private Address mOrderAddress;
@@ -106,6 +105,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private float previousZoomLevel = 17.7f;
     private long lastTouched = 0;
     private boolean bAllowRequest = true;
+    private boolean bUpdateOrderLocation = false;
+    private boolean bUseOtherLocation = false;
     private String sTextToSearch = "";
 
     @Override
@@ -113,7 +114,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_delivery_location);
-        mRequestingLocationUpdates = true;
+
 
         try {
             optOpenScreen = (ConstantUtils.optOpenScreen) getIntent().getExtras().getSerializable(ConstantUtils.TAG_OPEN_SCREEN);
@@ -128,12 +129,6 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         setupAutocomplete();
 
         mLastOrderLocation = BentoNowUtils.getOrderLocation();
-
-        if (mLastOrderLocation != null) {
-            mCurrentLocation = new Location("Current Location");
-            mCurrentLocation.setLatitude(mLastOrderLocation.latitude);
-            mCurrentLocation.setLongitude(mLastOrderLocation.longitude);
-        }
 
         getMapFragment();
 
@@ -396,6 +391,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     public void onCurrentLocationPressed(View view) {
         if (LocationUtils.isGpsEnable(DeliveryLocationActivity.this)) {
             WidgetsUtils.createShortToast("Getting your location");
+            bUpdateOrderLocation = true;
             startLocationUpdates();
         } else if (mConfirmationDialog == null || !mConfirmationDialog.isShowing()) {
             mConfirmationDialog = new ConfirmationDialog(DeliveryLocationActivity.this, "Enable GPS", "GPS is disabled in your device. Enable it?");
@@ -414,6 +410,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     private void updateCurrentLocation() {
         if (mLastOrderLocation == null || googleMap == null)
             return;
+
         markerLocation(mLastOrderLocation);
     }
 
@@ -441,6 +438,23 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
             getTxtAlertAgree().setText(sError);
 
             new FadeInOut(this, getTxtAlertAgree(), R.anim.fadein, R.anim.fadeout);
+        }
+
+
+        if (optOpenScreen == ConstantUtils.optOpenScreen.BUILD_BENTO && mCurrentLocation != null && !bUseOtherLocation) {
+            double iMeters = 100;
+            try {
+                iMeters = SettingsDao.getCurrent().geofence_order_radius_meters == 0 ? 100 : SettingsDao.getCurrent().geofence_order_radius_meters;
+            } catch (Exception ex) {
+                DebugUtils.logError(TAG, ex.getMessage());
+            }
+
+            iMeters = iMeters / 1000;
+
+            if (iMeters <= LocationUtils.getDistanceInTwoPoints(mCurrentLocation, mLastOrderLocation)) {
+                showNotHereDialog();
+                bIsValid = false;
+            }
         }
 
         DebugUtils.logDebug(TAG, "isValidLocation(): " + bIsValid);
@@ -674,16 +688,40 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         mLastOrderLocation = null;
     }
 
+    private void showNotHereDialog() {
+        if (mConfirmationDialog == null || !mConfirmationDialog.isShowing()) {
+            String sAddress = IosCopyDao.get("geofence-outside-msg");
+            sAddress = sAddress.replace("%address", getTxtAddress().getText());
+
+            mConfirmationDialog = new ConfirmationDialog(DeliveryLocationActivity.this, null, sAddress);
+            mConfirmationDialog.addAcceptButton("Keep", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    bUseOtherLocation = true;
+                    onContinuePressed();
+                }
+            });
+            mConfirmationDialog.addCancelButton("Change", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    bUseOtherLocation = true;
+                }
+            });
+            mConfirmationDialog.show();
+        }
+
+    }
+
     private void showChangeMenuDialog(final String sResponse) {
         if (mConfirmationDialog == null || !mConfirmationDialog.isShowing()) {
-            mConfirmationDialog = new ConfirmationDialog(DeliveryLocationActivity.this, "Change Menu", "If you change delivery zone, you will have to create an order again, do you want to continue?");
-            mConfirmationDialog.addAcceptButton(IosCopyDao.get("build-not-complete-confirmation-2"), new View.OnClickListener() {
+            mConfirmationDialog = new ConfirmationDialog(DeliveryLocationActivity.this, "Change Menu", IosCopyDao.get("change-zone-msg"));
+            mConfirmationDialog.addAcceptButton("Change", new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     getMenusByLocation(sResponse);
                 }
             });
-            mConfirmationDialog.addCancelButton(IosCopyDao.get("build-not-complete-confirmation-1"), null);
+            mConfirmationDialog.addCancelButton("Keep", null);
             mConfirmationDialog.show();
         }
 
@@ -806,21 +844,13 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     public void onConnected(Bundle bundle) {
         DebugUtils.logDebug("buildGoogleApiClient", "onConnected:");
 
-        if (optOpenScreen == ConstantUtils.optOpenScreen.BUILD_BENTO) {
-            mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            if (mCurrentLocation != null) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateCurrentLocation();
-                    }
-                });
-            }
+        Location mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
-            if (mRequestingLocationUpdates) {
-                startLocationUpdates();
-            }
-        }
+        if (mLocation != null)
+            mCurrentLocation = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
+
+        startLocationUpdates();
+
     }
 
     @Override
@@ -834,19 +864,23 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
     @Override
-    public void onLocationChanged(Location location) {
+    public void onLocationChanged(Location mNewLocation) {
         DebugUtils.logDebug("buildGoogleApiClient", "onLocationChanged:");
-        mCurrentLocation = location;
-        mLastOrderLocation = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+        mCurrentLocation = new LatLng(mNewLocation.getLatitude(), mNewLocation.getLongitude());
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                updateCurrentLocation();
-                mRequestingLocationUpdates = false;
-                stopLocationUpdates();
-            }
-        });
+        if (bUpdateOrderLocation) {
+            bUpdateOrderLocation = false;
+
+            mLastOrderLocation = new LatLng(mNewLocation.getLatitude(), mNewLocation.getLongitude());
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    updateCurrentLocation();
+                    stopLocationUpdates();
+                }
+            });
+        }
     }
 
     @Override

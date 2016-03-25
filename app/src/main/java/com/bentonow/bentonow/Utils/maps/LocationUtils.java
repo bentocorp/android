@@ -15,7 +15,6 @@ import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
 import com.google.android.gms.maps.model.LatLng;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -164,28 +163,18 @@ public class LocationUtils {
         return ConstantUtils.optBearing.values()[(int) Math.floor(dRotation / 45)];
     }
 
-    public static double CalculationByDistance(LatLng StartP, LatLng EndP) {
-        int Radius = 6371;// radius of earth in Km
-        double lat1 = StartP.latitude;
-        double lat2 = EndP.latitude;
-        double lon1 = StartP.longitude;
-        double lon2 = EndP.longitude;
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLon = Math.toRadians(lon2 - lon1);
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
-                + Math.cos(Math.toRadians(lat1))
-                * Math.cos(Math.toRadians(lat2)) * Math.sin(dLon / 2)
-                * Math.sin(dLon / 2);
-        double c = 2 * Math.asin(Math.sqrt(a));
-        double valueResult = Radius * c;
-        double km = valueResult / 1;
-        DecimalFormat newFormat = new DecimalFormat("####");
-        int kmInDec = Integer.valueOf(newFormat.format(km));
-        double meter = valueResult % 1000;
-        int meterInDec = Integer.valueOf(newFormat.format(meter));
-        double result = Radius * c;
-        DebugUtils.logDebug(TAG, "Radius Value:: " + result + "   KM  " + kmInDec + " Meter   " + meterInDec);
-        return Radius * c;
+    public static double getDistanceInTwoPoints(LatLng StartP, LatLng EndP) {
+        double theta = StartP.longitude - EndP.longitude;
+        double dist = Math.sin(deg2rad(StartP.latitude)) * Math.sin(deg2rad(EndP.latitude)) + Math.cos(deg2rad(StartP.latitude)) * Math.cos(deg2rad(EndP.latitude)) * Math.cos(deg2rad(theta));
+        dist = Math.acos(dist);
+        dist = rad2deg(dist);
+        dist = dist * 60 * 1.1515;
+
+        DebugUtils.logDebug(TAG, "Miles :: " + dist + "   KM ::  " + dist * 1.609344 + " Nautical ::  " + dist * 0.8684);
+
+        dist = (dist * 1.609344);
+
+        return dist;
     }
 
     public static ArrayList<LatLng> decodePoly(String encoded) {
@@ -226,6 +215,13 @@ public class LocationUtils {
         return poly;
     }
 
+    private static double deg2rad(double deg) {
+        return (deg * Math.PI / 180.0);
+    }
+
+    private static double rad2deg(double rad) {
+        return (rad * 180 / Math.PI);
+    }
 
     public static double degToRad(double deg) {
         return deg * Math.PI / 180.0;

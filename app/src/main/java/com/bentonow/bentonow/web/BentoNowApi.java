@@ -1,12 +1,11 @@
 package com.bentonow.bentonow.web;
 
 
-import android.location.Location;
-
 import com.bentonow.bentonow.R;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.service.OrderSocketService;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.net.URLEncoder;
 
@@ -20,7 +19,7 @@ public class BentoNowApi {
         return sUrl;
     }
 
-    public static String getUrlGoogleAutocomplete(Location mLocation, String sInput) {
+    public static String getUrlGoogleAutocomplete(LatLng mLocation, String sInput) {
         String sAddress;
 
         try {
@@ -32,7 +31,7 @@ public class BentoNowApi {
         if (mLocation == null)
             return BentoApplication.instance.getString(R.string.bento_api_url_autocomplete, BentoApplication.instance.getString(R.string.google_server_key), sAddress);
         else
-            return BentoApplication.instance.getString(R.string.bento_api_url_autocomplete_location, BentoApplication.instance.getString(R.string.google_server_key), sAddress, mLocation.getLatitude(), mLocation.getLongitude());
+            return BentoApplication.instance.getString(R.string.bento_api_url_autocomplete_location, BentoApplication.instance.getString(R.string.google_server_key), sAddress, mLocation.latitude, mLocation.longitude);
 
     }
 
