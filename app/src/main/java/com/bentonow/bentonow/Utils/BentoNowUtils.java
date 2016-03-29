@@ -592,4 +592,22 @@ public class BentoNowUtils {
         return lSeconds;
     }
 
+    public static String getMealType(String sTime) {
+        try {
+            String[] aTime = sTime.split(":");
+            int iHour = Integer.parseInt(aTime[0]);
+
+            if (iHour < 9)
+                return "Lunch";
+            else if (iHour < 16)
+                return "Dinner";
+            else
+                return "Other";
+        } catch (Exception ex) {
+            DebugUtils.logError(TAG, ex);
+            return "Other";
+        }
+
+    }
+
 }
