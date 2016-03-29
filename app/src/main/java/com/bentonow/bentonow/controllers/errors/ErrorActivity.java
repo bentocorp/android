@@ -29,12 +29,12 @@ import com.bentonow.bentonow.web.request.UserRequest;
 import com.google.android.gms.maps.model.LatLng;
 import com.loopj.android.http.TextHttpResponseHandler;
 
-import cz.msebera.android.httpclient.Header;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+
+import cz.msebera.android.httpclient.Header;
 
 
 public class ErrorActivity extends BaseFragmentActivity implements View.OnClickListener, InterfaceCustomerService {
@@ -169,7 +169,8 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
 
     public void onSubmitPressed() {
         if (!AndroidUtil.isEmailValid(getEditTxtEmail().getText().toString())) {
-            ConfirmationDialog mDialog = new ConfirmationDialog(ErrorActivity.this, "Error", "Invalid email address.");
+            ConfirmationDialog mDialog = new ConfirmationDialog(ErrorActivity.this, "Error", getEditTxtEmail().getText().toString().isEmpty() ?
+                    "Please enters email address" : "Invalid email address.");
             mDialog.addAcceptButton("OK", null);
             mDialog.show();
         } else {
