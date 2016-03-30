@@ -651,7 +651,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, final String responseString) {
-                DebugUtils.logDebug(TAG, "Location: " + responseString);
+              //  DebugUtils.logDebug(TAG, "Location: " + responseString);
                 mLastOrderLocation = GooglePlaceJsonParser.parseLocation(responseString);
 
                 runOnUiThread(new Runnable() {

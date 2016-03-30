@@ -14,7 +14,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.bentonow.bentonow.controllers.BentoApplication;
-import com.google.android.gms.common.GoogleApiAvailability;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -132,6 +131,20 @@ public class AndroidUtil {
                         .replaceAll(notAllowedCharactersRegex, "");
             }
 
+        };
+    }
+
+    public static InputFilter getInputFilterLetter() {
+        return new InputFilter() {
+            public CharSequence filter(CharSequence source, int start, int end,
+                                       Spanned dest, int dstart, int dend) {
+                for (int i = start; i < end; i++) {
+                    if (!Character.isLetter(source.charAt(i))) {
+                        return "";
+                    }
+                }
+                return null;
+            }
         };
     }
 

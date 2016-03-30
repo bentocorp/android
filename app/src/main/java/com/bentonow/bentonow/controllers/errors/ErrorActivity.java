@@ -182,7 +182,8 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
 
     public void onSubmitPressed() {
         if (!AndroidUtil.isEmailValid(getEditTxtEmail().getText().toString())) {
-            ConfirmationDialog mDialog = new ConfirmationDialog(ErrorActivity.this, "Error", "Invalid email address.");
+            ConfirmationDialog mDialog = new ConfirmationDialog(ErrorActivity.this, "Error", getEditTxtEmail().getText().toString().isEmpty() ?
+                    "Please enters email address" : "Invalid email address.");
             mDialog.addAcceptButton("OK", null);
             mDialog.show();
         } else {

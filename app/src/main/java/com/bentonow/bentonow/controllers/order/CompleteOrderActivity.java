@@ -206,7 +206,8 @@ public class CompleteOrderActivity extends BaseFragmentActivity implements View.
 
             params.put("total price", mOrder.OrderDetails.total_cents / 100);
             params.put("status", error == null ? "success" : "failure");
-            params.put("status_error", error);
+            params.put("status_error", error == null ? "" : error);
+            params.put("meal", BentoNowUtils.getMealType(mOrder.scheduled_window_start));
 
             MixpanelUtils.track(bIsMenuOD ? "Ordered On-demand" : "Ordered Order-ahead", params);
         } catch (Exception e) {

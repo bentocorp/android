@@ -18,6 +18,7 @@ import com.bentonow.bentonow.Utils.ConstantUtils;
 import com.bentonow.bentonow.Utils.DebugUtils;
 import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
 import com.bentonow.bentonow.Utils.MixpanelUtils;
+import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.Utils.SocialNetworksUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
@@ -117,6 +118,7 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
             }
 
         }
+
         super.onResume();
     }
 
@@ -303,21 +305,33 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
     }
 
     public void onSignUpPressed(View view) {
-        Intent mIntentSignUp = new Intent(this, SignUpActivity.class);
-        mIntentSignUp.putExtra(ConstantUtils.TAG_OPEN_SCREEN, optOpenScreen);
-        startActivity(mIntentSignUp);
+        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.ENABLE_SIGN_IN_CLICK)) {
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_SIGN_IN_CLICK, false);
+
+            Intent mIntentSignUp = new Intent(this, SignUpActivity.class);
+            mIntentSignUp.putExtra(ConstantUtils.TAG_OPEN_SCREEN, optOpenScreen);
+            startActivity(mIntentSignUp);
+        }
     }
 
     public void onPrivacyPolicyPressed(View view) {
-        Intent intent = new Intent(this, HelpActivity.class);
-        intent.putExtra("privacy", true);
-        startActivity(intent);
+        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.ENABLE_SIGN_IN_CLICK)) {
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_SIGN_IN_CLICK, false);
+
+            Intent intent = new Intent(this, HelpActivity.class);
+            intent.putExtra("privacy", true);
+            startActivity(intent);
+        }
     }
 
     public void onTermAndConditionsPressed(View view) {
-        Intent intent = new Intent(this, HelpActivity.class);
-        intent.putExtra("tos", true);
-        startActivity(intent);
+        if (SharedPreferencesUtil.getBooleanPreference(SharedPreferencesUtil.ENABLE_SIGN_IN_CLICK)) {
+            SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_SIGN_IN_CLICK, false);
+
+            Intent intent = new Intent(this, HelpActivity.class);
+            intent.putExtra("tos", true);
+            startActivity(intent);
+        }
     }
 
     public void onForgotPassword(View view) {
@@ -340,6 +354,13 @@ public class SignInActivity extends BaseFragmentActivity implements View.OnClick
                 break;
         }
     }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.ENABLE_SIGN_IN_CLICK, hasFocus);
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
