@@ -5,6 +5,8 @@ package com.bentonow.bentonow.Utils;
  */
 public class ConstantUtils {
 
+    public static final int MANIFEST_LOCATION_PERMISSION = 1;
+
     public static final String sFixed = "fixed";
 
     public static final String TAG_OPEN_SCREEN = "Open_Screen_Via";

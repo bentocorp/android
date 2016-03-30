@@ -1,14 +1,19 @@
 package com.bentonow.bentonow.controllers.geolocation;
 
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -213,8 +218,11 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
     @Override
     public void onMapReady(GoogleMap map) {
+        if ((ContextCompat.checkSelfPermission(DeliveryLocationActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(DeliveryLocationActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED))
+            map.setMyLocationEnabled(false);
+
         map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        map.setMyLocationEnabled(false);
         map.setTrafficEnabled(false);
         map.setIndoorEnabled(true);
         map.setBuildingsEnabled(true);
@@ -390,15 +398,20 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
     public void onCurrentLocationPressed(View view) {
         if (LocationUtils.isGpsEnable(DeliveryLocationActivity.this)) {
-            WidgetsUtils.createShortToast("Getting your location");
-            bUpdateOrderLocation = true;
-            startLocationUpdates();
+            if ((ContextCompat.checkSelfPermission(DeliveryLocationActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    || ContextCompat.checkSelfPermission(DeliveryLocationActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+                ActivityCompat.requestPermissions(DeliveryLocationActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, ConstantUtils.MANIFEST_LOCATION_PERMISSION);
+            } else {
+                WidgetsUtils.createShortToast("Getting your location");
+                bUpdateOrderLocation = true;
+                startLocationUpdates();
+            }
         } else if (mConfirmationDialog == null || !mConfirmationDialog.isShowing()) {
             mConfirmationDialog = new ConfirmationDialog(DeliveryLocationActivity.this, "Enable GPS", "GPS is disabled in your device. Enable it?");
             mConfirmationDialog.addAcceptButton("Yes", new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent callGPSSettingIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    Intent callGPSSettingIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                     startActivity(callGPSSettingIntent);
                 }
             });
@@ -651,7 +664,7 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, final String responseString) {
-              //  DebugUtils.logDebug(TAG, "Location: " + responseString);
+                //  DebugUtils.logDebug(TAG, "Location: " + responseString);
                 mLastOrderLocation = GooglePlaceJsonParser.parseLocation(responseString);
 
                 runOnUiThread(new Runnable() {
@@ -748,7 +761,10 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
     protected void startLocationUpdates() {
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, getLocationRequest(), this);
+        if ((ContextCompat.checkSelfPermission(DeliveryLocationActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(DeliveryLocationActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, getLocationRequest(), this);
+        }
     }
 
     protected void stopLocationUpdates() {
@@ -773,6 +789,20 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
                 .addApi(LocationServices.API)
                 .build();
         mGoogleApiClient.connect();
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case ConstantUtils.MANIFEST_LOCATION_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    WidgetsUtils.createShortToast("Getting your location");
+                    bUpdateOrderLocation = true;
+                    startLocationUpdates();
+                }
+                break;
+        }
     }
 
     @Override
@@ -812,7 +842,8 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     }
 
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, final int position, long id) {
+    public void onItemClick(AdapterView<?> adapterView, View view, final int position,
+                            long id) {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getTxtAddress().getWindowToken(), 0);
         restartSearch();
@@ -844,12 +875,15 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
     public void onConnected(Bundle bundle) {
         DebugUtils.logDebug("buildGoogleApiClient", "onConnected:");
 
-        Location mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if ((ContextCompat.checkSelfPermission(DeliveryLocationActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(DeliveryLocationActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+            Location mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
-        if (mLocation != null)
-            mCurrentLocation = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
+            if (mLocation != null)
+                mCurrentLocation = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
 
-        startLocationUpdates();
+            startLocationUpdates();
+        }
 
     }
 
@@ -957,6 +991,16 @@ public class DeliveryLocationActivity extends BaseFragmentActivity implements Go
         if (actionbar_left_btn == null)
             actionbar_left_btn = (ImageView) findViewById(R.id.actionbar_left_btn);
         return actionbar_left_btn;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
     }
 
     class GooglePlacesAutocompleteAdapter extends ArrayAdapter<String> implements Filterable {
