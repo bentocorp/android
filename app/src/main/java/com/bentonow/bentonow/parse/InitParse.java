@@ -291,7 +291,8 @@ public class InitParse extends MainParser {
             if (jsonGateKeeper.has("hasService"))
                 MenuDao.gateKeeper.setHasServices(jsonGateKeeper.getBoolean("hasService"));
             if (jsonGateKeeper.has("appState"))
-                MenuDao.gateKeeper.setAppState(jsonGateKeeper.getString("appState"));
+                //  MenuDao.gateKeeper.setAppState(jsonGateKeeper.getString("appState"));
+                MenuDao.gateKeeper.setAppState("closed_wall");
             if (jsonGateKeeper.has("CurrentMealType"))
                 MenuDao.gateKeeper.setCurrentMealType(jsonGateKeeper.getString("CurrentMealType"));
 

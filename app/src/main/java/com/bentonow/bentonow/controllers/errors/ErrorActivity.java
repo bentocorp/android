@@ -17,6 +17,7 @@ import com.bentonow.bentonow.Utils.GoogleAnalyticsUtil;
 import com.bentonow.bentonow.Utils.SharedPreferencesUtil;
 import com.bentonow.bentonow.controllers.BaseFragmentActivity;
 import com.bentonow.bentonow.controllers.dialog.ConfirmationDialog;
+import com.bentonow.bentonow.controllers.dialog.ProgressDialog;
 import com.bentonow.bentonow.controllers.help.HelpActivity;
 import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.dao.MenuDao;
@@ -29,12 +30,12 @@ import com.bentonow.bentonow.web.request.UserRequest;
 import com.google.android.gms.maps.model.LatLng;
 import com.loopj.android.http.TextHttpResponseHandler;
 
-import cz.msebera.android.httpclient.Header;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+
+import cz.msebera.android.httpclient.Header;
 
 
 public class ErrorActivity extends BaseFragmentActivity implements View.OnClickListener, InterfaceCustomerService {
@@ -51,6 +52,7 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
     private ImageView actionbar_left_btn;
     private ImageView actionbar_right_btn;
     private Menu mCurrentMenu;
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,6 +133,17 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
         }
     }
 
+    private void dismissDialog() {
+        if (mProgressDialog != null) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mProgressDialog.dismiss();
+                }
+            });
+        }
+    }
+
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
@@ -173,6 +186,8 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
             mDialog.addAcceptButton("OK", null);
             mDialog.show();
         } else {
+            showLoadingDialog(getString(R.string.processing_label), false);
+
             CouponRequest mCoupon = new CouponRequest();
             mCoupon.reason = sStatus;
             mCoupon.email = getEditTxtEmail().getText().toString();
@@ -192,6 +207,8 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
                     ConfirmationDialog mDialog = new ConfirmationDialog(ErrorActivity.this, "Error", "We having issues connecting to the server, please try later.");
                     mDialog.addAcceptButton("OK", null);
                     mDialog.show();
+
+                    onFinish();
                 }
 
                 @SuppressWarnings("deprecation")
@@ -205,11 +222,12 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
                     mDialog.addAcceptButton("OK", null);
                     mDialog.show();
 
+                    onFinish();
                 }
 
                 @Override
                 public void onFinish() {
-                    super.onFinish();
+                    dismissDialog();
                 }
             });
         }
@@ -238,6 +256,13 @@ public class ErrorActivity extends BaseFragmentActivity implements View.OnClickL
         startActivity(intent);
     }
 
+
+    private void showLoadingDialog(String sText, boolean bCancelable) {
+        if (mProgressDialog == null || !mProgressDialog.isShowing()) {
+            mProgressDialog = new ProgressDialog(ErrorActivity.this, sText, bCancelable);
+            mProgressDialog.show();
+        }
+    }
 
     @Override
     public void onBackPressed() {
