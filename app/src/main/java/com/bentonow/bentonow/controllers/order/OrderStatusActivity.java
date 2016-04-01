@@ -327,7 +327,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
                         getTxtDescriptionPickUp().setTextColor(getResources().getColor(R.color.gray));
 
                         if (isRequestData)
-                            webSocketService.trackDriver(mOrder.getDriverId());
+                            webSocketService.trackDriver();
 
                         break;
                     case "Arrived":
@@ -611,7 +611,6 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
     @Override
     public void onMapReady(GoogleMap map) {
         map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        map.setMyLocationEnabled(false);
         map.setTrafficEnabled(false);
         map.setIndoorEnabled(true);
         map.setBuildingsEnabled(true);
@@ -662,7 +661,7 @@ public class OrderStatusActivity extends BaseFragmentActivity implements View.On
 
     @Override
     public void onAuthenticationSuccess() {
-        webSocketService.trackDriver(mOrder.getDriverId());
+        webSocketService.trackDriver();
     }
 
     @Override

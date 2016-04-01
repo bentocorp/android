@@ -49,10 +49,10 @@ public class OrderSocketService extends Service {
     private boolean connecting = false;
     private boolean disconnectingPurposefully = false;
     private String sToken = "";
-    private String sDriverId = "";
     private Calendar mCalLoc;
     private OrderStatusListener mSocketListener;
     private OrderHistoryItemModel mOrder;
+    private boolean bIsSocketAlive;
 
 
     private TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
@@ -74,10 +74,12 @@ public class OrderSocketService extends Service {
         DebugUtils.logDebug(TAG, "Creating new OrderSocketService");
         mCalLoc = Calendar.getInstance();
         mHandler = new Handler();
+        bIsSocketAlive = true;
+
         mRunnable = new Runnable() {
             @Override
             public void run() {
-                if (connecting)
+                if (connecting && bIsSocketAlive)
                     checkServiceStatus();
             }
         };
@@ -87,7 +89,8 @@ public class OrderSocketService extends Service {
                 if (mSocketListener != null)
                     mSocketListener.getOrderHistory();
 
-                checkOrderHistoryStatus();
+                if (bIsSocketAlive)
+                    checkOrderHistoryStatus();
             }
         };
     }
@@ -310,7 +313,7 @@ public class OrderSocketService extends Service {
                     try {
                         DebugUtils.logDebug(TAG, "Loc: " + args[0].toString());
                         GlocSocketModel mGloc = SocketResponseParser.parseGloc(args[0].toString());
-                        if (mGloc.getClientId().equals(sDriverId)) {
+                        if (mGloc.getClientId().equals(mOrder.getDriverId())) {
                             mCalLoc = Calendar.getInstance();
                             mSocketListener.onDriverLocation(Double.parseDouble(mGloc.getLat()), Double.parseDouble(mGloc.getLng()));
                         } else
@@ -332,9 +335,8 @@ public class OrderSocketService extends Service {
 
     }
 
-    public void trackDriver(final String sDriverId) {
-        this.sDriverId = bIsProductionTesting ? "64" : sDriverId;
-        String sUrl = bIsProductionTesting ? BentoNowApi.getDriverTrackUrl("64", "o-23341") : BentoNowApi.getDriverTrackUrl(sDriverId, mOrder.getOrderId());
+    public void trackDriver() {
+        String sUrl = bIsProductionTesting ? BentoNowApi.getDriverTrackUrl("64", "o-23341") : BentoNowApi.getDriverTrackUrl(mOrder.getDriverId(), mOrder.getOrderId());
 
         DebugUtils.logDebug(TAG, "TrackDriver:: " + sUrl);
         mSocket.emit("get", sUrl, new Ack() {
@@ -356,14 +358,14 @@ public class OrderSocketService extends Service {
                     DebugUtils.logError(TAG, "Track: " + e.toString());
                 }
 
-                trackGloc(sDriverId);
+                trackGloc();
             }
         });
 
     }
 
-    public void trackGloc(String sDriverId) {
-        String sUrl = bIsProductionTesting ? BentoNowApi.getDriverTrackGloc("64", sToken) : BentoNowApi.getDriverTrackGloc(sDriverId, sToken);
+    public void trackGloc() {
+        String sUrl = bIsProductionTesting ? BentoNowApi.getDriverTrackGloc("64", sToken) : BentoNowApi.getDriverTrackGloc(mOrder.getDriverId(), sToken);
         DebugUtils.logDebug(TAG, "TrackGloc:: " + sUrl);
         mSocket.emit("get", sUrl, new Ack() {
             @Override
@@ -393,7 +395,7 @@ public class OrderSocketService extends Service {
     }
 
     public void untrack() {
-        String sUrl = bIsProductionTesting ? BentoNowApi.getDriverUntrack("o-23341", "64") : BentoNowApi.getDriverUntrack(mOrder.getOrderId(), sDriverId);
+        String sUrl = bIsProductionTesting ? BentoNowApi.getDriverUntrack("o-23341", "64") : BentoNowApi.getDriverUntrack(mOrder.getOrderId(), mOrder.getDriverId());
         DebugUtils.logDebug(TAG, "Untrack:: " + sUrl);
         mSocket.emit("get", sUrl, new Ack() {
             @Override
@@ -452,6 +454,7 @@ public class OrderSocketService extends Service {
         disconnectingPurposefully = true;
         connecting = false;
         mHandler.removeCallbacks(mRunnable);
+        mHandler.removeCallbacks(mRunnableOrderHistory);
 
         if (mSocket != null) {
             DebugUtils.logDebug(TAG, "disconnecting");
@@ -476,6 +479,7 @@ public class OrderSocketService extends Service {
     public void onDestroy() {
         DebugUtils.logDebug(TAG, "destroying OrderSocketService");
         untrack();
+        bIsSocketAlive = false;
         super.onDestroy();
     }
 
