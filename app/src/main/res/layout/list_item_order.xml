@@ -2,16 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/complete_row"
     android:layout_width="fill_parent"
-    android:layout_height="38dp"
+    android:layout_height="@dimen/dp_dish_order_item_height"
     android:background="@color/bgcolor"
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
     <ImageView
         android:id="@+id/btn_edit"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_marginLeft="10dp"
+        android:layout_width="@dimen/dp_dish_order_item_height"
+        android:layout_height="@dimen/dp_dish_order_item_height"
+        android:padding="@dimen/dp_dish_order_sub_item_padding"
         android:src="@drawable/vector_remove_orange" />
 
     <TextView
@@ -23,8 +23,8 @@
         android:paddingLeft="@dimen/btn_padding"
         android:paddingRight="@dimen/btn_padding"
         android:text=""
-        android:textAppearance="@style/SmallText"
-        android:textColor="@color/btn_green" />
+        android:textColor="@color/btn_green"
+        android:textSize="@dimen/sp_default_size" />
 
     <TextView
         android:id="@+id/txt_price"
@@ -34,8 +34,8 @@
         android:paddingLeft="@dimen/btn_padding"
         android:paddingRight="@dimen/btn_padding"
         android:text=""
-        android:textAppearance="@style/SmallText"
-        android:textColor="@color/black" />
+        android:textColor="@color/black"
+        android:textSize="@dimen/sp_default_size" />
 
     <ImageButton
         android:id="@+id/btn_remove"

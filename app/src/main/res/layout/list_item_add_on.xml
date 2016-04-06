@@ -11,7 +11,7 @@
     <RelativeLayout
         android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
-        android:layout_height="320dp"
+        android:layout_height="@dimen/dp_dish_add_on_list_item_height"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:layout_marginTop="20dp">
@@ -44,8 +44,8 @@
 
                     <ImageView
                         android:id="@+id/img_sold_out"
-                        android:layout_width="130dp"
-                        android:layout_height="130dp"
+                        android:layout_width="@dimen/dp_dish_add_on_list_sold_out"
+                        android:layout_height="@dimen/dp_dish_add_on_list_sold_out"
                         android:layout_alignParentRight="true"
                         android:scaleType="centerCrop"
                         android:src="@drawable/banner_sold_out" />
@@ -85,7 +85,7 @@
                 <LinearLayout
                     android:id="@+id/wrapper_add_price"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="@dimen/dp_general_height"
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentLeft="true"
                     android:background="#DFE2E2"
@@ -129,7 +129,7 @@
         <LinearLayout
             android:id="@+id/wrapper_add_remove"
             android:layout_width="match_parent"
-            android:layout_height="58dp"
+            android:layout_height="@dimen/dp_dish_add_on_list_button_wrapper"
             android:layout_alignParentBottom="true"
             android:orientation="horizontal"
             android:weightSum="100">
@@ -141,10 +141,10 @@
 
                 <ImageView
                     android:id="@+id/img_remove_dish"
-                    android:layout_width="58dp"
-                    android:layout_height="58dp"
+                    android:layout_width="@dimen/dp_dish_add_on_list_button_wrapper"
+                    android:layout_height="@dimen/dp_dish_add_on_list_button_wrapper"
                     android:layout_gravity="center"
-                    android:padding="7dp"
+                    android:padding="@dimen/dp_dish_add_on_list_button_padding"
                     android:src="@drawable/vector_remove_green" />
 
             </FrameLayout>
@@ -161,7 +161,7 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:text="1"
-                    android:textSize="18sp" />
+                    android:textSize="@dimen/sp_started_description" />
             </FrameLayout>
 
             <FrameLayout
@@ -171,10 +171,10 @@
 
                 <ImageView
                     android:id="@+id/img_add_dish"
-                    android:layout_width="58dp"
-                    android:layout_height="58dp"
+                    android:layout_width="@dimen/dp_dish_add_on_list_button_wrapper"
+                    android:layout_height="@dimen/dp_dish_add_on_list_button_wrapper"
                     android:layout_gravity="center"
-                    android:padding="7dp"
+                    android:padding="@dimen/dp_dish_add_on_list_button_padding"
                     android:src="@drawable/vector_add_green" />
             </FrameLayout>
 

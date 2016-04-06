@@ -119,7 +119,7 @@
     </style>
 
     <style name="TxtBentoPromo" parent="@android:style/Widget.TextView">
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">@dimen/sp_default_size</item>
         <item name="android:textColor">@color/white</item>
         <item name="fontPath">fonts/OpenSans-Bold.ttf</item>
     </style>
@@ -162,13 +162,13 @@
     <style name="TxtAddOnTitle" parent="@android:style/Widget.TextView">
         <item name="android:textColor">@color/dark_blue</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textSize">13sp</item>
+        <item name="android:textSize">@dimen/sp_default_size_bold</item>
         <item name="fontPath">fonts/OpenSans-Bold.ttf</item>
     </style>
 
     <style name="TxtSettingsRows" parent="@android:style/Widget.TextView">
         <item name="android:textColor">@color/dark_blue</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">@dimen/sp_default_size</item>
         <item name="fontPath">fonts/OpenSans-Regular.ttf</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:paddingLeft">@dimen/setting_ico_padd</item>
@@ -176,7 +176,7 @@
 
     <style name="TxtSettingsSocialMedia" parent="@android:style/Widget.TextView">
         <item name="android:textColor">@color/dark_blue</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">@dimen/sp_default_size</item>
         <item name="fontPath">fonts/OpenSans-Bold.ttf</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_marginTop">5dp</item>
@@ -192,6 +192,7 @@
 
     <style name="TxtOpenSansBold" parent="@android:style/Widget.TextView">
         <item name="fontPath">fonts/OpenSans-Bold.ttf</item>
+        <item name="android:textSize">@dimen/sp_default_size_bold</item>
     </style>
 
     <style name="TxtItemsBentoTitle" parent="@android:style/Widget.TextView">
@@ -276,8 +277,8 @@
 
     <style name="TextViewSettingsUserInfoName" parent="@android:style/Widget.TextView">
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">20dp</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:layout_height">@dimen/dp_settings_user_container_row_height</item>
+        <item name="android:textSize">@dimen/sp_settings_user_info_name</item>
         <item name="android:textColor">#8E949D</item>
         <item name="android:gravity">center</item>
         <item name="fontPath">fonts/OpenSans-Bold.ttf</item>
@@ -285,8 +286,8 @@
 
     <style name="TextViewSettingsUserInfo" parent="@android:style/Widget.TextView">
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">20dp</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:layout_height">@dimen/dp_settings_user_container_row_height</item>
+        <item name="android:textSize">@dimen/sp_settings_user_info_name</item>
         <item name="android:textColor">#8E949D</item>
         <item name="android:gravity">center</item>
         <item name="fontPath">fonts/OpenSans-Regular.ttf</item>

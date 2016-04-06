@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bgcolor"
-    tools:context="com.bentonow.bentonow.controllers.order.CompleteOrderActivity">
+    tools:context=".controllers.order.CompleteOrderActivity">
 
     <!-- background -->
 
@@ -46,7 +46,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center|left"
-                android:textSize="13sp" />
+                android:textSize="@dimen/sp_default_size" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -55,8 +55,8 @@
 
                 <ImageView
                     android:id="@+id/img_deliver_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/dp_order_icon_size"
+                    android:layout_height="@dimen/dp_order_icon_size"
                     android:layout_gravity="center"
                     android:src="@drawable/vector_calendar" />
 
@@ -75,7 +75,8 @@
                         android:layout_height="0dp"
                         android:layout_gravity="center|bottom"
                         android:layout_weight="1"
-                        android:text="15-25" />
+                        android:text="15-25"
+                        android:textSize="@dimen/sp_default_size" />
 
                     <TextView
                         android:id="@+id/txt_deliver_time_down"
@@ -84,7 +85,8 @@
                         android:layout_height="0dp"
                         android:layout_gravity="center|top"
                         android:layout_weight="1"
-                        android:text="min" />
+                        android:text="min"
+                        android:textSize="@dimen/sp_default_size" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -111,8 +113,8 @@
 
             <ImageView
                 android:id="@+id/img_credit_card"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/dp_order_icon_size"
+                android:layout_height="@dimen/dp_order_icon_size"
                 android:layout_gravity="center"
                 android:layout_marginLeft="@dimen/btn_padding"
                 android:adjustViewBounds="true"
@@ -126,7 +128,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center|left"
-                android:textSize="13sp" />
+                android:textSize="@dimen/sp_default_size" />
 
             <TextView
                 style="@style/TxtSummaryHeader"
@@ -134,7 +136,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:text="@string/edit"
-                android:textSize="13sp" />
+                android:textSize="@dimen/sp_default_size_bold" />
         </LinearLayout>
 
         <View
@@ -182,20 +184,24 @@
                 <com.bentonow.bentonow.ui.BackendTextView
                     style="@style/TxtOpenSansRegular"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:gravity="center|left"
                     android:padding="@dimen/btn_padding"
                     android:textColor="@color/dark_gray"
+                    android:textSize="@dimen/sp_default_size"
                     app:key="complete-promo-discount" />
 
                 <TextView
                     android:id="@+id/txt_discount"
                     style="@style/TxtOpenSansRegular"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
                     android:padding="@dimen/btn_padding"
                     android:text="@string/zero_dollar"
-                    android:textColor="@color/dark_gray" />
+                    android:textColor="@color/dark_gray"
+                    android:textSize="@dimen/sp_default_size" />
             </LinearLayout>
 
             <View
@@ -214,20 +220,24 @@
                 <com.bentonow.bentonow.ui.BackendTextView
                     style="@style/TxtOpenSansRegular"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:gravity="center|left"
                     android:padding="@dimen/btn_padding"
                     android:textColor="@color/dark_gray"
+                    android:textSize="@dimen/sp_default_size"
                     app:key="complete-tax" />
 
                 <TextView
                     android:id="@+id/txt_tax"
                     style="@style/TxtOpenSansRegular"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
                     android:padding="@dimen/btn_padding"
                     android:text="@string/zero_dollar"
-                    android:textColor="@color/dark_gray" />
+                    android:textColor="@color/dark_gray"
+                    android:textSize="@dimen/sp_default_size" />
             </LinearLayout>
 
             <View
@@ -246,29 +256,35 @@
                 <com.bentonow.bentonow.ui.BackendTextView
                     style="@style/TxtOpenSansRegular"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:gravity="center|left"
                     android:padding="@dimen/btn_padding"
                     android:textColor="@color/dark_gray"
+                    android:textSize="@dimen/sp_default_size"
                     app:key="delivery_label" />
 
                 <TextView
                     android:id="@+id/txt_delivery_price_total"
                     style="@style/TxtOpenSansRegular"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
                     android:padding="@dimen/btn_padding"
                     android:text="@string/zero_dollar"
-                    android:textColor="@color/orange" />
+                    android:textColor="@color/orange"
+                    android:textSize="@dimen/sp_default_size" />
 
                 <TextView
                     android:id="@+id/txt_delivery_price"
                     style="@style/TxtOpenSansRegular"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
                     android:padding="@dimen/btn_padding"
                     android:text="@string/zero_dollar"
-                    android:textColor="@color/dark_gray" />
+                    android:textColor="@color/dark_gray"
+                    android:textSize="@dimen/sp_default_size" />
             </LinearLayout>
 
             <View
@@ -287,10 +303,12 @@
                 <com.bentonow.bentonow.ui.BackendTextView
                     style="@style/TxtOpenSansRegular"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:gravity="center|left"
                     android:padding="@dimen/btn_padding"
                     android:textColor="@color/dark_gray"
+                    android:textSize="@dimen/sp_default_size"
                     app:key="complete-tip" />
 
                 <LinearLayout
@@ -325,7 +343,8 @@
                         android:gravity="center"
                         android:padding="5dp"
                         android:text=""
-                        android:textColor="@color/dark_gray" />
+                        android:textColor="@color/dark_gray"
+                        android:textSize="@dimen/sp_default_size" />
 
                     <View
                         android:layout_width="2dp"
@@ -362,11 +381,13 @@
                     android:id="@+id/txt_total_fix"
                     style="@style/TxtOpenSansRegular"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
+                    android:gravity="center|left"
                     android:padding="@dimen/btn_padding"
                     android:textColor="@color/dark_gray"
+                    android:textSize="@dimen/sp_default_size"
                     app:key="complete-total" />
 
                 <TextView
@@ -377,31 +398,35 @@
                     android:layout_alignTop="@+id/txt_total_fix"
                     android:layout_centerVertical="true"
                     android:layout_toRightOf="@+id/txt_total_fix"
-                    android:gravity="center_vertical"
-                    android:textSize="13sp" />
+                    android:gravity="center|left"
+                    android:textSize="@dimen/sp_default_size" />
 
                 <TextView
                     android:id="@+id/txt_promo_total"
                     style="@style/TxtOpenSansRegular"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_centerVertical="true"
                     android:layout_toLeftOf="@+id/txt_total"
+                    android:gravity="center"
                     android:padding="@dimen/btn_padding"
                     android:text="@string/zero_dollar"
-                    android:textColor="@color/orange" />
+                    android:textColor="@color/orange"
+                    android:textSize="@dimen/sp_default_size" />
 
 
                 <TextView
                     android:id="@+id/txt_total"
                     style="@style/TxtOpenSansRegular"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
+                    android:gravity="center"
                     android:padding="@dimen/btn_padding"
                     android:text="@string/zero_dollar"
-                    android:textColor="@color/dark_gray" />
+                    android:textColor="@color/dark_gray"
+                    android:textSize="@dimen/sp_default_size" />
             </RelativeLayout>
 
         </LinearLayout>

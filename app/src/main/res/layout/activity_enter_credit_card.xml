@@ -31,17 +31,16 @@
 
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="50sp"
+        android:layout_height="@dimen/dp_general_height"
         android:background="@color/white"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/img_credit_card"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
+            android:layout_width="@dimen/dp_general_height"
+            android:layout_height="@dimen/dp_general_height"
+            android:padding="@dimen/dp_dish_add_on_list_button_padding"
             android:adjustViewBounds="true"
             android:contentDescription="@null"
             android:src="@drawable/vector_credit_card_gray" />
@@ -59,7 +58,7 @@
             android:textColor="@color/gray"
             android:textColorHint="@color/gray_70"
             android:textCursorDrawable="@null"
-            android:textSize="@dimen/text_small" />
+            android:textSize="@dimen/sp_credit_card_text" />
 
         <Button
             android:id="@+id/txt_last4"
@@ -76,7 +75,7 @@
             android:singleLine="true"
             android:textColor="@color/gray"
             android:textCursorDrawable="@null"
-            android:textSize="@dimen/text_small" />
+            android:textSize="@dimen/sp_credit_card_text"  />
 
         <EditText
             android:id="@+id/txt_date"
@@ -97,7 +96,7 @@
             android:text=""
             android:textColor="@color/gray"
             android:textCursorDrawable="@null"
-            android:textSize="@dimen/text_small" />
+            android:textSize="@dimen/sp_credit_card_text" />
 
         <EditText
             android:id="@+id/txt_cvc"
@@ -115,13 +114,12 @@
             android:singleLine="true"
             android:textColor="@color/gray"
             android:textCursorDrawable="@null"
-            android:textSize="@dimen/text_small" />
+            android:textSize="@dimen/sp_credit_card_text" />
 
         <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="7dp"
-            android:layout_marginRight="7dp"
+            android:layout_width="@dimen/dp_general_height"
+            android:layout_height="@dimen/dp_general_height"
+            android:padding="@dimen/dp_dish_add_on_list_button_padding"
             android:background="@null"
             android:contentDescription="@null"
             android:onClick="onClearPressed"
@@ -132,10 +130,11 @@
     <com.bentonow.bentonow.ui.BackendButton
         android:id="@+id/btn_save"
         android:layout_width="fill_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:layout_margin="@dimen/general_padding"
         android:background="@drawable/btn_rounded_gray"
         android:gravity="center"
+        android:textSize="@dimen/sp_default_size_bold"
         android:onClick="onSavePressed"
         android:textColor="@color/white"
         app:key="credit-card-button" />

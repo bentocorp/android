@@ -93,7 +93,7 @@
             <RelativeLayout
                 android:id="@+id/layout_wrapper_buttons"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="@dimen/dp_general_height"
                 android:layout_alignParentBottom="true"
                 android:layout_marginBottom="5dp"
                 android:layout_marginLeft="20dp"
@@ -187,8 +187,8 @@
 
         <ImageView
             android:id="@+id/img_sold_out"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/dp_dish_main_list_promo"
+            android:layout_height="@dimen/dp_dish_main_list_promo"
             android:layout_alignParentRight="true"
             android:contentDescription="@null"
             android:src="@drawable/banner_sold_out" />
