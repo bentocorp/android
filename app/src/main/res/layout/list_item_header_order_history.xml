@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/complete_row"
     android:layout_width="fill_parent"
-    android:layout_height="@dimen/dp_general_height"
+    android:layout_height="@dimen/dp_dish_order_item_height"
     android:background="#4D5565"
     android:gravity="center_vertical"
     android:orientation="horizontal">

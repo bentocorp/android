@@ -1,8 +1,8 @@
 <resources>
 
     <!-- Text Size -->
-    <dimen name="sp_default_size">12sp</dimen>
-    <dimen name="sp_default_size_bold">10sp</dimen>
+    <dimen name="sp_default_size">13sp</dimen>
+    <dimen name="sp_default_size_bold">12sp</dimen>
     <dimen name="sp_text_main_subtitle">12sp</dimen>
     <dimen name="sp_started_title">21sp</dimen>
     <dimen name="sp_started_description">19sp</dimen>
@@ -13,7 +13,7 @@
     <dimen name="main_dish_custom_price">15sp</dimen>
 
     <!-- Dimen Size -->
-    <dimen name="dp_general_height">48dp</dimen>
+    <dimen name="dp_general_height">40dp</dimen>
     <dimen name="dp_main_loader_size">32dp</dimen>
     <dimen name="dp_delivery_icon_size">38dp</dimen>
     <dimen name="dp_settings_user_container_row_height">20dp</dimen>
