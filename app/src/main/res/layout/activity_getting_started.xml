@@ -13,7 +13,7 @@
 
     <LinearLayout
         android:id="@+id/linearLayout7"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="@dimen/general_padding">
@@ -57,9 +57,8 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:singleLine="true"
-                    android:text=""
                     android:textColor="@color/white"
-                    android:textSize="21sp"
+                    android:textSize="@dimen/sp_started_title"
                     android:textStyle="bold" />
 
                 <LinearLayout
@@ -85,9 +84,8 @@
                         android:paddingLeft="@dimen/home_about_point_left_padding"
                         android:paddingRight="@dimen/cero"
                         android:singleLine="true"
-                        android:text=""
                         android:textColor="@color/white"
-                        android:textSize="19sp"
+                        android:textSize="@dimen/sp_started_description"
                         android:textStyle="bold"
                         app:key="about-item-1" />
                 </LinearLayout>
@@ -115,9 +113,8 @@
                         android:paddingLeft="@dimen/home_about_point_left_padding"
                         android:paddingRight="@dimen/cero"
                         android:singleLine="true"
-                        android:text=""
                         android:textColor="@color/white"
-                        android:textSize="19sp"
+                        android:textSize="@dimen/sp_started_description"
                         android:textStyle="bold"
                         app:key="about-item-2" />
                 </LinearLayout>
@@ -146,7 +143,7 @@
                         android:paddingRight="@dimen/cero"
                         android:singleLine="true"
                         android:textColor="@color/white"
-                        android:textSize="19sp"
+                        android:textSize="@dimen/sp_started_description"
                         android:textStyle="bold"
                         app:key="about-item-3" />
                 </LinearLayout>
@@ -157,7 +154,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center_vertical"
+                android:gravity="center_vertical|bottom"
                 android:orientation="vertical">
 
                 <com.bentonow.bentonow.ui.BackendButton
@@ -169,7 +166,7 @@
                     android:padding="15dp"
                     android:text=""
                     android:textColor="@color/dark_green"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/sp_default_size_bold"
                     android:textStyle="bold"
                     app:key="about-button" />
             </LinearLayout>
@@ -193,7 +190,7 @@
                 android:paddingRight="@dimen/cero"
                 android:singleLine="true"
                 android:textColor="@color/white"
-                android:textSize="19sp"
+                android:textSize="@dimen/sp_started_title"
                 android:textStyle="bold"
                 app:key="notif-optin-new-txt1" />
 
@@ -208,7 +205,7 @@
                 android:paddingLeft="@dimen/home_about_point_left_padding"
                 android:paddingRight="@dimen/cero"
                 android:textColor="@color/white"
-                android:textSize="19sp"
+                android:textSize="@dimen/sp_started_description"
                 android:textStyle="bold"
                 app:key="notif-optin-new-txt2" />
 
@@ -231,7 +228,7 @@
                     android:singleLine="true"
                     android:text="NO THANKS"
                     android:textColor="@color/white"
-                    android:textSize="15sp"
+                    android:textSize="@dimen/sp_default_size_bold"
                     android:textStyle="bold" />
 
                 <Button
@@ -244,7 +241,7 @@
                     android:singleLine="true"
                     android:text="OK"
                     android:textColor="@color/primary"
-                    android:textSize="15sp" />
+                    android:textSize="@dimen/sp_default_size_bold" />
             </LinearLayout>
 
 

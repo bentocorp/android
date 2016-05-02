@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.widget.Button;
 
 import com.bentonow.bentonow.R;
+import com.bentonow.bentonow.controllers.BentoApplication;
 import com.bentonow.bentonow.dao.IosCopyDao;
 import com.bentonow.bentonow.model.BackendText;
 

@@ -70,21 +70,21 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="@dimen/dp_general_height"
             android:background="@drawable/bg_actionbar"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="38dp"
-                android:layout_height="38dp"
+                android:layout_width="@dimen/dp_delivery_icon_size"
+                android:layout_height="@dimen/dp_delivery_icon_size"
                 android:padding="10dp"
                 android:src="@drawable/vector_search_green" />
 
             <AutoCompleteTextView
                 android:id="@+id/txt_address"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@color/transparent"
                 android:completionThreshold="1"
@@ -94,15 +94,15 @@
                 android:minHeight="30dp"
                 android:singleLine="true"
                 android:textCursorDrawable="@null"
-                android:textSize="16sp">
+                android:textSize="@dimen/sp_default_size">
 
                 <requestFocus />
             </AutoCompleteTextView>
 
             <ImageView
                 android:id="@+id/btn_clear"
-                android:layout_width="38dp"
-                android:layout_height="38dp"
+                android:layout_width="@dimen/dp_delivery_icon_size"
+                android:layout_height="@dimen/dp_delivery_icon_size"
                 android:onClick="onClearPressed"
                 android:padding="10dp"
                 android:src="@drawable/vector_close_gray" />
@@ -115,8 +115,8 @@
 
             <ImageView
                 android:id="@+id/btn_current_location"
-                android:layout_width="38dp"
-                android:layout_height="38dp"
+                android:layout_width="@dimen/dp_delivery_icon_size"
+                android:layout_height="@dimen/dp_delivery_icon_size"
                 android:onClick="onCurrentLocationPressed"
                 android:padding="10dp"
                 android:src="@drawable/vector_near_me" />
@@ -170,7 +170,7 @@
     <RelativeLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="@dimen/dp_general_height"
         android:layout_above="@+id/btn_continue"
         android:background="@color/white"
         android:gravity="center_vertical">
@@ -181,6 +181,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_toLeftOf="@+id/btn_help"
+            android:textSize="@dimen/sp_default_size"
             android:gravity="center_vertical"
             android:lines="1"
             android:paddingLeft="10dp"
@@ -190,8 +191,9 @@
 
         <ImageView
             android:id="@+id/btn_help"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="@dimen/dp_delivery_icon_size"
+            android:layout_height="@dimen/dp_delivery_icon_size"
+            android:padding="10dp"
             android:layout_centerVertical="true"
             android:layout_marginEnd="20dp"
             android:layout_marginRight="25dp"
@@ -203,8 +205,8 @@
 
         <CheckBox
             android:id="@+id/chck_iagree"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/dp_delivery_icon_size"
+            android:layout_height="@dimen/dp_delivery_icon_size"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
@@ -217,7 +219,7 @@
         android:id="@+id/btn_continue"
         style="@style/TxtOpenSansBold"
         android:layout_width="fill_parent"
-        android:layout_height="48dp"
+        android:layout_height="@dimen/dp_general_height"
         android:layout_alignParentBottom="true"
         android:gravity="center"
         android:padding="@dimen/btn_padding"

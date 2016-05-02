@@ -208,6 +208,10 @@ public class OrderHistoryActivity extends BaseFragmentActivity implements View.O
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
 
     @Override
     protected void onDestroy() {

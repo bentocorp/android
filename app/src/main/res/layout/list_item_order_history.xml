@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/complete_row"
     android:layout_width="fill_parent"
-    android:layout_height="48dp"
+    android:layout_height="@dimen/dp_general_height"
     android:background="#EAEEEE"
     android:gravity="center_vertical"
     android:orientation="horizontal">
@@ -18,7 +18,7 @@
         android:paddingRight="@dimen/btn_padding"
         android:singleLine="true"
         android:textColor="#444E59"
-        android:textSize="12sp" />
+        android:textSize="@dimen/sp_default_size" />
 
     <TextView
         android:id="@+id/txt_order_history_price"
