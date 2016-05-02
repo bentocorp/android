@@ -38,7 +38,6 @@ public class BaseFragmentActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
 
         SharedPreferencesUtil.setAppPreference(SharedPreferencesUtil.IS_APP_IN_FRONT, true);
-
        /* CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
                         .setDefaultFontPath("fonts/OpenSans-Regular.ttf")
                         .setFontAttrId(R.attr.fontPath)
